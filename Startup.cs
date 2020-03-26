@@ -33,6 +33,7 @@ namespace isolaatti_API
             {
                 options.UseSqlite(Configuration.GetConnectionString("Database"));
             });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

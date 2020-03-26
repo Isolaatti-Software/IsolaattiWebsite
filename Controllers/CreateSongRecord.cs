@@ -15,7 +15,7 @@ namespace isolaatti_API.Controllers
             _contextApp = contextApp;
         }
         [HttpPost]
-        public int Index(int userId, string fileName)
+        public int Index([FromForm]int userId, [FromForm]string fileName)
         {
             Song songToAdd = new Song()
             {

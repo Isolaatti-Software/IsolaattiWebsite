@@ -13,7 +13,7 @@ namespace isolaatti_API.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.1");
+                .HasAnnotation("ProductVersion", "3.1.2");
 
             modelBuilder.Entity("isolaatti_API.Models.ProcessingServerList", b =>
                 {
@@ -38,11 +38,17 @@ namespace isolaatti_API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Artist")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("BassUrl")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("DrumsUrl")
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsBeingProcessed")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("OriginalFileName")
                         .HasColumnType("TEXT");
@@ -72,6 +78,15 @@ namespace isolaatti_API.Migrations
 
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
+
+                    b.Property<string>("Password")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Uid")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("emailValidated")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
