@@ -15,12 +15,13 @@ namespace isolaatti_API.Controllers
             _contextApp = contextApp;
         }
         [HttpPost]
-        public int Index([FromForm]int userId, [FromForm]string fileName)
+        public int Index([FromForm]int userId, [FromForm]string fileName, [FromForm]string songArtist="Unknown")
         {
             Song songToAdd = new Song()
             {
                 OwnerId = userId,
-                OriginalFileName = fileName
+                OriginalFileName = fileName,
+                Artist = songArtist
             };
             _contextApp.Songs.Add(songToAdd);
             _contextApp.SaveChanges();

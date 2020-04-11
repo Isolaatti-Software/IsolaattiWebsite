@@ -1,4 +1,5 @@
 using System;
+using isolaatti_API.Classes;
 using isolaatti_API.Models;
 using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Mvc;
@@ -29,7 +30,17 @@ namespace isolaatti_API.Controllers
                 _dbContext.SaveChanges();
 
                 int userId = _dbContext.Songs.Find(recordToComplete.Id).OwnerId;
+                
+                // add here some code to decide if should send an email
+                
                 sendEmailToUser(userId, songId);
+
+                // sends a notification to the user
+                NotificationSender notificationSender = 
+                    new NotificationSender(NotificationSender
+                        .NotificationModeProcessesFinished,userId,songId);
+                
+                notificationSender.Send();
             }
             catch (Exception e)
             {

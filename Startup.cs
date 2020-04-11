@@ -43,6 +43,7 @@ namespace isolaatti_API
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseDeveloperExceptionPage();
 
             app.UseHttpsRedirection();
 

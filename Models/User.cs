@@ -8,5 +8,6 @@ namespace isolaatti_API.Models
         public string Password { get; set; }
         public string Uid { get; set; }
         public bool emailValidated { get; set; }
+        public string googleToken { get; set; }
     }
 }
