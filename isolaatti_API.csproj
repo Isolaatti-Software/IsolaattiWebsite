@@ -6,7 +6,10 @@
 
   <ItemGroup>
     <PackageReference Include="EntityFramework" Version="6.4.0" />
+    <PackageReference Include="FirebaseAdmin" Version="1.6.0" />
+    <PackageReference Include="Flurl.Http" Version="2.4.2" />
     <PackageReference Include="Mailkit" Version="2.5.1" />
+    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.2">
       <PrivateAssets>all</PrivateAssets>
@@ -14,6 +17,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.0.0" />
+    <PackageReference Include="FirebaseAdmin" Version="1.6.0" />
   </ItemGroup>
 
 </Project>
