@@ -17,6 +17,7 @@ namespace isolaatti_API.Controllers
         {
             db = dbContextApp;
         }
+        [HttpPost]
         public ActionResult<IEnumerable<Notification>> Index(int userId)
         {
             return 
