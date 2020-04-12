@@ -25,7 +25,7 @@ namespace isolaatti_API.Controllers
                 User userToValidate = dbContext.Users.Find(id);
                 if(userToValidate.Uid == code)
                 {
-                    userToValidate.emailValidated = true;
+                    userToValidate.EmailValidated = true;
                     dbContext.Users.Update(userToValidate);
                     dbContext.SaveChanges();
                 }

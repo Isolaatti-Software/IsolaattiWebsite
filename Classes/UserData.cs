@@ -23,7 +23,7 @@ namespace isolaatti_API.Classes
             name = user.Name;
             emailAddress = user.Email;
             profilePhotoUrl = ""; //fill this when implemented
-            validatedEmail = user.emailValidated;
+            validatedEmail = user.EmailValidated;
             this.userId = userId;
         }
         public UserData(Boolean badPass)
