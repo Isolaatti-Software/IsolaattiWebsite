@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using FirebaseAdmin.Messaging;
 using isolaatti_API.Models;
 
@@ -5,28 +6,51 @@ namespace isolaatti_API.Classes
 {
     public class NotificationSender
     {
-        public static int NotificationModeProcessesFinished = 1;
-
-        public static int NotificationModeSongStartedToProcess = 2;
+        /* These constants are passed to the constructor */
+        public const int NotificationModeProcessesFinished = 1;
+        public const int NotificationModeSongStartedToProcess = 2;
 
         private int type;
-        private int songId;
-        private int userId;
+        private string songName;
+        private string songArtist;
+        private string userToken;
 
         /*
          * Use this constructor when you want to tell the user that a song has been processed, or
          * when a song has started to be processed
          */
-        public NotificationSender(int type,int userId,int songId)
+        public NotificationSender(int type,string userToken, string songName, string songArtist)
         {
             this.type = type;
-            this.userId = userId;
-            this.songId = songId;
+            this.userToken = userToken;
+            this.songName = songName;
+            this.songArtist = songArtist;
         }
 
-        public void Send()
+        public async void Send()
         {
-            /* Write here the code to send a message using the google cloud sdk */
+            var registrationToken = userToken;
+            var message = new Message();
+            // creates the message, depending on the type
+            switch (type)
+            {
+                case NotificationModeProcessesFinished:
+                    message.Data = new Dictionary<string, string>()
+                    {
+                        {"type",NotificationModeProcessesFinished.ToString()},
+                        {"songName",songName},
+                        {"songArtist",songArtist}
+                    }; break;
+                case NotificationModeSongStartedToProcess: 
+                    message.Data = new Dictionary<string, string>()
+                    {
+                        {"type",NotificationModeSongStartedToProcess.ToString()},
+                        {"songName",songName},
+                        {"songArtist",songArtist}
+                    }; break;
+            }
+            message.Token = registrationToken;
+            string response = await FirebaseMessaging.DefaultInstance.SendAsync(message);
         }
     }
 }
