@@ -17,10 +17,13 @@ namespace isolaatti_API.Controllers
         {
             db = dbContextApp;
         }
-        public void Index(int userId, string token)
+        [HttpPost]
+        public void Index([FromForm]int userId, [FromForm]string token)
         {
             User user = db.Users.Find(userId);
-            user.googleToken = token;
+            user.GoogleToken = token;
+            db.Users.Update(user);
+            db.SaveChanges();
         }
     }
 }
