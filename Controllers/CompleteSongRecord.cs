@@ -34,12 +34,15 @@ namespace isolaatti_API.Controllers
                 // add here some code to decide if should send an email
                 
                 sendEmailToUser(userId, songId);
+                string userToken = _dbContext.Users.Find(userId).GoogleToken;
 
                 // sends a notification to the user
-                NotificationSender notificationSender = 
-                    new NotificationSender(NotificationSender
-                        .NotificationModeProcessesFinished,userId,songId);
-                
+                NotificationSender notificationSender = new NotificationSender(
+                    NotificationSender.NotificationModeProcessesFinished, 
+                    userToken, 
+                    recordToComplete.OriginalFileName, 
+                    recordToComplete.Artist
+                );
                 notificationSender.Send();
             }
             catch (Exception e)
