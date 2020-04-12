@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -27,12 +30,18 @@ namespace isolaatti_API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var file = File.Open("client_secret.json", FileMode.Open);
+            FirebaseApp.Create(new AppOptions()
+            {
+                Credential = GoogleCredential.FromStream(file)
+            });
             services.AddControllers();
 
             services.AddDbContext<DbContextApp>(options =>
             {
                 options.UseSqlite(Configuration.GetConnectionString("Database"));
             });
+            
 
         }
 
@@ -55,6 +64,7 @@ namespace isolaatti_API
             {
                 endpoints.MapControllers();
             });
+            
         }
     }
 }
