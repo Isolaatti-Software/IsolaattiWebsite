@@ -4,10 +4,11 @@
  */
 using System;
 using System.Linq;
+using System.Net.Mail;
 using Microsoft.AspNetCore.Mvc;
 using isolaatti_API.Models;
-using MailKit.Net.Smtp;
 using MimeKit;
+using SmtpClient = MailKit.Net.Smtp.SmtpClient;
 
 namespace isolaatti_API.Controllers
 {
@@ -30,7 +31,7 @@ namespace isolaatti_API.Controllers
          Exception => Returns the exception string if something didn't go well on the server
         */
         [HttpPost]
-        public string Index([FromForm] string username, [FromForm] string email, [FromForm] string password)
+        public string Index([FromForm] string username = "", [FromForm] string email = "", [FromForm] string password = "")
         {
             if(dbContextApp.Users.Any(user => user.Email.Equals(email)))
             {
@@ -55,7 +56,7 @@ namespace isolaatti_API.Controllers
             {
                 dbContextApp.Users.Add(newUser);
                 dbContextApp.SaveChanges();
-                sendValidationEmail(newUser.Id, newUser.Uid);
+                SendValidationEmail(newUser.Id, newUser.Uid);
                 return "0";
             }
             catch(Exception e)
@@ -63,7 +64,7 @@ namespace isolaatti_API.Controllers
                 return e.ToString();
             }
         }
-        public bool sendValidationEmail(int id, string validationCode)
+        public bool SendValidationEmail(int id, string validationCode)
         {
             string link = String.Format("http://isolaattiapi.azurewebsites.net/validateAccount?id={0}&code={1}",id,validationCode);
             string userEmailAddress = dbContextApp.Users.Find(id).Email;
@@ -92,11 +93,22 @@ namespace isolaatti_API.Controllers
 
             using (var client = new SmtpClient())
             {
-                client.ServerCertificateValidationCallback = (s, c, h, e) => true;
-                client.Connect("smtp.gmail.com", 465, true);
-                client.Authenticate("validation.isolaatti@gmail.com","0203_0302_" );
-                client.Send(message);
-                client.Disconnect(true);
+                try
+                {
+                    client.ServerCertificateValidationCallback = (s, c, h, e) => true;
+                    client.Connect("smtp.gmail.com", 465, true);
+                    client.Authenticate("validation.isolaatti@gmail.com","0203_0302_" );
+                    client.Send(message);
+                    client.Disconnect(true);
+                }
+                catch (SmtpException exception)
+                {
+                    // this probably means the email address does not exist, so let's delete the account
+                    var accountToDelete = dbContextApp.Users.Find(id);
+                    dbContextApp.Users.Remove(accountToDelete);
+                    dbContextApp.SaveChanges();
+                }
+                
             }
             return true;
         }
