@@ -18,13 +18,14 @@ namespace isolaatti_API.Controllers
             db = dbContextApp;
         }
         [HttpPost]
-        public ActionResult<IEnumerable<Notification>> Index(int userId)
+        public ActionResult<IEnumerable<Notification>> Index([FromForm]int userId)
         {
-            return 
+            var notifications =
                 db.Notifications
-                .Where(notification => notification.UserId.Equals(userId))
-                .ToArray();
-
+                    .Where(notification => notification.UserId.Equals(userId))
+                    .ToArray();
+            notifications = notifications.OrderByDescending(notification => notification.Id).ToArray();
+            return notifications;
         }
     }
 }

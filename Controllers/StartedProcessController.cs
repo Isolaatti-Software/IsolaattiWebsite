@@ -22,7 +22,9 @@ namespace isolaatti_API.Controllers
             User user = db.Users.Find(song.OwnerId);
             NotificationSender notificationSender = new NotificationSender(
                 NotificationSender.NotificationModeSongStartedToProcess,
-                user.GoogleToken,song.OriginalFileName,song.Artist
+                    song,
+                user,
+                db
             );
             notificationSender.Send();
         }
