@@ -1,0 +1,26 @@
+@page
+@model isolaatti_API.Pages.admin.LogIn
+
+@{
+    Layout = "Shared/_LayoutLoginAdmin";
+    ViewData["Title"] = "LogIn";
+}
+
+<div class="d-flex justify-content-center">
+    <div class="card mt-5">
+        <form asp-page="AdminPortal" method="post">
+            <div class="form-group p-3 m-2">
+                @if (Model.ShowAlert)
+                {
+                    <div class="alert alert-info">@ViewData["AlertContent"]</div>
+                }
+                <input type="text" name="username" placeholder="Enter username" class="form-control mb-2" autocomplete="false"/>
+                <input type="password" name="password" placeholder="Enter password" class="form-control" autocomplete="false"/>
+            </div>
+            <div class="d-flex justify-content-end">
+                <button type="submit" class="btn btn-primary m-3">Enter</button>
+            </div>
+        </form>
+        
+    </div>
+</div>

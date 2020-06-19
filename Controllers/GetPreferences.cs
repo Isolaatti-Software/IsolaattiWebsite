@@ -5,6 +5,7 @@ using isolaatti_API.Models;
 
 namespace isolaatti_API.Controllers
 {
+    [Route("[controller]")]
     public class GetPreferences : Controller
     {
         private readonly DbContextApp db;

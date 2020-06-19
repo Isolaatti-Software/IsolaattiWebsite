@@ -15,16 +15,18 @@ namespace isolaatti_API.Controllers
         }
 
         [HttpPost]
-        public void Index(
-            [FromForm] int userId,
-            [FromForm] bool notifyByEmail,
-            [FromForm] bool notifyWhenProcessStarted,
-            [FromForm] bool notifyWhenProcessFinishes)
+        public void Index([FromForm] int userId, [FromForm] int what, [FromForm] bool value)
         {
             User user = db.Users.Find(userId);
-            user.NotifyByEmail = notifyByEmail;
-            user.NotifyWhenProcessFinishes = notifyWhenProcessFinishes;
-            user.NotifyWhenProcessStarted = notifyWhenProcessStarted;
+            switch (what)
+            {
+                case 0: user.NotifyByEmail = value;
+                    break;
+                case 1: user.NotifyWhenProcessStarted = value;
+                    break;
+                case 2: user.NotifyWhenProcessFinishes = value;
+                    break;
+            }
             db.Users.Update(user);
             db.SaveChanges();
         }

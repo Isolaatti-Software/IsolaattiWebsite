@@ -13,5 +13,8 @@ namespace isolaatti_API.Models
         public DbSet<User> Users { get; set; }
         public DbSet<ProcessingServerList> Servers { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<SongShares> SharedSongs { get; set; }
+        public DbSet<UserUsageData> UsageData { get; set; }
+        public DbSet<AdminAccount> AdminAccounts { get; set; }
     }
 }

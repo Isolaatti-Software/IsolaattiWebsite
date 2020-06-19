@@ -33,17 +33,24 @@ namespace isolaatti_API.Controllers
                 
                 // add here some code to decide if should send an email
                 
-                sendEmailToUser(userId, songId);
                 User user = _dbContext.Users.Find(userId);
+                if (user.NotifyByEmail)
+                {
+                    sendEmailToUser(userId, songId);
+                }
 
-                // sends a notification to the user
-                NotificationSender notificationSender = new NotificationSender(
-                    NotificationSender.NotificationModeProcessesFinished,
+
+                if (user.NotifyWhenProcessFinishes)
+                {
+                    // sends a notification to the user
+                    NotificationSender notificationSender = new NotificationSender(
+                        NotificationSender.NotificationModeProcessesFinished,
                         recordToComplete,
                         user,
                         _dbContext
                     );
                     notificationSender.Send();
+                }
             }
             catch (Exception e)
             {
