@@ -20,13 +20,17 @@ namespace isolaatti_API.Controllers
             db.Songs.Update(song);
             db.SaveChanges();
             User user = db.Users.Find(song.OwnerId);
-            NotificationSender notificationSender = new NotificationSender(
-                NotificationSender.NotificationModeSongStartedToProcess,
+            if (user.NotifyWhenProcessStarted)
+            {
+                NotificationSender notificationSender = new NotificationSender(
+                    NotificationSender.NotificationModeSongStartedToProcess,
                     song,
-                user,
-                db
-            );
-            notificationSender.Send();
+                    user,
+                    db
+                );
+                notificationSender.Send();
+            }
+            
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -15,7 +16,7 @@ namespace isolaatti_API.Controllers
             _contextApp = contextApp;
         }
         [HttpPost]
-        public int Index([FromForm]int userId, [FromForm]string fileName, [FromForm]string songArtist="Unknown")
+        public void Index([FromForm]int userId, [FromForm]string sourceUrl, [FromForm]string fileName, [FromForm]string songArtist="Unknown")
         {
             Song songToAdd = new Song()
             {
@@ -24,9 +25,20 @@ namespace isolaatti_API.Controllers
                 Artist = songArtist
             };
             _contextApp.Songs.Add(songToAdd);
+            
+            // add song to jobs queue
+            SongQueue songQueue = new SongQueue()
+            {
+                AudioSourceUrl = sourceUrl,
+                ReservationTime = DateTime.Now,
+                SongId = songToAdd.Id,
+                Reserved = false
+            };
+            _contextApp.SongsQueue.Add(songQueue);
+            
             _contextApp.SaveChanges();
             
-            return songToAdd.Id;
+            
         }
     }
 }

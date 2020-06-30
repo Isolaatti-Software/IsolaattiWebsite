@@ -8,6 +8,7 @@ using Google.Apis.Auth.OAuth2;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -36,10 +37,17 @@ namespace isolaatti_API
                 Credential = GoogleCredential.FromStream(file)
             });
             services.AddControllers();
+            services.AddRazorPages();
 
             services.AddDbContext<DbContextApp>(options =>
             {
                 options.UseSqlite(Configuration.GetConnectionString("Database"));
+            });
+            services.Configure<CookiePolicyOptions>(options =>
+            {
+                // No consent check needed here
+                options.CheckConsentNeeded = context => false;
+                options.MinimumSameSitePolicy = SameSiteMode.None;
             });
             
 
@@ -59,10 +67,12 @@ namespace isolaatti_API
             app.UseRouting();
 
             app.UseAuthorization();
+            app.UseStaticFiles();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapRazorPages();
             });
             
         }

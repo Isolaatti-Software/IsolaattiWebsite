@@ -1,0 +1,56 @@
+@page
+@model isolaatti_API.Pages.admin.Diffusion
+
+@{
+    Layout = "Shared/_LayoutAdminPortal";
+}
+<h1 class="mt-4">Diffusion</h1>
+<form>
+    
+    <div class="d-flex justify-content-between">
+        <p>Send a message to every user account via email</p>
+        <div>
+            <button type="button" class="btn btn-secondary" id="btnPreview" onclick="showPreview()">Preview</button>
+            <button type="submit" class="btn btn-primary">Send</button>
+        </div>
+    </div>
+    
+    <div class="form-group mt-2">
+        <input type="text" name="msg_title" placeholder="Message title" class="form-control mb-2" id="msgTitle"/>
+        <textarea class="form-control" name="msg_content" placeholder="Write the message here..." rows="15" id="msgContent"></textarea>
+    </div>
+    
+</form>
+
+<!-- Modal to show preview -->
+<div class="modal fade" id="previewModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 85%" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Preview</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h1 id="msg_title_preview"></h1>
+                <p id="msg_content_preview" style="white-space: pre-line"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+function showPreview(){
+    var msgTitle = document.getElementById("msgTitle").value;
+    var msgContent = document.getElementById("msgContent").value;
+    
+    
+    
+    document.getElementById("msg_title_preview").innerText = msgTitle;
+    document.getElementById("msg_content_preview").innerHTML = msgContent;
+    
+    $("#previewModal").modal('show');
+}
+</script>

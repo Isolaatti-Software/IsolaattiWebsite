@@ -16,5 +16,6 @@ namespace isolaatti_API.Models
         public DbSet<SongShares> SharedSongs { get; set; }
         public DbSet<UserUsageData> UsageData { get; set; }
         public DbSet<AdminAccount> AdminAccounts { get; set; }
+        public DbSet<SongQueue> SongsQueue { get; set; }
     }
 }
