@@ -7,7 +7,8 @@ namespace isolaatti_API.Models
         public int Id { get; set; }
         public string AudioSourceUrl { get; set; }
         public bool Reserved { get; set; }
-        public int SongId { get; set; }
-        public DateTime ReservationTime { get; set; }
+        public string UserId { get; set; }
+        public string SongName { get; set; }
+        public string SongArtist { get; set; }
     }
 }

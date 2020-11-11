@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using isolaatti_API.Models;
 using isolaatti_API;
 using isolaatti_API.Classes;
+using isolaatti_API.isolaatti_lib;
 
 namespace isolaatti_API.Controllers
 {
@@ -23,6 +24,7 @@ namespace isolaatti_API.Controllers
         [HttpPost]
         public ActionResult<UserData> Index([FromForm] string email, [FromForm] string password)
         {
+            /*
             if(!dbContext.Users.Any(user => user.Email.Equals(email)))
             {
                 return new UserData(false);
@@ -32,7 +34,9 @@ namespace isolaatti_API.Controllers
             {
                 return new UserData(userToEnter.Id, dbContext);
             }
-            return new UserData(true); //bad password (see UserData class for more info)
+            return new UserData(true); //bad password (see UserData class for more info)*/
+            Accounts accounts = new Accounts(dbContext);
+            return accounts.LogIn(email, password);
         }
     }
 }

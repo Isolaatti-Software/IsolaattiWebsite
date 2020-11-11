@@ -1,0 +1,36 @@
+@page
+@model isolaatti_API.Pages.WebApp.MakeAccount
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Isolaatti account making</title>
+</head>
+<body>
+<div>
+    <h1>Isolaatti, prototipo web</h1>
+    <h2>Paginas dinamicas de servidor</h2>
+    <p>Hecho lo más rapido posible, no esperes buen diseño jaja</p>
+    <p>Estoy desarollando un cliente WEB más bonito que esto. Solo es para pruebas de funcionalidad.</p>
+    <form asp-controller="SignIn" asp-action="Index" method="POST">
+        <label for="username_form_control">Nombre de usuario</label>
+        <input type="text" name="username" id="username_form_control">
+
+        <label for="email_form_control">Email</label>
+        <input type="email" name="email" id="email_form_control">
+
+        <label for="password_form_control">Password</label>
+        <input type="password" name="password" id="password_form_control">
+        <p>Se te enviara un correo, debes hacer clic en el link para 
+            verificar dirección de correo y poder entrar
+            </p>
+        <button type="submit">Crear cuenta ahora</button>
+    </form>
+</div>
+</body>
+</html>

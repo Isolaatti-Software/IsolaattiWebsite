@@ -24,6 +24,7 @@ namespace isolaatti_API.Controllers
                 // returns the first element that is not reserved, as it's the oldest element on the queue
                 return db.SongsQueue.First(element => element.Reserved.Equals(false));
             }
+            // this means there's not any element on queue
             catch (InvalidOperationException)
             {
                 return null;

@@ -3,8 +3,8 @@
  Handles the data to create a new account for users
  */
 using System;
-using System.Linq;
 using System.Net.Mail;
+using isolaatti_API.isolaatti_lib;
 using Microsoft.AspNetCore.Mvc;
 using isolaatti_API.Models;
 using MimeKit;
@@ -33,36 +33,8 @@ namespace isolaatti_API.Controllers
         [HttpPost]
         public string Index([FromForm] string username = "", [FromForm] string email = "", [FromForm] string password = "")
         {
-            if(dbContextApp.Users.Any(user => user.Email.Equals(email)))
-            {
-                return "1";
-            }
-            if(dbContextApp.Users.Any(user => user.Name.Equals(username)))
-            {
-                return "2";
-            }
-            if(username == "" || password == "" || email == "")
-            {
-                return "3";
-            }
-            User newUser = new User()
-            {
-                Name = username,
-                Email = email,
-                Password = password,
-                Uid = Guid.NewGuid().ToString()
-            };
-            try
-            {
-                dbContextApp.Users.Add(newUser);
-                dbContextApp.SaveChanges();
-                SendValidationEmail(newUser.Id, newUser.Uid);
-                return "0";
-            }
-            catch(Exception e)
-            {
-                return e.ToString();
-            }
+            Accounts accounts = new Accounts(dbContextApp);
+            return accounts.MakeAccount(username, email, password);
         }
         public bool SendValidationEmail(int id, string validationCode)
         {

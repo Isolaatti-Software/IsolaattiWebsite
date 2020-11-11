@@ -4,6 +4,7 @@ using Org.BouncyCastle.Ocsp;
 
 namespace isolaatti_API.Pages.admin
 {
+    
     public class Index : PageModel
     {
         public IActionResult OnGet()

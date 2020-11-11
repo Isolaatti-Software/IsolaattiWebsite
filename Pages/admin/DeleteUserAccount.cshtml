@@ -1,0 +1,33 @@
+@page
+@model isolaatti_API.Pages.admin.DeleteUserAccount
+
+@{
+    Layout = "Shared/_LayoutAdminPortal";
+}
+
+@if (Model.Error && !Model.Post)
+{
+    <div class="alert alert-danger">
+        Account not found @ViewData["error"]
+    </div>
+}
+else if(!Model.Post)
+{
+    <h1>Eliminar cuenta</h1>
+    <p>Eliminar cuenta de @ViewData["name"] con id @ViewData["id"]</p> 
+    <form method="post">
+        <input name="id" value="@ViewData["id"]" type="hidden"/>
+        <label for="adminPassword">Debes proporcionar tu contraseña de administrador para eliminar la cuenta</label>
+        <input name="adminPassword" type="password" id="adminPassword">
+        <button type="submit" class="btn btn-danger">Eliminar definitivamente</button>
+    </form>
+}
+
+@if (Model.Post && !Model.BadAuthAdmin && Model.AccountDeleted)
+{
+    <div class="alert alert-info">Account deleted</div>
+}
+else if (Model.BadAuthAdmin)
+{
+    <div class="alert alert-info">You entered a wrong admin password</div>
+}

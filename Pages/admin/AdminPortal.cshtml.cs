@@ -22,6 +22,8 @@ namespace isolaatti_API.Pages.admin
         
         //db
         private readonly DbContextApp db;
+
+        public AdminAccount account;
         public AdminPortal(DbContextApp _dbContextApp)
         {
             db = _dbContextApp;
@@ -57,7 +59,7 @@ namespace isolaatti_API.Pages.admin
 
             if (db.AdminAccounts.Any(acc => acc.name.Equals(username)))
             {
-                var account = db.AdminAccounts.Single(ac => ac.name.Equals(username));
+                account = db.AdminAccounts.Single(ac => ac.name.Equals(username));
                 CredentialsAreValid = account.password.Equals(password);
 
                 // account exists but password is incorrect
@@ -80,5 +82,6 @@ namespace isolaatti_API.Pages.admin
             // when the account doesn't exist'
             return RedirectToPage("LogIn", new {accounterror = true});
         }
+
     }
 }

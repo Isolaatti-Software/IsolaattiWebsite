@@ -63,6 +63,7 @@
                     <th>ID</th>
                     <th>Username</th>
                     <th>Email</th>
+                    <th>Danger Zone</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -72,6 +73,14 @@
                         <td>@user.Id</td>
                         <td>@user.Name</td>
                         <td>@user.Email</td>
+                        <td>
+                            <form asp-page="DeleteUserAccount" method="get">
+                                <input type="hidden" name="id" value="@user.Id">
+                                <input type="hidden" name="adminId" value="@Model.account.Id">
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
+                            
+                        </td>
                     </tr>
                 }
                 </tbody>
