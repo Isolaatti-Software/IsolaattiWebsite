@@ -71,7 +71,7 @@ namespace isolaatti_API.Classes
             }
             SaveNotification();
             message.Token = registrationToken;
-            string response = await FirebaseMessaging.DefaultInstance.SendAsync(message);
+            var response = await FirebaseMessaging.DefaultInstance.SendAsync(message);
         }
     }
 }
