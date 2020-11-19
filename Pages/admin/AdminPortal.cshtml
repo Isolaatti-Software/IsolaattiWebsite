@@ -30,6 +30,8 @@
             <table class="table table-dark">
                 <thead>
                 <tr>
+                    <th>Id</th>
+                    <th>User Id</th>
                     <th>Name</th>
                     <th>Artist</th>
                     <th>Drums track</th>
@@ -42,6 +44,8 @@
                 @foreach (var song in Model.Songs)
                 {
                     <tr>
+                        <td>@song.Id</td>
+                        <td>@song.OwnerId</td>
                         <td>@song.OriginalFileName</td>
                         <td>@song.Artist</td>
                         <td><a href="@song.DrumsUrl">@song.DrumsUrl</a></td>
