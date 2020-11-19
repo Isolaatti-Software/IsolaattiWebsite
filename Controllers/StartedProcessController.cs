@@ -1,4 +1,5 @@
 ﻿using isolaatti_API.Classes;
+using isolaatti_API.isolaatti_lib;
 using Microsoft.AspNetCore.Mvc;
 using isolaatti_API.Models;
 
@@ -30,7 +31,13 @@ namespace isolaatti_API.Controllers
                 );
                 notificationSender.Send();
             }
-            
+            if (!user.NotifyByEmail) return;
+            var emailNotificationSender = new EmailNotification(
+                db,
+                song.OwnerId,
+                EmailNotification.EmailNotificationSongProcessingStarted,
+                songId);
+            emailNotificationSender.Send();
         }
     }
 }
