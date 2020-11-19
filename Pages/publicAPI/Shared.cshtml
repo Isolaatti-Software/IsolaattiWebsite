@@ -1,0 +1,31 @@
+@page
+@using Microsoft.AspNetCore.Razor.Language.CodeGeneration
+@model isolaatti_API.Pages.publicAPI.Shared
+
+@{
+    Layout = "Shared/_LayoutWebAppOutside";
+    ViewData["title"] = "Isolaatti shared song: " + ViewData["name"]; 
+}
+<h1>@ViewData["owner"] shared a song with you</h1>
+<p>Name: @ViewData["name"]</p>
+<p>Artist: @ViewData["artist"]</p>
+<h3>Bass</h3>
+<p>
+    <audio src="@ViewData["bass_url"]" controls></audio>
+    <a href="@ViewData["bass_url"]" download>Download "bass" track</a>
+</p>
+<h3>Drums</h3>
+<p>
+    <audio src="@ViewData["drums_url"]" controls></audio>
+    <a href="@ViewData["drums_url"]" download>Download "drums" track</a>
+</p>
+<h3>Vocals</h3>
+<p>
+    <audio src="@ViewData["vocals_url"]" controls></audio>
+    <a href="@ViewData["vocals_url"]" download>Download "vocals" track</a>
+</p>
+<h3>Other</h3>
+<p>
+    <audio src="@ViewData["other_url"]" controls></audio>
+    <a href="@ViewData["other_url"]" download>Download "other" track</a>
+</p>
