@@ -31,7 +31,7 @@ namespace isolaatti_API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var file = File.Open("client_secret.json", FileMode.Open);
+            var file = File.Open("isolaatti-firebase-adminsdk.json", FileMode.Open);
             FirebaseApp.Create(new AppOptions()
             {
                 Credential = GoogleCredential.FromStream(file)
