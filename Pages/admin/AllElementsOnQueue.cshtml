@@ -1,0 +1,77 @@
+@page
+@using isolaatti_API.Models
+@model isolaatti_API.Pages.admin.AllElementsOnQueue
+
+@{
+    Layout = "Shared/_LayoutAdminPortal";
+    ViewData["Title"] = "General Queue";
+}
+@if (ViewData["alert"] != null)
+{
+    <div class="alert alert-info">
+        @ViewData["alert"]
+    </div>
+}
+
+<div class="d-flex justify-content-end m-2">
+    @if (Model.IsDefaultViewMode)
+    {
+        <form method="get" class="m-1">
+            <input type="hidden" name="view" value="alsoPast">
+            <button type="submit" class="btn btn-primary">View past elements too</button>
+        </form>
+    }
+    else
+    {
+        <form method="get" class="m-1">
+            <button type="submit" class="btn btn-primary">View pending elements only</button>
+        </form>
+    }
+    
+    <form method="get" class="m-1">
+        <input type="hidden" name="delete" value="all">
+        <input type="hidden" name="from" value='@ViewData["from"]'>
+        <button type="submit" class="btn btn-danger">Clear all elements</button>
+    </form>
+    <form method="get" class="m-1">
+        <input type="hidden" name="delete" value="onlyPending">
+        <input type="hidden" name="from" value='@ViewData["from"]'>
+        <button type="submit" class="btn btn-danger">Clear pending elements</button>
+    </form>
+    <form method="get" class="m-1">
+        <input type="hidden" name="delete" value="onlyPast">
+        <input type="hidden" name="from" value='@ViewData["from"]'>
+        <button type="submit" class="btn btn-danger">Clear past elements</button>
+    </form>
+</div>
+<table class="table table-dark">
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Name</th>
+        <th>User</th>
+        <th>Url</th>
+    </tr>
+    
+    </thead>
+    <tbody>
+    @foreach (SongQueue element in Model.GeneralQueue)
+    {
+        <tr>
+            <td>@element.Id</td>
+            <td>@element.SongName</td>
+            <td>@element.UserId</td>
+            <td><a href="@element.AudioSourceUrl" target="_blank">Go</a></td>
+            <td>
+                <form method="get">
+                    <input type="hidden" name="delete" value="single">
+                    <input type="hidden" name="id" value="@element.Id">
+                    <input type="hidden" name="from" value='@ViewData["from"]'>
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+                
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
