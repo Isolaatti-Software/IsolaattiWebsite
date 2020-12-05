@@ -30,7 +30,7 @@ namespace isolaatti_API.Pages.admin
             
             // here is safe, the credentials are correct
 
-            ViewData["Title"] = "Users usage data";
+            
             ViewData["username"] = account.name;
             _usageData = db.UsageData.ToArray();
 

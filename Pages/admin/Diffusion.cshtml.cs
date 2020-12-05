@@ -23,7 +23,7 @@ namespace isolaatti_API.Pages.admin
             if (!account.password.Equals(password)) return RedirectToPage("LogIn");
             
             // here is safe, the credentials are correct
-            
+            ViewData["username"] = account.name;
             
             return Page();
         }

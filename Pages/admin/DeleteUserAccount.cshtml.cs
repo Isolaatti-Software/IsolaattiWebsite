@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -19,6 +20,17 @@ namespace isolaatti_API.Pages.admin
         }
         public IActionResult OnGet(int id)
         {
+            var username = Request.Cookies["name"];
+            var password = Request.Cookies["password"];
+
+            if (username == null || password == null) return RedirectToPage("LogIn");
+            if (!db.AdminAccounts.Any(ac => ac.name.Equals(username))) return RedirectToPage("LogIn");
+            var account = db.AdminAccounts.Single(ac => ac.name.Equals(username));
+            if (!account.password.Equals(password)) return RedirectToPage("LogIn");
+            
+            // here is safe, the credentials are correct
+            ViewData["username"] = account.name;
+            
             try
             {
                 var userToDelete = db.Users.Find(id);
@@ -36,6 +48,17 @@ namespace isolaatti_API.Pages.admin
 
         public IActionResult OnPost(int id, int adminId,string adminPassword)
         {
+            var username = Request.Cookies["name"];
+            var password = Request.Cookies["password"];
+
+            if (username == null || password == null) return RedirectToPage("LogIn");
+            if (!db.AdminAccounts.Any(ac => ac.name.Equals(username))) return RedirectToPage("LogIn");
+            var account = db.AdminAccounts.Single(ac => ac.name.Equals(username));
+            if (!account.password.Equals(password)) return RedirectToPage("LogIn");
+            
+            // here is safe, the credentials are correct
+            ViewData["username"] = account.name;
+            
             Post = true;
             if (db.AdminAccounts.Find(adminId).password.Equals(adminPassword))
             {

@@ -3,6 +3,7 @@
 
 @{
     Layout = "Shared/_LayoutAdminPortal";
+    ViewData["Title"] = "Delete account";
 }
 
 @if (Model.Error && !Model.Post)
@@ -26,6 +27,10 @@ else if(!Model.Post)
 @if (Model.Post && !Model.BadAuthAdmin && Model.AccountDeleted)
 {
     <div class="alert alert-info">Account deleted</div>
+    <div class="d-flex justify-content-center">
+        <a asp-page="AdminPortal" class="btn btn-primary">Go to portal</a>
+    </div>
+    
 }
 else if (Model.BadAuthAdmin)
 {
