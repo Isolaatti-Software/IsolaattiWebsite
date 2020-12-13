@@ -15,7 +15,7 @@ namespace isolaatti_API.Controllers
             _dbContextApp = dbContextApp;
         }
         [HttpPost]
-        public IQueryable<SongQueue> Index(string userId)
+        public IQueryable<SongQueue> Index([FromForm]string userId)
         {
             var elements =
                 _dbContextApp.SongsQueue
@@ -25,7 +25,7 @@ namespace isolaatti_API.Controllers
 
         [HttpPost]
         [Route("Count")]
-        public int Count(string userId)
+        public int Count([FromForm]string userId)
         {
             return _dbContextApp.SongsQueue
                 .Count(element => element.UserId.Equals(userId) && !element.Reserved);

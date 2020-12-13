@@ -14,7 +14,7 @@ namespace isolaatti_API.Controllers
             _dbContextApp = dbContextApp;
         }
         [HttpPost]
-        public bool Index(int id)
+        public bool Index([FromForm]int id)
         {
             try
             {
