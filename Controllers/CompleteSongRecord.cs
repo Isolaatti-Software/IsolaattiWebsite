@@ -27,6 +27,7 @@ namespace isolaatti_API.Controllers
                 recordToComplete.DrumsUrl = drumsUrl;
                 recordToComplete.OtherUrl = otherUrl;
                 recordToComplete.VoiceUrl = voiceUrl;
+                recordToComplete.IsBeingProcessed = false;
                 _dbContext.Songs.Update(recordToComplete);
                 _dbContext.SaveChanges();
 
