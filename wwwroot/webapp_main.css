@@ -5,6 +5,10 @@
 .custom-nav-link {
     color:white;
 }
+.custom-nav-link:hover {
+    color: white;
+    background-color: black;
+}
 .custom-active-nav-link {
     text-decoration: underline;
 }
