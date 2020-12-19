@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +19,7 @@ namespace isolaatti_API.Controllers
             dbContext = dbContextApp;
         }
         [HttpGet]
-        public bool Index(int id, string code)
+        public IActionResult Index(int id, string code)
         {
             try
             {
@@ -29,11 +30,20 @@ namespace isolaatti_API.Controllers
                     dbContext.Users.Update(userToValidate);
                     dbContext.SaveChanges();
                 }
-                return true;
+                else
+                {
+                    return StatusCode(404);
+                }
+
+                return RedirectToPage("/WebApp/LogIn", new
+                {
+                    justVerified = true,
+                    username = userToValidate.Email
+                });
             }
             catch
             {
-                return false;
+                return StatusCode(500);
             }
         
         }
