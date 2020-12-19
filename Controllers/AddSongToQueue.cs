@@ -13,7 +13,7 @@ namespace isolaatti_API.Controllers
             Db = dbContextApp;
         }
         [HttpPost]
-        public void Index([FromForm]string userId, [FromForm] string songName, [FromForm] string songArtist, [FromForm] string url)
+        public void Index([FromForm]string userId, [FromForm] string songName, [FromForm] string url,[FromForm] string songArtist="Unknown")
         {
             SongQueue songQueue = new SongQueue()
             {

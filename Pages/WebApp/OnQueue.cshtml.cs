@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +10,7 @@ namespace isolaatti_API.Pages.WebApp
     public class OnQueue : PageModel
     {
         private readonly DbContextApp _db;
-        public IQueryable<SongQueue> SongsOnQueue;
+        public List<SongQueue> SongsOnQueue;
         public bool EmptyQueue = false;
 
         public OnQueue(DbContextApp dbContextApp)
@@ -47,7 +48,8 @@ namespace isolaatti_API.Pages.WebApp
                     {
                         SongsOnQueue = _db.SongsQueue
                             .Where(element => element
-                                .UserId.Equals(user.Id.ToString()) && !element.Reserved);
+                                .UserId.Equals(user.Id.ToString()) && !element.Reserved).ToList();
+                        SongsOnQueue.Reverse();
                     }
                     catch (InvalidOperationException)
                     {
