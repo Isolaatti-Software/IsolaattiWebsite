@@ -1,0 +1,70 @@
+@page
+@model isolaatti_API.Pages.WebApp.Songs
+
+@{
+    Layout = "Shared/_LayoutWebApp";
+    ViewData["Title"] = "Collection";
+}
+<h1>Your songs</h1>
+<hr>
+@if (!Model.SongsBeingProcessedList.Count().Equals(0))
+{
+    <h2>Processing now</h2>
+    <table class="table">
+        <thead class="thead_dark">
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Artist</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var song in Model.SongsBeingProcessedList)
+        {
+            <tr>
+                <td>
+                    @song.OriginalFileName
+                </td>
+                <td>@song.Artist</td>
+                <td>
+                    <div class="spinner-border" role="status">
+                        <span class="sr-only">Processing...</span>
+                    </div>
+                </td>
+            </tr>
+
+        }
+        </tbody>
+    </table>
+    <hr>
+}
+@if (Model.SongsList.Count().Equals(0))
+{
+    <div class="alert alert-info"><h2>You don't have any song</h2></div>
+}
+else
+{
+    <table class="table">
+        <thead class="thead_dark">
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Artist</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var song in Model.SongsList)
+        {
+            <tr>
+                <td>
+                    <a asp-page="Play" asp-route-id="@song.Id">
+                        @song.OriginalFileName
+                    </a>
+                    
+                </td>
+                <td>@song.Artist</td>
+            </tr>
+
+        }
+        </tbody>
+    </table>
+}

@@ -6,11 +6,13 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace isolaatti_API.Pages.WebApp
 {
-    public class Index : PageModel
+    public class Songs : PageModel
     {
         private readonly DbContextApp _db;
+        public IQueryable<Song> SongsList;
+        public IQueryable<Song> SongsBeingProcessedList;
 
-        public Index(DbContextApp dbContextApp)
+        public Songs(DbContextApp dbContextApp)
         {
             _db = dbContextApp;
         }
@@ -38,7 +40,20 @@ namespace isolaatti_API.Pages.WebApp
                     // here it's know that account is correct. Data binding!
                     ViewData["name"] = user.Name;
                     ViewData["email"] = user.Email;
-                    ViewData["userId"] = user.Id;
+                    // possible errors if there are no songs in the database (empty table)
+                    try
+                    {
+                        // get songs
+                        SongsList = _db.Songs
+                            .Where(song => song.OwnerId.Equals(user.Id) && !song.IsBeingProcessed);
+                    
+                        // get song that are being processed
+                        SongsBeingProcessedList = _db.Songs
+                            .Where(song => song.OwnerId.Equals(user.Id) && song.IsBeingProcessed);
+                    }
+                    catch (InvalidOperationException)
+                    {
+                    }
                     return Page();
                 }
             }

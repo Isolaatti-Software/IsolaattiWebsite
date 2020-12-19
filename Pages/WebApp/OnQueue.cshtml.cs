@@ -6,11 +6,13 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace isolaatti_API.Pages.WebApp
 {
-    public class Index : PageModel
+    public class OnQueue : PageModel
     {
         private readonly DbContextApp _db;
+        public IQueryable<SongQueue> SongsOnQueue;
+        public bool EmptyQueue = false;
 
-        public Index(DbContextApp dbContextApp)
+        public OnQueue(DbContextApp dbContextApp)
         {
             _db = dbContextApp;
         }
@@ -39,6 +41,19 @@ namespace isolaatti_API.Pages.WebApp
                     ViewData["name"] = user.Name;
                     ViewData["email"] = user.Email;
                     ViewData["userId"] = user.Id;
+                    
+                    // get songs on queue
+                    try
+                    {
+                        SongsOnQueue = _db.SongsQueue
+                            .Where(element => element
+                                .UserId.Equals(user.Id.ToString()) && !element.Reserved);
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        EmptyQueue = true;
+                        return Page();
+                    }
                     return Page();
                 }
             }
