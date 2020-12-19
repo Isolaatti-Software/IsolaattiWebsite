@@ -18,9 +18,18 @@ namespace isolaatti_API.Controllers
             _db = dbContextApp;
         }
         [HttpPost]
-        public ActionResult<IEnumerable<Song>> Index([FromForm] int userId)
+        public IQueryable<Song> Index([FromForm] int userId)
         {
-            return _db.Songs.Where(song => song.OwnerId.Equals(userId)).ToArray();
+            return _db.Songs
+                .Where(song => song.OwnerId.Equals(userId) && !song.IsBeingProcessed);
+        }
+
+        [HttpPost]
+        [Route("Processing")]
+        public IQueryable<Song> Processing([FromForm] int userId)
+        {
+            return _db.Songs
+                .Where(song => song.OwnerId.Equals(userId) && song.IsBeingProcessed);
         }
     }
 }
