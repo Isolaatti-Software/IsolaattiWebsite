@@ -1,7 +1,12 @@
 ﻿/*
- File written by erik
- Handles the data to create a new account for users
- */
+* Isolaatti project
+* Erik Cavazos, 2020
+* This program is not allowed to be copied or reused without explicit permission.
+* erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
+*/
+
+//Handles the data to create a new account for users
+
 using System;
 using System.Net.Mail;
 using isolaatti_API.isolaatti_lib;

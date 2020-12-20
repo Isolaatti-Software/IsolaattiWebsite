@@ -1,8 +1,12 @@
 /*
- * Written by Erik, november 2020
- * Make objects of this class when tasks related to accounts will be performed.
- * These methods are normally used by controllers (for API) and Razor pages
- */
+* Isolaatti project
+* Erik Cavazos, 2020
+* This program is not allowed to be copied or reused without explicit permission.
+* erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
+*/
+
+//Make objects of this class when tasks related to accounts will be performed.
+//These methods are normally used by controllers (for API) and Razor pages
 
 using System;
 using System.Linq;

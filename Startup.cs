@@ -1,20 +1,19 @@
-using System;
-using System.Collections.Generic;
+/*
+* Isolaatti project
+* Erik Cavazos, 2020
+* This program is not allowed to be copied or reused without explicit permission.
+* erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
+*/
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 
 namespace isolaatti_API

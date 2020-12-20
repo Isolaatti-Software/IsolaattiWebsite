@@ -1,11 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+/*
+* Isolaatti project
+* Erik Cavazos, 2020
+* This program is not allowed to be copied or reused without explicit permission.
+* erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
+*/
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace isolaatti_API
 {
