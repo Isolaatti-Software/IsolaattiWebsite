@@ -1,6 +1,8 @@
+using System;
 using System.Linq;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Razor.Language.Intermediate;
@@ -53,8 +55,14 @@ namespace isolaatti_API.Pages.WebApp
                     username = email
                 });
             // store credentials cookies
-            Response.Cookies.Append("isolaatti_user_name",email);
-            Response.Cookies.Append("isolaatti_user_password", password);
+            Response.Cookies.Append("isolaatti_user_name", email, new CookieOptions()
+            {
+                Expires = new DateTimeOffset(DateTime.Today.AddMonths(1))
+            });
+            Response.Cookies.Append("isolaatti_user_password", password, new CookieOptions()
+            {
+                Expires = new DateTimeOffset(DateTime.Today.AddMonths(1))
+            });
             return RedirectToPage("Index");
         }
     }
