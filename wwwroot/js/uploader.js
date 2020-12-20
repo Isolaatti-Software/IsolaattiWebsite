@@ -1,3 +1,18 @@
+/*
+* Isolaatti project
+* Erik Cavazos, 2020
+* This program is not allowed to be copied or reused without explicit permission.
+* erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
+*
+* uploader.js
+* This file is intended to be inserted at the bottom of the WebApp/Index.cshtml (where the uploading form is)
+* What this does:
+*   Adds event listener to input file: to perform DOM changes when a file has been selected
+*   Adds event listener to "GO" button: to perform some validation and then upload the file.
+*       Once the file is uploaded, a URL to that file is gotten and sent to the API to create 
+*       a new element on the queue.
+*/
+
 var storageRef = storage.ref();
 
 let fileSource = document.getElementById("audioFileInput");
