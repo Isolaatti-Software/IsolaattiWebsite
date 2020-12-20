@@ -40,7 +40,10 @@ namespace isolaatti_API.isolaatti_lib
                 Name = username,
                 Email = email,
                 Password = password,
-                Uid = Guid.NewGuid().ToString()
+                Uid = Guid.NewGuid().ToString(),
+                NotifyByEmail = true,
+                NotifyWhenProcessFinishes = true,
+                NotifyWhenProcessStarted = true
             };
             try
             {
