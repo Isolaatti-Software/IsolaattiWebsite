@@ -3,4 +3,20 @@
 
 @{
     Layout = "Shared/_LayoutWebApp";
+    ViewData["Title"] = $"Play - {Model.song.OriginalFileName} ";
 }
+<h1>Player</h1>
+<h2>@Model.song.OriginalFileName</h2>
+<h3>@Model.song.Artist</h3>
+<hr>
+<div class="alert alert-info">
+    Hey, a tracks player is being developed. For now, here you have direct links to your tracks :)
+</div>
+<h4>Drums</h4>
+<p><a href="@Model.song.DrumsUrl" download="@Model.song.OriginalFileName-drums.mp3">Download Drums</a></p>
+<h4>Bass</h4>
+<p><a href="@Model.song.BassUrl" download="@Model.song.OriginalFileName-bass.mp3">Download Bass</a></p>
+<h4>Vocals</h4>
+<p><a href="@Model.song.VoiceUrl" download="@Model.song.OriginalFileName-vocals.mp3">Download Vocals</a></p>
+<h4>Other</h4>
+<p><a href="@Model.song.OtherUrl" download="@Model.song.OriginalFileName-Other.mp3">Download Other</a></p>
