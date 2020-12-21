@@ -37,7 +37,7 @@ namespace isolaatti_API.Pages.publicAPI
             }
             catch (Exception e)
             {
-                return null;
+                return StatusCode(404);
             }
             
         }
