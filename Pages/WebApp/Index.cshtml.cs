@@ -7,6 +7,7 @@
 using System;
 using System.Linq;
 using isolaatti_API.Models;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -15,10 +16,12 @@ namespace isolaatti_API.Pages.WebApp
     public class Index : PageModel
     {
         private readonly DbContextApp _db;
+        public IWebHostEnvironment Environment;
 
-        public Index(DbContextApp dbContextApp)
+        public Index(DbContextApp dbContextApp, IWebHostEnvironment env)
         {
             _db = dbContextApp;
+            Environment = env;
         }
         public IActionResult OnGet()
         {
@@ -45,6 +48,7 @@ namespace isolaatti_API.Pages.WebApp
                     ViewData["name"] = user.Name;
                     ViewData["email"] = user.Email;
                     ViewData["userId"] = user.Id;
+                    
                     return Page();
                 }
             }
