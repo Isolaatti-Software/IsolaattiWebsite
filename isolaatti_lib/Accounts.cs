@@ -138,5 +138,25 @@ namespace isolaatti_API.isolaatti_lib
             
             return true;
         }
+
+        public bool ChangeAPassword(int userId, string currentPassword, string newPassword)
+        {
+            try
+            {
+                var user = db.Users.Find(userId);
+                if (user.Password.Equals(currentPassword))
+                {
+                    user.Password = newPassword;
+                }
+
+                db.Users.Update(user);
+                db.SaveChanges();
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            return true;
+        }
     }
 }
