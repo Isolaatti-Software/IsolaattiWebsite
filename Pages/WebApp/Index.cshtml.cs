@@ -48,6 +48,7 @@ namespace isolaatti_API.Pages.WebApp
                     ViewData["name"] = user.Name;
                     ViewData["email"] = user.Email;
                     ViewData["userId"] = user.Id;
+                    ViewData["password"] = user.Password;
                     
                     return Page();
                 }

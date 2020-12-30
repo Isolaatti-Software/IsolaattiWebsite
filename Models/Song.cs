@@ -17,6 +17,7 @@ namespace isolaatti_API.Models
         public string VoiceUrl { get; set; }
         public string OtherUrl { get; set; }
         public bool IsBeingProcessed { get; set; }
+        public string Uid { get; set; }
         
     }
 }

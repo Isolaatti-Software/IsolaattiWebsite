@@ -17,3 +17,30 @@
     color: white;
     font-family: "Lohit Tamil Classical", serif;
 }
+
+/* Player styles*/
+input[type=range][orient=vertical]
+{
+    writing-mode: bt-lr; /* IE */
+    -webkit-appearance: slider-vertical; /* WebKit */
+    width: 8px;
+    height: 175px;
+    padding: 0 5px;
+}
+.track {
+    min-width: 90px;
+    border-radius: 15px;
+    background-color: #73ff31;
+    padding: 10px;
+}
+#player-top-actionbar {
+    border-radius: 15px;
+    background-color: skyblue;
+    padding: 10px;
+}
+#tracks-container{
+    background-color: skyblue;
+    border-radius: 15px;
+    padding: 10px;
+    overflow: auto;
+}

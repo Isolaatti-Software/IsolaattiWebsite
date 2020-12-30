@@ -22,7 +22,7 @@ namespace isolaatti_API.Controllers
             _dbContext = contextApp;
         }
         [HttpPost]
-        public void Index(int songId, string bassUrl, string drumsUrl, string voiceUrl, string otherUrl)
+        public void Index(int songId, string bassUrl, string drumsUrl, string voiceUrl, string otherUrl, string uid)
         {
             try
             {
@@ -31,6 +31,7 @@ namespace isolaatti_API.Controllers
                 recordToComplete.DrumsUrl = drumsUrl;
                 recordToComplete.OtherUrl = otherUrl;
                 recordToComplete.VoiceUrl = voiceUrl;
+                recordToComplete.Uid = uid;
                 recordToComplete.IsBeingProcessed = false;
                 _dbContext.Songs.Update(recordToComplete);
                 _dbContext.SaveChanges();

@@ -7,6 +7,7 @@
 using System;
 using System.Linq;
 using isolaatti_API.Models;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -17,10 +18,12 @@ namespace isolaatti_API.Pages.WebApp
         private readonly DbContextApp _db;
         public IQueryable<Song> SongsList;
         public IQueryable<Song> SongsBeingProcessedList;
+        public IWebHostEnvironment Environment;
 
-        public Songs(DbContextApp dbContextApp)
+        public Songs(DbContextApp dbContextApp, IWebHostEnvironment env)
         {
             _db = dbContextApp;
+            Environment = env;
         }
         public IActionResult OnGet()
         {
@@ -46,6 +49,8 @@ namespace isolaatti_API.Pages.WebApp
                     // here it's know that account is correct. Data binding!
                     ViewData["name"] = user.Name;
                     ViewData["email"] = user.Email;
+                    ViewData["userId"] = user.Id;
+                    ViewData["password"] = user.Password;
                     // possible errors if there are no songs in the database (empty table)
                     try
                     {

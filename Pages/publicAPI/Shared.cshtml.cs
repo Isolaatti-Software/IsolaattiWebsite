@@ -23,7 +23,7 @@ namespace isolaatti_API.Pages.publicAPI
         {
             try
             {
-                var songRef = db.SharedSongs.Single(song => song.uid.Equals(uid));
+                var songRef = db.SharedSongs.Single(song_ => song_.uid.Equals(uid));
                 var song = db.Songs.Find(songRef.SharedSongId);
                 var owner = db.Users.Find(song.OwnerId);
                 ViewData["name"] = song.OriginalFileName;
