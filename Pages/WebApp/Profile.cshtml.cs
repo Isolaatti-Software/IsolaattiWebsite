@@ -7,6 +7,7 @@
 
 using System;
 using System.Linq;
+using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -63,8 +64,10 @@ namespace isolaatti_API.Pages.WebApp
             });
         }
 
-        public IActionResult OnPost(int userId, string currentPassword, string newPassword)
+        public IActionResult OnPost(int userId, string current_password, string new_password, string new_password_conf_field)
         {
+            var accountsManager = new Accounts(_db);
+            accountsManager.ChangeAPassword(userId,current_password,new_password);
             return RedirectToPage("LogIn");
         }
     }
