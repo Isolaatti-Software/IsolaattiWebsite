@@ -17,6 +17,18 @@
     color: white;
     font-family: "Lohit Tamil Classical", serif;
 }
+@media screen and (max-width: 576px){
+    #isolaatti_brand{
+        padding:0.5rem;
+        color: white;
+        font-family: "Lohit Tamil Classical", serif;
+        width: 100%;
+        text-align: center;
+    }
+    .navbar-item-text{
+        display: none;
+    }
+}
 
 /* Player styles*/
 input[type=range][orient=vertical]
