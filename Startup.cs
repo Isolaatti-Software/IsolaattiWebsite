@@ -40,7 +40,10 @@ namespace isolaatti_API
 
             services.AddDbContext<DbContextApp>(options =>
             {
-                options.UseSqlite(Configuration.GetConnectionString("Database"));
+                //options.UseSqlite(Configuration.GetConnectionString("Database"));
+                options.UseSqlServer(
+                    "Server=tcp:isolaatti.database.windows.net,1433;Initial Catalog=isolaatti-db;Persist Security Info=False;User ID=erikeverardo;Password=040882004Az1;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+                    );
             });
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -59,15 +62,10 @@ namespace isolaatti_API
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.UseDeveloperExceptionPage();
-
-            app.UseHttpsRedirection();
-
             app.UseRouting();
-
             app.UseAuthorization();
             app.UseStaticFiles();
-
+            app.UseHttpsRedirection();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
