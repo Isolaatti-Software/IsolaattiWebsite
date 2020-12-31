@@ -37,7 +37,11 @@ buttonUploadFile.addEventListener("click",function (){
         fieldArtistName.disabled = true;
         fieldSongName.disabled = true;
         progressBarContainer.style.visibility = "visible";
-        let uploadTask = storageRef.child(`source_files/${fileSource.files[0].name}`).put(fileSource.files[0]);
+        let uploadTask = storageRef
+            .child(`source_files/${fileSource.files[0].name}`)
+            .put(fileSource.files[0],{
+                contentType:"audio/mpeg"
+            });
         
         let songName = fieldSongName.value;
         let songArtist = fieldArtistName.value;
