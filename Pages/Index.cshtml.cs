@@ -13,7 +13,7 @@ namespace isolaatti_API.Pages
     {
         public IActionResult OnGet()
         {
-            return RedirectToPage("/WebApp/Index");
+            return Page();
         }
     }
 }

@@ -4,3 +4,75 @@
 @{
     Layout = null;
 }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Isolaatti</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav id="topnav">
+        <div class="nav-item">
+            <a asp-page="WebApp/MakeAccount" class="nav-link">Sign up</a>
+        </div>
+        <div class="nav-item">
+            <a asp-page="WebApp/Index" class="nav-link">Sign in</a>
+        </div>
+        
+        
+    </nav>
+    <div class="slide" id="main_picture">
+        <div class="picture_text">
+            <h1>Isolaatti</h1>
+            <h2>The new easy-to-use recording studio</h2>
+            <div id="links_to_sections">
+                <a href="#web_mixer">Web mixer</a>
+                <a href="#source_separation">Source separation</a>
+                <a href="#recording">Recording</a>
+                <a href="#more">More</a>
+            </div>
+        </div>
+        
+    </div>
+    <div class="slide" id="web_mixer">
+        <div class="picture_text">
+            <h1>Web mixer</h1>
+            <p>Use the built-in web mixer. With it you can:</p>
+            <ul>
+                <li>Change gain and balance of tracks and mix.</li>
+                <li>Add some basic effects like reverb and other.</li>
+                <li>Use your default sound input (microphone) to record new tracks using the wizard.</li>
+                <li>Save your mix in your account.</li>
+                <li>Export files with the settings you've set.</li>
+                <li>And more.</li>
+            </ul>
+        </div>
+    </div>
+    <div class="slide" id="source_separation">
+        <div class="picture_text">
+            <h1>Source separation</h1>
+            <p>Upload a song and get bass, drums, vocals and others using AI. Use them as base tracks for further creations.</p>
+            <p style="text-align: center;margin-top: 10px;">Powered by <br> <strong>demucs</strong> <br><a href="https://github.com/facebookresearch/demucs">GitHub repo</a></p>
+        </div>
+    </div>
+    <div class="slide" id="recording">
+        <div class="picture_text">
+            <h1>Recording</h1>
+            <p>Use your microphone to record your voice or whatever you want to be alongside the base tracks.</p>
+        </div>
+    </div>
+    <div class="slide" id="more">
+        <div class="picture_text">
+            <h1>More</h1>
+            <h2>About this project</h2>
+            <p>Isolaatti begins as a school project, originally an Android application, but now a web app as well. The Android version is currently being developed but not available on any apps store</p>
+            <h2>Developer</h2>
+            <p>Isolaatti is developed and maintained by Erik Everardo. <a href="mailto:erik10cavazos@gmail.com">Contact me</a>.</p>
+        </div>
+    </div>
+</body>
+    
+    
+</html>
