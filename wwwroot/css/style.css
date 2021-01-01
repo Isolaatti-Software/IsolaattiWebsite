@@ -47,8 +47,7 @@ html {
     flex-direction: column;
     color:white;
     padding:30px;
-    background-color: black;
-    left: 0;
+    background-color: rgba(0,0,0,0.4);
 }
 .picture_text > img {
     height: 75%;
@@ -57,14 +56,17 @@ html {
 #links_to_sections {
     display: flex;
     flex-wrap: wrap;
+    width: 100%;
+    justify-content: center;
+    background-color: black;
+    margin-top: 10px;
 }
 #links_to_sections > a {
     padding: 10px;
-    color:#6200EE;
+    color:white;
 }
 #links_to_sections > a:hover {
     background-color: #6200EE;
-    color: white;
 }
 .slide {
     /* keep centered the text*/
