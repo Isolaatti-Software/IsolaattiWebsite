@@ -2,6 +2,9 @@
     margin: 0;
     padding: 0;
 }
+html {
+    scroll-behavior: smooth;
+}
 #topnav {
     display: flex;
     justify-content: flex-end;
@@ -97,4 +100,8 @@
 #more {
     background-color: rgb(40,40,40);
     top:400%;
+}
+.change_slide_buttons {
+    display: flex;
+    justify-content: space-between;
 }
