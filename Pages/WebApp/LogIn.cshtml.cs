@@ -22,6 +22,7 @@ namespace isolaatti_API.Pages.WebApp
         public bool NotVerifiedEmail = false;
         public bool NewUser = false;
         public bool JustVerifiedEmail = false;
+        public bool ExistingSession = false;
 
         public LogIn(DbContextApp dbContextApp)
         {
@@ -36,10 +37,17 @@ namespace isolaatti_API.Pages.WebApp
             bool notVerified=false,
             bool justVerified=false)
         {
+            
             NewUser = newUser;
             WrongCredential = badCredential;
             NotVerifiedEmail = notVerified;
             JustVerifiedEmail = justVerified;
+            ExistingSession = Request.Cookies["isolaatti_user_name"] != null &&
+                              Request.Cookies["isolaatti_user_password"] != null &&
+                              !WrongCredential && !NotVerifiedEmail && !JustVerifiedEmail && !NewUser;
+
+            if (ExistingSession)
+                ViewData["GuessedUsername"] = Request.Cookies["isolaatti_user_name"];
             if (NewUser || WrongCredential || NotVerifiedEmail || JustVerifiedEmail) 
                 ViewData["username_field"] = username;
             
