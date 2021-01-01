@@ -15,6 +15,7 @@
 
 var storageRef = storage.ref();
 
+let labelNameOfFile = document.getElementById("label-input-file");
 let fileSource = document.getElementById("audioFileInput");
 let buttonUploadFile = document.getElementById("btnUploadAudioFile");
 let fieldSongName = document.getElementById("field_songs_name");
@@ -25,7 +26,9 @@ let progressBar = document.getElementById("file_upload_progress_bar");
 fileSource.addEventListener("change", function(){
     fieldSongName.disabled = false;
     fieldArtistName.disabled = false;
-    fieldSongName.value = fileSource.files[0].name; 
+    fieldSongName.value = fileSource.files[0].name;
+    labelNameOfFile.innerHTML = fileSource.files[0].name;
+    fieldArtistName.value = "Unknown (change me)"
 });
 
 buttonUploadFile.addEventListener("click",function (){
