@@ -5,7 +5,7 @@
     Layout = "Shared/_LayoutWebAppOutside";
     ViewData["Title"] = "Make account";
 }
-<h1>Isolaatti</h1>
+<h1><a asp-page="/Index">Isolaatti</a></h1>
 <h3>Make an account to join Isolaatti</h3>
 <p>You are about joining the biggest music source separation community worldwide. Can you handle it?</p>
 
@@ -28,7 +28,7 @@
                     </div>
                 }
         <div class="form-group">
-            <label for="username_form_control">Nombre de usuario</label>
+            <label for="username_form_control">Username</label>
             <input type="text" name="username" id="username_form_control" class="form-control"
                    value='@ViewData["user_field"]'>
         </div>
@@ -38,12 +38,12 @@
                    value='@ViewData["email_field"]'>
         </div>
         <div class="form-group">
-            <label for="password_form_control">Contraseña</label>
+            <label for="password_form_control">Password</label>
             <input type="password" name="password" id="password_form_control" class="form-control">
-            <label for="confirm_password_form_control">Confirmación de contraseña</label>
+            <label for="confirm_password_form_control">Confirm password</label>
             <input type="password" name="password" id="confirm_password_form_control" class="form-control">
         </div>
-        <p>By continuing, you are accepting the <a href="http://isolaatti.com/terms_and_conditions.html" target="_blank">term and conditions</a></p>
+        <p>By continuing, you are accepting the <a href="http://isolaatti.com/terms_and_conditions.html" target="_blank">terms and conditions</a></p>
         <p>
             You will receive an e-mail with a link to confirm your e-email
             address.
