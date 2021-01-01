@@ -59,8 +59,12 @@ html {
     flex-wrap: wrap;
 }
 #links_to_sections > a {
-    margin: 10px;
+    padding: 10px;
     color:#6200EE;
+}
+#links_to_sections > a:hover {
+    background-color: #6200EE;
+    color: white;
 }
 .slide {
     /* keep centered the text*/
@@ -104,4 +108,11 @@ html {
 .change_slide_buttons {
     display: flex;
     justify-content: space-between;
+}
+.change_slide_buttons > a {
+    padding: 10px;
+}
+.change_slide_buttons > a:hover{
+    background-color: #6200EE;
+    color:white;
 }
