@@ -18,11 +18,13 @@ namespace isolaatti_API.Pages.WebApp
     {
         private readonly DbContextApp _db;
 
+        public bool PasswordIsWrong = false;
+
         public Profile(DbContextApp dbContextApp)
         {
             _db = dbContextApp;
         }
-        public IActionResult OnGet()
+        public IActionResult OnGet(string open="", bool currentPasswordIsWrong=false)
         {
             var email = Request.Cookies["isolaatti_user_name"];
             var password = Request.Cookies["isolaatti_user_password"];
@@ -47,10 +49,15 @@ namespace isolaatti_API.Pages.WebApp
                     ViewData["name"] = user.Name;
                     ViewData["email"] = user.Email;
                     ViewData["userId"] = user.Id;
+
+                    ViewData["profile_open"] = open;
+
+                    PasswordIsWrong = currentPasswordIsWrong;
                     
 
                     return Page();
                 }
+                
             }
             catch (InvalidOperationException)
             {
@@ -64,11 +71,31 @@ namespace isolaatti_API.Pages.WebApp
             });
         }
 
-        public IActionResult OnPost(int userId, string current_password, string new_password, string new_password_conf_field)
+        public IActionResult OnPost(int userId, string current_password, string new_password)
         {
+            if (current_password == null || new_password == null)
+            {
+                return RedirectToPage("Profile", new
+                {
+                    errorChangingPass = true
+                });
+            }
             var accountsManager = new Accounts(_db);
-            accountsManager.ChangeAPassword(userId,current_password,new_password);
-            return RedirectToPage("LogIn");
+            
+            if (!accountsManager.ChangeAPassword(userId, current_password, new_password))
+            {
+                return RedirectToPage("Profile", new
+                {
+                    currentPasswordIsWrong = true
+                });
+            }
+            Response.Cookies.Delete("isolaatti_user_name");
+            Response.Cookies.Delete("isolaatti_user_password");
+            return RedirectToPage("LogIn", new
+            {
+                changedPassword = true,
+                username = _db.Users.Find(userId).Email
+            });
         }
     }
 }

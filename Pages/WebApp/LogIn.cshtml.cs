@@ -23,6 +23,7 @@ namespace isolaatti_API.Pages.WebApp
         public bool NewUser = false;
         public bool JustVerifiedEmail = false;
         public bool ExistingSession = false;
+        public bool ChangedPassword = false;
 
         public LogIn(DbContextApp dbContextApp)
         {
@@ -35,7 +36,8 @@ namespace isolaatti_API.Pages.WebApp
             bool badCredential=false,
             string username=null,
             bool notVerified=false,
-            bool justVerified=false)
+            bool justVerified=false,
+            bool changedPassword=false)
         {
             
             NewUser = newUser;
@@ -45,10 +47,11 @@ namespace isolaatti_API.Pages.WebApp
             ExistingSession = Request.Cookies["isolaatti_user_name"] != null &&
                               Request.Cookies["isolaatti_user_password"] != null &&
                               !WrongCredential && !NotVerifiedEmail && !JustVerifiedEmail && !NewUser;
+            ChangedPassword = changedPassword;
 
             if (ExistingSession)
                 ViewData["GuessedUsername"] = Request.Cookies["isolaatti_user_name"];
-            if (NewUser || WrongCredential || NotVerifiedEmail || JustVerifiedEmail) 
+            if (NewUser || WrongCredential || NotVerifiedEmail || JustVerifiedEmail || ChangedPassword) 
                 ViewData["username_field"] = username;
             
             

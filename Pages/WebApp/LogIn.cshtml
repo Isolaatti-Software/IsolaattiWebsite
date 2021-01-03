@@ -19,7 +19,12 @@
         <p>Now you can log in here or the Android application!</p>
     </div>
 }
-
+@if (Model.ChangedPassword)
+{
+    <div class="alert alert-info">
+        Your password was changed successfully, please log in again with the new password.
+    </div>
+}
 
 <h1><a asp-page="/Index">Isolaatti</a></h1>
 <h3>Logging in to Isolaatti</h3>

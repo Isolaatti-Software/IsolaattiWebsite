@@ -5,7 +5,6 @@
     Layout = "Shared/_LayoutWebApp";
     ViewData["Title"] = ViewData["name"] + " profile";
 }
-<h1>Profile</h1>
 <div class="d-flex justify-content-center">
     <h1 class="display-1">
         <i class="fas fa-user"></i>
@@ -25,7 +24,7 @@
     </li>
     <li class="nav-item">
         <a class="nav-link" id="password_tab" data-toggle="tab" href="#password_pane" role="tab" aria-controls="my password" 
-           aria-selected="true">Your password</a>
+           aria-selected="true">Password</a>
     </li>
 </ul>
 <div class="tab-content">
@@ -42,20 +41,54 @@
             <input type="hidden" name="userId" value="@ViewData["userId"]">
             <div class="form-group">
                 <label for="current_password_field">Current password</label>
-                <input type="password" name="current_password" class="form-control" id="current_password_field">
+                <input type="password" name="current_password" class="form-control" 
+                       id="current_password_field" required autocomplete="false">
+                <div class="invalid-feedback">
+                    Current password is not correct, Try again.
+                </div>
+                
             </div>
             <div class="form-group">
                 <label>New password</label>
-                <input type="password" name="new_password" class="form-control" id="new_password_field">
+                <input type="password" name="new_password" class="form-control" 
+                       id="new_password_field" required autocomplete="false">
             </div>
             <div class="form-group">
                 <label for="new_password_conf_field">Confirm new password</label>
-                <input type="password" name="new_password_conf" class="form-control" id="new_password_conf_field">
+                <input type="password" name="new_password_conf" class="form-control"
+                       id="new_password_conf_field" required autocomplete="false">
             </div>
             <button type="submit" class="btn btn-primary">
                 Change
             </button>
         </form>
     </div>
-    
 </div>
+@if (Model.PasswordIsWrong)
+{
+    // show password pane because password was not correct
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        $("#password_tab").tab('show');
+        document.querySelector("#current_password_field").classList.add("is-invalid");
+    });
+    </script>
+}
+
+@if (ViewData["profile_open"].Equals("password"))
+{
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        $("#password_tab").tab('show');
+    });
+    </script>
+}
+else if (ViewData["profile_open"].Equals("links"))
+{
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        $("#shared-links_tab").tab('show');
+    });
+    </script>
+}
+<script src="~/js/profile.js"></script>
