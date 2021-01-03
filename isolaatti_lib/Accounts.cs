@@ -13,6 +13,7 @@ using System.Linq;
 using System.Net.Mail;
 using isolaatti_API.Classes;
 using isolaatti_API.Models;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using MimeKit;
 using SmtpClient = MailKit.Net.Smtp.SmtpClient;
 
@@ -147,6 +148,10 @@ namespace isolaatti_API.isolaatti_lib
                 if (user.Password.Equals(currentPassword))
                 {
                     user.Password = newPassword;
+                }
+                else
+                {
+                    return false;
                 }
 
                 db.Users.Update(user);
