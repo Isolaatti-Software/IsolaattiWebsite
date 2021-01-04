@@ -16,6 +16,7 @@ class Track {
             .connect(this.gainEffect)
             .connect(this.trackContext.destination);
         
+        
     }
 
     play() {
@@ -49,6 +50,7 @@ class Mix {
 
     constructor() {
         this.playing = false;
+        this.gainValue = 1.0;
     }
 
     play() {
@@ -73,9 +75,13 @@ class Mix {
     }
     
     setGain(masterGain) {
+        this.gainValue = masterGain;
         this.tracks.forEach(function(value,index) {
            value.setGain(tracksSliders.item(index).value * masterGain); 
         });
+    }
+    getGain() {
+        return this.gainValue;
     }
     
     addTrack(track){
@@ -83,7 +89,7 @@ class Mix {
     }
     
     getTracks() {
-        return this.tracks;
+        return this.gainValue;
     }
     
     isPlaying() {
@@ -174,11 +180,13 @@ playPauseButton.addEventListener('click', function() {
    }
 });
 
+/*
 stopButton.addEventListener('click', function() {
    if(mix.isPlaying()) {
        mix.stop();
    } 
 });
+*/
 
 resetGainsButton.addEventListener("click", function() {
     tracksSliders.forEach(function(item) {
@@ -186,7 +194,7 @@ resetGainsButton.addEventListener("click", function() {
         item.title = (parseFloat(item.value) * 100) + "%";
     });
     tracks.forEach(function(item) {
-        item.setGain(1.0);
+        item.setGain(mix.getGain());
     });
 });
 
