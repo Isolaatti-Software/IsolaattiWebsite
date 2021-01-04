@@ -7,9 +7,10 @@
     ViewData["Title"] = "Collection";
 }
 <h1>Your songs</h1>
-<hr>
+
 @if (Model.SongsBeingProcessedList.Any())
 {
+    <hr>
     <h2>Processing now</h2>
     <table class="table">
         <thead class="thead_dark">
@@ -49,7 +50,7 @@ else
     {
         <h2>Available songs</h2>
     }
-    <table class="table">
+    <table class="table table-responsive-sm">
         <thead class="thead_dark">
         <tr>
             <th scope="col">Name</th>
@@ -61,16 +62,23 @@ else
         @foreach (var song in Model.SongsList)
         {
             <tr id="songid_@song.Id">
-                <td>
+                <td class="song-name">
                     <a asp-page="Play" asp-route-id="@song.Id">
                         @song.OriginalFileName
                     </a>
                 </td>
-                <td>@song.Artist</td>
-                <td>
-                    <a href="#"><i class="fas fa-share-alt"></i></a>
-                    <a href="javascript:deleteSong(@song.Id);"><i class="fas fa-trash-alt"></i></a>
-                    <a href="#"><i class="fas fa-pencil-alt"></i></a>
+                <td class="song-artist">@song.Artist</td>
+                <td class="song-actions">
+                    <div class="btn-group-sm btn-group">
+                        <a href="#" class="btn btn-dark"><i class="fas fa-share-alt"></i></a>
+                        <a href="javascript:deleteSong(@song.Id);" class="btn btn-danger"><i class="fas fa-trash-alt"></i></a>
+                        <button type="button" class="btn btn-primary modify-info-song" data-toggle="modal" data-target="#modifySongInfoModal" 
+                                data-name="@song.OriginalFileName" data-artist="@song.Artist" data-id="@song.Id">
+                            <i class="fas fa-pencil-alt"></i>
+                        </button>
+                        
+                    </div>
+                    
                 </td>
             </tr>
 
@@ -79,35 +87,31 @@ else
     </table>
 }
 
-<!-- Modify song info modal-->
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="mdo">Open modal for mdo</button>
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="fat">Open modal for fat</button>
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="getbootstrap">Open modal for getbootstrap</button>
-
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+<div class="modal fade" id="modifySongInfoModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+                <h5 class="modal-title">Edit song information</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
                 <form>
+                    <input type="hidden" id="modal-song-id">
                     <div class="form-group">
-                        <label for="recipient-name" class="col-form-label">Recipient:</label>
-                        <input type="text" class="form-control" id="recipient-name">
+                        <label for="song-name" class="col-form-label">Name:</label>
+                        <input type="text" class="form-control" id="song-name" required>
                     </div>
                     <div class="form-group">
-                        <label for="message-text" class="col-form-label">Message:</label>
-                        <textarea class="form-control" id="message-text"></textarea>
+                        <label for="song-artist" class="col-form-label">Artist:</label>
+                        <input type="text" class="form-control" id="song-artist" required>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Send message</button>
+                <button type="button" class="btn btn-primary" id="modal-button-modify">Modify</button>
             </div>
         </div>
     </div>
@@ -143,15 +147,48 @@ else
 }
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-    $('#exampleModal').on('show.bs.modal', function (event) {
-      var button = $(event.relatedTarget) // Button that triggered the modal
-      var recipient = button.data('whatever') // Extract info from data-* attributes
-      // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-      // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
-      var modal = $(this)
-      modal.find('.modal-title').text('New message to ' + recipient)
-      modal.find('.modal-body input').val(recipient)
-    })
+    var modifyInfoModal = $('#modifySongInfoModal');
+    
+    modifyInfoModal.on('show.bs.modal', function (event) {
+      var button = $(event.relatedTarget) 
+      var songName = button.data('name');
+      var songArtist = button.data('artist');
+      var songId = button.data('id');
+      
+      var modal = $(this);
+      modal.find('.modal-title').text('Modify "' + button.data('name') + '" information');
+      modal.find('.modal-body #song-name').val(songName);
+      modal.find('.modal-body #song-artist').val(songArtist);
+      modal.find('.modal-body #modal-song-id').val(songId);
+      
+    });
+    modifyInfoModal.find(".modal-footer #modal-button-modify").on('click', function (event){
+      
+        var newName = modifyInfoModal.find('.modal-body #song-name').val();
+        var newArtist = modifyInfoModal.find('.modal-body #song-artist').val();
+        var songId = modifyInfoModal.find(".modal-body #modal-song-id").val();
+        // starts call to API
+        let XMLHttpRequestObj = new XMLHttpRequest();
+        let formData = new FormData();
+        formData.append("songId", songId);
+        formData.append("songName", newName);
+        formData.append("songArtist", newArtist);
+        XMLHttpRequestObj.open("POST", "/ModifySongInfo");
+        XMLHttpRequestObj.send(formData);
+        XMLHttpRequestObj.onreadystatechange = function () {
+            if (XMLHttpRequestObj.readyState === XMLHttpRequest.DONE){
+                // updates DOM
+                //document.querySelector(`#songid_${songId} .song-name a` ).innerHTML = newName;
+                //document.querySelector(`#songid_${songId} .song-artist`).innerHTML = newArtist;
+                
+                //var modifiedSongModifyButton = document.querySelector(`#songid_${songId} .song-actions .modify-info-song`);
+                //modifiedSongModifyButton.setAttribute("data-name", newName);
+                //modifiedSongModifyButton.setAttribute("data-artist", newArtist);
+                //modifyInfoModal.modal('hide');
+                window.location.reload();
+            }
+        };
+    });
 });
 </script>
 
