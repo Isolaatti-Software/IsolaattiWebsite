@@ -12,8 +12,10 @@ class Track {
         this.trackContext = new AudioContext();
         this.track = this.trackContext.createMediaElementSource(sourceMediaElement);
         this.gainEffect = this.trackContext.createGain();
+        this.panningEffect = this.trackContext.createStereoPanner();
         this.track
             .connect(this.gainEffect)
+            .connect(this.panningEffect)
             .connect(this.trackContext.destination);
         
         
@@ -43,6 +45,10 @@ class Track {
         return this.gainEffect.gain.value;
     }
     
+    /* panning values between -1 and 1 */
+    setPanning(value) {
+        this.panningEffect.pan.setValueAtTime(value, this.trackContext.currentTime);
+    }
 }
 
 class Mix {
@@ -161,6 +167,7 @@ let resetGainsButton = document.getElementById("reset_gains");
 // references to sliders in DOM
 let masterGain = document.getElementById("mix_gain");
 let tracksSliders = document.querySelectorAll(".track-gain");
+let panningSliders = document.querySelectorAll(".balance_slider");
 
 allTracksDownloadedMonitoring.onmessage = function(event) {
     if(event.data === "completed"){
@@ -196,6 +203,12 @@ resetGainsButton.addEventListener("click", function() {
     tracks.forEach(function(item) {
         item.setGain(mix.getGain());
     });
+    panningSliders.forEach(function(item){
+        item.value = 0.0;
+    });
+    tracks.forEach(function(item){
+        item.setPanning(0.0);
+    });
 });
 
 ////////////////////////////////////////////////////////////////////////
@@ -210,4 +223,10 @@ tracksSliders.forEach(function (value,index) {
         tracks[index].setGain(parseFloat(value.value));
         value.title = (parseFloat(value.value) * 100) + "%";
     });
+});
+
+panningSliders.forEach(function (value,index){
+   value.addEventListener("input", function() {
+      tracks[index].setPanning(value.value);
+   });
 });
