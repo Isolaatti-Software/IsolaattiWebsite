@@ -12,8 +12,8 @@
 {
     <hr>
     <h2>Processing now</h2>
-    <table class="table">
-        <thead class="thead_dark">
+    <table class="table table-responsive-sm table-borderless bg-dark text-white">
+        <thead>
         <tr>
             <th scope="col">Name</th>
             <th scope="col">Artist</th>
@@ -50,7 +50,7 @@ else
     {
         <h2>Available songs</h2>
     }
-    <table class="table table-responsive-sm">
+    <table class="table table-responsive-sm table-borderless bg-dark text-white">
         <thead class="thead_dark">
         <tr>
             <th scope="col">Name</th>
@@ -70,7 +70,7 @@ else
                 <td class="song-artist">@song.Artist</td>
                 <td class="song-actions">
                     <div class="btn-group-sm btn-group">
-                        <a href="#" class="btn btn-dark"><i class="fas fa-share-alt"></i></a>
+                        <a href="#" class="btn btn-light"><i class="fas fa-share-alt"></i></a>
                         <a href="javascript:deleteSong(@song.Id);" class="btn btn-danger"><i class="fas fa-trash-alt"></i></a>
                         <button type="button" class="btn btn-primary modify-info-song" data-toggle="modal" data-target="#modifySongInfoModal" 
                                 data-name="@song.OriginalFileName" data-artist="@song.Artist" data-id="@song.Id">
@@ -87,9 +87,9 @@ else
     </table>
 }
 
-<div class="modal fade" id="modifySongInfoModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="modifySongInfoModal" tabindex="-1" aria-labelledby="modifying information of song" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
+        <div class="modal-content bg-dark text-white">
             <div class="modal-header">
                 <h5 class="modal-title">Edit song information</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">

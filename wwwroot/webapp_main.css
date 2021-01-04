@@ -1,4 +1,8 @@
 /* Erik Cavazos, 2020*/
+body {
+    background-color: rgb(55,55,75);
+    color:white;
+}
 .custom-nav {
     background-color: #6200EE;
 }
@@ -42,16 +46,18 @@ input[type=range][orient=vertical]
 .track {
     min-width: 90px;
     border-radius: 15px;
-    background-color: #73ff31;
+    background-color: black;
     padding: 10px;
 }
 #player-top-actionbar {
     border-radius: 15px;
-    background-color: skyblue;
+    background-color: rgb(45,45,45);
     padding: 10px;
+    color:white;
 }
 #tracks-container{
-    background-color: skyblue;
+    background-color: rgb(45,45,45);
+    color:white;
     border-radius: 15px;
     padding: 10px;
     overflow: auto;
