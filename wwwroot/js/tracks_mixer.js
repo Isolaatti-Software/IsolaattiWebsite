@@ -192,13 +192,13 @@ resetGainsButton.addEventListener("click", function() {
 
 ////////////////////////////////////////////////////////////////////////
 // events for sliders
-masterGain.addEventListener("change", function() {
+masterGain.addEventListener("input", function() {
     mix.setGain(parseFloat(masterGain.value));
     masterGain.title = (parseFloat(masterGain.value) * 100) + "%";
 });
 
 tracksSliders.forEach(function (value,index) {
-    value.addEventListener("change", function() {
+    value.addEventListener("input", function() {
         tracks[index].setGain(parseFloat(value.value));
         value.title = (parseFloat(value.value) * 100) + "%";
     });
