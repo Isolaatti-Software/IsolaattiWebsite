@@ -11,16 +11,16 @@
    <h3 class="mt-1">Notifications</h3>
    <div class="d-flex flex-column mt-2">
        <div class="custom-control custom-switch mb-2">
-           <input type="checkbox" class="custom-control-input" id="customSwitch1">
-           <label class="custom-control-label" for="customSwitch1">Send notifications</label>
+           <input type="checkbox" class="custom-control-input" id="notifyByEmail">
+           <label class="custom-control-label" for="notifyByEmail">Send notifications by e-mail</label>
        </div>
        <div class="custom-control custom-switch mb-2">
-           <input type="checkbox" class="custom-control-input" id="customSwitch2">
-           <label class="custom-control-label" for="customSwitch2">Notify when server starts to process your song</label>
+           <input type="checkbox" class="custom-control-input" id="notifyWhenProcessStarts">
+           <label class="custom-control-label" for="notifyWhenProcessStarts">Notify when server starts to process your song</label>
        </div>
        <div class="custom-control custom-switch mb-2">
-           <input type="checkbox" class="custom-control-input" id="customSwitch3">
-           <label class="custom-control-label" for="customSwitch3">Notify when your song is ready</label>
+           <input type="checkbox" class="custom-control-input" id="notifyWhenProcessFinishes">
+           <label class="custom-control-label" for="notifyWhenProcessFinishes">Notify when your song is ready</label>
        </div>
        
    </div>
@@ -35,3 +35,9 @@
     <p><a href="#">Delete all your shares</a></p>
 </div>
 <div class="col-lg-3 col-md-2"></div>
+<script>
+document.querySelector("#notifyWhenProcessFinishes").checked = "@ViewData["notify_when_finish"]" === "True";
+document.querySelector("#notifyByEmail").checked = "@ViewData["notify_by_email"]" === "True";
+document.querySelector("#notifyWhenProcessStarts").checked = "@ViewData["notify_when_starts"]" === "True";
+</script>
+<script src="~/js/settings.js"></script>
