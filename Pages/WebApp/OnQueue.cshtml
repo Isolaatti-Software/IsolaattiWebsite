@@ -16,6 +16,7 @@
         </button>
     </div>
     <p>Songs that are pending to be passed to the processing server.</p>
+    <p>This page is not real time updated, if the song you attempt to delete from the queue is already being processed, the process will not be stopped</p>
     @if (Model.EmptyQueue || Model.SongsOnQueue.Count().Equals(0))
     {
         <h2><i class="fas fa-info-circle"></i>
