@@ -5,65 +5,70 @@
     Layout = "Shared/_LayoutWebApp";
     ViewData["Title"] = ViewData["name"] + " profile";
 }
-<div class="d-flex justify-content-center">
-    <h1 class="display-1">
-        <i class="fas fa-user"></i>
-    </h1>
-</div>
-<h2>@ViewData["name"]</h2>
-<h3>@ViewData["email"]</h3>
-
-<ul class="nav nav-tabs">
-    <li class="nav-item">
-        <a class="nav-link active" id="stats_tab" data-toggle="tab" href="#stats_pane" role="tab" aria-controls="home" 
-           aria-selected="true">Stats</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" id="shared-links_tab" data-toggle="tab" href="#shared-links_pane" role="tab" aria-controls="shared links" 
-           aria-selected="true">Shared links</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" id="password_tab" data-toggle="tab" href="#password_pane" role="tab" aria-controls="my password" 
-           aria-selected="true">Password</a>
-    </li>
-</ul>
-<div class="tab-content">
-    <div class="tab-pane fade show active" id="stats_pane">
-        
+<div class="col-lg-3 col-md-2"></div>
+<div class="col-lg-6 col-md-8">
+    <div class="d-flex justify-content-center">
+        <h1 class="display-1">
+            <i class="fas fa-user"></i>
+        </h1>
     </div>
-    <div class="tab-pane fade" id="shared-links_pane">
+    <h2>@ViewData["name"]</h2>
+    <h3>@ViewData["email"]</h3>
+    
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link active" id="stats_tab" data-toggle="tab" href="#stats_pane" role="tab" aria-controls="home" 
+               aria-selected="true">Stats</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="shared-links_tab" data-toggle="tab" href="#shared-links_pane" role="tab" aria-controls="shared links" 
+               aria-selected="true">Shared links</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="password_tab" data-toggle="tab" href="#password_pane" role="tab" aria-controls="my password" 
+               aria-selected="true">Password</a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane fade show active" id="stats_pane">
             
-    </div>
-    <div class="tab-pane fade" id="password_pane">
-        <h5>Change your password</h5>
-        <p>After this process, you will be asked to log in again.</p>
-        <form method="post">
-            <input type="hidden" name="userId" value="@ViewData["userId"]">
-            <div class="form-group">
-                <label for="current_password_field">Current password</label>
-                <input type="password" name="current_password" class="form-control" 
-                       id="current_password_field" required autocomplete="false">
-                <div class="invalid-feedback">
-                    Current password is not correct, Try again.
-                </div>
+        </div>
+        <div class="tab-pane fade" id="shared-links_pane">
                 
-            </div>
-            <div class="form-group">
-                <label>New password</label>
-                <input type="password" name="new_password" class="form-control" 
-                       id="new_password_field" required autocomplete="false">
-            </div>
-            <div class="form-group">
-                <label for="new_password_conf_field">Confirm new password</label>
-                <input type="password" name="new_password_conf" class="form-control"
-                       id="new_password_conf_field" required autocomplete="false">
-            </div>
-            <button type="submit" class="btn btn-primary">
-                Change
-            </button>
-        </form>
+        </div>
+        <div class="tab-pane fade" id="password_pane">
+            <h5>Change your password</h5>
+            <p>After this process, you will be asked to log in again.</p>
+            <form method="post">
+                <input type="hidden" name="userId" value="@ViewData["userId"]">
+                <div class="form-group">
+                    <label for="current_password_field">Current password</label>
+                    <input type="password" name="current_password" class="form-control" 
+                           id="current_password_field" required autocomplete="false">
+                    <div class="invalid-feedback">
+                        Current password is not correct, Try again.
+                    </div>
+                    
+                </div>
+                <div class="form-group">
+                    <label>New password</label>
+                    <input type="password" name="new_password" class="form-control" 
+                           id="new_password_field" required autocomplete="false">
+                </div>
+                <div class="form-group">
+                    <label for="new_password_conf_field">Confirm new password</label>
+                    <input type="password" name="new_password_conf" class="form-control"
+                           id="new_password_conf_field" required autocomplete="false">
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    Change
+                </button>
+            </form>
+        </div>
     </div>
 </div>
+<div class="col-lg-3 col-md-2"></div>
+
 @if (Model.PasswordIsWrong)
 {
     // show password pane because password was not correct

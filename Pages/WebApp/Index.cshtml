@@ -8,35 +8,41 @@
     ViewData["Title"] = "Home";
 }
 <script>document.querySelector("#index-link").classList.add("custom-active-nav-link")</script>
-<h1>Hi, @ViewData["name"].</h1>
-<h2>Add an audio file to the queue to process it!</h2>
-<p><a asp-page="OnQueue">Manage queue</a></p>
-<p class="mt-4">Only MP3 files are allowed</p>
-<div class="custom-file">
-    <input type="file" class="custom-file-input" id="audioFileInput" accept="audio/mpeg">
-    <label class="custom-file-label" for="customFile" id="label-input-file">Choose file</label>
-</div>
-<p class="mt-4">Some data has been automatically filled in, but you can change it anyway</p>
-<div class="form-group">
-    <label for="field_songs_name">Song</label>
-    <input type="text" class="form-control" id="field_songs_name" placeholder="Name goes here" disabled autocomplete="false">
-</div>
-<div class="form-group">
-    <label for="field_songs_artist">Artist</label>
-    <input type="text" class="form-control" id="field_songs_artist" placeholder="Artist goes here" disabled autocomplete="false">
-</div>
-<div class="d-flex">
-    <div class="progress w-100 mt-2 mb-2" id="progress-bar-container" style="visibility: hidden">
-        <div id="file_upload_progress_bar" class="progress-bar" role="progressbar" style="width: 0" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+<div class="col-lg-3 col-md-2"></div>
+<div class="col-lg-6 col-md-8">
+    <h1>Hi, @ViewData["name"].</h1>
+    <h2>Add an audio file to the queue to process it!</h2>
+    <p><a asp-page="OnQueue">Manage queue</a></p>
+    <p class="mt-4">Only MP3 files are allowed</p>
+    <div class="custom-file">
+        <input type="file" class="custom-file-input" id="audioFileInput" accept="audio/mpeg">
+        <label class="custom-file-label" for="customFile" id="label-input-file">Choose file</label>
     </div>
-    
+    <p class="mt-4">Some data has been automatically filled in, but you can change it anyway</p>
+    <div class="form-group">
+        <label for="field_songs_name">Song</label>
+        <input type="text" class="form-control" id="field_songs_name" placeholder="Name goes here" disabled autocomplete="false">
+    </div>
+    <div class="form-group">
+        <label for="field_songs_artist">Artist</label>
+        <input type="text" class="form-control" id="field_songs_artist" placeholder="Artist goes here" disabled autocomplete="false">
+    </div>
+    <div class="d-flex">
+        <div class="progress w-100 mt-2 mb-2" id="progress-bar-container" style="visibility: hidden">
+            <div id="file_upload_progress_bar" class="progress-bar" role="progressbar" style="width: 0" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+        
+    </div>
+    <div class="d-flex justify-content-center">
+        
+        <button class="btn btn-dark" id="btnUploadAudioFile">
+            GO!
+        </button>
+    </div>
 </div>
-<div class="d-flex justify-content-center">
-    
-    <button class="btn btn-dark" id="btnUploadAudioFile">
-        GO!
-    </button>
-</div>
+<div class="col-lg-3 col-md-2"></div>
+
+
 <script src="https://www.gstatic.com/firebasejs/7.23.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/7.23.0/firebase-storage.js"></script>
 @if (Model.Environment.IsDevelopment())

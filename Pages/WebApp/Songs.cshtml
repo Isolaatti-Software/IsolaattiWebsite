@@ -7,116 +7,121 @@
     ViewData["Title"] = "Collection";
 }
 <script>document.querySelector("#songs-link").classList.add("custom-active-nav-link")</script>
-<h1>Your songs</h1>
-
-@if (Model.SongsBeingProcessedList.Any())
-{
-    <hr>
-    <h2>Processing now</h2>
-    <table class="table table-responsive-sm table-borderless bg-dark text-white">
-        <thead>
-        <tr>
-            <th scope="col">Name</th>
-            <th scope="col">Artist</th>
-            <th></th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach (var song in Model.SongsBeingProcessedList)
-        {
-            <tr>
-                <td>
-                    @song.OriginalFileName
-                </td>
-                <td>@song.Artist</td>
-                <td>
-                    <div class="spinner-border" role="status">
-                        <span class="sr-only">Processing...</span>
-                    </div>
-                </td>
-            </tr>
-
-        }
-        </tbody>
-    </table>
-    <hr>
-}
-@if (Model.SongsList.Count().Equals(0))
-{
-    <div class="alert alert-info"><h2>You don't have any song</h2></div>
-}
-else
-{
-    if (Model.SongsBeingProcessedList.Any())
+<div class="col-lg-3 col-md-2"></div>
+<div class="col-lg-6 col-md-8">
+    <h1>Your songs</h1>
+    
+    @if (Model.SongsBeingProcessedList.Any())
     {
-        <h2>Available songs</h2>
-    }
-    <table class="table table-responsive-sm table-borderless bg-dark text-white">
-        <thead class="thead_dark">
-        <tr>
-            <th scope="col">Name</th>
-            <th scope="col">Artist</th>
-            <th></th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach (var song in Model.SongsList)
-        {
-            <tr id="songid_@song.Id">
-                <td class="song-name">
-                    <a asp-page="Play" asp-route-id="@song.Id">
-                        @song.OriginalFileName
-                    </a>
-                </td>
-                <td class="song-artist">@song.Artist</td>
-                <td class="song-actions">
-                    <div class="btn-group-sm btn-group">
-                        <a href="#" class="btn btn-light"><i class="fas fa-share-alt"></i></a>
-                        <a href="javascript:deleteSong(@song.Id);" class="btn btn-danger"><i class="fas fa-trash-alt"></i></a>
-                        <button type="button" class="btn btn-primary modify-info-song" data-toggle="modal" data-target="#modifySongInfoModal" 
-                                data-name="@song.OriginalFileName" data-artist="@song.Artist" data-id="@song.Id">
-                            <i class="fas fa-pencil-alt"></i>
-                        </button>
-                        
-                    </div>
-                    
-                </td>
+        <hr>
+        <h2>Processing now</h2>
+        <table class="table table-responsive-sm table-borderless bg-dark text-white">
+            <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Artist</th>
+                <th></th>
             </tr>
-
+            </thead>
+            <tbody>
+            @foreach (var song in Model.SongsBeingProcessedList)
+            {
+                <tr>
+                    <td>
+                        @song.OriginalFileName
+                    </td>
+                    <td>@song.Artist</td>
+                    <td>
+                        <div class="spinner-border" role="status">
+                            <span class="sr-only">Processing...</span>
+                        </div>
+                    </td>
+                </tr>
+    
+            }
+            </tbody>
+        </table>
+        <hr>
+    }
+    @if (Model.SongsList.Count().Equals(0))
+    {
+        <div class="alert alert-info"><h2>You don't have any song</h2></div>
+    }
+    else
+    {
+        if (Model.SongsBeingProcessedList.Any())
+        {
+            <h2>Available songs</h2>
         }
-        </tbody>
-    </table>
-}
-
-<div class="modal fade" id="modifySongInfoModal" tabindex="-1" aria-labelledby="modifying information of song" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content bg-dark text-white">
-            <div class="modal-header">
-                <h5 class="modal-title">Edit song information</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form>
-                    <input type="hidden" id="modal-song-id">
-                    <div class="form-group">
-                        <label for="song-name" class="col-form-label">Name:</label>
-                        <input type="text" class="form-control" id="song-name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="song-artist" class="col-form-label">Artist:</label>
-                        <input type="text" class="form-control" id="song-artist" required>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="modal-button-modify">Modify</button>
+        <table class="table table-responsive-sm table-borderless bg-dark text-white">
+            <thead class="thead_dark">
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Artist</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var song in Model.SongsList)
+            {
+                <tr id="songid_@song.Id">
+                    <td class="song-name">
+                        <a asp-page="Play" asp-route-id="@song.Id">
+                            @song.OriginalFileName
+                        </a>
+                    </td>
+                    <td class="song-artist">@song.Artist</td>
+                    <td class="song-actions">
+                        <div class="btn-group-sm btn-group">
+                            <a href="#" class="btn btn-light"><i class="fas fa-share-alt"></i></a>
+                            <a href="javascript:deleteSong(@song.Id);" class="btn btn-danger"><i class="fas fa-trash-alt"></i></a>
+                            <button type="button" class="btn btn-primary modify-info-song" data-toggle="modal" data-target="#modifySongInfoModal" 
+                                    data-name="@song.OriginalFileName" data-artist="@song.Artist" data-id="@song.Id">
+                                <i class="fas fa-pencil-alt"></i>
+                            </button>
+                            
+                        </div>
+                        
+                    </td>
+                </tr>
+    
+            }
+            </tbody>
+        </table>
+    }
+    
+    <div class="modal fade" id="modifySongInfoModal" tabindex="-1" aria-labelledby="modifying information of song" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark text-white">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit song information</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <input type="hidden" id="modal-song-id">
+                        <div class="form-group">
+                            <label for="song-name" class="col-form-label">Name:</label>
+                            <input type="text" class="form-control" id="song-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="song-artist" class="col-form-label">Artist:</label>
+                            <input type="text" class="form-control" id="song-artist" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="modal-button-modify">Modify</button>
+                </div>
             </div>
         </div>
     </div>
 </div>
+<div class="col-lg-3 col-md-2"></div>
+
 
 <script src="https://www.gstatic.com/firebasejs/7.23.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/7.23.0/firebase-storage.js"></script>

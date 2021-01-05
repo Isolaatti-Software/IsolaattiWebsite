@@ -5,29 +5,33 @@
     Layout = "Shared/_LayoutWebApp";
     ViewData["Title"] = "Settings";
 }
-<h1>Settings</h1>
-<h3 class="mt-1">Notifications</h3>
-<div class="d-flex flex-column mt-2">
-    <div class="custom-control custom-switch mb-2">
-        <input type="checkbox" class="custom-control-input" id="customSwitch1">
-        <label class="custom-control-label" for="customSwitch1">Send notifications</label>
-    </div>
-    <div class="custom-control custom-switch mb-2">
-        <input type="checkbox" class="custom-control-input" id="customSwitch2">
-        <label class="custom-control-label" for="customSwitch2">Notify when server starts to process your song</label>
-    </div>
-    <div class="custom-control custom-switch mb-2">
-        <input type="checkbox" class="custom-control-input" id="customSwitch3">
-        <label class="custom-control-label" for="customSwitch3">Notify when your song is ready</label>
-    </div>
-    
+<div class="col-lg-3 col-md-2"></div>
+<div class="col-lg-6 col-md-8">
+   <h1>Settings</h1>
+   <h3 class="mt-1">Notifications</h3>
+   <div class="d-flex flex-column mt-2">
+       <div class="custom-control custom-switch mb-2">
+           <input type="checkbox" class="custom-control-input" id="customSwitch1">
+           <label class="custom-control-label" for="customSwitch1">Send notifications</label>
+       </div>
+       <div class="custom-control custom-switch mb-2">
+           <input type="checkbox" class="custom-control-input" id="customSwitch2">
+           <label class="custom-control-label" for="customSwitch2">Notify when server starts to process your song</label>
+       </div>
+       <div class="custom-control custom-switch mb-2">
+           <input type="checkbox" class="custom-control-input" id="customSwitch3">
+           <label class="custom-control-label" for="customSwitch3">Notify when your song is ready</label>
+       </div>
+       
+   </div>
+   <h3 class="mt-1">Your password</h3>
+   <p><a asp-page="Profile" asp-route-open="password">Go to profile to change password</a></p>
+   <h3 class="mt-1">Your songs</h3>
+   <p>You have N of 10 spaces available</p>
+   <p><a asp-page="Songs">Go to collection</a></p>
+   <p><a href="#">Delete all your songs</a></p>
+   <h3 class="mt-1">Your shares</h3>
+   <p><a asp-page="Profile" asp-route-open="links">Go to your shares</a></p>
+    <p><a href="#">Delete all your shares</a></p>
 </div>
-<h3 class="mt-1">Your password</h3>
-<p><a asp-page="Profile" asp-route-open="password">Go to profile to change password</a></p>
-<h3 class="mt-1">Your songs</h3>
-<p>You have N of 10 spaces available</p>
-<p><a asp-page="Songs">Go to collection</a></p>
-<p><a href="#">Delete all your songs</a></p>
-<h3 class="mt-1">Your shares</h3>
-<p><a asp-page="Profile" asp-route-open="links">Go to your shares</a></p>
-<p><a href="#">Delete all your shares</a></p>
+<div class="col-lg-3 col-md-2"></div>
