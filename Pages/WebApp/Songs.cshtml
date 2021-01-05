@@ -6,6 +6,7 @@
     Layout = "Shared/_LayoutWebApp";
     ViewData["Title"] = "Collection";
 }
+<script>document.querySelector("#songs-link").classList.add("custom-active-nav-link")</script>
 <h1>Your songs</h1>
 
 @if (Model.SongsBeingProcessedList.Any())
