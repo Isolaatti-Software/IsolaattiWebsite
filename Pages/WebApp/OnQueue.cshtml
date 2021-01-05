@@ -37,8 +37,8 @@
             <tbody>
             @foreach (var element in Model.SongsOnQueue)
             {
-                <tr>
-                    <td><a href="#"><i class="fas fa-trash-alt"></i></a> </td>
+                <tr id="elementid_@element.Id">
+                    <td><a href="javascript: deleteElementFromQueue(@element.Id)"><i class="fas fa-trash-alt"></i></a> </td>
                     <td>@element.SongName</td>
                     <td>@element.SongArtist</td>
                     <td><a href="@element.AudioSourceUrl" target="_blank"><i class="fas fa-external-link-square-alt"></i></a></td>
@@ -49,3 +49,4 @@
     }
 </div>
 <div class="col-lg-3 col-md-2"></div>
+<script src="~/js/onqueue.js"></script>
