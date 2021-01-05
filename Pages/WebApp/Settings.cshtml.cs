@@ -54,6 +54,8 @@ namespace isolaatti_API.Pages.WebApp
                     ViewData["notify_when_starts"] = user.NotifyWhenProcessStarted;
                     ViewData["notify_when_finish"] = user.NotifyWhenProcessFinishes;
 
+                    ViewData["number_of_songs"] = _db.Songs.Count(song => song.OwnerId.Equals(user.Id));
+
                     return Page();
                 }
             }
