@@ -10,7 +10,6 @@
 <div class="col-lg-3 col-md-2"></div>
 <div class="col-lg-6 col-md-8">
     <h1>Your songs</h1>
-    
     @if (Model.SongsBeingProcessedList.Any())
     {
         <hr>
@@ -37,7 +36,6 @@
                         </div>
                     </td>
                 </tr>
-    
             }
             </tbody>
         </table>
@@ -79,17 +77,13 @@
                                     data-name="@song.OriginalFileName" data-artist="@song.Artist" data-id="@song.Id">
                                 <i class="fas fa-pencil-alt"></i>
                             </button>
-                            
                         </div>
-                        
                     </td>
                 </tr>
-    
             }
             </tbody>
         </table>
     }
-    
     <div class="modal fade" id="modifySongInfoModal" tabindex="-1" aria-labelledby="modifying information of song" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content bg-dark text-white">
@@ -121,8 +115,6 @@
     </div>
 </div>
 <div class="col-lg-3 col-md-2"></div>
-
-
 <script src="https://www.gstatic.com/firebasejs/7.23.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/7.23.0/firebase-storage.js"></script>
 @if (Model.Environment.IsDevelopment())
@@ -154,13 +146,11 @@ else
 <script>
 document.addEventListener("DOMContentLoaded", function () {
     var modifyInfoModal = $('#modifySongInfoModal');
-    
     modifyInfoModal.on('show.bs.modal', function (event) {
       var button = $(event.relatedTarget) 
       var songName = button.data('name');
       var songArtist = button.data('artist');
       var songId = button.data('id');
-      
       var modal = $(this);
       modal.find('.modal-title').text('Modify "' + button.data('name') + '" information');
       modal.find('.modal-body #song-name').val(songName);
@@ -169,7 +159,6 @@ document.addEventListener("DOMContentLoaded", function () {
       
     });
     modifyInfoModal.find(".modal-footer #modal-button-modify").on('click', function (event){
-      
         var newName = modifyInfoModal.find('.modal-body #song-name').val();
         var newArtist = modifyInfoModal.find('.modal-body #song-artist').val();
         var songId = modifyInfoModal.find(".modal-body #modal-song-id").val();
@@ -197,5 +186,4 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 </script>
-
 <script src="~/js/collection.js"></script>
