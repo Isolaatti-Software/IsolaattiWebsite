@@ -8,7 +8,7 @@
 */
 
 function deleteSong(songId) {
-    if(confirm("Do you really want to delete that song?")){
+    if(confirm("Do you really want to delete that song?")) {
         let formData = new FormData();
         formData.append("songId", songId);
         formData.append("userId", userData.id);
@@ -34,12 +34,12 @@ function deleteFiles(uid) {
     
     // for now, as there are only the 4 base tracks, they are deleted one by one
     storageRef.child(`results/${userData.id}/${uid}/bass.mp3`).delete()
-        .then(function(){
+        .then(function() {
             console.log("bass deleted from bucket");
         }).catch();
     
     storageRef.child(`results/${userData.id}/${uid}/drums.mp3`).delete()
-        .then(function(){
+        .then(function() {
             console.log("drums deleted from bucket");
         }).catch();
     
@@ -49,7 +49,7 @@ function deleteFiles(uid) {
         }).catch();
     
     storageRef.child(`results/${userData.id}/${uid}/other.mp3`).delete()
-        .then(function(){
+        .then(function() {
             console.log("other was deleted from bucket");
         }).catch();
 }

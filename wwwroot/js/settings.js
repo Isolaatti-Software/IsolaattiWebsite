@@ -7,7 +7,7 @@
 * This file should be placed in the Pages/WebApp/Settings.cshtml
 */
 
-(function(){
+(function() {
     let notifyByEmailSwitch = document.querySelector("#notifyByEmail");
     let notifyWhenProcessStartsSwitch = document.querySelector("#notifyWhenProcessStarts");
     let notifyWhenProcessFinishesSwitch = document.querySelector("#notifyWhenProcessFinishes");

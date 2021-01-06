@@ -15,7 +15,7 @@ newPasswordConfField.addEventListener("keyup", function() {
     if(newPasswordConfField.value !== newPasswordField.value) {
         newPasswordConfField.classList.add("is-invalid");
     } else {
-        if(newPasswordConfField.classList.contains("is-invalid")){
+        if(newPasswordConfField.classList.contains("is-invalid")) {
             newPasswordConfField.classList.remove("is-invalid");
         }
     }

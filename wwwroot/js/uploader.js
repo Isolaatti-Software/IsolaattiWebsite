@@ -23,7 +23,7 @@ let fieldArtistName = document.getElementById("field_songs_artist");
 let progressBarContainer = document.getElementById("progress-bar-container");
 let progressBar = document.getElementById("file_upload_progress_bar");
 
-fileSource.addEventListener("change", function(){
+fileSource.addEventListener("change", function() {
     fieldSongName.disabled = false;
     fieldArtistName.disabled = false;
     fieldSongName.value = fileSource.files[0].name;
@@ -31,10 +31,10 @@ fileSource.addEventListener("change", function(){
     fieldArtistName.value = "Unknown (change me)"
 });
 
-buttonUploadFile.addEventListener("click",function (){
+buttonUploadFile.addEventListener("click",function () {
     if(fieldSongName.value === "" || fieldArtistName.value === "")
         alert("Field cannot be empty");
-    else{
+    else {
         buttonUploadFile.disabled = true;
         fileSource.disabled = true;
         fieldArtistName.disabled = true;
@@ -49,12 +49,12 @@ buttonUploadFile.addEventListener("click",function (){
         let songName = fieldSongName.value;
         let songArtist = fieldArtistName.value;
 
-        uploadTask.on("state_changed",function(snapshot){
+        uploadTask.on("state_changed",function(snapshot) {
             //updates progress bar
             progressBar.style.width = `${(snapshot.bytesTransferred / snapshot.totalBytes) * 100}%`;
-        }, function(error){
+        }, function(error) {
             alert(error)
-        }, function(){
+        }, function() {
             buttonUploadFile.disabled = false;
             fileSource.disabled = false;
             fieldArtistName.disabled = false;
@@ -67,7 +67,7 @@ buttonUploadFile.addEventListener("click",function (){
     }
 });
 
-function registerFile(fileUrl, songName, songArtist){
+function registerFile(fileUrl, songName, songArtist) {
     let formData = new FormData();
     formData.append("userId",userData.id);
     formData.append("songName", songName);
@@ -79,8 +79,8 @@ function registerFile(fileUrl, songName, songArtist){
     let createRecordRequest = new XMLHttpRequest();
     createRecordRequest.open("POST", "/AddSongToQueue");
     createRecordRequest.send(formData);
-    createRecordRequest.onreadystatechange = function (){
-        if(createRecordRequest.readyState === XMLHttpRequest.DONE){
+    createRecordRequest.onreadystatechange = function () {
+        if(createRecordRequest.readyState === XMLHttpRequest.DONE) {
             alert("Song added to queue");
             window.location = "/WebApp/OnQueue";
         }

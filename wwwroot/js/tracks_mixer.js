@@ -72,7 +72,7 @@ class Mix {
     }
     
     stop() {
-        this.tracks.forEach(function(value){
+        this.tracks.forEach(function(value) {
             value.stop();
         });
         this.playing = false;
@@ -84,6 +84,7 @@ class Mix {
            value.setGain(tracksSliders.item(index).value * masterGain); 
         });
     }
+    
     getGain() {
         return this.gainValue;
     }
@@ -223,7 +224,7 @@ tracksSliders.forEach(function (value,index) {
     });
 });
 
-panningSliders.forEach(function (value,index){
+panningSliders.forEach(function (value,index) {
    value.addEventListener("input", function() {
       tracks[index].setPanning(value.value);
    });
