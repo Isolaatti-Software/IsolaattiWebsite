@@ -1,4 +1,9 @@
-/* Erik Cavazos, 2020*/
+/* 
+   Erik Cavazos, 2021 
+   erik10cavazos@gmail.com
+   Styles for all /WebApp pages (used at layout)
+*/
+
 body {
     background-color: rgb(55,55,75);
     color:white;
@@ -16,23 +21,21 @@ body {
 .custom-active-nav-link {
     background-color: rgb(55,55,75);
 }
-
-#isolaatti_brand, #isolaatti_brand:hover{
+#isolaatti_brand, #isolaatti_brand:hover {
     background-color: rgb(98, 0, 238);!important;
 }
-@media screen and (max-width: 576px){
-    #isolaatti_brand{
+@media screen and (max-width: 576px) {
+    #isolaatti_brand {
         width: 100%;
         text-align: center;
     }
-    .navbar-item-text{
+    .navbar-item-text {
         display: none;
     }
 }
 
-/* Player styles*/
-input[type=range][orient=vertical]
-{
+/* Rule for vertical slider */
+input[type=range][orient=vertical] {
     writing-mode: bt-lr; /* IE */
     -webkit-appearance: slider-vertical; /* WebKit */
     -moz-appearance: scale-vertical;
@@ -54,13 +57,13 @@ input[type=range][orient=vertical]
     padding: 10px;
     color:white;
 }
-#tracks-container{
+#tracks-container {
     background-color: rgb(45,45,45);
     color:white;
     border-radius: 0 0 15px 15px;
     padding: 10px;
 }
-#tracks-deposit{
+#tracks-deposit {
     overflow: auto;
 }
 #base-tracks {
