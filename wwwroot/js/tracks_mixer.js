@@ -15,10 +15,8 @@ class Track {
         this.panningEffect = this.trackContext.createStereoPanner();
         this.track
             .connect(this.gainEffect)
-            .connect(this.panningEffect)
+            .connect(this.panningEffect)            // add here effects (before connecting to destination)
             .connect(this.trackContext.destination);
-        
-        
     }
 
     play() {
@@ -115,10 +113,9 @@ const vocalsSource = document.getElementById("media_vocals");
 const otherSource = document.getElementById("media_other");
 
 const allTracksDownloadedMonitoring = new Worker('/js/monitoring_tracks_availability.js');
-allTracksDownloadedMonitoring.postMessage(
-    {
+allTracksDownloadedMonitoring.postMessage({
         numberOfTracks:4
-    });
+});
 
 bassSource.addEventListener("canplaythrough", function() {
     allTracksDownloadedMonitoring.postMessage("+1")
@@ -135,7 +132,6 @@ vocalsSource.addEventListener("canplaythrough", function() {
 otherSource.addEventListener("canplaythrough", function() {
    allTracksDownloadedMonitoring.postMessage("+1"); 
 });
-
 
 ////////////////////////////////////////////////////////////////////////
 // Creates tracks (for now there are only 4 tracks, so they are hardcoded)
@@ -162,7 +158,6 @@ mix.setOnEnded(function(){
 let playPauseButton = document.getElementById("play_pause_button");
 let stopButton = document.getElementById("stop_button");
 let resetGainsButton = document.getElementById("reset_gains");
-
 
 // references to sliders in DOM
 let masterGain = document.getElementById("mix_gain");
@@ -200,12 +195,15 @@ resetGainsButton.addEventListener("click", function() {
         item.value = 1.0;
         item.title = (parseFloat(item.value) * 100) + "%";
     });
+    
     tracks.forEach(function(item) {
         item.setGain(mix.getGain());
     });
+    
     panningSliders.forEach(function(item){
         item.value = 0.0;
     });
+    
     tracks.forEach(function(item){
         item.setPanning(0.0);
     });

@@ -52,5 +52,4 @@ function deleteFiles(uid) {
         .then(function(){
             console.log("other was deleted from bucket");
         }).catch();
-    
 }

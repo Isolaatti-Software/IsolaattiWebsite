@@ -85,5 +85,4 @@ function registerFile(fileUrl, songName, songArtist){
             window.location = "/WebApp/OnQueue";
         }
     }
-        
 }
