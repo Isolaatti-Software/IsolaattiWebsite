@@ -24,17 +24,6 @@ namespace isolaatti_API.Controllers
         [HttpPost]
         public ActionResult<UserData> Index([FromForm] string email, [FromForm] string password)
         {
-            /*
-            if(!dbContext.Users.Any(user => user.Email.Equals(email)))
-            {
-                return new UserData(false);
-            }
-            User userToEnter = dbContext.Users.Single(user => user.Email.Equals(email));
-            if(userToEnter.Password == password)
-            {
-                return new UserData(userToEnter.Id, dbContext);
-            }
-            return new UserData(true); //bad password (see UserData class for more info)*/
             Accounts accounts = new Accounts(dbContext);
             return accounts.LogIn(email, password);
         }

@@ -51,8 +51,7 @@ namespace isolaatti_API.Controllers
                         );
                     emailNotificationSender.Send();
                 }
-
-
+                
                 if (user.NotifyWhenProcessFinishes)
                 {
                     // sends a notification to the user

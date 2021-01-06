@@ -36,7 +36,6 @@ namespace isolaatti_API.Controllers
                 };
                 return profile;
             }
-
             return null;
         }
     }

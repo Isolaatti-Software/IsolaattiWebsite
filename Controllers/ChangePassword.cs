@@ -29,9 +29,7 @@ namespace isolaatti_API.Controllers
                 Db.SaveChanges();
                 return true;
             }
-
             return false;
         }
-        
     }
 }

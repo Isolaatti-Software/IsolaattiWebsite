@@ -45,7 +45,6 @@ namespace isolaatti_API.Controllers
             {
                 return StatusCode(500);
             }
-        
         }
     }
 }

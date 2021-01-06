@@ -39,7 +39,6 @@ namespace isolaatti_API.Classes
             {
                 badPassword = false;
             }
-            
         }
     }
 }

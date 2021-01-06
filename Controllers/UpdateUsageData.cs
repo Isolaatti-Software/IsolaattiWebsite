@@ -62,11 +62,9 @@ namespace isolaatti_API.Controllers
                     case "other": userUsageRecord.SoloOnOther += 1;
                         break;
                 }
-
                 db.UsageData.Update(userUsageRecord);
                 db.SaveChanges();
             }
         }
-        
     }
 }

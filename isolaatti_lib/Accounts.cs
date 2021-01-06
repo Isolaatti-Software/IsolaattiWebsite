@@ -136,7 +136,6 @@ namespace isolaatti_API.isolaatti_lib
             {
                 return false;
             }
-            
             return true;
         }
 
