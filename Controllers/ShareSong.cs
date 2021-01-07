@@ -30,6 +30,7 @@ namespace isolaatti_API.Controllers
             {
                 SongShares share = new SongShares()
                 {
+                    userId = userId,
                     SharedSongId = songId,
                     uid = Guid.NewGuid().ToString()
                 };
