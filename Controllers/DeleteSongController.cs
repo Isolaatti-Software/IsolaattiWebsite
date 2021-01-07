@@ -1,6 +1,6 @@
 ﻿/*
 * Isolaatti project
-* Erik Cavazos, 2020
+* Erik Cavazos, 2021
 * This program is not allowed to be copied or reused without explicit permission.
 * erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
 */
@@ -8,8 +8,6 @@
 using System;
 using Microsoft.AspNetCore.Mvc;
 using isolaatti_API.Models;
-using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace isolaatti_API.Controllers
 {
@@ -43,7 +41,20 @@ namespace isolaatti_API.Controllers
             {
                 return StatusCode(404);
             }
-            return StatusCode(403);
+            return StatusCode(401);
+        }
+        
+        [HttpPost]
+        [Route("All")]
+        public IActionResult DeleteAll([FromForm] int userId, [FromForm] string password)
+        {
+            var user = db.Users.Find(userId);
+            if (user == null) return NotFound();
+            if (!user.Password.Equals(password)) return Unauthorized();
+            var allSongs = db.Songs;
+            db.Songs.RemoveRange(allSongs);
+            db.SaveChanges();
+            return Ok();
         }
     }
 }
