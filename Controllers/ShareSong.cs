@@ -22,7 +22,7 @@ namespace isolaatti_API.Controllers
             db = _dbContextApp;
         }
         [HttpPost]
-        public string Index([FromForm] int userId, [FromForm] string passwd, [FromForm] int songId)
+        public IActionResult Index([FromForm] int userId, [FromForm] string passwd, [FromForm] int songId)
         {
             User userWhoShares = db.Users.Find(userId);
             
@@ -36,17 +36,17 @@ namespace isolaatti_API.Controllers
                 // this means that the same song had already been shared
                 if (db.SharedSongs.Any(shares => shares.SharedSongId.Equals(songId)))
                 {
-                    return db.SharedSongs.Single(sh => sh.SharedSongId.Equals(songId)).uid;
+                    return Ok(db.SharedSongs.Single(sh => sh.SharedSongId.Equals(songId)).uid);
                 }
                 
                 // returns uid, client will create the link using this uid
                 db.SharedSongs.Add(share);
                 db.SaveChanges();
-                return share.uid;
+                return Ok(share.uid);
             }
 
             // in case the password is incorrect
-            return "err_pwd";
+            return Unauthorized("err_pwd");
         }
     }
 }
