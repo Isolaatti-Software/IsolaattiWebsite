@@ -20,3 +20,29 @@ newPasswordConfField.addEventListener("keyup", function() {
         }
     }
 });
+
+function getUserSharedSongs() {
+    let formData = new FormData();
+    formData.append("userId", userData.id);
+    
+    let request = new XMLHttpRequest();
+    request.open("POST", "/GetUserSharedSongs");
+    request.send(formData);
+    // response object from API should be an array of objects with following properties:
+    // ==> name : "The name of the song"
+    // => artist : "The name of the Artist"
+    // => uid : " "The-ui-of-the-song"
+    // => url : "https://host.example/publicAPI/Shared?uid={uidvalue}
+    request.onreadystatechange = function() {
+        if(request.readyState === XMLHttpRequest.DONE) {
+            JSON.parse(request.response)
+            .forEach(function(value, index) {
+                console.log(`Element ${index}:`);
+                console.log(`Name: ${value.name}`);
+                console.log(`Artist: ${value.artist}`);
+                console.log(`UID: ${value.uid}`);
+                console.log(`URL: ${value.url}`);
+            })
+        }
+    }
+}
