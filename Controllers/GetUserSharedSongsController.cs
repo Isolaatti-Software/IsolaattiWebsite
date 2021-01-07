@@ -27,7 +27,7 @@ namespace isolaatti_API.Controllers
                     Name = song.OriginalFileName,
                     Artist = song.Artist,
                     Uid = share.uid,
-                    Url = $"https://preview.isolaatti.com/publicAPI/Shared?uid={share.uid}"
+                    Url = $"https://{Request.HttpContext.Request.Host.Value}/publicAPI/Shared?uid={share.uid}"
                 };
 
             return Ok(shares);
