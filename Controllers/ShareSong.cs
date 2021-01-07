@@ -28,22 +28,23 @@ namespace isolaatti_API.Controllers
             
             if (userWhoShares.Password == passwd)
             {
+                // this means that the same song had already been shared
+                if (db.SharedSongs.Any(shares => shares.SharedSongId.Equals(songId)))
+                {
+                    var existingShareUid = db.SharedSongs.Single(sh => sh.SharedSongId.Equals(songId)).uid;
+                    return Ok($"https://{Request.HttpContext.Request.Host.Value}/publicAPI/Shared?uid={existingShareUid}");
+                }
                 SongShares share = new SongShares()
                 {
                     userId = userId,
                     SharedSongId = songId,
                     uid = Guid.NewGuid().ToString()
                 };
-                // this means that the same song had already been shared
-                if (db.SharedSongs.Any(shares => shares.SharedSongId.Equals(songId)))
-                {
-                    return Ok(db.SharedSongs.Single(sh => sh.SharedSongId.Equals(songId)).uid);
-                }
                 
                 // returns uid, client will create the link using this uid
                 db.SharedSongs.Add(share);
                 db.SaveChanges();
-                return Ok(share.uid);
+                return Ok($"https://{Request.HttpContext.Request.Host.Value}/publicAPI/Shared?uid={share.uid}");
             }
 
             // in case the password is incorrect
