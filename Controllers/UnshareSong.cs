@@ -20,12 +20,12 @@ namespace isolaatti_API.Controllers
             db = _db;
         }
         [HttpPost]
-        public IActionResult Index([FromForm] int userId, [FromForm] string pwd, [FromForm] int songId)
+        public IActionResult Index([FromForm] int userId, [FromForm] string pwd, [FromForm] string uid)
         {
             var user = db.Users.Find(userId);
             if (user == null) return NotFound("Unknown user");
             if (!user.Password.Equals(pwd)) return Unauthorized("Wrong password");
-            var elementToUnshare = db.SharedSongs.Single(s => s.SharedSongId.Equals(songId));
+            var elementToUnshare = db.SharedSongs.Single(s => s.uid.Equals(uid));
             if (!elementToUnshare.userId.Equals(user.Id)) return Unauthorized("This share is not yours!");
             db.SharedSongs.Remove(elementToUnshare);
             db.SaveChanges();
