@@ -40,3 +40,39 @@ function setPreference(what, value) {
         }
     }
 }
+
+function deleteAllSongs() {
+    if(confirm("Are you sure you want to delete all your songs?")) {
+        let formData = new FormData();
+        formData.append("userId", userData.id);
+        formData.append("password", userData.password);
+
+        let request = new XMLHttpRequest();
+        request.open("POST", "/DeleteSong/All");
+        request.send(formData);
+        request.onreadystatechange = function() {
+            if(request.readyState === XMLHttpRequest.DONE) {
+                alert("All your song were deleted!");
+                window.location.reload();
+            }
+        }
+    }
+}
+
+function deleteAllShares() {
+    if(confirm("Are you sure you want to delete all your shares?")) {
+        let formData = new FormData();
+        formData.append("userId", userData.id);
+        formData.append("password", userData.password);
+        
+        let request = new XMLHttpRequest();
+        request.open("POST", "/UnshareSong/All");
+        request.send(formData);
+        request.onreadystatechange = function() {
+            if(request.readyState === XMLHttpRequest.DONE) {
+                alert("All your shares were deleted!");
+                window.location.reload();
+            }
+        }
+    }
+}
