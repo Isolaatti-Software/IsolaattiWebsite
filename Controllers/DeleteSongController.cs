@@ -6,6 +6,7 @@
 */
 
 using System;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using isolaatti_API.Models;
 
@@ -30,7 +31,7 @@ namespace isolaatti_API.Controllers
                 if (user.Password.Equals(password))
                 {
                     Song songToDelete = db.Songs.Find(songId);
-                
+                    if (!songToDelete.OwnerId.Equals(userId)) return Unauthorized("Song is not yours");
                     // deletes database record of song
                     db.Songs.Remove(songToDelete);
                     db.SaveChanges();
@@ -50,8 +51,8 @@ namespace isolaatti_API.Controllers
         {
             var user = db.Users.Find(userId);
             if (user == null) return NotFound();
-            if (!user.Password.Equals(password)) return Unauthorized();
-            var allSongs = db.Songs;
+            if (!user.Password.Equals(password)) return Unauthorized("Wrong credential");
+            var allSongs = db.Songs.Where(song => song.OwnerId.Equals(user.Id));
             db.Songs.RemoveRange(allSongs);
             db.SaveChanges();
             return Ok();
