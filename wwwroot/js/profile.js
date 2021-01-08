@@ -26,3 +26,20 @@ function copyLinkToClipboard(button,link){
        button.innerHTML = '<i class="fas fa-check"></i>'; 
     });
 }
+
+function deleteShare(uid) {
+    let formData = new FormData();
+    formData.append("userId", userData.id);
+    formData.append("pwd", userData.password);
+    formData.append("uid", uid);
+    
+    let request = new XMLHttpRequest();
+    request.open("POST", "/UnshareSong");
+    request.send(formData);
+    request.onreadystatechange = function() {
+        if(request.readyState === XMLHttpRequest.DONE) {
+            alert("Share deleted");
+            window.location.reload();
+        }
+    }
+}
