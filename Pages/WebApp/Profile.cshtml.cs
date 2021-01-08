@@ -6,11 +6,15 @@
 */
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using isolaatti_API.Classes;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Org.BouncyCastle.Asn1.X509;
 
 namespace isolaatti_API.Pages.WebApp
 {
@@ -19,6 +23,7 @@ namespace isolaatti_API.Pages.WebApp
         private readonly DbContextApp _db;
 
         public bool PasswordIsWrong = false;
+        public List<ShareLink> Shares = new List<ShareLink>();
 
         public Profile(DbContextApp dbContextApp)
         {
@@ -53,7 +58,22 @@ namespace isolaatti_API.Pages.WebApp
                     ViewData["profile_open"] = open;
 
                     PasswordIsWrong = currentPasswordIsWrong;
-                    
+                    var shares = 
+                        from song in _db.Songs
+                        join share in _db.SharedSongs on song.OwnerId equals share.userId
+                        where share.userId == user.Id
+                        select new 
+                        {
+                            Name = song.OriginalFileName,
+                            Artist = song.Artist,
+                            Uid = share.uid,
+                            Url = $"https://{Request.HttpContext.Request.Host.Value}/publicAPI/Shared?uid={share.uid}"
+                        };
+
+                    foreach (var share in shares)
+                    {
+                        this.Shares.Add(CastAnonymousObjectIntoShareLink(share));
+                    }
 
                     return Page();
                 }
@@ -96,6 +116,24 @@ namespace isolaatti_API.Pages.WebApp
                 changedPassword = true,
                 username = _db.Users.Find(userId).Email
             });
+        }
+
+        private ShareLink CastAnonymousObjectIntoShareLink(Object queryObject)
+        {
+            // properties information
+            PropertyInfo propertyInfoName = queryObject.GetType().GetProperty("Name");
+            PropertyInfo propertyInfoArtist = queryObject.GetType().GetProperty("Artist");
+            PropertyInfo propertyInfoUid = queryObject.GetType().GetProperty("Uid");
+            PropertyInfo propertyInfoUrl = queryObject.GetType().GetProperty("Url");
+            
+            // get values from properties casting from property information
+            return new ShareLink()
+            {
+                Name = (String)(propertyInfoName.GetValue(queryObject,null)),
+                Artist = (String)(propertyInfoArtist.GetValue(queryObject,null)),
+                Uid = (String)(propertyInfoUid.GetValue(queryObject, null)),
+                Url = (String)(propertyInfoUrl.GetValue(queryObject, null))
+            };
         }
     }
 }

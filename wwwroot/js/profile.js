@@ -46,3 +46,9 @@ function getUserSharedSongs() {
         }
     }
 }
+
+function copyLinkToClipboard(button,link){
+    navigator.clipboard.writeText(link).then(function() {
+       button.innerHTML = '<i class="fas fa-check"></i>'; 
+    });
+}
