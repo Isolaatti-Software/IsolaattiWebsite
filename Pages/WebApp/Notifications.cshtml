@@ -1,0 +1,40 @@
+﻿@page
+@model isolaatti_API.Pages.WebApp.Notifications
+
+@{
+    Layout = "Shared/_LayoutWebApp";
+    ViewData["Title"] = "Notifications";
+}
+<div class="col-lg-3 col-md-2"></div>
+<div class="col-lg-6 col-md-8">
+    <h1>Notifications</h1>
+    <p>Notifications are sent by email, here you have all we've sent you. This page is not real-time update.</p>
+    @if (Model.UserNotifications.Any())
+    {
+        <div class="list-group">
+            @foreach (var notification in Model.UserNotifications)
+            {
+                // 1 -> Song is ready
+                // 2 -> Song is being processed
+                @if (notification.type.Equals(1))
+                {
+                    <a asp-page="Play" asp-route-id="@notification.SongId" class="list-group-item list-group-item-action bg-dark text-white">
+                        <h6>"@notification.SongName - @notification.ArtistName" is ready. Click this notification to open in.</h6>
+                    </a>
+                }
+                else if (notification.type.Equals(2))
+                {
+                    <div class="list-group-item bg-dark text-white">
+                        <h6>"@notification.SongName - @notification.ArtistName" is being processed.</h6>
+                    </div>
+                }
+                
+            }
+        </div>
+    }
+    else
+    {
+        <h2>You have no notifications</h2>
+    }
+</div>
+<div class="col-lg-3 col-md-2"></div>
