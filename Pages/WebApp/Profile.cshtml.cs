@@ -54,14 +54,15 @@ namespace isolaatti_API.Pages.WebApp
                     ViewData["name"] = user.Name;
                     ViewData["email"] = user.Email;
                     ViewData["userId"] = user.Id;
+                    ViewData["password"] = user.Password;
 
                     ViewData["profile_open"] = open;
 
                     PasswordIsWrong = currentPasswordIsWrong;
-                    var shares = 
-                        from song in _db.Songs
-                        join share in _db.SharedSongs on song.OwnerId equals share.userId
-                        where share.userId == user.Id
+                    var shares =
+                        from share in _db.SharedSongs
+                        join song in _db.Songs on share.userId equals song.OwnerId
+                        where share.SharedSongId == song.Id && share.userId == user.Id
                         select new 
                         {
                             Name = song.OriginalFileName,
