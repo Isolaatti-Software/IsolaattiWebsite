@@ -10,7 +10,7 @@
 }
 body {
     background-image: url("../res/imgs/simple_mixer.jpg");
-    background-size:cover;
+    background-size:auto;
     background-blend-mode:darken;
     background-color: rgb(20, 3, 43);
     color: white;
