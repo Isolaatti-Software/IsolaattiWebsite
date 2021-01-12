@@ -56,7 +56,8 @@ namespace isolaatti_API.isolaatti_lib
                     string drums = song.DrumsUrl;
                     string vocals = song.VoiceUrl;
                     string others = song.OtherUrl;
-                    htmlBody = string.Format(EmailTemplates.SongReady,songName,bass,drums,vocals,others);
+                    string projectUrl = $"https://preview.isolaatti.com/WebApp/Play?id={song.Id}";
+                    htmlBody = string.Format(EmailTemplates.SongReady,songName,bass,drums,vocals,others, projectUrl);
                     message.Subject = $"Your song: {songName} has been processed!";
                     message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
                     {
