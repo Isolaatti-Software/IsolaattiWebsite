@@ -9,8 +9,10 @@
 <div class="col-lg-6 col-md-8">
     <h1>Notifications</h1>
     <p>Notifications are sent by email, here you have all we've sent you. This page is not real-time update.</p>
+    
     @if (Model.UserNotifications.Any())
     {
+        <button type="button" class="btn btn-link" onclick="deleteNotifications();">Delete all notifications</button>
         <div class="list-group">
             @foreach (var notification in Model.UserNotifications)
             {
@@ -18,14 +20,23 @@
                 // 2 -> Song is being processed
                 @if (notification.type.Equals(1))
                 {
-                    <a asp-page="Play" asp-route-id="@notification.SongId" class="list-group-item list-group-item-action bg-dark text-white">
-                        <h6>"@notification.SongName - @notification.ArtistName" is ready. Click this notification to open in.</h6>
-                    </a>
+                    <div  class="list-group-item bg-dark text-white">
+                        <div class="d-flex flex-column">
+                            <h6>"@notification.SongName - @notification.ArtistName" is ready. Click this notification to open in.</h6>
+                            <div class="d-flex justify-content-between">
+                                <button type="button" class="btn btn-danger" onclick="deleteNotification(@notification.Id)">Delete</button>
+                                <a type="button" class="btn btn-success" asp-page="Play" asp-route-id="@notification.SongId">Play it</a>
+                            </div>
+                        </div>
+                    </div>
                 }
                 else if (notification.type.Equals(2))
                 {
                     <div class="list-group-item bg-dark text-white">
-                        <h6>"@notification.SongName - @notification.ArtistName" is being processed.</h6>
+                        <div class="d-flex flex-column">
+                            <h6>"@notification.SongName - @notification.ArtistName" is being processed.</h6>
+                            <p><button type="button" class="btn btn-danger" onclick="deleteNotification(@notification.Id)">Delete</button></p>
+                        </div>
                     </div>
                 }
                 
@@ -38,3 +49,4 @@
     }
 </div>
 <div class="col-lg-3 col-md-2"></div>
+<script src="~/js/notifications.js"></script>
