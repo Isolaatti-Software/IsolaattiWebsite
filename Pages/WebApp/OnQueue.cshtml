@@ -6,15 +6,15 @@
     ViewData["Title"] = "Songs on queue";
 }
 <script>document.querySelector("#onqueue-link").classList.add("custom-active-nav-link")</script>
+<div class="alert alert-info alert-dismissible fade show ml-auto mr-auto">
+    <strong>Disclaimer.</strong> Hey, this platform is under continuous development and is not ready for production yet. Some delay can be present.
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
 <div class="col-lg-3 col-md-2"></div>
 <div class="col-lg-6 col-md-8">
     <h1>Songs on queue</h1>
-    <div class="alert alert-info alert-dismissible fade show">
-        <strong>Disclaimer.</strong> Hey, this platform is under continuous development and is not ready for production yet. Some delay can be present.
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
     <p>Songs that are pending to be passed to the processing server.</p>
     <p>This page is not real time updated (only updated when the page is loaded or refreshed), if the song you attempt to delete from the queue is already being processed, the process will not be stopped.</p>
     @if (Model.EmptyQueue || Model.SongsOnQueue.Count().Equals(0))
