@@ -7,10 +7,10 @@
 }
 <div class="col-12">
     <!-- Base tracks -->
-    <audio src="@Model.song.BassUrl" id="media_bass" crossorigin="anonymous" preload="auto"></audio>
-    <audio src="@Model.song.DrumsUrl" id="media_drums" crossorigin="anonymous" preload="auto"></audio>
-    <audio src="@Model.song.VoiceUrl" id="media_vocals" crossorigin="anonymous" preload="auto"></audio>
-    <audio src="@Model.song.OtherUrl" id="media_other" crossorigin="anonymous" preload="auto"></audio>
+    <audio src="@Model.song.DrumsUrl" crossorigin="anonymous" preload="auto" class="track-audio-element" track-name="drums"></audio>
+    <audio src="@Model.song.BassUrl"  crossorigin="anonymous" preload="auto" class="track-audio-element" track-name="bass"></audio>
+    <audio src="@Model.song.VoiceUrl" crossorigin="anonymous" preload="auto" class="track-audio-element" track-name="vocals"></audio>
+    <audio src="@Model.song.OtherUrl" crossorigin="anonymous" preload="auto" class="track-audio-element" track-name="other"></audio>
     <h6 class="m-2" style="text-align: center">@Model.song.OriginalFileName - @Model.song.Artist</h6>
     <div id="player-top-actionbar" class="d-flex flex-column">
         <div class="d-flex">
@@ -43,7 +43,7 @@
             </div>
         </div>
         <div class="d-flex mt-2">
-            <input type="range" class="custom-range">
+            <input type="range" class="custom-range" id="seek-position-slider" min="0">
         </div>
     </div>
     <div id="tracks-container" class="d-flex flex-column mt-2">
@@ -184,10 +184,10 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
     </div>
 </div>
-<script src="~/js/tracks_mixer.js"></script>
+<script src="https://erik-everardo.github.io/isolaatti-js-web-audio-mixer/isolaattiaudiomixer.js" crossorigin="anonymous"></script>
+<script src="~/js/play.js"></script>
