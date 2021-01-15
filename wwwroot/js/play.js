@@ -9,15 +9,24 @@
 let mediaElements = document.querySelectorAll(".track-audio-element");
 let seekPositionSlider = document.querySelector("#seek-position-slider");
 let playButton = document.querySelector("#play_pause_button");
+let timeLabel = document.querySelector("#time-container");
+let stopButton = document.querySelector("#stop_button");
+let mainGainLabel = document.querySelector("#mix_gain_label");
+
 let isolaattiMixer = new IsolaattiAudioMixer(mediaElements, function(event){
     /* Handle here slider of current position */
     seekPositionSlider.value = event.target.currentTime;
+    timeLabel.innerHTML =
+        `${getClockFormatFromSeconds(event.target.currentTime)}/${getClockFormatFromSeconds(isolaattiMixer.getDuration())}`;
 });
+
+
 
 isolaattiMixer.prepareMix(function(){
     console.log("Mixer is ready!!");
     document.querySelector("#play_pause_button").disabled = false;
     defineEvents();
+    timeLabel.innerHTML = `--/${getClockFormatFromSeconds(isolaattiMixer.getDuration())}`;
 });
 
 isolaattiMixer.setOnMixEnded(function(event){
@@ -35,6 +44,12 @@ function defineEvents() {
             isolaattiMixer.playMix();
             playButton.innerHTML = '<i class="fas fa-pause"></i>';
         }
+    });
+    
+    stopButton.addEventListener("click", function() {
+       isolaattiMixer.pauseMix();
+       playButton.innerHTML = '<i class="fas fa-play"></i>';
+       isolaattiMixer.seekTo(0);
     });
     
     // hide top bar button
@@ -60,6 +75,7 @@ function defineEvents() {
     let mainGainSlider = document.querySelector("#mix_gain");
     mainGainSlider.addEventListener("input", function() {
         isolaattiMixer.setMainGainValue(mainGainSlider.value);
+        mainGainLabel.innerHTML = `${mainGainSlider.value*100}%`
     });
     
     // gains of every track
@@ -79,3 +95,12 @@ function defineEvents() {
     });
 }
 
+function getClockFormatFromSeconds(secs){
+    let truncatedSecs = Math.round(secs);
+    let minutes = truncatedSecs / 60;
+    let seconds = truncatedSecs % 60;
+    if (seconds < 10) {
+        seconds = `0${seconds}`
+    }
+    return `${Math.trunc(minutes)}:${seconds}`;
+}

@@ -44,6 +44,13 @@ input[type=range][orient=vertical] {
     padding: 0 5px;
     background-color: gray;
 }
+
+/* Rule for vertical progress bar*/
+progress[orient=vertical] {
+    transform: rotate(-90deg);
+    width: 180px;
+    margin-top: 90px;
+}
 .track {
     min-width: 90px;
     max-width: 120px;
@@ -57,11 +64,11 @@ input[type=range][orient=vertical] {
     padding: 10px;
     color:white;
 }
-#tracks-container {
+#master-output-controls, #tracks-container {
     background-color: rgb(45,45,45);
     color:white;
-    border-radius: 0 0 15px 15px;
     padding: 10px;
+    margin-top: 10px;
 }
 #tracks-deposit {
     overflow: auto;
@@ -71,4 +78,14 @@ input[type=range][orient=vertical] {
     display: flex;
     flex-direction: column;
     border-radius: 0 0 0 15px;
+}
+#title-bar {
+    background-color: black;
+    z-index: 2000;
+    position: sticky;
+    top:0;
+}
+
+#seek-position-slider{
+    max-width: 600px;
 }
