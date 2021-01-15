@@ -36,6 +36,19 @@ function defineEvents() {
             playButton.innerHTML = '<i class="fas fa-pause"></i>';
         }
     });
+    
+    // hide top bar button
+    let hideTopBarButton = document.querySelector("#hide-top-bar-button");
+    let topBar = document.querySelector("nav.nav.custom-nav.sticky-top");
+    hideTopBarButton.addEventListener("click", function() {
+        if(topBar.style.display === "none") {
+            topBar.style.display = "flex";
+            hideTopBarButton.innerHTML = '<i class="fas fa-chevron-up"></i>'
+        } else {
+            topBar.style.display = "none";
+            hideTopBarButton.innerHTML = '<i class="fas fa-chevron-down"></i>';
+        }
+    })
 
     // seeking slider
     seekPositionSlider.max = isolaattiMixer.getDuration();

@@ -12,7 +12,13 @@
     <audio src="@Model.song.VoiceUrl" crossorigin="anonymous" preload="auto" class="track-audio-element" track-name="vocals"></audio>
     <audio src="@Model.song.OtherUrl" crossorigin="anonymous" preload="auto" class="track-audio-element" track-name="other"></audio>
     
-    <h6 class="m-2" style="text-align: center">@Model.song.OriginalFileName - @Model.song.Artist</h6>
+    
+    <div class="d-flex">
+        <h6 class="m-2 ml-auto">@Model.song.OriginalFileName - @Model.song.Artist</h6>
+        <button type="button" class="btn btn-primary btn-sm mt-1 mb-1 ml-auto" id="hide-top-bar-button">
+            <i class="fas fa-chevron-up"></i>
+        </button>
+    </div>
     <div id="player-top-actionbar" class="d-flex flex-column">
         <div class="d-flex">
             <h4>Master output</h4>
