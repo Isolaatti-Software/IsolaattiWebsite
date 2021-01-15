@@ -33,7 +33,7 @@ function defineEvents() {
     
     seekPositionSlider.max = isolaattiMixer.getDuration();
     seekPositionSlider.addEventListener("input", function(event){
-       /* set audio position here */ 
+       isolaattiMixer.seekTo(event.target.value);
     });
 }
 
