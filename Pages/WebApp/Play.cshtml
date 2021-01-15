@@ -11,6 +11,7 @@
     <audio src="@Model.song.BassUrl"  crossorigin="anonymous" preload="auto" class="track-audio-element" track-name="bass"></audio>
     <audio src="@Model.song.VoiceUrl" crossorigin="anonymous" preload="auto" class="track-audio-element" track-name="vocals"></audio>
     <audio src="@Model.song.OtherUrl" crossorigin="anonymous" preload="auto" class="track-audio-element" track-name="other"></audio>
+    
     <h6 class="m-2" style="text-align: center">@Model.song.OriginalFileName - @Model.song.Artist</h6>
     <div id="player-top-actionbar" class="d-flex flex-column">
         <div class="d-flex">
@@ -43,7 +44,7 @@
             </div>
         </div>
         <div class="d-flex mt-2">
-            <input type="range" class="custom-range" id="seek-position-slider" min="0">
+            <input type="range" class="custom-range" id="seek-position-slider" min="0" value="0">
         </div>
     </div>
     <div id="tracks-container" class="d-flex flex-column mt-2">
@@ -67,7 +68,7 @@
                         </div>
                         <div class="track-middle-actions d-flex justify-content-between">
                             <div class="track-volume-control-container">
-                                <input class="track-gain" type="range" orient="vertical" min="0" max="2" step="0.1">
+                                <input class="track-gain" target-track="bass" type="range" orient="vertical" min="0" max="2" step="0.1">
                             </div>
                             <div class="track-middle-right-actions d-flex flex-column">
                                 <button class="btn btn-primary btn-sm mb-1" title="Mute/unmute">
@@ -87,7 +88,7 @@
                                     <span>L</span>
                                     <span>R</span>
                                 </div>
-                                <input class="w-100 balance_slider" type="range" min="-1" max="1" step="0.1">
+                                <input class="w-100 balance_slider" target-track="bass" type="range" min="-1" max="1" step="0.1">
                             </div>
                         </div>
                     </div>
@@ -98,7 +99,7 @@
                         </div>
                         <div class="track-middle-actions d-flex justify-content-between">
                             <div class="track-volume-control-container">
-                                <input class="track-gain" type="range" orient="vertical" min="0" max="2" step="0.1">
+                                <input class="track-gain" target-track="drums" type="range" orient="vertical" min="0" max="2" step="0.1">
                             </div>
                             <div class="track-middle-right-actions d-flex flex-column">
                                 <button class="btn btn-primary btn-sm mb-1" title="Mute/unmute">
@@ -118,7 +119,7 @@
                                     <span>L</span>
                                     <span>R</span>
                                 </div>
-                                <input class="w-100 balance_slider" type="range" min="-1" max="1" step="0.1">
+                                <input class="w-100 balance_slider" target-track="drums" type="range" min="-1" max="1" step="0.1">
                             </div>
                         </div>
                     </div>
@@ -129,7 +130,7 @@
                         </div>
                         <div class="track-middle-actions d-flex justify-content-between">
                             <div class="track-volume-control-container">
-                                <input class="track-gain" type="range" orient="vertical" min="0" max="2" step="0.1">
+                                <input class="track-gain" target-track="vocals" type="range" orient="vertical" min="0" max="2" step="0.1">
                             </div>
                             <div class="track-middle-right-actions d-flex flex-column">
                                 <button class="btn btn-primary btn-sm mb-1" title="Mute/unmute">
@@ -149,7 +150,7 @@
                                     <span>L</span>
                                     <span>R</span>
                                 </div>
-                                <input class="w-100 balance_slider" type="range" min="-1" max="1" step="0.1">
+                                <input class="w-100 balance_slider" target-track="vocals" type="range" min="-1" max="1" step="0.1">
                             </div>
                         </div>
                     </div>
@@ -160,7 +161,7 @@
                         </div>
                         <div class="track-middle-actions d-flex justify-content-between">
                             <div class="track-volume-control-container">
-                                <input class="track-gain" type="range" orient="vertical" min="0" max="2" step="0.1">
+                                <input class="track-gain" target-track="other" type="range" orient="vertical" min="0" max="2" step="0.1">
                             </div>
                             <div class="track-middle-right-actions d-flex flex-column">
                                 <button class="btn btn-primary btn-sm mb-1" title="Mute/unmute">
@@ -180,7 +181,7 @@
                                     <span>L</span>
                                     <span>R</span>
                                 </div>
-                                <input class="w-100 balance_slider" type="range" min="-1" max="1" step="0.1">
+                                <input class="w-100 balance_slider" target-track="other" type="range" min="-1" max="1" step="0.1">
                             </div>
                         </div>
                     </div>
