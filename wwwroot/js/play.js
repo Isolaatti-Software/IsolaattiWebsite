@@ -78,6 +78,14 @@ function defineEvents() {
         mainGainLabel.innerHTML = `${mainGainSlider.value*100}%`
     });
     
+    // mute/unmute buttons of every track
+    let mute_unmuteButtonsOfEveryTrack = document.getElementsByClassName("mute-track-btn");
+    for(let button of mute_unmuteButtonsOfEveryTrack) {
+        button.addEventListener("click", function() {
+            isolaattiMixer.setGainOfTrack(button.attributes.getNamedItem("target-track").value, 0.0);
+        });
+    }
+    
     // gains of every track
     let tracksGainSliders = document.querySelectorAll(".track-gain");
     tracksGainSliders.forEach(function(slider) {
