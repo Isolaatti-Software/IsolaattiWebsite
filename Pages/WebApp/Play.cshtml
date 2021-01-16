@@ -3,7 +3,7 @@
 
 @{
     Layout = "Shared/_LayoutWebApp";
-    ViewData["Title"] = $"Play - {Model.song.OriginalFileName} ";
+    ViewData["Title"] = $"Audio mixer - {Model.song.OriginalFileName} ";
 }
 <div class="col-12 p-0">
     <!-- Base tracks -->
@@ -14,14 +14,14 @@
     
     
     <div class="d-flex pl-1 pr-1" id="title-bar">
-        <h6 class="m-2 ml-auto">Isolaatti audio mixer</h6>
+        <h6 class="m-2 ml-auto">Isolaatti audio mixer (@Model.song.OriginalFileName - @Model.song.Artist)</h6>
         <button type="button" class="btn btn-primary btn-sm mt-1 mb-1 ml-auto" id="hide-top-bar-button">
             <i class="fas fa-chevron-up"></i>
         </button>
     </div>
     <div id="player-top-actionbar" class="d-flex flex-column m-1">
         <div class="d-flex">
-            <h4>@Model.song.OriginalFileName - @Model.song.Artist</h4>
+            <h4></h4>
         </div>
         <div class="d-flex justify-content-between">
             <div class="d-flex">
