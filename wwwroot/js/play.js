@@ -34,6 +34,19 @@ isolaattiMixer.setOnMixEnded(function(event){
     seekPositionSlider.value = 0;
 });
 
+// hide top bar button
+let hideTopBarButton = document.querySelector("#hide-top-bar-button");
+let topBar = document.querySelector("nav.nav.custom-nav.sticky-top");
+hideTopBarButton.addEventListener("click", function() {
+    if(topBar.style.display === "none") {
+        topBar.style.display = "flex";
+        hideTopBarButton.innerHTML = '<i class="fas fa-chevron-up"></i>'
+    } else {
+        topBar.style.display = "none";
+        hideTopBarButton.innerHTML = '<i class="fas fa-chevron-down"></i>';
+    }
+});
+
 function defineEvents() {
     // set events here
     playButton.addEventListener("click", function() {
@@ -52,19 +65,6 @@ function defineEvents() {
        isolaattiMixer.seekTo(0);
     });
     
-    // hide top bar button
-    let hideTopBarButton = document.querySelector("#hide-top-bar-button");
-    let topBar = document.querySelector("nav.nav.custom-nav.sticky-top");
-    hideTopBarButton.addEventListener("click", function() {
-        if(topBar.style.display === "none") {
-            topBar.style.display = "flex";
-            hideTopBarButton.innerHTML = '<i class="fas fa-chevron-up"></i>'
-        } else {
-            topBar.style.display = "none";
-            hideTopBarButton.innerHTML = '<i class="fas fa-chevron-down"></i>';
-        }
-    })
-
     // seeking slider
     seekPositionSlider.max = isolaattiMixer.getDuration();
     seekPositionSlider.addEventListener("input", function(event) {
