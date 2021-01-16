@@ -98,3 +98,14 @@ progress[orient=vertical] {
     font-family: "Press Start 2P";
     font-size: large;
 }
+
+#contact-me-bottom-section {
+    z-index: 4000;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    padding: 8px;
+    background-color: white;
+    color: #385898;
+    font-size: larger;
+}
