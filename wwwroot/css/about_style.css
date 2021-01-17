@@ -1,0 +1,70 @@
+/* 
+   Erik Cavazos, 2021 
+   erik10cavazos@gmail.com
+   Styles for informative page
+*/
+
+/* Animations */
+@keyframes appear_picture {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1.0;
+    }
+}
+/*************************************************************/
+/* Rules */
+* {
+    margin: 0;
+    padding: 0;
+}
+html {
+    scroll-behavior: smooth;
+}
+#topnav {
+    display: flex;
+    justify-content: flex-end;
+
+    height: 60px;
+    background: rgba(0, 0, 0, 0.50);
+    position: fixed;
+    z-index: 2000;
+    width: 100%;
+}
+
+/* Font for topnav header */
+@font-face {
+    font-family: "ShadowsIntoLight-Regular";
+    src: url("../fonts/ShadowsIntoLight-Regular.ttf");
+}
+
+@font-face {
+    font-family: "GloriaHallelujah-Regular";
+    src: url("../fonts/GloriaHallelujah-Regular.ttf");
+}
+#topnav > .header {
+    color: white;
+    width: 100%;
+    text-align: center;
+    margin-top: auto;
+    margin-bottom: auto;
+    font-family: "ShadowsIntoLight-Regular", serif;
+    font-size: xx-large;
+}
+.slide {
+    /* keep centered the text*/
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    animation-name: appear_picture;
+    animation-duration: 1s;
+    background-color: #6200EE;
+}
+.slide#pres > h1 {
+    font-family: "GloriaHallelujah-Regular", serif;
+    color: white;
+}

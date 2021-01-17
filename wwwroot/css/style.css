@@ -85,15 +85,27 @@ html {
     animation-name: appear_picture;
     animation-duration: 1s;
 }
+@font-face {
+    font-family: "GloriaHallelujah-Regular";
+    src: url("../fonts/GloriaHallelujah-Regular.ttf");
+}
+#pres {
+    background-color: #6200EE;
+    top:0;
+}
+.slide#pres h1 {
+    font-family: "GloriaHallelujah-Regular", serif;
+    color: white;
+}
 #main_picture {
     background-image: url("../res/imgs/simple_mixer.jpg");
     background-blend-mode:darken;
     background-color: rgb(20, 3, 43);
     background-size:cover;
-    top:0;
+    top:100%;
 }
 #web_mixer {
-    top:100%;
+    top:200%;
     background-color: rgb(13, 1, 19);
     background-image: url("../res/imgs/web_mixer.png");
     background-size: auto;
@@ -102,15 +114,15 @@ html {
 #source_separation {
     background-color: rgb(10, 10, 10);
     background-size:cover;
-    top:200%;
+    top:300%;
 }
 #recording {
     background-color: rgb(27, 27, 27);
-    top:300%
+    top:400%
 }
 #more {
     background-color: rgb(40,40,40);
-    top:400%;
+    top:500%;
 }
 .change_slide_buttons {
     display: flex;
