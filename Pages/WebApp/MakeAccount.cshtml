@@ -8,6 +8,13 @@
 <h1><a asp-page="/Index">Isolaatti</a></h1>
 <h3>Make an account to join Isolaatti</h3>
 <p>You are about joining the biggest music source separation community worldwide. Can you handle it?</p>
+        @if (Model.LimitOfAccountsReached)
+        {
+            <div class="alert alert-info">
+                <h4 class="alert-heading">We're on preview phase</h4>
+                <p>At this stage, Isolaatti will only accept up to 50 accounts, so that the development server does not crash. Sorry for that!</p>
+            </div>
+        }
 <div class="d-flex justify-content-center">
     <form method="POST" id="make_account_form" style="max-width: 568px">
         <p class="m-3">If you already have an account, what are you doing here? <a asp-page="LogIn">Log In!</a></p>
@@ -22,6 +29,13 @@
         {
             <div class="alert alert-danger">
                 The name you entered is already in use.
+            </div>
+        }
+        @if (Model.AccountNotMade)
+        {
+            <div class="alert alert-danger">
+                <h4 class="alert-heading">Sorry, your account could not be made</h4>
+                <p>As told you at the message at the top of this page, Isolaatti is only accepting up to 50 accounts, this because the development server might crash</p>
             </div>
         }
         <div class="form-group">
