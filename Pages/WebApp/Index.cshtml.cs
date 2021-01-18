@@ -17,6 +17,7 @@ namespace isolaatti_API.Pages.WebApp
     {
         private readonly DbContextApp _db;
         public IWebHostEnvironment Environment;
+        public bool LimitOfSongsReached = false;
 
         public Index(DbContextApp dbContextApp, IWebHostEnvironment env)
         {
@@ -49,6 +50,7 @@ namespace isolaatti_API.Pages.WebApp
                     ViewData["email"] = user.Email;
                     ViewData["userId"] = user.Id;
                     ViewData["password"] = user.Password;
+                    LimitOfSongsReached = _db.Songs.Count(song => song.OwnerId.Equals(user.Id)) >= 10;
                     
                     return Page();
                 }
