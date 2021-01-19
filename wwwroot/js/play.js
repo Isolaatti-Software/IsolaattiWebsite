@@ -27,11 +27,12 @@ isolaattiMixer.prepareMix(function(){
     document.querySelector("#play_pause_button").disabled = false;
     defineEvents();
     timeLabel.innerHTML = `--/${getClockFormatFromSeconds(isolaattiMixer.getDuration())}`;
+    isolaattiMixer.getAudioAnalyserNode().fftSize = 64;
     drawMainGainBar(isolaattiMixer.getAudioAnalyserNode());
     
     setInterval(function (){
         drawMainGainBar(isolaattiMixer.getAudioAnalyserNode());
-    },50)
+    },10)
 });
 
 isolaattiMixer.setOnMixEnded(function(event){
