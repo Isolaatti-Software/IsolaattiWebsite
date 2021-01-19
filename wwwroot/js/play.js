@@ -27,6 +27,11 @@ isolaattiMixer.prepareMix(function(){
     document.querySelector("#play_pause_button").disabled = false;
     defineEvents();
     timeLabel.innerHTML = `--/${getClockFormatFromSeconds(isolaattiMixer.getDuration())}`;
+    drawMainGainBar(isolaattiMixer.getAudioAnalyserNode());
+    
+    setInterval(function (){
+        drawMainGainBar(isolaattiMixer.getAudioAnalyserNode());
+    },50)
 });
 
 isolaattiMixer.setOnMixEnded(function(event){
@@ -111,4 +116,17 @@ function getClockFormatFromSeconds(secs){
         seconds = `0${seconds}`
     }
     return `${Math.trunc(minutes)}:${seconds}`;
+}
+let mainGainBar = document.querySelector("#mainGainBar");
+function drawMainGainBar(audioAnalyserNode) {
+    let bufferLenght = audioAnalyserNode.frequencyBinCount;
+    
+    let dataArray = new Uint8Array(bufferLenght);
+    
+    audioAnalyserNode.getByteFrequencyData(dataArray);
+    let sumOfFrequencies = 0;
+    for(let i = 0; i < bufferLenght; i++) {
+        sumOfFrequencies += dataArray[i];
+    }
+    mainGainBar.value = sumOfFrequencies/bufferLenght;
 }
