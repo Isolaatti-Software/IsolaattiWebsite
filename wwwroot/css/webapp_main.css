@@ -99,6 +99,10 @@ progress[orient=vertical] {
     font-size: large;
 }
 
+.track-average-gain-bar {
+    max-width: 100%;
+}
+
 #contact-me-bottom-section {
     z-index: 4000;
     position: fixed;
