@@ -27,12 +27,13 @@ isolaattiMixer.prepareMix(function(){
     document.querySelector("#play_pause_button").disabled = false;
     defineEvents();
     timeLabel.innerHTML = `--/${getClockFormatFromSeconds(isolaattiMixer.getDuration())}`;
-    isolaattiMixer.getAudioAnalyserNode().fftSize = 64;
+    isolaattiMixer.getAudioAnalyserNode().fftSize = 128;
     
     setInterval(function (){
         drawMainGainBar(isolaattiMixer.getAudioAnalyserNode());
     },10)
     isolaattiMixer.getTracks().forEach(function(track,name) {
+        track.getAudioAnalyserNode().fftSize = 128;
         setInterval(function() {
             drawGainBarOfTrack(name,track.getAudioAnalyserNode());
         });
