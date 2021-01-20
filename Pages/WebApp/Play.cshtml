@@ -6,225 +6,229 @@
     ViewData["Title"] = $"Audio mixer - {Model.song.OriginalFileName} ";
 }
 <div class="col-12 p-0">
-    <!-- Base tracks -->
-    <audio src="@Model.song.DrumsUrl" crossorigin="anonymous" preload="auto" class="track-audio-element" track-name="drums"></audio>
-    <audio src="@Model.song.BassUrl"  crossorigin="anonymous" preload="auto" class="track-audio-element" track-name="bass"></audio>
-    <audio src="@Model.song.VoiceUrl" crossorigin="anonymous" preload="auto" class="track-audio-element" track-name="vocals"></audio>
-    <audio src="@Model.song.OtherUrl" crossorigin="anonymous" preload="auto" class="track-audio-element" track-name="other"></audio>
+<!-- Base tracks -->
+<audio src="@Model.song.DrumsUrl" crossorigin="anonymous" preload="auto" class="track-audio-element" track-name="drums"></audio>
+<audio src="@Model.song.BassUrl"  crossorigin="anonymous" preload="auto" class="track-audio-element" track-name="bass"></audio>
+<audio src="@Model.song.VoiceUrl" crossorigin="anonymous" preload="auto" class="track-audio-element" track-name="vocals"></audio>
+<audio src="@Model.song.OtherUrl" crossorigin="anonymous" preload="auto" class="track-audio-element" track-name="other"></audio>
     
     
-    <div class="d-flex pl-1 pr-1" id="title-bar">
-        <h6 class="m-2 ml-auto">Isolaatti audio mixer (@Model.song.OriginalFileName - @Model.song.Artist)</h6>
-        <button type="button" class="btn btn-primary btn-sm mt-1 mb-1 ml-auto" id="hide-top-bar-button">
-            <i class="fas fa-chevron-up"></i>
-        </button>
+<div class="d-flex pl-1 pr-1" id="title-bar">
+    <h6 class="m-2 ml-auto">Isolaatti audio mixer (@Model.song.OriginalFileName - @Model.song.Artist)</h6>
+    <button type="button" class="btn btn-primary btn-sm mt-1 mb-1 ml-auto" id="hide-top-bar-button">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+</div>
+<div id="player-top-actionbar" class="d-flex flex-column m-1">
+    <div class="d-flex">
+        <h4></h4>
     </div>
-    <div id="player-top-actionbar" class="d-flex flex-column m-1">
+    <div class="d-flex justify-content-between">
         <div class="d-flex">
-            <h4></h4>
+            <div class="btn-group ml-2">
+                <button class="btn btn-success btn-sm" id="play_pause_button" disabled>
+                    <i class="fas fa-play"></i>
+                </button>
+                <button class="btn btn-danger btn-sm" id="stop_button">
+                    <i class="fas fa-stop"></i>
+                </button>
+            </div>
         </div>
-        <div class="d-flex justify-content-between">
-            <div class="d-flex">
-                <div class="btn-group ml-2">
-                    <button class="btn btn-success btn-sm" id="play_pause_button" disabled>
-                        <i class="fas fa-play"></i>
-                    </button>
-                    <button class="btn btn-danger btn-sm" id="stop_button">
-                        <i class="fas fa-stop"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="d-flex" id="time-container">
-                --/--
-            </div>
+        <div class="d-flex" id="time-container">
+            --/--
+        </div>
             
-            <div class="d-flex">
-                <button class="btn btn-primary btn-sm mr-1" title="Save changes">
-                    <i class="fas fa-save"></i>
-                </button>
-                <button class="btn btn-primary btn-sm mr-1" title="Download mix">
-                    <i class="fas fa-download"></i>
-                </button>
-            </div>
-        </div>
-        <div class="d-flex mt-2 justify-content-center">
-            <input type="range" class="custom-range" id="seek-position-slider" min="0" value="0">
+        <div class="d-flex">
+            <button class="btn btn-primary btn-sm mr-1" title="Save changes">
+                <i class="fas fa-save"></i>
+            </button>
+            <button class="btn btn-primary btn-sm mr-1" title="Download mix">
+                <i class="fas fa-download"></i>
+            </button>
         </div>
     </div>
-    <div class="container-fluid mt-2 pl-0 pr-0">
-        <div class="row m-1">
-            <div class="col-lg-2 col-md-3 col-sm-4 p-0">
-                <div id="master-output-controls" class="mr-1 d-flex flex-column h-100">
-                    <h4>Master output</h4>
-                    <div class="d-flex">
-                        <div class="d-flex flex-column ml-auto mr-auto">
-                            <i class="fas fa-volume-up mt-auto mb-auto"></i>
-                            <input id="mix_gain" type="range" min="0" max="2" step="0.1"
-                                   class="mt-auto mb-auto mr-1 ml-1 flex-shrink-1" orient="vertical">
-                            <i class="fas fa-volume-down mt-auto mb-auto"></i>
-                        </div>
-                        
-                        <div class="d-flex flex-column">
-                            <progress id="mainGainBar" min="0" max="210" value="0.5" orient="vertical"></progress>
-                        </div>
-                        
+    <div class="d-flex mt-2 justify-content-center">
+        <input type="range" class="custom-range" id="seek-position-slider" min="0" value="0">
+    </div>
+</div>
+<div class="container-fluid mt-2 pl-0 pr-0">
+    <div class="row m-1">
+        <div class="col-lg-2 col-md-3 col-sm-4 p-0">
+            <div id="master-output-controls" class="mr-1 d-flex flex-column h-100">
+                <h4>Master output</h4>
+                <div class="d-flex">
+                    <div class="d-flex flex-column ml-auto mr-auto">
+                        <i class="fas fa-volume-up mt-auto mb-auto"></i>
+                        <input id="mix_gain" type="range" min="0" max="2" step="0.1"
+                               class="mt-auto mb-auto mr-1 ml-1 flex-shrink-1" orient="vertical">
+                        <i class="fas fa-volume-down mt-auto mb-auto"></i>
                     </div>
-                    <div class="d-flex">
-                        <label for="mix_gain" id="mix_gain_label">100%</label>
+                        
+                    <div class="d-flex flex-column">
+                        <progress id="mainGainBar" min="0" max="210" value="0.5" orient="vertical"></progress>
                     </div>
-                    
+                        
                 </div>
+                <div class="d-flex">
+                    <label for="mix_gain" id="mix_gain_label">100%</label>
+                </div>
+                    
             </div>
-            <div class="col-lg-10 col-md-9 col-sm-8 p-0">
-                <div id="tracks-container" class="d-flex flex-column flex-fill h-100">
-                                <div class="d-flex justify-content-between">
-                                    <h4>Tracks</h4>
-                                    <button class="btn btn-primary btn-sm ml-auto mt-auto mb-auto mr-1" title="All gains to 1" id="reset_gains">RS</button>
-                                    <button class="btn btn-primary btn-sm mt-auto mb-auto" title="Add track">
-                                        <i class="fas fa-plus"></i>
-                                    </button>
+        </div>
+        <div class="col-lg-10 col-md-9 col-sm-8 p-0">
+            <div id="tracks-container" class="d-flex flex-column flex-fill h-100">
+                <div class="d-flex justify-content-between">
+                    <h4>Tracks</h4>
+                    <button class="btn btn-primary btn-sm ml-auto mt-auto mb-auto mr-1" title="All gains to 1" id="reset_gains">RS</button>
+                    <button class="btn btn-primary btn-sm mt-auto mb-auto" title="Add track">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+                <div class="d-flex flex-nowrap" id="tracks-deposit">
+                    <div id="base-tracks">
+                        <div class="d-flex justify-content-center mb-1 mt-2">
+                            <h6>Base tracks</h6>
+                        </div>
+                        <div class="d-flex">
+                            <!-- Bass track-->
+                            <div class="track d-flex m-2 flex-column">
+                                <div class="track-top-actionbar">
+                                    <p class="w-100">Bass</p>
                                 </div>
-                                <div class="d-flex flex-nowrap" id="tracks-deposit">
-                                    <div id="base-tracks">
-                                        <div class="d-flex justify-content-center mb-1 mt-2">
-                                            <h6>Base tracks</h6>
+                                <progress class="track-average-gain-bar mb-1" target-track="bass" min="0" max="255" value="0"></progress>
+                                <div class="track-middle-actions d-flex justify-content-between">
+                                    <div class="track-volume-control-container">
+                                        <input class="track-gain" target-track="bass" type="range" orient="vertical" min="0" max="2" step="0.1">
+                                    </div>
+                                    <div class="track-middle-right-actions d-flex flex-column">
+                                        <button class="btn btn-primary btn-sm mb-1 mute-track-btn" title="Mute/unmute" target-track="bass">
+                                            <i class="fas fa-volume-mute"></i>
+                                        </button>
+                                        <button class="btn btn-primary btn-sm mb-1" title="Effects and filter">
+                                            <i class="fas fa-wrench"></i>
+                                        </button>
+                                        <button class="btn btn-primary btn-sm  mb-1" title="Equalizer">
+                                            EQ
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="track-bottom-actionbar d-flex mw-100">
+                                    <div class="track-balance d-flex flex-column">
+                                        <div class="d-flex justify-content-between">
+                                            <span>L</span>
+                                            <span>R</span>
                                         </div>
-                                        <div class="d-flex">
-                                            <!-- Bass track-->
-                                            <div class="track d-flex m-2 flex-column">
-                                                <div class="track-top-actionbar">
-                                                    <p class="w-100">Bass</p>
-                                                </div>
-                                                <div class="track-middle-actions d-flex justify-content-between">
-                                                    <div class="track-volume-control-container">
-                                                        <input class="track-gain" target-track="bass" type="range" orient="vertical" min="0" max="2" step="0.1">
-                                                    </div>
-                                                    <div class="track-middle-right-actions d-flex flex-column">
-                                                        <button class="btn btn-primary btn-sm mb-1 mute-track-btn" title="Mute/unmute" target-track="bass">
-                                                            <i class="fas fa-volume-mute"></i>
-                                                        </button>
-                                                        <button class="btn btn-primary btn-sm mb-1" title="Effects and filter">
-                                                            <i class="fas fa-wrench"></i>
-                                                        </button>
-                                                        <button class="btn btn-primary btn-sm  mb-1" title="Equalizer">
-                                                            EQ
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                                <div class="track-bottom-actionbar d-flex mw-100">
-                                                    <div class="track-balance d-flex flex-column">
-                                                        <div class="d-flex justify-content-between">
-                                                            <span>L</span>
-                                                            <span>R</span>
-                                                        </div>
-                                                        <input class="w-100 balance_slider" target-track="bass" type="range" min="-1" max="1" step="0.1">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <!-- Drums track-->
-                                            <div class="track d-flex m-2 flex-column">
-                                                <div class="track-top-actionbar">
-                                                    <p class="w-100">Drums</p>
-                                                </div>
-                                                <div class="track-middle-actions d-flex justify-content-between">
-                                                    <div class="track-volume-control-container">
-                                                        <input class="track-gain" target-track="drums" type="range" orient="vertical" min="0" max="2" step="0.1">
-                                                    </div>
-                                                    <div class="track-middle-right-actions d-flex flex-column">
-                                                        <button class="btn btn-primary btn-sm mb-1 mute-track-btn" title="Mute/unmute" target-track="drums">
-                                                            <i class="fas fa-volume-mute"></i>
-                                                        </button>
-                                                        <button class="btn btn-primary btn-sm mb-1" title="Effects and filter">
-                                                            <i class="fas fa-wrench"></i>
-                                                        </button>
-                                                        <button class="btn btn-primary btn-sm  mb-1" title="Equalizer">
-                                                            EQ
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                                <div class="track-bottom-actionbar d-flex mw-100">
-                                                    <div class="track-balance d-flex flex-column">
-                                                        <div class="d-flex justify-content-between">
-                                                            <span>L</span>
-                                                            <span>R</span>
-                                                        </div>
-                                                        <input class="w-100 balance_slider" target-track="drums" type="range" min="-1" max="1" step="0.1">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <!-- Vocals track-->
-                                            <div class="track d-flex m-2 flex-column">
-                                                <div class="track-top-actionbar">
-                                                    <p class="w-100">Vocals</p>
-                                                </div>
-                                                <div class="track-middle-actions d-flex justify-content-between">
-                                                    <div class="track-volume-control-container">
-                                                        <input class="track-gain" target-track="vocals" type="range" orient="vertical" min="0" max="2" step="0.1">
-                                                    </div>
-                                                    <div class="track-middle-right-actions d-flex flex-column">
-                                                        <button class="btn btn-primary btn-sm mb-1 mute-track-btn" title="Mute/unmute" target-track="vocals">
-                                                            <i class="fas fa-volume-mute"></i>
-                                                        </button>
-                                                        <button class="btn btn-primary btn-sm mb-1" title="Effects and filter">
-                                                            <i class="fas fa-wrench"></i>
-                                                        </button>
-                                                        <button class="btn btn-primary btn-sm  mb-1" title="Equalizer">
-                                                            EQ
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                                <div class="track-bottom-actionbar d-flex mw-100">
-                                                    <div class="track-balance d-flex flex-column">
-                                                        <div class="d-flex justify-content-between">
-                                                            <span>L</span>
-                                                            <span>R</span>
-                                                        </div>
-                                                        <input class="w-100 balance_slider" target-track="vocals" type="range" min="-1" max="1" step="0.1">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <!-- Other track-->
-                                            <div class="track d-flex m-2 flex-column">
-                                                <div class="track-top-actionbar">
-                                                    <p class="w-100">Other</p>
-                                                </div>
-                                                <div class="track-middle-actions d-flex justify-content-between">
-                                                    <div class="track-volume-control-container">
-                                                        <input class="track-gain" target-track="other" type="range" orient="vertical" min="0" max="2" step="0.1">
-                                                    </div>
-                                                    <div class="track-middle-right-actions d-flex flex-column">
-                                                        <button class="btn btn-primary btn-sm mb-1 mute-track-btn" title="Mute/unmute" target-track="other">
-                                                            <i class="fas fa-volume-mute"></i>
-                                                        </button>
-                                                        <button class="btn btn-primary btn-sm mb-1" title="Effects and filter">
-                                                            <i class="fas fa-wrench"></i>
-                                                        </button>
-                                                        <button class="btn btn-primary btn-sm  mb-1" title="Equalizer">
-                                                            EQ
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                                <div class="track-bottom-actionbar d-flex mw-100">
-                                                    <div class="track-balance d-flex flex-column">
-                                                        <div class="d-flex justify-content-between">
-                                                            <span>L</span>
-                                                            <span>R</span>
-                                                        </div>
-                                                        <input class="w-100 balance_slider" target-track="other" type="range" min="-1" max="1" step="0.1">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        <input class="w-100 balance_slider" target-track="bass" type="range" min="-1" max="1" step="0.1">
                                     </div>
                                 </div>
                             </div>
+                            <!-- Drums track-->
+                            <div class="track d-flex m-2 flex-column">
+                                <div class="track-top-actionbar">
+                                    <p class="w-100">Drums</p>
+                                </div>
+                                <progress class="track-average-gain-bar mb-1" target-track="drums" min="0" max="255" value="0"></progress>
+                                <div class="track-middle-actions d-flex justify-content-between">
+                                    <div class="track-volume-control-container">
+                                        <input class="track-gain" target-track="drums" type="range" orient="vertical" min="0" max="2" step="0.1">
+                                    </div>
+                                    <div class="track-middle-right-actions d-flex flex-column">
+                                        <button class="btn btn-primary btn-sm mb-1 mute-track-btn" title="Mute/unmute" target-track="drums">
+                                            <i class="fas fa-volume-mute"></i>
+                                        </button>
+                                        <button class="btn btn-primary btn-sm mb-1" title="Effects and filter">
+                                            <i class="fas fa-wrench"></i>
+                                        </button>
+                                        <button class="btn btn-primary btn-sm  mb-1" title="Equalizer">
+                                            EQ
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="track-bottom-actionbar d-flex mw-100">
+                                    <div class="track-balance d-flex flex-column">
+                                        <div class="d-flex justify-content-between">
+                                            <span>L</span>
+                                            <span>R</span>
+                                        </div>
+                                        <input class="w-100 balance_slider" target-track="drums" type="range" min="-1" max="1" step="0.1">
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Vocals track-->
+                            <div class="track d-flex m-2 flex-column">
+                                <div class="track-top-actionbar">
+                                    <p class="w-100">Vocals</p>
+                                </div>
+                                <progress class="track-average-gain-bar mb-1" target-track="vocals" min="0" max="255" value="0"></progress>
+                                <div class="track-middle-actions d-flex justify-content-between">
+                                    <div class="track-volume-control-container">
+                                        <input class="track-gain" target-track="vocals" type="range" orient="vertical" min="0" max="2" step="0.1">
+                                    </div>
+                                    <div class="track-middle-right-actions d-flex flex-column">
+                                        <button class="btn btn-primary btn-sm mb-1 mute-track-btn" title="Mute/unmute" target-track="vocals">
+                                            <i class="fas fa-volume-mute"></i>
+                                        </button>
+                                        <button class="btn btn-primary btn-sm mb-1" title="Effects and filter">
+                                            <i class="fas fa-wrench"></i>
+                                        </button>
+                                        <button class="btn btn-primary btn-sm  mb-1" title="Equalizer">
+                                            EQ
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="track-bottom-actionbar d-flex mw-100">
+                                    <div class="track-balance d-flex flex-column">
+                                        <div class="d-flex justify-content-between">
+                                            <span>L</span>
+                                            <span>R</span>
+                                        </div>
+                                        <input class="w-100 balance_slider" target-track="vocals" type="range" min="-1" max="1" step="0.1">
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Other track-->
+                            <div class="track d-flex m-2 flex-column">
+                                <div class="track-top-actionbar">
+                                    <p class="w-100">Other</p>
+                                </div>
+                                <progress class="track-average-gain-bar mb-1" target-track="other" min="0" max="255" value="0"></progress>
+                                <div class="track-middle-actions d-flex justify-content-between">
+                                    <div class="track-volume-control-container">
+                                        <input class="track-gain" target-track="other" type="range" orient="vertical" min="0" max="2" step="0.1">
+                                    </div>
+                                    <div class="track-middle-right-actions d-flex flex-column">
+                                        <button class="btn btn-primary btn-sm mb-1 mute-track-btn" title="Mute/unmute" target-track="other">
+                                            <i class="fas fa-volume-mute"></i>
+                                        </button>
+                                        <button class="btn btn-primary btn-sm mb-1" title="Effects and filter">
+                                            <i class="fas fa-wrench"></i>
+                                        </button>
+                                        <button class="btn btn-primary btn-sm  mb-1" title="Equalizer">
+                                            EQ
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="track-bottom-actionbar d-flex mw-100">
+                                    <div class="track-balance d-flex flex-column">
+                                        <div class="d-flex justify-content-between">
+                                            <span>L</span>
+                                            <span>R</span>
+                                        </div>
+                                        <input class="w-100 balance_slider" target-track="other" type="range" min="-1" max="1" step="0.1">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <div class="d-flex mt-2" id="workspace-container">
+</div>
+<div class="d-flex mt-2" id="workspace-container">
         
         
-    </div>
+</div>
     
 </div>
 <script src="https://erik-everardo.github.io/isolaatti-js-web-audio-mixer/isolaattiaudiomixer.js" crossorigin="anonymous"></script>
