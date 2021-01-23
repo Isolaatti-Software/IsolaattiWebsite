@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace isolaatti_API.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class DeleteNotification : ControllerBase
     {
         private readonly DbContextApp _db;
