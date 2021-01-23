@@ -12,7 +12,7 @@ using isolaatti_API.Models;
 
 namespace isolaatti_API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("/api/[controller]")]
     [ApiController]
     public class DeleteSongController : ControllerBase
     {

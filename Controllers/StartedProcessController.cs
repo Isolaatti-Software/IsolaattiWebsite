@@ -11,7 +11,7 @@ using isolaatti_API.Models;
 
 namespace isolaatti_API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("/api/[controller]")]
     public class StartedProcessController : ControllerBase
     {
         private readonly DbContextApp db;

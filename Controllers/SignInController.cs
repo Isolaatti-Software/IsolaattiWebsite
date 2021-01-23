@@ -17,7 +17,7 @@ using SmtpClient = MailKit.Net.Smtp.SmtpClient;
 
 namespace isolaatti_API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("/api/[controller]")]
     [ApiController]
     public class SignIn : ControllerBase
     {

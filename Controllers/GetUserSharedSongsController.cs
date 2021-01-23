@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace isolaatti_API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("/api/[controller]")]
     [ApiController]
     public class GetUserSharedSongsController : Controller
     {

@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace isolaatti_API.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("/api/[controller]")]
     public class GetProfile : ControllerBase
     {
         private readonly DbContextApp Db;

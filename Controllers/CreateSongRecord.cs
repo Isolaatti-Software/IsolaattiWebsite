@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace isolaatti_API.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("/api/[controller]")]
     public class CreateSongRecord : ControllerBase
     {
         private readonly DbContextApp _contextApp;
