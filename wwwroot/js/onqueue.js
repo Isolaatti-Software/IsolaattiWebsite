@@ -15,7 +15,7 @@ function deleteElementFromQueue(elementId) {
         formData.append("password", userData.password);
         
         let request = new XMLHttpRequest();
-        request.open("POST","api/DeleteElementFromQueue");
+        request.open("POST","/api/DeleteElementFromQueue");
         request.send(formData);
         request.onreadystatechange = function() {
             if(request.readyState === XMLHttpRequest.DONE) {

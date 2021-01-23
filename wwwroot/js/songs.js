@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
         formData.append("songId", songId);
         formData.append("songName", newName);
         formData.append("songArtist", newArtist);
-        XMLHttpRequestObj.open("POST", "/ModifySongInfo");
+        XMLHttpRequestObj.open("POST", "/api/ModifySongInfo");
         XMLHttpRequestObj.send(formData);
         XMLHttpRequestObj.onreadystatechange = function () {
             if (XMLHttpRequestObj.readyState === XMLHttpRequest.DONE){
@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", function () {
         formData.append("passwd", userData.password);
 
         let request = new XMLHttpRequest();
-        request.open("POST", "/ShareSong");
+        request.open("POST", "/api/ShareSong");
         request.send(formData);
         request.onreadystatechange = function (){
             if (request.readyState === XMLHttpRequest.DONE) {
