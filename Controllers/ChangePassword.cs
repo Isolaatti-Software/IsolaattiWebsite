@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace isolaatti_API.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class ChangePassword : ControllerBase
     {
         private readonly DbContextApp Db;
