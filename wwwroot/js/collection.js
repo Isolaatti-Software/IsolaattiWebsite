@@ -15,7 +15,7 @@ function deleteSong(songId) {
         formData.append("password", userData.password);
 
         let request = new XMLHttpRequest();
-        request.open("POST", "/DeleteSong");
+        request.open("POST", "api/DeleteSong");
         request.send(formData);
         request.onreadystatechange = function() {
             if(request.readyState === XMLHttpRequest.DONE) {
