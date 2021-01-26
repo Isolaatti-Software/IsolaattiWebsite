@@ -18,10 +18,10 @@ namespace isolaatti_API.Controllers
         [HttpPost]
         public IActionResult Index([FromForm] int userId)
         {
-            var shares = 
-                from song in _db.Songs
-                join share in _db.SharedSongs on song.OwnerId equals share.userId
-                where share.userId == userId
+            var shares =
+                from share in _db.SharedSongs
+                join song in _db.Songs on share.userId equals song.OwnerId
+                where share.SharedSongId == song.Id && share.userId == userId
                 select new 
                 {
                     Name = song.OriginalFileName,
