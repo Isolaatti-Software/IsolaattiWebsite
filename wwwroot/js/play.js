@@ -29,6 +29,8 @@ isolaattiMixer.prepareMix(function(){
     timeLabel.innerHTML = `--/${getClockFormatFromSeconds(isolaattiMixer.getDuration())}`;
     isolaattiMixer.getAudioAnalyserNode().fftSize = 64;
     
+    // this variable is needed by this function
+    let mainGainBar = document.querySelector("#mainGainBar");
     setInterval(function (){
         drawMainGainBar(isolaattiMixer.getAudioAnalyserNode());
     },10)
@@ -122,7 +124,7 @@ function getClockFormatFromSeconds(secs){
     }
     return `${Math.trunc(minutes)}:${seconds}`;
 }
-let mainGainBar = document.querySelector("#mainGainBar");
+
 function drawMainGainBar(audioAnalyserNode) {
     let bufferLenght = audioAnalyserNode.frequencyBinCount;
     
