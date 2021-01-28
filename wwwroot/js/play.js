@@ -12,6 +12,7 @@ let playButton = document.querySelector("#play_pause_button");
 let timeLabel = document.querySelector("#time-container");
 let stopButton = document.querySelector("#stop_button");
 let mainGainLabel = document.querySelector("#mix_gain_label");
+let mainGainBar = document.querySelector("#mainGainBar");
 
 let isolaattiMixer = new IsolaattiAudioMixer(mediaElements, function(event){
     /* Handle here slider of current position */
@@ -29,8 +30,6 @@ isolaattiMixer.prepareMix(function(){
     timeLabel.innerHTML = `--/${getClockFormatFromSeconds(isolaattiMixer.getDuration())}`;
     isolaattiMixer.getAudioAnalyserNode().fftSize = 64;
     
-    // this variable is needed by this function
-    let mainGainBar = document.querySelector("#mainGainBar");
     setInterval(function (){
         drawMainGainBar(isolaattiMixer.getAudioAnalyserNode());
     },10)
