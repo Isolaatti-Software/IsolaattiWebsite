@@ -35,7 +35,18 @@ namespace isolaatti_API.Controllers
                     // deletes database record of song
                     db.Songs.Remove(songToDelete);
                     db.SaveChanges();
-                    return Ok(songToDelete.Uid);
+                    //return Ok(songToDelete.Uid);
+                    return Ok(new
+                    {
+                        uid = songToDelete.Uid,
+                        urls = new []
+                        {
+                            songToDelete.BassUrl,
+                            songToDelete.DrumsUrl,
+                            songToDelete.OtherUrl,
+                            songToDelete.VoiceUrl
+                        }
+                    });
                 }
             }
             catch (InvalidOperationException)
