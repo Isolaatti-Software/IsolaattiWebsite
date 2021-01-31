@@ -1,11 +1,24 @@
 /*
 * Isolaatti project
 * Erik Cavazos, 2020
+* Last modified Jan 31 2021
 * This program is not allowed to be copied or reused without explicit permission.
 * erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
 * 
 * This file should be placed in the Pages/WebApp/Songs.cshtml
 */
+
+//                    Web api calls
+/* /api/DeleteSong                 :   Method: POST
+*                                     Description: "Deletes the record indicated by the id. Returns the uid of that project and the urls"
+*                                     Form data parameters: songId, userId and password
+* 
+* /api/IsTrackUrlUsedBySomeoneElse:   Method: POST
+*                                     Description: "Returns true if the url passed is used by an user other that the current
+*                                     FormData parameters: url, userWhoAsksId
+*/
+
+let storageRef = storage.ref();
 
 function deleteSong(songId) {
     if(confirm("Do you really want to delete that song?")) {
@@ -21,14 +34,11 @@ function deleteSong(songId) {
             if(request.readyState === XMLHttpRequest.DONE) {
                 console.log("Song with Id " + songId + " has been deleted");
                 document.getElementById("songid_" + songId).remove();
-                console.log(request.response)
                 deleteFiles(request.response);
             }
         }
     }
 }
-
-let storageRef = storage.ref();
 
 function deleteFiles(data) {
     // TODO: delete every console.log when everything is working correct
@@ -72,7 +82,10 @@ function deleteFiles(data) {
     askForDrumsRequest.onreadystatechange = function() {
         if(askForDrumsRequest.readyState === XMLHttpRequest.DONE && askForDrumsRequest.status === 200) {
             if(askForDrumsRequest.responseText === "false") {
-                // delete drums
+                storageRef.child(`results/${userData.id}/${parsedData.uid}/drums.mp3`).delete()
+                    .then(function() {
+                        console.log("drums deleted from bucket");
+                    }).catch();
             }
         }
     }
@@ -87,7 +100,10 @@ function deleteFiles(data) {
     askForVocalsRequest.onreadystatechange = function() {
         if(askForVocalsRequest.readyState === XMLHttpRequest.DONE && askForVocalsRequest.status === 200) {
             if(askForVocalsRequest.responseText === "false") {
-                // delete vocals
+                storageRef.child(`results/${userData.id}/${parsedData.uid}/vocals.mp3`).delete()
+                    .then(function() {
+                        console.log("vocals deleted from bucket");
+                    }).catch();
             }
         }
     }
@@ -102,23 +118,11 @@ function deleteFiles(data) {
     askForOtherRequest.onreadystatechange = function() {
         if(askForOtherRequest.readyState === XMLHttpRequest.DONE && askForOtherRequest.status === 200) {
             if(askForOtherRequest.responseText === "false") {
-                // delete other
+                storageRef.child(`results/${userData.id}/${parsedData.uid}/other.mp3`).delete()
+                    .then(function() {
+                        console.log("other was deleted from bucket");
+                    }).catch();
             }
         }
     }
-    
-    storageRef.child(`results/${userData.id}/${parsedData.uid}/drums.mp3`).delete()
-        .then(function() {
-            console.log("drums deleted from bucket");
-        }).catch();
-    
-    storageRef.child(`results/${userData.id}/${parsedData.uid}/vocals.mp3`).delete()
-        .then(function() {
-            console.log("vocals deleted from bucket");
-        }).catch();
-    
-    storageRef.child(`results/${userData.id}/${parsedData.uid}/other.mp3`).delete()
-        .then(function() {
-            console.log("other was deleted from bucket");
-        }).catch();
 }
