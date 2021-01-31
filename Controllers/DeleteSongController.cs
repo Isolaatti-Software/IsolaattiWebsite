@@ -31,20 +31,23 @@ namespace isolaatti_API.Controllers
                 if (user.Password.Equals(password))
                 {
                     Song songToDelete = db.Songs.Find(songId);
+                    if (songToDelete == null) return NotFound($"Song with id {songId} does not exist");
                     if (!songToDelete.OwnerId.Equals(userId)) return Unauthorized("Song is not yours");
                     // deletes database record of song
                     db.Songs.Remove(songToDelete);
                     db.SaveChanges();
-                    //return Ok(songToDelete.Uid);
+                    
+                    // urls are returned so that clients use them to see which files should not delete.
                     return Ok(new
                     {
                         uid = songToDelete.Uid,
-                        urls = new []
+                        // this object should be populated programatically when custom tracks are available
+                        urls = new
                         {
-                            songToDelete.BassUrl,
-                            songToDelete.DrumsUrl,
-                            songToDelete.OtherUrl,
-                            songToDelete.VoiceUrl
+                            bass = songToDelete.BassUrl,
+                            drums = songToDelete.DrumsUrl,
+                            vocals = songToDelete.VoiceUrl,
+                            other = songToDelete.OtherUrl
                         }
                     });
                 }
