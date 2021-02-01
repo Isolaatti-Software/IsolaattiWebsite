@@ -22,7 +22,7 @@
                 {
                     <div  class="list-group-item bg-dark text-white">
                         <div class="d-flex flex-column">
-                            <h6>"@notification.SongName - @notification.ArtistName" is ready. Click this notification to open in.</h6>
+                            <h6>"@notification.SongName - @notification.ArtistName" is ready. Click this notification to open it.</h6>
                             <div class="d-flex justify-content-between">
                                 <button type="button" class="btn btn-danger" onclick="deleteNotification(@notification.Id)">Delete</button>
                                 <a type="button" class="btn btn-success" asp-page="Play" asp-route-id="@notification.SongId">Play it</a>
