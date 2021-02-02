@@ -27,10 +27,13 @@
     <a asp-page="/WebApp/MakeAccount" class="nav-link custom-nav-link nav-link ml-auto mr-1">Sign up</a>
     <a asp-page="/WebApp/LogIn" class="nav-link custom-nav-link nav-link mr-1">Sign in</a>
 </nav>
-<div class="alert alert-success">
-    <strong>Hey, you are signed in.</strong> Do you want to import this project to your collection? 
-    <a asp-page="/WebApp/ImportFromShared" asp-route-id="@ViewData["uid"]">Import</a>
-</div>
+@if (Model.SignedIn)
+{
+    <div class="alert alert-success">
+        <strong>Hey, you are signed in.</strong> Do you want to import this project to your collection? 
+        <a asp-page="/WebApp/ImportFromShared" asp-route-id="@ViewData["uid"]">Import</a>
+    </div>
+}
 <h1 class="ml-2">@ViewData["owner"] shared a song with you from Isolaatti</h1>
 <p class="ml-2">@ViewData["name"] - @ViewData["artist"]</p>
 
