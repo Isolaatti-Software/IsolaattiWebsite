@@ -16,6 +16,8 @@ namespace isolaatti_API.Models
         public string DrumsUrl { get; set; }
         public string VoiceUrl { get; set; }
         public string OtherUrl { get; set; }
+        public string EffectsDefinitionJsonArray { get; set; }
+        public string TracksSettings { get; set; }
         public bool IsBeingProcessed { get; set; }
         public string Uid { get; set; }
         

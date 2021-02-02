@@ -34,7 +34,7 @@ function deleteShare(uid) {
     formData.append("uid", uid);
     
     let request = new XMLHttpRequest();
-    request.open("POST", "/UnshareSong");
+    request.open("POST", "/api/UnshareSong");
     request.send(formData);
     request.onreadystatechange = function() {
         if(request.readyState === XMLHttpRequest.DONE) {

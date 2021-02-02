@@ -9,20 +9,20 @@ body {
     color:white;
 }
 .custom-nav {
-    background-color: rgb(48, 9, 142);
+    background-color: rgba(48, 9, 142,0.9);
 }
 .custom-nav-link {
     color:white;
 }
 .custom-nav-link:hover {
     color: white;
-    background-color: rgb(55,55,75);
+    background-color: rgba(55,55,75,0.9);
 }
 .custom-active-nav-link {
     background-color: rgb(55,55,75);
 }
 #isolaatti_brand, #isolaatti_brand:hover {
-    background-color: rgb(98, 0, 238);!important;
+    background-color: rgba(98, 0, 238,0.9);!important;
 }
 @media screen and (max-width: 576px) {
     #isolaatti_brand {

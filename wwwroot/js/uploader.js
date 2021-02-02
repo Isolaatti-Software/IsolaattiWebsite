@@ -77,10 +77,10 @@ function registerFile(fileUrl, songName, songArtist) {
         formData.append("songArtist",songArtist);
     
     let createRecordRequest = new XMLHttpRequest();
-    createRecordRequest.open("POST", "/AddSongToQueue");
+    createRecordRequest.open("POST", "/api/AddSongToQueue");
     createRecordRequest.send(formData);
     createRecordRequest.onreadystatechange = function () {
-        if(createRecordRequest.readyState === XMLHttpRequest.DONE) {
+        if(createRecordRequest.readyState === XMLHttpRequest.DONE && createRecordRequest.status === 200) {
             alert("Song added to queue");
             window.location = "/WebApp/OnQueue";
         }

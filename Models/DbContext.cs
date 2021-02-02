@@ -23,5 +23,6 @@ namespace isolaatti_API.Models
         public DbSet<UserUsageData> UsageData { get; set; }
         public DbSet<AdminAccount> AdminAccounts { get; set; }
         public DbSet<SongQueue> SongsQueue { get; set; }
+        public DbSet<CustomTrack> CustomTracks { get; set; }
     }
 }

@@ -5,7 +5,7 @@ function deleteNotifications() {
         formData.append("password", userData.password);
         
         let request = new XMLHttpRequest();
-        request.open("POST", "/DeleteNotification/All");
+        request.open("POST", "/api/DeleteNotification/All");
         request.send(formData);
         request.onreadystatechange = function() {
             if(request.readyState === XMLHttpRequest.DONE) {
@@ -27,7 +27,7 @@ function deleteNotification(id) {
         formData.append("notificationId", id);
 
         let request = new XMLHttpRequest();
-        request.open("POST", "/DeleteNotification");
+        request.open("POST", "/api/DeleteNotification");
         request.send(formData);
         request.onreadystatechange = function() {
             if(request.readyState === XMLHttpRequest.DONE) {

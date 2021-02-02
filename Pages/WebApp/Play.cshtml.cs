@@ -21,7 +21,7 @@ namespace isolaatti_API.Pages.WebApp
         }
 
         public Song song;
-        public IActionResult OnGet(int id)
+        public IActionResult OnGet(int id, bool android=false)
         {
             var email = Request.Cookies["isolaatti_user_name"];
             var password = Request.Cookies["isolaatti_user_password"];
@@ -48,6 +48,7 @@ namespace isolaatti_API.Pages.WebApp
                     ViewData["userId"] = user.Id;
                     ViewData["password"] = user.Password;
 
+                    ViewData["isAndroid"] = android;
                     try
                     {
                         // get the song requested

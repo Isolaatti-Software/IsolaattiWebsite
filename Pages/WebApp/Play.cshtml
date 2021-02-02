@@ -13,12 +13,16 @@
 <audio src="@Model.song.OtherUrl" crossorigin="anonymous" preload="auto" class="track-audio-element" track-name="other"></audio>
     
     
-<div class="d-flex pl-1 pr-1" id="title-bar">
-    <h6 class="m-2 ml-auto">Isolaatti audio mixer (@Model.song.OriginalFileName - @Model.song.Artist)</h6>
-    <button type="button" class="btn btn-primary btn-sm mt-1 mb-1 ml-auto" id="hide-top-bar-button">
-        <i class="fas fa-chevron-up"></i>
-    </button>
-</div>
+@if ((bool) ViewData["isAndroid"] == false)
+{
+    <div class="d-flex pl-1 pr-1" id="title-bar">
+        <h6 class="m-2 ml-auto">Isolaatti audio mixer (@Model.song.OriginalFileName - @Model.song.Artist)</h6>
+        <button type="button" class="btn btn-primary btn-sm mt-1 mb-1 ml-auto" id="hide-top-bar-button">
+            <i class="fas fa-chevron-up"></i>
+        </button>
+    </div>
+}
+
 <div id="player-top-actionbar" class="d-flex flex-column m-1">
     <div class="d-flex">
         <h4></h4>
@@ -53,7 +57,7 @@
 </div>
 <div class="container-fluid mt-2 pl-0 pr-0">
     <div class="row m-1">
-        <div class="col-lg-2 col-md-3 col-sm-4 p-0">
+        <div class="col-lg-2 col-md-3 col-sm-3 p-0">
             <div id="master-output-controls" class="mr-1 d-flex flex-column h-100">
                 <h4>Master output</h4>
                 <div class="d-flex">
@@ -75,7 +79,7 @@
                     
             </div>
         </div>
-        <div class="col-lg-10 col-md-9 col-sm-8 p-0">
+        <div class="col-lg-10 col-md-9 col-sm-9 p-0">
             <div id="tracks-container" class="d-flex flex-column flex-fill h-100">
                 <div class="d-flex justify-content-between">
                     <h4>Tracks</h4>

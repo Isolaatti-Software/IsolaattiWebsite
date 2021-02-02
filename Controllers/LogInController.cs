@@ -11,7 +11,7 @@ using isolaatti_API.isolaatti_lib;
 
 namespace isolaatti_API.Controllers
 {
-    [Route("[controller]")]
+    [Route("/api/[controller]")]
     [ApiController]
     public class LogIn : ControllerBase
     {

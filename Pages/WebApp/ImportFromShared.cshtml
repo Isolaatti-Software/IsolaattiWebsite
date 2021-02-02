@@ -1,0 +1,16 @@
+@page
+@model isolaatti_API.Pages.WebApp.ImportFromShared
+
+@{
+    Layout = "Shared/_LayoutWebApp";
+    ViewData["Title"] = "Import from share";
+}
+<div class="container p-0">
+    <h1 class="m-2">You are trying to import this song</h1>
+    <p class="ml-2">@ViewData["SharedSongName"] - @ViewData["SharedSongArtist"]</p>
+    <p class="ml-2">This song will use one of your 10 song spaces. Do you want to continue?</p>
+    <form method="post">
+        <input type="hidden" name="songId" value="@ViewData["SongId"]">
+        <button type="submit" class="btn btn-success">Continue</button>
+    </form>
+</div>

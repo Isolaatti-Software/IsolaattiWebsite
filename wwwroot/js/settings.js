@@ -32,7 +32,7 @@ function setPreference(what, value) {
     formData.append("value", value);
     
     let request = new XMLHttpRequest();
-    request.open("POST","/SetPreferences");
+    request.open("POST","/api/SetPreferences");
     request.send(formData);
     request.onreadystatechange = function() {
         if(request.readyState === XMLHttpRequest.DONE) {
@@ -48,7 +48,7 @@ function deleteAllSongs() {
         formData.append("password", userData.password);
 
         let request = new XMLHttpRequest();
-        request.open("POST", "/DeleteSong/All");
+        request.open("POST", "/api/DeleteSong/All");
         request.send(formData);
         request.onreadystatechange = function() {
             if(request.readyState === XMLHttpRequest.DONE) {
@@ -66,7 +66,7 @@ function deleteAllShares() {
         formData.append("password", userData.password);
         
         let request = new XMLHttpRequest();
-        request.open("POST", "/UnshareSong/All");
+        request.open("POST", "/api/UnshareSong/All");
         request.send(formData);
         request.onreadystatechange = function() {
             if(request.readyState === XMLHttpRequest.DONE) {

@@ -12,6 +12,7 @@ let playButton = document.querySelector("#play_pause_button");
 let timeLabel = document.querySelector("#time-container");
 let stopButton = document.querySelector("#stop_button");
 let mainGainLabel = document.querySelector("#mix_gain_label");
+let mainGainBar = document.querySelector("#mainGainBar");
 
 let isolaattiMixer = new IsolaattiAudioMixer(mediaElements, function(event){
     /* Handle here slider of current position */
@@ -123,7 +124,7 @@ function getClockFormatFromSeconds(secs){
     }
     return `${Math.trunc(minutes)}:${seconds}`;
 }
-let mainGainBar = document.querySelector("#mainGainBar");
+
 function drawMainGainBar(audioAnalyserNode) {
     let bufferLenght = audioAnalyserNode.frequencyBinCount;
     

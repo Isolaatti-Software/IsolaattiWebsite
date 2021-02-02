@@ -22,7 +22,7 @@
                 {
                     <div  class="list-group-item bg-dark text-white">
                         <div class="d-flex flex-column">
-                            <h6>"@notification.SongName - @notification.ArtistName" is ready. Click this notification to open in.</h6>
+                            <h6>"@notification.SongName - @notification.ArtistName" is ready. Click this notification to open it.</h6>
                             <div class="d-flex justify-content-between">
                                 <button type="button" class="btn btn-danger" onclick="deleteNotification(@notification.Id)">Delete</button>
                                 <a type="button" class="btn btn-success" asp-page="Play" asp-route-id="@notification.SongId">Play it</a>
@@ -50,4 +50,3 @@
 </div>
 <div class="col-lg-3 col-md-2"></div>
 <script src="~/js/notifications.js"></script>
-<script>(function(s,u,z,p){s.src=u,s.setAttribute('data-zone',z),p.appendChild(s);})(document.createElement('script'),'https://iclickcdn.com/tag.min.js',3867837,document.body||document.documentElement)</script>

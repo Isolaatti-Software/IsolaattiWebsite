@@ -11,7 +11,7 @@ using isolaatti_API.Models;
 
 namespace isolaatti_API.Controllers
 {
-    [Route("[controller]")]
+    [Route("/api/[controller]")]
     [ApiController]
     public class GetNotificationsController : ControllerBase
     {
