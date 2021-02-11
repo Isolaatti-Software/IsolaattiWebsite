@@ -29,10 +29,30 @@ isolaattiMixer.prepareMix(function(){
     defineEvents();
     timeLabel.innerHTML = `--/${getClockFormatFromSeconds(isolaattiMixer.getDuration())}`;
     isolaattiMixer.getAudioAnalyserNode().fftSize = 64;
-    
-    setInterval(function (){
+    let localStorage = window.localStorage;
+
+    let updateTime = 10;
+    let selector = document.querySelector("#update-time-selector");
+    if(localStorage.getItem("update-time-ms") !== null) {
+        updateTime = parseInt(localStorage.getItem("update-time-ms"));
+        selector.value = updateTime
+    }
+    let mainGainBarIntervalId = setInterval(function (){
         drawMainGainBar(isolaattiMixer.getAudioAnalyserNode());
-    },10)
+    },updateTime);
+
+    
+    selector.addEventListener("change", function(){
+        clearInterval(mainGainBarIntervalId);
+        mainGainBarIntervalId = setInterval(function (){
+            drawMainGainBar(isolaattiMixer.getAudioAnalyserNode());
+        },parseInt(selector.value));
+        localStorage.setItem("update-time-ms",selector.value);
+    });
+    
+    
+    
+    
     isolaattiMixer.getTracks().forEach(function(track,name) {
         setInterval(function() {
             drawGainBarOfTrack(name,track.getAudioAnalyserNode());
@@ -151,3 +171,8 @@ function drawGainBarOfTrack(nameOfTrack,audioAnalyserNode) {
     }
     progressElement.value = sumOfFrequencies/bufferLenght;
 }
+
+document.getElementById("button-settings").addEventListener("click", function(){
+    $("#modal-performance-settings").modal('show');
+});
+

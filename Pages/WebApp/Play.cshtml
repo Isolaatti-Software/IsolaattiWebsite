@@ -17,7 +17,8 @@
 {
     <div class="d-flex pl-1 pr-1" id="title-bar">
         <h6 class="m-2 ml-auto">Isolaatti audio mixer (@Model.song.OriginalFileName - @Model.song.Artist)</h6>
-        <button type="button" class="btn btn-primary btn-sm mt-1 mb-1 ml-auto" id="hide-top-bar-button">
+        <button type="button" class="btn btn-primary btn-sm m-1 ml-auto" id="button-settings"><i class="fas fa-cog"></i></button>
+        <button type="button" class="btn btn-primary btn-sm mt-1 mb-1" id="hide-top-bar-button">
             <i class="fas fa-chevron-up"></i>
         </button>
     </div>
@@ -234,6 +235,35 @@
         
 </div>
     
+</div>
+<!-- Modals -->
+<div class="modal" tabindex="-1" id="modal-performance-settings">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark">
+            <div class="modal-header">
+                <h5 class="modal-title">Performance settings</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Choose time in ms to update gain bar</p>
+                <select id="update-time-selector">
+                    <option value="10">10ms</option>
+                    <option value="15">15ms</option>
+                    <option value="20">20ms</option>
+                    <option value="30">30ms</option>
+                    <option value="50">50ms</option>
+                    <option value="75">75ms</option>
+                    <option value="85">85ms</option>
+                    <option value="100">100ms</option>
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
 </div>
 <script src="https://erik-everardo.github.io/isolaatti-js-web-audio-mixer/isolaattiaudiomixer.js" crossorigin="anonymous"></script>
 <script src="~/js/play.js"></script>
