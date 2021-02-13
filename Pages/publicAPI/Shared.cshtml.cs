@@ -25,18 +25,16 @@ namespace isolaatti_API.Pages.publicAPI
             var email = Request.Cookies["isolaatti_user_name"];
             var password = Request.Cookies["isolaatti_user_password"];
 
-            if (email == null || password == null)
+            if (email != null && password != null)
             {
-                var user = db.Users.Single(user => user.Email.Equals(email));
-                if (user.Password.Equals(password))
+                // Put on screen alert to ask user to import project only if it's signed in
+                var user = db.Users.Single(user_ => user_.Email.Equals(email));
+                if (user != null)
                 {
-                    if (!user.EmailValidated)
-                        return RedirectToPage("LogIn", new
-                        {
-                            username = email,
-                            notVerified = true
-                        });
-                    SignedIn = true;
+                    if (user.Password.Equals(password) && user.EmailValidated)
+                    {
+                        SignedIn = true;
+                    }  
                 }
             }
             try
