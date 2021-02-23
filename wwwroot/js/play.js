@@ -32,31 +32,50 @@ isolaattiMixer.prepareMix(function(){
     let localStorage = window.localStorage;
 
     let updateTime = 10;
+
     let selector = document.querySelector("#update-time-selector");
+
+    
     if(localStorage.getItem("update-time-ms") !== null) {
         updateTime = parseInt(localStorage.getItem("update-time-ms"));
         selector.value = updateTime
     }
-    let mainGainBarIntervalId = setInterval(function (){
+
+    // these are for storing references to intervals, they are used below
+    // to clearInterval
+    let mainGainBarIntervalId = setInterval(function (){           // at the same time it defines the interval
         drawMainGainBar(isolaattiMixer.getAudioAnalyserNode());
     },updateTime);
+    let gainBarsOfEveryTrack = new Map();
 
-    
+    // this is executed when the value of the control changes
     selector.addEventListener("change", function(){
+        // sets the main bar update time
         clearInterval(mainGainBarIntervalId);
         mainGainBarIntervalId = setInterval(function (){
             drawMainGainBar(isolaattiMixer.getAudioAnalyserNode());
         },parseInt(selector.value));
+
+        // sets the tracks bars update time
+        isolaattiMixer.getTracks().forEach(function(track,name) {
+            // this stops rendering the graph
+            clearInterval(gainBarsOfEveryTrack.get(name));  
+            // and then the interval is set again, with the new update time
+            gainBarsOfEveryTrack.set(name,setInterval(function() {
+                drawGainBarOfTrack(name,track.getAudioAnalyserNode());
+            }, parseInt(selector.value)));
+        });
+
+        // stores the setting so that it can be used in the future
         localStorage.setItem("update-time-ms",selector.value);
     });
     
-    
-    
-    
     isolaattiMixer.getTracks().forEach(function(track,name) {
-        setInterval(function() {
+        // this stores references for every interval. Use this
+        // to do clearInterval and setInterval on event of changing
+        gainBarsOfEveryTrack.set(name,setInterval(function() {
             drawGainBarOfTrack(name,track.getAudioAnalyserNode());
-        });
+        },updateTime));
     });
 });
 
