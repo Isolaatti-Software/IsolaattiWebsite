@@ -12,6 +12,9 @@
             <i class="fas fa-user"></i>
         </h1>
     </div>
+    <nav class="d-flex justify-content-end">
+        <button class="btn btn-primary btn-sm" id="edit-profile-button">Edit profile</button>
+    </nav>
     <h2>@ViewData["name"]</h2>
     <h3>@ViewData["email"]</h3>
     <ul class="nav nav-tabs">
@@ -101,6 +104,32 @@
     </div>
 </div>
 <div class="col-lg-3 col-md-2"></div>
+
+<!-- Modals -->
+<div class="modal" id="modal-edit-profile">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit profile</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="edit-name-field">Name</label>
+                    <input type="text" id="edit-name-field" class="form-control">
+                    <label for="edit-email-field">Email</label>
+                    <input type="email" id="edit-email-field" class="form-control">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="save-edited-profile">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
 @if (Model.PasswordIsWrong)
 {
     <script>
