@@ -55,6 +55,16 @@ saveEditedProfileButton.addEventListener("click", function(event) {
     
 });
 
+let editNameField = document.getElementById("edit-name-field");
+let editEmailField = document.getElementById("edit-email-field");
+
+
+document.addEventListener("DOMContentLoaded", function(){
+    // Filling the fields in edit profile modal with current information
+    editEmailField.value = userData.email;
+    editNameField.value = userData.name;
+});
+
 function editProfile(newName, newEmail) {
     let formData = new FormData();
     formData.append("userId", userData.id);
