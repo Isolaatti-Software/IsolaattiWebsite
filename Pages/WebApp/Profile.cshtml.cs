@@ -35,7 +35,8 @@ namespace isolaatti_API.Pages.WebApp
             bool profileUpdate = false,
             bool nameAndEmailUsed = false,
             bool nameNotAvailable = false,
-            bool emailNotAvailable = false)
+            bool emailNotAvailable = false,
+            string statusData = "")
         {
 
             var email = Request.Cookies["isolaatti_user_name"];
@@ -65,6 +66,11 @@ namespace isolaatti_API.Pages.WebApp
                     ViewData["id"] = user.Id;
 
                     ViewData["profile_open"] = open;
+
+                    ViewData["profile_updated"] = profileUpdate;
+                    ViewData["emailNotAvailable"] = emailNotAvailable;
+                    ViewData["nameNotAvailable"] = nameNotAvailable;
+                    ViewData["statusData"] = statusData;
 
                     PasswordIsWrong = currentPasswordIsWrong;
                     var shares =
