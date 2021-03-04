@@ -34,13 +34,19 @@ isolaattiMixer.prepareMix(function(){
     let updateTime = 10;
 
     let selector = document.querySelector("#update-time-selector");
+    let enabledGraphsSwitch = document.getElementById("enable-gain-graphs");
 
     
     if(localStorage.getItem("update-time-ms") !== null) {
         updateTime = parseInt(localStorage.getItem("update-time-ms"));
         selector.value = updateTime
     }
-
+    // enables or disables the selector depending on the value stored
+    selector.disabled = localStorage.getItem("gainGraphsDisabled") === "1" || false;
+    
+    // sets checked depending on the value stored
+    enabledGraphsSwitch.checked = localStorage.getItem("gainGraphsDisabled") === "0" || false;
+    
     // these are for storing references to intervals, they are used below
     // to clearInterval
     let mainGainBarIntervalId = setInterval(function (){           // at the same time it defines the interval
@@ -68,6 +74,40 @@ isolaattiMixer.prepareMix(function(){
 
         // stores the setting so that it can be used in the future
         localStorage.setItem("update-time-ms",selector.value);
+    });
+    
+    // this is the "enable/disable gain graphs" switch event
+    document.getElementById("enable-gain-graphs").addEventListener("input", function(e)  {
+        // changes the selector disabled attribute
+        selector.disabled = !this.checked;
+        localStorage.setItem("gainGraphsDisabled", !this.checked ? "1" : "0" );
+        
+        // Here the graphs are enabled or disabled depending on what the value of switch (this) is
+        if(this.checked) {
+            // enabling master bar
+            mainGainBarIntervalId = setInterval(function() {
+                drawMainGainBar(isolaattiMixer.getAudioAnalyserNode());
+            }, parseInt(selector.value));
+            
+            // enabling every track bar
+            isolaattiMixer.getTracks().forEach(function(track, name) {
+               gainBarsOfEveryTrack.set(name, setInterval(function() {
+                   drawGainBarOfTrack(name,track.getAudioAnalyserNode())
+               },parseInt(selector.value)));
+            });
+        } else {
+            // disabling master bar
+            clearInterval(mainGainBarIntervalId);
+            mainGainBar.value = 0;
+            
+            // disabling every track bar
+            isolaattiMixer.getTracks().forEach(function(track,name) {
+                clearInterval(gainBarsOfEveryTrack.get(name));
+                document.querySelectorAll(".track-average-gain-bar").forEach(function(value) {
+                   value.value = 0; 
+                });
+            });
+        }
     });
     
     isolaattiMixer.getTracks().forEach(function(track,name) {
