@@ -116,16 +116,22 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="form-group">
-                    <label for="edit-name-field">Name</label>
-                    <input type="text" id="edit-name-field" class="form-control">
-                    <label for="edit-email-field">Email</label>
-                    <input type="email" id="edit-email-field" class="form-control">
-                </div>
+                <form id="edit-profile-form" method="post" asp-controller="EditProfile" asp-action="FromWeb">
+                    <div class="form-group">
+                        <label for="edit-name-field">Name</label>
+                        <input type="text" id="edit-name-field" class="form-control" name="newUsername">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-email-field">Email</label>
+                        <input type="email" id="edit-email-field" class="form-control" name="newEmail">
+                    </div>
+                    <input type="hidden" name="id" value="@ViewData["id"]">
+                    <input type="hidden" name="password" value="@ViewData["password"]">
+                </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="save-edited-profile">Save</button>
+                <button type="submit" class="btn btn-primary" id="save-edited-profile" form="edit-profile-form">Save</button>
             </div>
         </div>
     </div>
