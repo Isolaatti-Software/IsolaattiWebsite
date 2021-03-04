@@ -247,17 +247,28 @@
                 </button>
             </div>
             <div class="modal-body">
-                <p>Choose time in ms to update gain bar</p>
-                <select id="update-time-selector">
-                    <option value="10">10ms</option>
-                    <option value="15">15ms</option>
-                    <option value="20">20ms</option>
-                    <option value="30">30ms</option>
-                    <option value="50">50ms</option>
-                    <option value="75">75ms</option>
-                    <option value="85">85ms</option>
-                    <option value="100">100ms</option>
-                </select>
+                <div class="d-flex justify-content-between">
+                    <h6>Gain graphs</h6>
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="enable-gain-graphs" checked>
+                        <label class="custom-control-label" for="enable-gain-graphs"></label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="update-time-selector">Choose time in ms to update gain bar</label>
+                    <select id="update-time-selector" class="custom-select">
+                        <option value="10">10 ms (Higher CPU usage)</option>
+                        <option value="15">15 ms</option>
+                        <option value="20">20 ms</option>
+                        <option value="30">30 ms</option>
+                        <option value="50">50 ms</option>
+                        <option value="75">75 ms</option>
+                        <option value="85">85 ms</option>
+                        <option value="100">100 ms (Lower CPU usage)</option>
+                    </select>
+
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
