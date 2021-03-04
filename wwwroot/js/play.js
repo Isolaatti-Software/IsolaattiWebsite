@@ -45,7 +45,8 @@ isolaattiMixer.prepareMix(function(){
     selector.disabled = localStorage.getItem("gainGraphsDisabled") === "1" || false;
     
     // sets checked depending on the value stored
-    enabledGraphsSwitch.checked = localStorage.getItem("gainGraphsDisabled") === "0" || false;
+    enabledGraphsSwitch.checked = localStorage
+        .getItem("gainGraphsDisabled") === "0" || localStorage.getItem("gainGraphsDisabled") === null;
     
     // these are for storing references to intervals, they are used below
     // to clearInterval
