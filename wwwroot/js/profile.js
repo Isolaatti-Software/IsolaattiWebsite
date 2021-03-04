@@ -50,11 +50,6 @@ editProfileButton.addEventListener("click", function(event) {
     $('#modal-edit-profile').modal('show');
 });
 
-let saveEditedProfileButton = document.getElementById("save-edited-profile");
-saveEditedProfileButton.addEventListener("click", function(event) {
-    
-});
-
 let editNameField = document.getElementById("edit-name-field");
 let editEmailField = document.getElementById("edit-email-field");
 
@@ -64,25 +59,3 @@ document.addEventListener("DOMContentLoaded", function(){
     editEmailField.value = userData.email;
     editNameField.value = userData.name;
 });
-
-function editProfile(newName, newEmail) {
-    let formData = new FormData();
-    formData.append("userId", userData.id);
-    formData.append("password", userData.password);
-    formData.append("newEmail", newEmail);
-    formData.append("newUsername", newName);
-    
-    let request = new XMLHttpRequest();
-    request.open("POST", "/api/EditProfile");
-    request.send(formData);
-    request.onreadystatechange = function() {
-        if(request.readyState === XMLHttpRequest.DONE) {
-            switch (request.status) {
-                case 200 : console.log("all good"); break;
-                case 401 : console.log("profile was not updated"); //TODO: manage statuses
-                    break;
-                default : console.log("An error occurred, report!");
-            }
-        }
-    }
-}
