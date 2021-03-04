@@ -29,8 +29,15 @@ namespace isolaatti_API.Pages.WebApp
         {
             _db = dbContextApp;
         }
-        public IActionResult OnGet(string open="", bool currentPasswordIsWrong=false)
+        public IActionResult OnGet(
+            string open="", 
+            bool currentPasswordIsWrong = false,
+            bool profileUpdate = false,
+            bool nameAndEmailUsed = false,
+            bool nameNotAvailable = false,
+            bool emailNotAvailable = false)
         {
+
             var email = Request.Cookies["isolaatti_user_name"];
             var password = Request.Cookies["isolaatti_user_password"];
 
