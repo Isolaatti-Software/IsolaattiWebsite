@@ -39,5 +39,47 @@ namespace isolaatti_API.Controllers
             Db.SaveChanges();
             return Ok("profile updated");
         }
+
+        [HttpPost]
+        [Route("FromWeb")]
+        public IActionResult FromWeb([FromForm]int id, [FromForm] string password, [FromForm] string newUsername, [FromForm] string newEmail)
+        {
+            var user = Db.Users.Find(id);
+            if (user == null) return NotFound("User was not found");
+            if (!user.Password.Equals(password)) return Unauthorized();
+            
+            // verify if name or email is used by someone else
+            var nameRepeated = Db.Users.Any(_ => _.Name.Equals(newUsername) && !_.Id.Equals(id));
+            var emailRepeated = Db.Users.Any(_ => _.Email.Equals(newEmail) && !_.Id.Equals(id));
+
+            if (!nameRepeated && !emailRepeated)
+            {
+                user.Name = newUsername;
+                user.Email = newEmail;
+                Db.Users.Update(user);
+                Db.SaveChanges();
+                Response.Cookies.Append("isolaatti_user_name",newEmail);
+                return RedirectToPage("/WebApp/Profile", new {profileUpdate = true});
+            }
+
+            if (nameRepeated && emailRepeated)
+            {
+                return RedirectToPage("/WebApp/Profile", new {nameAndEmailUsed = true});
+            }
+
+            // as the name is used by someone else, just change the email
+            if (nameRepeated)
+            {
+                user.Email = newEmail;
+                Db.Users.Update(user);
+                Db.SaveChanges();
+                return RedirectToPage("/WebApp/Profile", new {nameNotAvailable = true, statusData = newUsername});
+            }
+
+            user.Name = newUsername;
+            Db.Users.Update(user);
+            Db.SaveChanges();
+            return RedirectToPage("/WebApp/Profile", new {emailNotAvailable = true, statusData = newEmail});
+        }
     }
 }
