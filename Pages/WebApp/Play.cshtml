@@ -96,12 +96,14 @@
                         </div>
                         <div class="d-flex">
                             <!-- Bass track-->
-                            <div class="track d-flex m-2 flex-column">
+                            <div class="track d-flex m-2 flex-column" 
+                                 track="@Model.TrackPreferencesList[0].Name"
+                                 color="@Model.TrackPreferencesList[0].HtmlColorHex">
                                 <div class="track-top-actionbar">
-                                    <p class="w-100">Bass</p>
+                                    <p class="w-100">@Model.TrackPreferencesList[0].Name</p>
                                     <a class="edit-track-button" href="#" 
                                        data-toggle="modal" data-target="#track-settings-modal"
-                                       data-track="Bass">
+                                       data-track="@Model.TrackPreferencesList[0].Name">
                                         <i class="fas fa-pencil-alt"></i>
                                     </a>
                                 </div>
@@ -133,12 +135,14 @@
                                 </div>
                             </div>
                             <!-- Drums track-->
-                            <div class="track d-flex m-2 flex-column">
+                            <div class="track d-flex m-2 flex-column" 
+                                 track="@Model.TrackPreferencesList[1].Name"
+                                 color="@Model.TrackPreferencesList[1].HtmlColorHex">
                                 <div class="track-top-actionbar">
-                                    <p class="w-100">Drums</p>
+                                    <p class="w-100">@Model.TrackPreferencesList[1].Name</p>
                                     <a class="edit-track-button" href="#" 
                                        data-toggle="modal" data-target="#track-settings-modal"
-                                       data-track="Bass">
+                                       data-track="@Model.TrackPreferencesList[1].Name">
                                         <i class="fas fa-pencil-alt"></i>
                                     </a>
                                 </div>
@@ -170,12 +174,14 @@
                                 </div>
                             </div>
                             <!-- Vocals track-->
-                            <div class="track d-flex m-2 flex-column">
+                            <div class="track d-flex m-2 flex-column" 
+                                 track="@Model.TrackPreferencesList[2].Name"
+                                 color="@Model.TrackPreferencesList[2].HtmlColorHex">
                                 <div class="track-top-actionbar">
-                                    <p class="w-100">Vocals</p>
+                                    <p class="w-100">@Model.TrackPreferencesList[2].Name</p>
                                     <a class="edit-track-button" href="#" 
                                        data-toggle="modal" data-target="#track-settings-modal"
-                                       data-track="Bass">
+                                       data-track="@Model.TrackPreferencesList[2].Name">
                                         <i class="fas fa-pencil-alt"></i>
                                     </a>
                                 </div>
@@ -207,12 +213,14 @@
                                 </div>
                             </div>
                             <!-- Other track-->
-                            <div class="track d-flex m-2 flex-column">
+                            <div class="track d-flex m-2 flex-column" 
+                                 track="@Model.TrackPreferencesList[3].Name"
+                                 color="@Model.TrackPreferencesList[3].HtmlColorHex">
                                 <div class="track-top-actionbar">
-                                    <p class="w-100">Other</p>
+                                    <p class="w-100">@Model.TrackPreferencesList[3].Name</p>
                                     <a class="edit-track-button" href="#" 
                                        data-toggle="modal" data-target="#track-settings-modal"
-                                       data-track="Bass">
+                                       data-track="@Model.TrackPreferencesList[3].Name">
                                         <i class="fas fa-pencil-alt"></i>
                                     </a>
                                 </div>
@@ -317,13 +325,16 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Accept</button>
+                <button type="button" class="btn btn-primary" id="track-settings-modal-accept-button">Accept</button>
             </div>
         </div>
     </div>
 </div>
 @section Scripts
 {
+    <script>
+    let songData = {id : @ViewData["songId"]}
+    </script>
     <script src="https://erik-everardo.github.io/isolaatti-js-web-audio-mixer/isolaattiaudiomixer.js" crossorigin="anonymous"></script>
     <script src="~/js/play.js"></script>
 }

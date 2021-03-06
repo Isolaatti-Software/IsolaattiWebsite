@@ -5,10 +5,13 @@
 * erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
 */
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using isolaatti_API.Classes;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace isolaatti_API.Pages.WebApp
 {
@@ -21,6 +24,7 @@ namespace isolaatti_API.Pages.WebApp
         }
 
         public Song song;
+        public List<TrackPreferences> TrackPreferencesList;
         public IActionResult OnGet(int id, bool android=false)
         {
             var email = Request.Cookies["isolaatti_user_name"];
@@ -47,6 +51,7 @@ namespace isolaatti_API.Pages.WebApp
                     ViewData["email"] = user.Email;
                     ViewData["userId"] = user.Id;
                     ViewData["password"] = user.Password;
+                    
 
                     ViewData["isAndroid"] = android;
                     try
@@ -54,8 +59,13 @@ namespace isolaatti_API.Pages.WebApp
                         // get the song requested
                         song = _db.Songs.Find(id);
                         if (song.OwnerId.Equals(user.Id))
+                        {
+                            TrackPreferencesList =
+                                JsonSerializer.Deserialize<List<TrackPreferences>>(song.TracksSettings);
+                            ViewData["songId"] = song.Id;
                             return Page();
-
+                        }
+                        
                         return StatusCode(404);
                     }
                     catch (InvalidOperationException)

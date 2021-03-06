@@ -236,3 +236,65 @@ document.getElementById("button-settings").addEventListener("click", function(){
     $("#modal-performance-settings").modal('show');
 });
 
+let trackSettingsModal = $("#track-settings-modal");
+
+/* Coloring tracks using the "color" attributes of every DOM element (defined at server side)*/
+document.querySelectorAll(".track").forEach(function (value) {
+   value.style.backgroundColor = value.attributes.getNamedItem("color").value; 
+});
+
+/*                      Events for "Track settings" modal. Using JQuery                          */
+let trackSettingsModalData = {
+    trackName : "",
+    currentColor : ""
+}
+trackSettingsModal.on('show.bs.modal', function(event) {
+    let button = $(event.relatedTarget);
+    trackSettingsModalData.trackName = button.data("track");
+    trackSettingsModalData.currentColor = 
+        document.querySelector(`.track[track=${trackSettingsModalData.trackName}]`)
+            .attributes.getNamedItem("color").value;
+    let modal = $(this);
+    modal.find('.modal-body #track-settings-modal-name-field').val(trackSettingsModalData.trackName);
+    modal.find(".modal-body #track-settings-modal-color-field").val(trackSettingsModalData.currentColor);
+});
+
+// accept button
+trackSettingsModal.find(".modal-footer #track-settings-modal-accept-button")
+    .on("click", function(event) {
+        // make change to UI and save it in backend
+        trackSettingsModalData.currentColor = 
+            trackSettingsModal.find('.modal-body #track-settings-modal-color-field').val();
+        
+        document.querySelector(`.track[track=${trackSettingsModalData.trackName}]`)
+            .style.backgroundColor = trackSettingsModalData.currentColor;
+        
+        let formDataColor = new FormData();
+        formDataColor.append("songId", songData.id);
+        formDataColor.append("trackName", trackSettingsModalData.trackName);
+        formDataColor.append("htmlHexColor", trackSettingsModalData.currentColor);
+        
+        let requestToChangeColor = new XMLHttpRequest();
+        requestToChangeColor.open("POST","/api/EditSingleTrackProperties/SetColor");
+        requestToChangeColor.send(formDataColor);
+        requestToChangeColor.onreadystatechange = function() {
+          if(requestToChangeColor.readyState === XMLHttpRequest.DONE) {
+              console.log(requestToChangeColor.responseText);
+              switch (requestToChangeColor.status) {
+                  case 200 : // everything ok
+                      trackSettingsModal.modal('hide');
+                      break;
+                  case 500 : // probably name of track doesn't point to any track
+                      // close modal
+                      trackSettingsModal.modal('hide');
+                      alert("Could not save color. Please report this...");
+                      break;
+                  default : // this should not happen ??
+                      trackSettingsModal.modal('hide');
+                      break;
+              }
+          }  
+        };
+        
+        
+});

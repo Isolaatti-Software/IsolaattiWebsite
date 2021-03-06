@@ -55,7 +55,7 @@ progress[orient=vertical] {
     min-width: 90px;
     max-width: 120px;
     border-radius: 15px;
-    background-color: black;
+    /*background-color: black;*/
     padding: 10px;
 }
 #player-top-actionbar {
