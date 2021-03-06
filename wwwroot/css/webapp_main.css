@@ -113,3 +113,11 @@ progress[orient=vertical] {
     color: #385898;
     font-size: larger;
 }
+
+.track-top-actionbar {
+    display: flex;
+}
+.edit-track-button {
+    color: white;
+    text-decoration: none;
+}
