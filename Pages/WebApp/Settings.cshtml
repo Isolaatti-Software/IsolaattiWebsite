@@ -39,4 +39,7 @@ document.querySelector("#notifyWhenProcessFinishes").checked = "@ViewData["notif
 document.querySelector("#notifyByEmail").checked = "@ViewData["notify_by_email"]" === "True";
 document.querySelector("#notifyWhenProcessStarts").checked = "@ViewData["notify_when_starts"]" === "True";
 </script>
-<script src="~/js/settings.js"></script>
+@section Scripts
+{
+    <script src="~/js/settings.js"></script>
+}

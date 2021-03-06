@@ -66,21 +66,24 @@
         </div>
     </form>
 </div>
-<script>
-let form = document.getElementById("make_account_form");
-form.onsubmit = function (){
-    if (document.getElementById("username_form_control").value === "" 
-    || 
-    document.getElementById("email_form_control").value === ""
-    ||
-    document.getElementById("password_form_control").value === ""){
-        alert("Fill all fields");
-        return false;
-    }
-    if (document.getElementById("password_form_control").value !== document.getElementById("confirm_password_form_control").value){
-        alert("Please confirm password");
-        return false;
-    } 
-    return true;
-};
-</script>
+@section Scripts
+{
+    <script>
+    let form = document.getElementById("make_account_form");
+    form.onsubmit = function (){
+        if (document.getElementById("username_form_control").value === "" 
+        || 
+        document.getElementById("email_form_control").value === ""
+        ||
+        document.getElementById("password_form_control").value === ""){
+            alert("Fill all fields");
+            return false;
+        }
+        if (document.getElementById("password_form_control").value !== document.getElementById("confirm_password_form_control").value){
+            alert("Please confirm password");
+            return false;
+        } 
+        return true;
+    };
+    </script>
+}
