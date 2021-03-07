@@ -24,13 +24,13 @@
        </div>
    </div>
    <h3 class="mt-1">Your password</h3>
-   <p><a asp-page="Profile" asp-route-open="password">Go to profile to change password</a></p>
+   <p><a asp-page="MyProfile" asp-route-open="password">Go to profile to change password</a></p>
    <h3 class="mt-1">Your songs</h3>
    <p>You have @ViewData["number_of_songs"] songs out of 10</p>
    <p><a asp-page="Songs">Go to collection</a></p>
    <p><a href="javascript: deleteAllSongs();">Delete all your songs</a></p>
    <h3 class="mt-1">Your shares</h3>
-   <p><a asp-page="Profile" asp-route-open="links">Go to your shares</a></p>
+   <p><a asp-page="MyProfile" asp-route-open="links">Go to your shares</a></p>
     <p><a href="javascript: deleteAllShares();">Delete all your shares</a></p>
 </div>
 <div class="col-lg-3 col-md-2"></div>

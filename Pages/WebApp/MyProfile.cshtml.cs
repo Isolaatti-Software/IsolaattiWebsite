@@ -18,14 +18,14 @@ using Org.BouncyCastle.Asn1.X509;
 
 namespace isolaatti_API.Pages.WebApp
 {
-    public class Profile : PageModel
+    public class MyProfile : PageModel
     {
         private readonly DbContextApp _db;
 
         public bool PasswordIsWrong = false;
         public List<ShareLink> Shares = new List<ShareLink>();
 
-        public Profile(DbContextApp dbContextApp)
+        public MyProfile(DbContextApp dbContextApp)
         {
             _db = dbContextApp;
         }
@@ -110,7 +110,7 @@ namespace isolaatti_API.Pages.WebApp
         {
             if (current_password == null || new_password == null)
             {
-                return RedirectToPage("Profile", new
+                return RedirectToPage("MyProfile", new
                 {
                     errorChangingPass = true
                 });
@@ -119,7 +119,7 @@ namespace isolaatti_API.Pages.WebApp
             
             if (!accountsManager.ChangeAPassword(userId, current_password, new_password))
             {
-                return RedirectToPage("Profile", new
+                return RedirectToPage("MyProfile", new
                 {
                     currentPasswordIsWrong = true
                 });

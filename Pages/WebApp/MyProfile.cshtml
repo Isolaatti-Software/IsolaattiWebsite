@@ -1,9 +1,9 @@
 @page
-@model isolaatti_API.Pages.WebApp.Profile
+@model isolaatti_API.Pages.WebApp.MyProfile
 
 @{
     Layout = "Shared/_LayoutWebApp";
-    ViewData["Title"] = ViewData["name"] + " profile";
+    ViewData["Title"] = ViewData["name"];
 }
 
 <div class="col-lg-3 col-md-2"></div>
@@ -29,26 +29,28 @@
     <nav class="d-flex justify-content-end">
         <button class="btn btn-primary btn-sm" id="edit-profile-button">Edit profile</button>
     </nav>
-    <h2>@ViewData["name"]</h2>
-    <h3>@ViewData["email"]</h3>
+    <h2 class="text-center">@ViewData["name"]</h2>
+    <h5 class="text-center">@ViewData["email"]</h5>
     <ul class="nav nav-tabs">
         <li class="nav-item">
-            <a class="nav-link disabled" id="stats_tab" data-toggle="tab" href="#stats_pane" role="tab" aria-controls="home" 
-               aria-selected="true">Stats</a>
+            <a class="nav-link active" id="shared-links_tab" data-toggle="tab" href="#shared-links_pane" role="tab" aria-controls="shared links"
+               aria-selected="true">
+                Shared links
+            </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link active" id="shared-links_tab" data-toggle="tab" href="#shared-links_pane" role="tab" aria-controls="shared links" 
-               aria-selected="true">Shared links</a>
+            <a class="nav-link" id="people_tab" data-toggle="tab" href="#people_pane" role="tab" aria-controls="people">
+                People
+            </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" id="password_tab" data-toggle="tab" href="#password_pane" role="tab" aria-controls="my password" 
-               aria-selected="true">Password</a>
+            <a class="nav-link" id="password_tab" data-toggle="tab" href="#password_pane" role="tab" aria-controls="my password"
+               aria-selected="true">
+                Password
+            </a>
         </li>
     </ul>
     <div class="tab-content">
-        <div class="tab-pane fade" id="stats_pane">
-            @* Write here stats *@
-        </div>
         <div class="tab-pane fade show active" id="shared-links_pane">
             @* Write here shared links table *@
             <ul class="list-group">
@@ -61,8 +63,8 @@
                             <div class="d-flex justify-content-between">
                                 <div class="d-flex">
                                     <div class="btn-group">
-                                        <button type="button" 
-                                                onclick="copyLinkToClipboard(this,'@share.Url')" 
+                                        <button type="button"
+                                                onclick="copyLinkToClipboard(this,'@share.Url')"
                                                 class="btn btn-light btn-sm" title="Copy to clipboard">
                                             <i class="fas fa-link"></i>
                                         </button>
@@ -83,9 +85,9 @@
                         </div>
                     </li>
                 }
-                
+
             </ul>
-            
+
         </div>
         <div class="tab-pane fade" id="password_pane">
             <h5>Change your password</h5>
@@ -94,7 +96,7 @@
                 <input type="hidden" name="userId" value="@ViewData["userId"]">
                 <div class="form-group">
                     <label for="current_password_field">Current password</label>
-                    <input type="password" name="current_password" class="form-control" 
+                    <input type="password" name="current_password" class="form-control"
                            id="current_password_field" required autocomplete="false">
                     <div class="invalid-feedback">
                         Current password is not correct, Try again.
@@ -102,7 +104,7 @@
                 </div>
                 <div class="form-group">
                     <label>New password</label>
-                    <input type="password" name="new_password" class="form-control" 
+                    <input type="password" name="new_password" class="form-control"
                            id="new_password_field" required autocomplete="false">
                 </div>
                 <div class="form-group">
@@ -114,6 +116,39 @@
                     Change
                 </button>
             </form>
+        </div>
+        <div class="tab-pane fade" id="people_pane">
+            <div class="accordion" id="people_accordion">
+                <div class="card bg-dark">
+                    <div class="card-header" id="headingOne">
+                        <h2 class="mb-0">
+                            <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#following" aria-expanded="true" aria-controls="following">
+                                Following
+                            </button>
+                        </h2>
+                    </div>
+
+                    <div id="following" class="collapse show" aria-labelledby="headingOne" data-parent="#people_accordion">
+                        <div class="card-body">
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="card bg-dark">
+                    <div class="card-header" id="headingTwo">
+                        <h2 class="mb-0">
+                            <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#followers" aria-expanded="false" aria-controls="followers">
+                                Followers
+                            </button>
+                        </h2>
+                    </div>
+                    <div id="followers" class="collapse" aria-labelledby="headingTwo" data-parent="#people_accordion">
+                        <div class="card-body">
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -176,6 +211,7 @@ else if (ViewData["profile_open"].Equals("links"))
     });
     </script>
 }
+
 @section Scripts
 {
     <script src="~/js/profile.js"></script>

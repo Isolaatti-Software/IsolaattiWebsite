@@ -53,8 +53,13 @@ namespace isolaatti_API.Controllers
             {
                 return Problem($"Track with name {trackName} was not found", statusCode: 500);
             }
+        }
 
-
+        [Route("SetName")]
+        [HttpPost]
+        public IActionResult SetName()
+        {
+            return Ok();
         }
     }
 }
