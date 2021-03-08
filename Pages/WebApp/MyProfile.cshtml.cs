@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json;
 using isolaatti_API.Classes;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
@@ -24,6 +25,8 @@ namespace isolaatti_API.Pages.WebApp
 
         public bool PasswordIsWrong = false;
         public List<ShareLink> Shares = new List<ShareLink>();
+        public List<User> Followers = new List<User>();
+        public List<User> Following = new List<User>();
 
         public MyProfile(DbContextApp dbContextApp)
         {
@@ -88,6 +91,18 @@ namespace isolaatti_API.Pages.WebApp
                     foreach (var share in shares)
                     {
                         this.Shares.Add(CastAnonymousObjectIntoShareLink(share));
+                    }
+                    
+                    var followersIds = JsonSerializer.Deserialize<List<int>>(user.FollowersIdsJson);
+                    foreach (var followerId in followersIds)
+                    {
+                        Followers.Add(_db.Users.Find(followerId));
+                    }
+
+                    var followingIds = JsonSerializer.Deserialize<List<int>>(user.FollowingIdsJson);
+                    foreach (var followingId in followingIds)
+                    {
+                        Following.Add(_db.Users.Find(followingId));
                     }
 
                     return Page();
