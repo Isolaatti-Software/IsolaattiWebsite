@@ -20,6 +20,8 @@ namespace isolaatti_API.Models
         public string TracksSettings { get; set; }
         public bool IsBeingProcessed { get; set; }
         public string Uid { get; set; }
+        public long NumberOfLikes { get; set; }
+        public bool IsPublicInApp { get; set; }
         
     }
 }

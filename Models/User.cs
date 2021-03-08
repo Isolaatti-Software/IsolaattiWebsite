@@ -24,5 +24,9 @@ namespace isolaatti_API.Models
         
         // language field is used to decide what language to use in notifications by E-mail
         public string AppLanguage { get; set; }
+        
+        // here store people (followers and following)
+        public string FollowersIdsJson { get; set; }
+        public string FollowingIdsJson { get; set; }
     }
 }
