@@ -16,7 +16,7 @@ body {
 }
 .custom-nav-link:hover {
     color: white;
-    background-color: rgba(55,55,75,0.9);
+    background-color: rgba(103, 103, 113, 0.9);
 }
 .custom-active-nav-link {
     background-color: rgb(55,55,75);
@@ -120,4 +120,26 @@ progress[orient=vertical] {
 .edit-track-button {
     color: white;
     text-decoration: none;
+}
+
+#search-bar {
+    background-color: black;
+}
+
+@keyframes appear-search-bar {
+    0% {
+        margin-top: -50px;
+    }
+    100% {
+        margin-top: 0;
+    }
+}
+
+@keyframes disappear-search-bar {
+    0% {
+        margin-top: 0;
+    }
+    100% {
+        margin-top: -50px;
+    }
 }

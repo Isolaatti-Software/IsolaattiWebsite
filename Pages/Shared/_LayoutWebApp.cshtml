@@ -32,7 +32,8 @@
         <a class="nav-link custom-nav-link" asp-page="Index" id="index-link"><i class="fas fa-home"></i> <span class="navbar-item-text">Home</span></a>
         <a class="nav-link custom-nav-link" asp-page="Songs" id="songs-link"><i class="fas fa-music"></i> <span class="navbar-item-text">Collection</span></a>
         <a class="nav-link custom-nav-link" asp-page="OnQueue" id="onqueue-link"><i class="fas fa-th-list"></i> <span class="navbar-item-text">On queue</span></a>
-        <a class="nav-link custom-nav-link nav-link ml-auto mr-1" asp-page="Notifications"><i class="fas fa-bell"></i></a>
+        <a class="nav-link custom-nav-link ml-auto mr-1" href="#" id="search-bar-button"><i class="fas fa-search"></i></a>
+        <a class="nav-link custom-nav-link nav-link mr-1" asp-page="Notifications"><i class="fas fa-bell"></i></a>
         <div class="dropdown ">
             <a class="dropdown-toggle nav-link custom-nav-link nav-link ml-auto mr-1" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-user-circle"></i>
@@ -48,6 +49,13 @@
             </div>
         </div>
     </nav>
+    <form id="form-search" asp-page="Search" method="get"></form>
+    <div id="search-bar" class="d-none justify-content-center">
+        <button type="button" class="btn btn-dark m-2"><i class="fas fa-window-close"></i></button>
+        <input type="text" class="form-control flex-grow-1 m-2" 
+               placeholder="Search people, your projects..." form="form-search" name="q"/>
+        <button type="submit" class="btn btn-primary m-2" form="form-search"><i class="fas fa-search"></i></button>
+    </div>
 }
 
 <div class="container-fluid p-0">
@@ -63,6 +71,25 @@
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+<script>
+document.getElementById("search-bar-button").addEventListener("click", function () {
+    let searchBar = document.getElementById("search-bar");
+    if (searchBar.classList.contains("d-none")) { 
+        searchBar.classList.replace("d-none","d-flex");
+        searchBar.style.animation = "appear-search-bar";
+        searchBar.style.animationDuration = "0.3s";
+    }
+    else if (searchBar.classList.contains("d-flex")) {
+        searchBar.style.animation = "disappear-search-bar";
+        searchBar.style.animationDuration = "0.3s";
+        let timeOut = setTimeout(function (){
+            searchBar.classList.replace("d-flex", "d-none");
+            clearTimeout(timeOut);
+        }, 300);
+        
+    }
+});
+</script>
 @RenderSection("Scripts", required: false)
 </body>
 </html>
