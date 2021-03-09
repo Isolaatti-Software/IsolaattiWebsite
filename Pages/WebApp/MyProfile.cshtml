@@ -60,7 +60,7 @@
                     <li class="list-group-item list-group-item-dark">
                         <div class="d-flex flex-column">
                             <h5 class="mb-1">@share.Name - @share.Artist</h5>
-                            <p>Link: <a href="@share.Url">@share.Url</a></p>
+                            <p class="share-link-text">Link: <a href="@share.Url">@share.Url</a></p>
                             <div class="d-flex justify-content-between">
                                 <div class="d-flex">
                                     <div class="btn-group">
@@ -119,50 +119,38 @@
             </form>
         </div>
         <div class="tab-pane fade" id="people_pane">
-            <div class="accordion" id="people_accordion">
-                <div class="card bg-dark text-white">
-                    <div class="card-header" id="headingOne">
-                        <h2 class="mb-0">
-                            <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#following" aria-expanded="true" aria-controls="following">
-                                Following
-                            </button>
-                        </h2>
-                    </div>
-
-                    <div id="following" class="collapse show" aria-labelledby="headingOne" data-parent="#people_accordion">
-                        <div class="card-body">
-                            <div class="list-group">
-                                @foreach (User user in Model.Following)
-                                {
-                                    <a class="list-group-item list-group-item-action bg-dark text-white"
-                                       asp-page="Profile" asp-route-id="@user.Id">
-                                        @user.Name
-                                    </a>
-                                }
-                            </div>
-                        </div>
+            <ul class="nav nav-pills mt-2 mb-2 justify-content-center">
+                <li class="nav-item"><a href="#following-pane" class="nav-link active" data-toggle="tab">Following</a> </li>
+                <li class="nav-item"><a href="#followers-pane" class="nav-link" data-toggle="tab">Followers</a> </li>
+            </ul>
+            <div class="tab-content">
+                
+                <div class="tab-pane show active" id="following-pane">
+                    <div class="profiles-list-container">
+                        @foreach (User user in Model.Following)
+                        {
+                            
+                            <a class="user-profile-card" asp-page="Profile" asp-route-id="@user.Id">
+                                <div class="profile-pic">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <h6>@user.Name</h6>
+                            </a>
+                        }
                     </div>
                 </div>
-                <div class="card bg-dark text-white">
-                    <div class="card-header" id="headingTwo">
-                        <h2 class="mb-0">
-                            <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#followers" aria-expanded="false" aria-controls="followers">
-                                Followers
-                            </button>
-                        </h2>
-                    </div>
-                    <div id="followers" class="collapse" aria-labelledby="headingTwo" data-parent="#people_accordion">
-                        <div class="card-body">
-                            <div class="list-group">
-                                @foreach (User user in Model.Followers)
-                                {
-                                    <a class="list-group-item list-group-item-action bg-dark text-white"
-                                       asp-page="Profile" asp-route-id="@user.Id">
-                                        @user.Name
-                                    </a>
-                                }
-                            </div>
-                        </div>
+                <div class="tab-pane" id="followers-pane">
+                    <div class="profiles-list-container">
+                        @foreach (User user in Model.Followers)
+                        {
+                            <a class="user-profile-card"
+                               asp-page="Profile" asp-route-id="@user.Id">
+                                <div class="profile-pic">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <h6>@user.Name</h6>
+                            </a>
+                        }
                     </div>
                 </div>
             </div>

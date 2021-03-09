@@ -151,3 +151,52 @@ progress[orient=vertical] {
         margin-right: 50vw;
     }
 }
+
+.share-link-text {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.profiles-list-container {
+    display: flex;
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+.user-profile-card {
+    width: 130px;
+    height: 130px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid white;
+    border-radius: 20px;
+    margin: 20px;
+    color: white!important;
+}
+
+.user-profile-card .profile-pic{
+    width: 70px;
+    height: 70px;
+    border: 1px solid white;
+    border-radius: 20px;
+    display: flex;
+    font-size: 50px;
+    justify-content: center;
+    align-items: center;
+    color:white;
+    text-decoration: none;
+    margin-top: 20px;
+    background-color: black;
+}
+.user-profile-card:hover{
+    background-color: rgba(0,0,0,0.2);
+    text-decoration: none;
+}
+.user-profile-card:hover .profile-pic {
+    text-decoration: none;
+    color: white!important;
+    
+}
