@@ -6,86 +6,29 @@
     Layout = "Shared/_LayoutWebApp";
     ViewData["Title"] = "Home";
 }
-<script>document.querySelector("#index-link").classList.add("custom-active-nav-link")</script>
+
 <div class="col-lg-3 col-md-2"></div>
 <div class="col-lg-6 col-md-8">
-    <h1>Hi, @ViewData["name"].</h1>
-    <h2>Add an audio file to the queue to process it!</h2>
-    @if (Model.LimitOfSongsReached)
-    {
-        <div class="alert alert-danger">
-            <h4 class="alert-heading">You are out of space</h4>
-            <p>You can only have up to <strong>10</strong> projects on your account. Delete some and try again.</p>
-        </div>
-    }
-    <p><a asp-page="OnQueue">Manage queue</a></p>
-    <p class="mt-4">Only MP3 files are allowed</p>
-    <div class="custom-file">
-        <input type="file" class="custom-file-input" id="audioFileInput" accept="audio/mpeg">
-        <label class="custom-file-label" for="customFile" id="label-input-file">Choose file</label>
-    </div>
-    <p class="mt-4">Some data has been automatically filled in, but you can change it anyway</p>
-    <div class="form-group">
-        <label for="field_songs_name">Song</label>
-        <input type="text" class="form-control" id="field_songs_name" placeholder="Name goes here" disabled autocomplete="false">
-    </div>
-    <div class="form-group">
-        <label for="field_songs_artist">Artist</label>
-        <input type="text" class="form-control" id="field_songs_artist" placeholder="Artist goes here" disabled autocomplete="false">
-    </div>
-    <div class="d-flex">
-        <div class="progress w-100 mt-2 mb-2" id="progress-bar-container" style="visibility: hidden">
-            <div id="file_upload_progress_bar" class="progress-bar" role="progressbar" style="width: 0" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-        </div>
-    </div>
-    <div class="d-flex justify-content-center">
-        
-        @if (!Model.LimitOfSongsReached)
-        {
-            <button class="btn btn-primary" id="btnUploadAudioFile">
-                GO!
-            </button>
-        }
-        else
-        {
-            <button disabled class="btn btn-primary" id="btnUploadAudioFile">
-                GO!
-            </button>
-        }
-    </div>
+    <section id="new-project-area" class="d-flex flex-column pt-2 rounded-border-black black-box-shadow mt-2 mb-3 p-4">
+        <h5>New project</h5>
+        <p>Upload an audio file and get "Drums", "Bass", "Vocals" and "Others". You can record your tracks and add them later</p>
+        <a class="btn btn-primary" asp-page="NewProject">Create new project</a>
+    </section>
+    <section class="d-flex flex-column p-4 pt-1 rounded-border-black black-box-shadow mt-2 mb-3" id="posting-area">
+        <h5 class="mb-2">Simple text posting</h5>
+        <textarea class="form-control w-100" id="simple-post-textarea" placeholder="Say something to your followers" rows="1"></textarea>
+        <button type="button" class="btn btn-primary mt-1">Post</button>
+    </section>
 </div>
 <div class="col-lg-3 col-md-2"></div>
 
 @section Scripts
 {
-    @if (!Model.LimitOfSongsReached)
-    {
-        <script src="https://www.gstatic.com/firebasejs/7.23.0/firebase-app.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/7.23.0/firebase-storage.js"></script>
-        @if (Model.Environment.IsDevelopment())
-        {
-            <script>
-                var firebaseConfig = {
-                    apiKey: "AIzaSyDZHVXLR_1imwVb2mCArnYpdbNx6XUPZBQ",
-                    authDomain: "isolaatti-b6641.firebaseapp.com",
-                    databaseURL: "https://isolaatti-b6641.firebaseio.com",
-                    projectId: "isolaatti-b6641",
-                    storageBucket: "isolaatti-b6641.appspot.com",
-                    messagingSenderId: "556033448926",
-                    appId: "1:556033448926:web:35759afc37d6a1585b1b4f",
-                    measurementId: "G-JQV4WX75RK"
-                };
-                // Initialize Firebase
-                firebase.initializeApp(firebaseConfig);
-                var storage = firebase.storage();
-            </script>
-        }
-        else
-        {
-            <script>
-                var firebaseConfig={apiKey:"AIzaSyDZHVXLR_1imwVb2mCArnYpdbNx6XUPZBQ",authDomain:"isolaatti-b6641.firebaseapp.com",databaseURL:"https://isolaatti-b6641.firebaseio.com",projectId:"isolaatti-b6641",storageBucket:"isolaatti-b6641.appspot.com",messagingSenderId:"556033448926",appId:"1:556033448926:web:35759afc37d6a1585b1b4f",measurementId:"G-JQV4WX75RK"};firebase.initializeApp(firebaseConfig);var storage=firebase.storage();
-            </script>
-        }
-        <script src="~/js/uploader.js"></script>
-    }
+    <script>
+    document.querySelector('#simple-post-textarea').addEventListener('focus', function(){
+        setTimeout(function (){
+            window.scroll({top:window.innerHeight,left: 0,behavior:'smooth'});
+        },200)
+    });
+    </script>
 }

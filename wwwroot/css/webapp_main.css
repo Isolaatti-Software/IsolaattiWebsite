@@ -7,6 +7,7 @@
 body {
     background-color: rgb(55,55,75);
     color:white;
+    scroll-behavior: smooth;
 }
 .custom-nav {
     background-color: rgba(48, 9, 142,0.9);
@@ -209,4 +210,15 @@ progress[orient=vertical] {
 
 .black-box-shadow {
     box-shadow: 3px 2px black;
+}
+
+#simple-post-textarea{
+    resize: vertical;
+    height: 50px;
+    transition: height 0.1s ease-out;
+}
+
+#simple-post-textarea:focus {
+    height: 50vh;
+    transition: height 0.1s ease-in;
 }
