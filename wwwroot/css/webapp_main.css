@@ -177,7 +177,7 @@ progress[orient=vertical] {
     color: white!important;
 }
 
-.user-profile-card .profile-pic{
+.profile-pic {
     width: 70px;
     height: 70px;
     border: 1px solid white;
@@ -191,6 +191,7 @@ progress[orient=vertical] {
     margin-top: 20px;
     background-color: black;
 }
+
 .user-profile-card:hover{
     background-color: rgba(0,0,0,0.2);
     text-decoration: none;
@@ -199,4 +200,13 @@ progress[orient=vertical] {
     text-decoration: none;
     color: white!important;
     
+}
+
+.rounded-border-black {
+    border: 1px solid black;
+    border-radius: 20px;
+}
+
+.black-box-shadow {
+    box-shadow: 3px 2px black;
 }

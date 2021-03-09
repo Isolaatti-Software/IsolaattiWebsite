@@ -9,29 +9,57 @@
 
 <div class="col-lg-3 col-md-2"></div>
 <div class="col-lg-6 col-md-8">
-    <div class="d-flex justify-content-center">
-        <h1 class="display-1">
-            <i class="fas fa-user"></i>
-        </h1>
-    </div>
-    <h2 class="text-center">@ViewData["profile_name"]</h2>
-    <h5 class="text-center">@ViewData["profile_email"]</h5>
-    <nav class="d-flex flex-column justify-content-center">
-            @if ((bool) ViewData["thisUserIsFollowingMe"])
-            {
-                <span class="text-white text-center mb-2 ml-auto mr-auto p-2 badge badge-pill badge-dark">
-                    <i class="fas fa-user-friends"></i> Follows you
+    <nav class="d-flex flex-column justify-content-center mt-3 mb-4 p-3 rounded-border-black black-box-shadow">
+        <div class="d-flex justify-content-center">
+            <div class="profile-pic">
+                <i class="fas fa-user"></i>
+            </div>
+        </div>
+        <h2 class="text-center">@ViewData["profile_name"]</h2>
+        <h5 class="text-center">@ViewData["profile_email"]</h5>
+        <div class="d-flex justify-content-between">
+            <div class="d-flex flex-nowrap overflow-auto">
+                <span class="text-white text-center mb-2 p-2 mr-1 badge badge-pill badge-info">
+                    Followers: <b>@ViewData["numberOfFollowers"]</b>
                 </span>
-            }
+                <span class="text-white text-center mb-2 p-2 mr-1 badge badge-pill badge-info">
+                    Following: <b>@ViewData["numberOfFollowing"]</b>
+                </span>
+                @if ((bool) ViewData["thisUserIsFollowingMe"])
+                {
+                    <span class="text-white text-center mb-2 p-2 mr-1 badge badge-pill badge-success">
+                        <i class="fas fa-user-friends"></i> Follows you
+                    </span>
+                }
+            </div>
+            <div class="d-flex flex-nowrap overflow-auto">
+                <span class="text-white text-center mb-2 p-2 mr-1 badge badge-pill badge-info">
+                    Likes
+                </span>
+                <span class="text-white text-center mb-2 p-2 mr-1 badge badge-pill badge-info">
+                    Posts
+                </span>
+            </div>
+        </div>
+        <div class="d-flex">
             @if ((bool) ViewData["followingThisUser"])
             {
-                <button class="btn btn-primary btn-sm mb-2" id="followButton">Unfollow <i class="fas fa-times"></i></button>
+                <button class="btn btn-primary btn-sm mb-2 w-100" id="followButton">Unfollow <i class="fas fa-times"></i></button>
             }
             else
             {
-                <button class="btn btn-primary btn-sm mb-2" id="followButton">Follow <i class="fas fa-check"></i></button>
+                <button class="btn btn-primary btn-sm mb-2 w-100" id="followButton">Follow <i class="fas fa-check"></i></button>
             }
-        </nav>
+        </div>
+    </nav>
+    <h5>Public projects</h5>
+    <section id="public-projects-section" class="d-flex black-box-shadow rounded-border-black mb-4" style="height: 200px">
+        
+    </section>
+    <h5>Text posts</h5>
+    <section id="generic-text-posts" class="d-flex black-box-shadow rounded-border-black" style="height: 600px">
+            
+    </section>
 </div>
 <div class="col-lg-3 col-md-2"></div>
 
