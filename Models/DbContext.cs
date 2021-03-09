@@ -24,5 +24,8 @@ namespace isolaatti_API.Models
         public DbSet<AdminAccount> AdminAccounts { get; set; }
         public DbSet<SongQueue> SongsQueue { get; set; }
         public DbSet<CustomTrack> CustomTracks { get; set; }
+        public DbSet<Comment> Comments { get; set; }
+        public DbSet<SimpleTextPost> SimpleTextPosts { get; set; }
+        public DbSet<ProjectComment> ProjectComments { get; set; }
     }
 }
