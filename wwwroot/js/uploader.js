@@ -5,7 +5,7 @@
 * erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
 *
 * uploader.js
-* This file is intended to be inserted at the bottom of the WebApp/Index.cshtml (where the uploading form is)
+* This file is intended to be inserted at the bottom of the Pages/Index.cshtml (where the uploading form is)
 * What this does:
 *   Adds event listener to input file: to perform DOM changes when a file has been selected
 *   Adds event listener to "GO" button: to perform some validation and then upload the file.
