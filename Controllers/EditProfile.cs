@@ -59,12 +59,12 @@ namespace isolaatti_API.Controllers
                 Db.Users.Update(user);
                 Db.SaveChanges();
                 Response.Cookies.Append("isolaatti_user_name",newEmail);
-                return RedirectToPage("/WebApp/MyProfile", new {profileUpdate = true});
+                return RedirectToPage("/MyProfile", new {profileUpdate = true});
             }
 
             if (nameRepeated && emailRepeated)
             {
-                return RedirectToPage("/WebApp/MyProfile", new {nameAndEmailUsed = true});
+                return RedirectToPage("/MyProfile", new {nameAndEmailUsed = true});
             }
 
             // as the name is used by someone else, just change the email
@@ -73,13 +73,13 @@ namespace isolaatti_API.Controllers
                 user.Email = newEmail;
                 Db.Users.Update(user);
                 Db.SaveChanges();
-                return RedirectToPage("/WebApp/MyProfile", new {nameNotAvailable = true, statusData = newUsername});
+                return RedirectToPage("/MyProfile", new {nameNotAvailable = true, statusData = newUsername});
             }
 
             user.Name = newUsername;
             Db.Users.Update(user);
             Db.SaveChanges();
-            return RedirectToPage("/WebApp/MyProfile", new {emailNotAvailable = true, statusData = newEmail});
+            return RedirectToPage("/MyProfile", new {emailNotAvailable = true, statusData = newEmail});
         }
     }
 }

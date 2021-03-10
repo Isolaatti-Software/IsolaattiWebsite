@@ -16,7 +16,7 @@ namespace isolaatti_API.Controllers
         {
             Response.Cookies.Delete("isolaatti_user_name");
             Response.Cookies.Delete("isolaatti_user_password");
-            return RedirectToPage("/WebApp/Index");
+            return RedirectToPage("/Index");
         }
     }
 }

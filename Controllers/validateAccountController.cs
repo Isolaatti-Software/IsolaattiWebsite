@@ -35,7 +35,7 @@ namespace isolaatti_API.Controllers
                     return StatusCode(404);
                 }
 
-                return RedirectToPage("/WebApp/LogIn", new
+                return RedirectToPage("/LogIn", new
                 {
                     justVerified = true,
                     username = userToValidate.Email
