@@ -222,3 +222,20 @@ progress[orient=vertical] {
     height: 50vh;
     transition: height 0.1s ease-in;
 }
+
+.horizontal-panel-container {
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-wrap: nowrap;
+    flex-grow: 1;
+    scroll-behavior: smooth;
+}
+
+.horizontal-panel-container .panel {
+    min-width: 100%;
+    display: flex;
+    padding: 10px;
+    box-sizing: border-box;
+    flex-direction: column;
+}
