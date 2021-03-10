@@ -1,3 +1,12 @@
+/*
+* Isolaatti project
+* Erik Cavazos, 2021
+* This program is not allowed to be copied or reused without explicit permission.
+* erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
+* 
+* This file should be placed in the Pages/Notifications.cshtml
+*/
+
 function deleteNotifications() {
     if(confirm("Do you really want to delete all notifications?")) {
         let formData = new FormData();
