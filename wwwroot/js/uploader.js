@@ -82,7 +82,7 @@ function registerFile(fileUrl, songName, songArtist) {
     createRecordRequest.onreadystatechange = function () {
         if(createRecordRequest.readyState === XMLHttpRequest.DONE && createRecordRequest.status === 200) {
             alert("Song added to queue");
-            window.location = "/WebApp/OnQueue";
+            window.location = "/OnQueue";
         }
     }
 }
