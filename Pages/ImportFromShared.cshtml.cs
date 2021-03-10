@@ -4,7 +4,7 @@ using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace isolaatti_API.Pages.WebApp
+namespace isolaatti_API.Pages
 {
     public class ImportFromShared : PageModel
     {

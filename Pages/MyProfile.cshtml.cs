@@ -17,7 +17,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Org.BouncyCastle.Asn1.X509;
 
-namespace isolaatti_API.Pages.WebApp
+namespace isolaatti_API.Pages
 {
     public class MyProfile : PageModel
     {

@@ -4,23 +4,26 @@
 * This program is not allowed to be copied or reused without explicit permission.
 * erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
 */
-
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using isolaatti_API.Models;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace isolaatti_API.Pages.WebApp
+namespace isolaatti_API.Pages
 {
-    public class Settings : PageModel
+    public class Songs : PageModel
     {
         private readonly DbContextApp _db;
-        
-        public Settings(DbContextApp dbContextApp)
+        public IQueryable<Song> SongsList;
+        public IQueryable<Song> SongsBeingProcessedList;
+        public IWebHostEnvironment Environment;
+
+        public Songs(DbContextApp dbContextApp, IWebHostEnvironment env)
         {
             _db = dbContextApp;
+            Environment = env;
         }
         public IActionResult OnGet()
         {
@@ -48,14 +51,20 @@ namespace isolaatti_API.Pages.WebApp
                     ViewData["email"] = user.Email;
                     ViewData["userId"] = user.Id;
                     ViewData["password"] = user.Password;
-
-                    // values for settings
-                    ViewData["notify_by_email"] = user.NotifyByEmail;
-                    ViewData["notify_when_starts"] = user.NotifyWhenProcessStarted;
-                    ViewData["notify_when_finish"] = user.NotifyWhenProcessFinishes;
-
-                    ViewData["number_of_songs"] = _db.Songs.Count(song => song.OwnerId.Equals(user.Id));
-
+                    // possible errors if there are no songs in the database (empty table)
+                    try
+                    {
+                        // get songs
+                        SongsList = _db.Songs
+                            .Where(song => song.OwnerId.Equals(user.Id) && !song.IsBeingProcessed);
+                    
+                        // get song that are being processed
+                        SongsBeingProcessedList = _db.Songs
+                            .Where(song => song.OwnerId.Equals(user.Id) && song.IsBeingProcessed);
+                    }
+                    catch (InvalidOperationException)
+                    {
+                    }
                     return Page();
                 }
             }

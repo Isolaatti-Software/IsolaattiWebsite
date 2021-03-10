@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Razor.Language.Intermediate;
 
-namespace isolaatti_API.Pages.WebApp
+namespace isolaatti_API.Pages
 {
     public class LogIn : PageModel
     {

@@ -4,28 +4,25 @@
 * This program is not allowed to be copied or reused without explicit permission.
 * erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
 */
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using isolaatti_API.Classes;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using JsonSerializer = System.Text.Json.JsonSerializer;
 
-namespace isolaatti_API.Pages.WebApp
+namespace isolaatti_API.Pages
 {
-    public class Play : PageModel
+    public class Settings : PageModel
     {
         private readonly DbContextApp _db;
-        public Play(DbContextApp dbContextApp)
+        
+        public Settings(DbContextApp dbContextApp)
         {
             _db = dbContextApp;
         }
-
-        public Song song;
-        public List<TrackPreferences> TrackPreferencesList;
-        public IActionResult OnGet(int id, bool android=false)
+        public IActionResult OnGet()
         {
             var email = Request.Cookies["isolaatti_user_name"];
             var password = Request.Cookies["isolaatti_user_password"];
@@ -51,28 +48,15 @@ namespace isolaatti_API.Pages.WebApp
                     ViewData["email"] = user.Email;
                     ViewData["userId"] = user.Id;
                     ViewData["password"] = user.Password;
-                    
 
-                    ViewData["isAndroid"] = android;
-                    try
-                    {
-                        // get the song requested
-                        song = _db.Songs.Find(id);
-                        if (song.OwnerId.Equals(user.Id))
-                        {
-                            TrackPreferencesList =
-                                JsonSerializer.Deserialize<List<TrackPreferences>>(song.TracksSettings);
-                            ViewData["songId"] = song.Id;
-                            return Page();
-                        }
-                        
-                        return StatusCode(404);
-                    }
-                    catch (InvalidOperationException)
-                    {
-                        return StatusCode(404);
-                    }
-                    
+                    // values for settings
+                    ViewData["notify_by_email"] = user.NotifyByEmail;
+                    ViewData["notify_when_starts"] = user.NotifyWhenProcessStarted;
+                    ViewData["notify_when_finish"] = user.NotifyWhenProcessFinishes;
+
+                    ViewData["number_of_songs"] = _db.Songs.Count(song => song.OwnerId.Equals(user.Id));
+
+                    return Page();
                 }
             }
             catch (InvalidOperationException)

@@ -1,30 +1,20 @@
-/*
-* Isolaatti project
-* Erik Cavazos, 2020
-* This program is not allowed to be copied or reused without explicit permission.
-* erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
-*/
-using System;
+﻿using System;
 using System.Linq;
 using isolaatti_API.Models;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace isolaatti_API.Pages.WebApp
+namespace isolaatti_API.Pages
 {
-    public class Songs : PageModel
+    public class Notifications : PageModel
     {
-        private readonly DbContextApp _db;
-        public IQueryable<Song> SongsList;
-        public IQueryable<Song> SongsBeingProcessedList;
-        public IWebHostEnvironment Environment;
-
-        public Songs(DbContextApp dbContextApp, IWebHostEnvironment env)
+        private readonly DbContextApp db;
+        public Notifications(DbContextApp dbContext)
         {
-            _db = dbContextApp;
-            Environment = env;
+            db = dbContext;
         }
+
+        public IQueryable<Notification> UserNotifications;
         public IActionResult OnGet()
         {
             var email = Request.Cookies["isolaatti_user_name"];
@@ -37,7 +27,7 @@ namespace isolaatti_API.Pages.WebApp
 
             try
             {
-                var user = _db.Users.Single(user => user.Email.Equals(email));
+                var user = db.Users.Single(user => user.Email.Equals(email));
                 if (user.Password.Equals(password))
                 {
                     if (!user.EmailValidated)
@@ -51,20 +41,10 @@ namespace isolaatti_API.Pages.WebApp
                     ViewData["email"] = user.Email;
                     ViewData["userId"] = user.Id;
                     ViewData["password"] = user.Password;
-                    // possible errors if there are no songs in the database (empty table)
-                    try
-                    {
-                        // get songs
-                        SongsList = _db.Songs
-                            .Where(song => song.OwnerId.Equals(user.Id) && !song.IsBeingProcessed);
                     
-                        // get song that are being processed
-                        SongsBeingProcessedList = _db.Songs
-                            .Where(song => song.OwnerId.Equals(user.Id) && song.IsBeingProcessed);
-                    }
-                    catch (InvalidOperationException)
-                    {
-                    }
+                    // Get user notifications
+                    UserNotifications = db.Notifications.Where(notification => notification.UserId.Equals(user.Id))
+                        .OrderByDescending(notification => notification.Id);
                     return Page();
                 }
             }
