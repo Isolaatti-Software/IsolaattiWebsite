@@ -22,140 +22,156 @@
     {
         <div class="alert alert-warning"><strong>@ViewData["statusData"]</strong> is not available</div>
     }
-    <div class="d-flex justify-content-center">
-        <h1 class="display-1">
-            <i class="fas fa-user"></i>
-        </h1>
-    </div>
-    <nav class="d-flex justify-content-end">
-        <button class="btn btn-primary btn-sm" id="edit-profile-button">Edit profile</button>
-    </nav>
-    <h2 class="text-center">@ViewData["name"]</h2>
-    <h5 class="text-center">@ViewData["email"]</h5>
-    <ul class="nav nav-tabs">
-        <li class="nav-item">
-            <a class="nav-link active" id="shared-links_tab" data-toggle="tab" href="#shared-links_pane" role="tab" aria-controls="shared links"
-               aria-selected="true">
-                Shared links
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" id="people_tab" data-toggle="tab" href="#people_pane" role="tab" aria-controls="people">
-                People
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" id="password_tab" data-toggle="tab" href="#password_pane" role="tab" aria-controls="my password"
-               aria-selected="true">
-                Password
-            </a>
-        </li>
-    </ul>
-    <div class="tab-content">
-        <div class="tab-pane fade show active" id="shared-links_pane">
-            @* Write here shared links table *@
-            <ul class="list-group">
-                @foreach (var share in Model.Shares)
-                {
-                    <li class="list-group-item list-group-item-dark">
-                        <div class="d-flex flex-column">
-                            <h5 class="mb-1">@share.Name - @share.Artist</h5>
-                            <p class="share-link-text">Link: <a href="@share.Url">@share.Url</a></p>
-                            <div class="d-flex justify-content-between">
-                                <div class="d-flex">
-                                    <div class="btn-group">
-                                        <button type="button"
-                                                onclick="copyLinkToClipboard(this,'@share.Url')"
-                                                class="btn btn-light btn-sm" title="Copy to clipboard">
-                                            <i class="fas fa-link"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-light btn-sm" title="Share on Facebook">
-                                            <i class="fab fa-facebook"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-light btn-sm" title="Share on Twitter">
-                                            <i class="fab fa-twitter-square"></i>
+    <section class="rounded-border-black black-box-shadow mt-3 p-2">
+        <div class="d-flex justify-content-center">
+            <h1 class="display-1">
+                <i class="fas fa-user"></i>
+            </h1>
+        </div>
+        <nav class="d-flex justify-content-end">
+            <button class="btn btn-primary btn-sm" id="edit-profile-button">Edit profile</button>
+        </nav>
+        <h2 class="text-center">@ViewData["name"]</h2>
+        <h5 class="text-center">@ViewData["email"]</h5>
+    </section>
+    <section class="rounded-border-black black-box-shadow mt-4 p-2">
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <a class="nav-link active" id="shared-links_tab" data-toggle="tab" href="#shared-links_pane" role="tab" aria-controls="shared links"
+                   aria-selected="true">
+                    Shared links
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="people_tab" data-toggle="tab" href="#people_pane" role="tab" aria-controls="people">
+                    People
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="password_tab" data-toggle="tab" href="#password_pane" role="tab" aria-controls="my password"
+                   aria-selected="true">
+                    Password
+                </a>
+            </li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="shared-links_pane">
+                @* Write here shared links table *@
+                <ul class="list-group">
+                    @if (!Model.Shares.Any())
+                    {
+                        <div class="d-flex justify-content-center align-items-center" style="height: 350px">
+                            <h6>You have not shared any project</h6>
+                        </div>
+                            
+                    }
+                    @foreach (var share in Model.Shares)
+                    {
+                        <li class="list-group-item list-group-item-dark">
+                            <div class="d-flex flex-column">
+                                <h5 class="mb-1">@share.Name - @share.Artist</h5>
+                                <p class="share-link-text">Link: <a href="@share.Url">@share.Url</a></p>
+                                <div class="d-flex justify-content-between">
+                                    <div class="d-flex">
+                                        <div class="btn-group">
+                                            <button type="button"
+                                                    onclick="copyLinkToClipboard(this,'@share.Url')"
+                                                    class="btn btn-light btn-sm" title="Copy to clipboard">
+                                                <i class="fas fa-link"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-light btn-sm" title="Share on Facebook">
+                                                <i class="fab fa-facebook"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-light btn-sm" title="Share on Twitter">
+                                                <i class="fab fa-twitter-square"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex">
+                                        <button type="button" class="btn btn-sm btn-danger" title="Delete link" onclick="deleteShare('@share.Uid')">
+                                            <i class="fas fa-trash-alt"></i>
                                         </button>
                                     </div>
                                 </div>
-                                <div class="d-flex">
-                                    <button type="button" class="btn btn-sm btn-danger" title="Delete link" onclick="deleteShare('@share.Uid')">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
-                                </div>
                             </div>
+                        </li>
+                    }
+
+                </ul>
+
+            </div>
+            <div class="tab-pane fade" id="password_pane">
+                <h5>Change your password</h5>
+                <p>After this process, you will be asked to log in again.</p>
+                <form method="post">
+                    <input type="hidden" name="userId" value="@ViewData["userId"]">
+                    <div class="form-group">
+                        <label for="current_password_field">Current password</label>
+                        <input type="password" name="current_password" class="form-control"
+                               id="current_password_field" required autocomplete="false">
+                        <div class="invalid-feedback">
+                            Current password is not correct, Try again.
                         </div>
+                    </div>
+                    <div class="form-group">
+                        <label>New password</label>
+                        <input type="password" name="new_password" class="form-control"
+                               id="new_password_field" required autocomplete="false">
+                    </div>
+                    <div class="form-group">
+                        <label for="new_password_conf_field">Confirm new password</label>
+                        <input type="password" name="new_password_conf" class="form-control"
+                               id="new_password_conf_field" required autocomplete="false">
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        Change
+                    </button>
+                </form>
+            </div>
+            <div class="tab-pane fade" id="people_pane">
+                <ul class="nav nav-pills mt-2 mb-2 justify-content-center">
+                    <li class="nav-item">
+                        <a href="#following-pane" class="nav-link active" data-toggle="tab">Following</a>
                     </li>
-                }
+                    <li class="nav-item">
+                        <a href="#followers-pane" class="nav-link" data-toggle="tab">Followers</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
 
-            </ul>
-
-        </div>
-        <div class="tab-pane fade" id="password_pane">
-            <h5>Change your password</h5>
-            <p>After this process, you will be asked to log in again.</p>
-            <form method="post">
-                <input type="hidden" name="userId" value="@ViewData["userId"]">
-                <div class="form-group">
-                    <label for="current_password_field">Current password</label>
-                    <input type="password" name="current_password" class="form-control"
-                           id="current_password_field" required autocomplete="false">
-                    <div class="invalid-feedback">
-                        Current password is not correct, Try again.
+                    <div class="tab-pane show active" id="following-pane">
+                        <div class="profiles-list-container">
+                            @foreach (User user in Model.Following)
+                            {
+                                <a class="user-profile-card" asp-page="Profile" asp-route-id="@user.Id">
+                                    <div class="profile-pic">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <h6>@user.Name</h6>
+                                </a>
+                            }
+                        </div>
                     </div>
-                </div>
-                <div class="form-group">
-                    <label>New password</label>
-                    <input type="password" name="new_password" class="form-control"
-                           id="new_password_field" required autocomplete="false">
-                </div>
-                <div class="form-group">
-                    <label for="new_password_conf_field">Confirm new password</label>
-                    <input type="password" name="new_password_conf" class="form-control"
-                           id="new_password_conf_field" required autocomplete="false">
-                </div>
-                <button type="submit" class="btn btn-primary">
-                    Change
-                </button>
-            </form>
-        </div>
-        <div class="tab-pane fade" id="people_pane">
-            <ul class="nav nav-pills mt-2 mb-2 justify-content-center">
-                <li class="nav-item"><a href="#following-pane" class="nav-link active" data-toggle="tab">Following</a> </li>
-                <li class="nav-item"><a href="#followers-pane" class="nav-link" data-toggle="tab">Followers</a> </li>
-            </ul>
-            <div class="tab-content">
-                
-                <div class="tab-pane show active" id="following-pane">
-                    <div class="profiles-list-container">
-                        @foreach (User user in Model.Following)
-                        {
-                            
-                            <a class="user-profile-card" asp-page="Profile" asp-route-id="@user.Id">
-                                <div class="profile-pic">
-                                    <i class="fas fa-user"></i>
-                                </div>
-                                <h6>@user.Name</h6>
-                            </a>
-                        }
-                    </div>
-                </div>
-                <div class="tab-pane" id="followers-pane">
-                    <div class="profiles-list-container">
-                        @foreach (User user in Model.Followers)
-                        {
-                            <a class="user-profile-card"
-                               asp-page="Profile" asp-route-id="@user.Id">
-                                <div class="profile-pic">
-                                    <i class="fas fa-user"></i>
-                                </div>
-                                <h6>@user.Name</h6>
-                            </a>
-                        }
+                    <div class="tab-pane" id="followers-pane">
+                        <div class="profiles-list-container">
+                            @foreach (User user in Model.Followers)
+                            {
+                                <a class="user-profile-card"
+                                   asp-page="Profile" asp-route-id="@user.Id">
+                                    <div class="profile-pic">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <h6>@user.Name</h6>
+                                </a>
+                            }
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
+
+
 </div>
 <div class="col-lg-3 col-md-2"></div>
 
