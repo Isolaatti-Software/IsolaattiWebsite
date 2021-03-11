@@ -209,7 +209,7 @@ progress[orient=vertical] {
 }
 
 .black-box-shadow {
-    box-shadow: 3px 2px black;
+    box-shadow: 0 0 10px rgba(48, 9, 142,0.9);
 }
 
 #simple-post-textarea{
