@@ -25,5 +25,10 @@ namespace isolaatti_API.isolaatti_lib
         <h1>Your song is being processing now</h1>
         <p>Your song {0} is now processing. Please wait, you will receive a message when it's finished</p>
         </body></html>";
+
+        public const string PasswordRecoveryEmail = @"<html><body>
+            <h1>Hi, let us recover your password!</h1>
+            <p>Just click on the link. You will be asked for a new password. Please do not share this link to anyone.</p>
+            <p><a href='{0}'>{0}</a></p>";
     }
 }

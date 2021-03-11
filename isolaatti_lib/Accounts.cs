@@ -80,7 +80,7 @@ namespace isolaatti_API.isolaatti_lib
         /*This method is called internally when a new account was created successfully*/
         private bool SendValidationEmail(int id, string validationCode)
         {
-            string link = String.Format("http://isolaattiapi.azurewebsites.net/validateAccount?id={0}&code={1}",id,validationCode);
+            string link = $"http://isolaattiapi.azurewebsites.net/validateAccount?id={id}&code={validationCode}";
             string userEmailAddress = db.Users.Find(id).Email;
             string htmlBody = String.Format( @"
                 <html>
