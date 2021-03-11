@@ -23,7 +23,6 @@
 
   <ItemGroup>
     <Folder Include="Migrations" />
-    <Folder Include="Pages" />
   </ItemGroup>
 
 </Project>
