@@ -24,7 +24,7 @@
                     <input type="file" class="custom-file-input" id="audioFileInput" accept="audio/mpeg">
                     <label class="custom-file-label" for="customFile" id="label-input-file">Choose file</label>
                 </div>
-                <a href="#fill-data-panel" class="btn btn-primary mt-4 ml-auto mr-auto">Next</a>
+                <button class="btn btn-primary mt-4 ml-auto mr-auto" id="next-button" disabled>Next</button>
         </div>
         <div class="panel" id="fill-data-panel">
             <p class="mt-4">Some data has been automatically filled in, but you can change it anyway</p>
@@ -42,9 +42,9 @@
                 </div>
             </div>
             <div class="d-flex justify-content-center">
-                <a href="#add-file-panel" class="btn btn-primary mr-2">
+                <button class="btn btn-primary mr-2" id="back-button">
                     Back
-                </a>
+                </button>
 
                 @if (!Model.LimitOfSongsReached)
                 {
@@ -88,6 +88,22 @@
                 firebase.initializeApp(firebaseConfig);
                 var storage = firebase.storage();
             </script>
+        <script>
+        let nextButton = document.getElementById("next-button");
+        let backButton = document.getElementById("back-button");
+        let cont = document.querySelector(".horizontal-panel-container");
+        
+        cont.scroll(0,0);
+        
+        nextButton.addEventListener("click", function (){
+            cont.scroll(cont.scrollWidth/2,0);
+        });
+        backButton.addEventListener("click", function () {
+           cont.scroll(0,0); 
+        });
+        
+        </script>
         <script src="~/js/uploader.js"></script>
+        
     }
 }

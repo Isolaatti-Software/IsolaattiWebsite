@@ -28,7 +28,8 @@ fileSource.addEventListener("change", function() {
     fieldArtistName.disabled = false;
     fieldSongName.value = fileSource.files[0].name;
     labelNameOfFile.innerHTML = fileSource.files[0].name;
-    fieldArtistName.value = "Unknown (change me)"
+    fieldArtistName.value = "Unknown (change me)";
+    nextButton.disabled = false;
 });
 
 buttonUploadFile.addEventListener("click",function () {
