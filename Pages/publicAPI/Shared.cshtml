@@ -4,8 +4,8 @@
 
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <!-- Chrome, Firefox OS and Opera -->
     <meta name="theme-color" content="#30098E">
     <!-- Windows Phone -->
@@ -13,9 +13,10 @@
     <!-- iOS Safari -->
     <meta name="apple-mobile-web-app-status-bar-style" content="#30098E">
     <title>Isolaatti Shared project - @ViewData["name"]</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" 
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
           integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
     <link rel="stylesheet" href="~/css/webapp_main.css"/>
+    <link rel="shortcut icon" href="~/icon.png">
     <script src="https://kit.fontawesome.com/fde197fc03.js" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -23,26 +24,36 @@
 </body>
 </html>
 <nav class="nav custom-nav sticky-top">
-    <a href="/WebApp" class="nav-link custom-nav-link" id="isolaatti_brand">ISOLAATTI</a>
-    <a asp-page="/WebApp/MakeAccount" class="nav-link custom-nav-link nav-link ml-auto mr-1">Sign up</a>
-    <a asp-page="/WebApp/LogIn" class="nav-link custom-nav-link nav-link mr-1">Sign in</a>
+    <a href="/" class="nav-link custom-nav-link" id="isolaatti_brand">ISOLAATTI</a>
+    <a asp-page="/MakeAccount" class="nav-link custom-nav-link nav-link ml-auto mr-1">Sign up</a>
+    <a asp-page="/LogIn" class="nav-link custom-nav-link nav-link mr-1">Sign in</a>
 </nav>
 @if (Model.SignedIn)
 {
-    <div class="alert alert-success">
-        <strong>Hey, you are signed in.</strong> Do you want to import this project to your collection? 
+    <div class="alert alert-success alert-dismissible fade show">
+        <strong>Hey, you are signed in.</strong> Do you want to import this project to your collection?
         <a asp-page="/WebApp/ImportFromShared" asp-route-id="@ViewData["uid"]">Import</a>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
     </div>
 }
-<h1 class="ml-2">@ViewData["owner"] shared a song with you from Isolaatti</h1>
-<p class="ml-2">@ViewData["name"] - @ViewData["artist"]</p>
 
-<h2 class="ml-2">You are on preview mode</h2>
-<p class="m-2">You can get something like this if you join Isolaatti</p>
 <audio src='@ViewData["drums_url"]' crossorigin="anonymous" preload="auto" class="track-audio-element" track-name="drums"></audio>
-<audio src='@ViewData["bass_url"]'   crossorigin="anonymous" preload="auto" class="track-audio-element" track-name="bass"></audio>
-<audio src='@ViewData["vocals_url"]'  crossorigin="anonymous" preload="auto" class="track-audio-element" track-name="vocals"></audio>
-<audio src='@ViewData["other_url"]'  crossorigin="anonymous" preload="auto" class="track-audio-element" track-name="other"></audio>
+<audio src='@ViewData["bass_url"]' crossorigin="anonymous" preload="auto" class="track-audio-element" track-name="bass"></audio>
+<audio src='@ViewData["vocals_url"]' crossorigin="anonymous" preload="auto" class="track-audio-element" track-name="vocals"></audio>
+<audio src='@ViewData["other_url"]' crossorigin="anonymous" preload="auto" class="track-audio-element" track-name="other"></audio>
+
+<div class="d-flex pl-1 pr-1" id="title-bar">
+    <h6 class="m-2 ml-auto">(Invited mode) Isolaatti audio mixer (@ViewData["name"] - @ViewData["artist"])</h6>
+    <button type="button" class="btn btn-primary btn-sm m-1 ml-auto" id="button-settings">
+        <i class="fas fa-cog"></i>
+    </button>
+    <button type="button" class="btn btn-primary btn-sm mt-1 mb-1" id="hide-top-bar-button">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+</div>
+
 <div id="player-top-actionbar" class="d-flex flex-column m-1">
     <div class="d-flex">
         <h4></h4>
@@ -79,16 +90,16 @@
                                class="mt-auto mb-auto mr-1 ml-1 flex-shrink-1" orient="vertical">
                         <i class="fas fa-volume-down mt-auto mb-auto"></i>
                     </div>
-                        
+
                     <div class="d-flex flex-column">
                         <progress id="mainGainBar" min="0" max="210" value="0.5" orient="vertical"></progress>
                     </div>
-                        
+
                 </div>
                 <div class="d-flex">
                     <label for="mix_gain" id="mix_gain_label">100%</label>
                 </div>
-                    
+
             </div>
         </div>
         <div class="col-lg-10 col-md-9 col-sm-9 p-0">
@@ -103,9 +114,16 @@
                         </div>
                         <div class="d-flex">
                             <!-- Bass track-->
-                            <div class="track d-flex m-2 flex-column">
+                            <div class="track d-flex m-2 flex-column"
+                                 track="@Model.TrackPreferencesList[0].Name"
+                                 color="@Model.TrackPreferencesList[0].HtmlColorHex">
                                 <div class="track-top-actionbar">
-                                    <p class="w-100">Bass</p>
+                                    <p class="w-100">@Model.TrackPreferencesList[0].Name</p>
+                                    @* <a class="edit-track-button" href="#"  *@
+                                    @*    data-toggle="modal" data-target="#track-settings-modal" *@
+                                    @*    data-track="@Model.TrackPreferencesList[0].Name"> *@
+                                    @*     <i class="fas fa-pencil-alt"></i> *@
+                                    @* </a> *@
                                 </div>
                                 <progress class="track-average-gain-bar mb-1" target-track="bass" min="0" max="255" value="0"></progress>
                                 <div class="track-middle-actions d-flex justify-content-between">
@@ -135,9 +153,16 @@
                                 </div>
                             </div>
                             <!-- Drums track-->
-                            <div class="track d-flex m-2 flex-column">
+                            <div class="track d-flex m-2 flex-column"
+                                 track="@Model.TrackPreferencesList[1].Name"
+                                 color="@Model.TrackPreferencesList[1].HtmlColorHex">
                                 <div class="track-top-actionbar">
-                                    <p class="w-100">Drums</p>
+                                    <p class="w-100">@Model.TrackPreferencesList[1].Name</p>
+                                    @* <a class="edit-track-button" href="#"  *@
+                                    @*    data-toggle="modal" data-target="#track-settings-modal" *@
+                                    @*    data-track="@Model.TrackPreferencesList[1].Name"> *@
+                                    @*     <i class="fas fa-pencil-alt"></i> *@
+                                    @* </a> *@
                                 </div>
                                 <progress class="track-average-gain-bar mb-1" target-track="drums" min="0" max="255" value="0"></progress>
                                 <div class="track-middle-actions d-flex justify-content-between">
@@ -167,9 +192,16 @@
                                 </div>
                             </div>
                             <!-- Vocals track-->
-                            <div class="track d-flex m-2 flex-column">
+                            <div class="track d-flex m-2 flex-column"
+                                 track="@Model.TrackPreferencesList[2].Name"
+                                 color="@Model.TrackPreferencesList[2].HtmlColorHex">
                                 <div class="track-top-actionbar">
-                                    <p class="w-100">Vocals</p>
+                                    <p class="w-100">@Model.TrackPreferencesList[2].Name</p>
+                                    @* <a class="edit-track-button" href="#"  *@
+                                    @*    data-toggle="modal" data-target="#track-settings-modal" *@
+                                    @*    data-track="@Model.TrackPreferencesList[2].Name"> *@
+                                    @*     <i class="fas fa-pencil-alt"></i> *@
+                                    @* </a> *@
                                 </div>
                                 <progress class="track-average-gain-bar mb-1" target-track="vocals" min="0" max="255" value="0"></progress>
                                 <div class="track-middle-actions d-flex justify-content-between">
@@ -199,9 +231,16 @@
                                 </div>
                             </div>
                             <!-- Other track-->
-                            <div class="track d-flex m-2 flex-column">
+                            <div class="track d-flex m-2 flex-column"
+                                 track="@Model.TrackPreferencesList[3].Name"
+                                 color="@Model.TrackPreferencesList[3].HtmlColorHex">
                                 <div class="track-top-actionbar">
-                                    <p class="w-100">Other</p>
+                                    <p class="w-100">@Model.TrackPreferencesList[3].Name</p>
+                                    @* <a class="edit-track-button" href="#"  *@
+                                    @*    data-toggle="modal" data-target="#track-settings-modal" *@
+                                    @*    data-track="@Model.TrackPreferencesList[3].Name"> *@
+                                    @*     <i class="fas fa-pencil-alt"></i> *@
+                                    @* </a> *@
                                 </div>
                                 <progress class="track-average-gain-bar mb-1" target-track="other" min="0" max="255" value="0"></progress>
                                 <div class="track-middle-actions d-flex justify-content-between">
@@ -237,8 +276,47 @@
         </div>
     </div>
 </div>
+<div class="modal" tabindex="-1" id="modal-performance-settings">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark">
+            <div class="modal-header">
+                <h5 class="modal-title">Performance settings</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex justify-content-between">
+                    <h6>Gain graphs</h6>
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="enable-gain-graphs" checked>
+                        <label class="custom-control-label" for="enable-gain-graphs"></label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="update-time-selector">Choose time in ms to update gain bar</label>
+                    <select id="update-time-selector" class="custom-select">
+                        <option value="10">10 ms (Higher CPU usage)</option>
+                        <option value="15">15 ms</option>
+                        <option value="20">20 ms</option>
+                        <option value="30">30 ms</option>
+                        <option value="50">50 ms</option>
+                        <option value="75">75 ms</option>
+                        <option value="85">85 ms</option>
+                        <option value="100">100 ms (Lower CPU usage)</option>
+                    </select>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 <script src="https://erik-everardo.github.io/isolaatti-js-web-audio-mixer/isolaattiaudiomixer.js" crossorigin="anonymous"></script>
-<script src="~/js/play.js"></script>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="~/js/play.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>

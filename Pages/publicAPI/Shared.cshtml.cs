@@ -5,7 +5,10 @@
 * erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
 */
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using isolaatti_API.Classes;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -16,6 +19,7 @@ namespace isolaatti_API.Pages.publicAPI
     {
         private readonly DbContextApp db;
         public bool SignedIn = false;
+        public List<TrackPreferences> TrackPreferencesList;
         public Shared(DbContextApp dbContextApp)
         {
             db = dbContextApp;
@@ -50,6 +54,8 @@ namespace isolaatti_API.Pages.publicAPI
                 ViewData["drums_url"] = song.DrumsUrl;
                 ViewData["vocals_url"] = song.VoiceUrl;
                 ViewData["other_url"] = song.OtherUrl;
+
+                TrackPreferencesList = JsonSerializer.Deserialize<List<TrackPreferences>>(song.TracksSettings);
                 return Page();
             }
             catch (Exception e)
