@@ -16,8 +16,16 @@
     </section>
     <section class="d-flex flex-column p-4 pt-1 rounded-border-black black-box-shadow mt-2 mb-3" id="posting-area">
         <h5 class="mb-2">Simple text posting</h5>
+        <select class="custom-select mb-2" id="privacy-selector">
+            <option value="private">Private</option>
+            <option value="isolaatti">People on Isolaatti</option>
+            <option value="everyone">Everyone</option>
+        </select>
         <textarea class="form-control w-100" id="simple-post-textarea" placeholder="Say something to your followers" rows="1"></textarea>
-        <button type="button" class="btn btn-primary mt-1">Post</button>
+        <button type="button" class="btn btn-primary mt-1" id="post-button">Post</button>
+    </section>
+    <section id="posts-deposit" class="d-flex flex-column p-4 pt-1 rounded-border-black black-box-shadow mt-2 mb-3">
+        
     </section>
 </div>
 <div class="col-lg-3 col-md-2"></div>
@@ -31,4 +39,5 @@
         },200)
     });
     </script>
+    <script src="~/js/main_page.js"></script>
 }
