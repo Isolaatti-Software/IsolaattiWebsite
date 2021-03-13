@@ -27,6 +27,7 @@ namespace isolaatti_API.Pages
         public List<ShareLink> Shares = new List<ShareLink>();
         public List<User> Followers = new List<User>();
         public List<User> Following = new List<User>();
+        public IQueryable<SimpleTextPost> UserPosts;
 
         public MyProfile(DbContextApp dbContextApp)
         {
@@ -104,6 +105,8 @@ namespace isolaatti_API.Pages
                     {
                         Following.Add(_db.Users.Find(followingId));
                     }
+
+                    UserPosts = _db.SimpleTextPosts.Where(post => post.UserId.Equals(user.Id));
 
                     return Page();
                 }

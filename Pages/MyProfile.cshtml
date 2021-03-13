@@ -33,29 +33,81 @@
         </nav>
         <h2 class="text-center">@ViewData["name"]</h2>
         <h5 class="text-center">@ViewData["email"]</h5>
-    </section>
-    <section class="rounded-border-black black-box-shadow mt-4 p-2">
-        <ul class="nav nav-tabs">
+        <ul class="nav nav-pills">
             <li class="nav-item">
-                <a class="nav-link active" id="shared-links_tab" data-toggle="tab" href="#shared-links_pane" role="tab" aria-controls="shared links"
+                <a class="nav-link" id="shared-links_tab" data-toggle="modal" href="#modal-shared-links" role="tab" aria-controls="shared links"
                    aria-selected="true">
                     Shared links
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" id="people_tab" data-toggle="tab" href="#people_pane" role="tab" aria-controls="people">
+                <a class="nav-link" id="people_tab" data-toggle="modal" href="#modal-people" role="tab" aria-controls="people">
                     People
                 </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" id="password_tab" data-toggle="tab" href="#password_pane" role="tab" aria-controls="my password"
-                   aria-selected="true">
-                    Password
-                </a>
-            </li>
         </ul>
-        <div class="tab-content">
-            <div class="tab-pane fade show active" id="shared-links_pane">
+    </section>
+    <section id="your-posts-deposit" class="d-flex flex-column-reverse mt-3">
+        @foreach (var post in Model.UserPosts)
+        {
+            <div class="d-flex mb-2 rounded-border-black black-box-shadow flex-column p-2">
+                <p>@ViewData["name"]</p>
+                <p>@post.TextContent</p>
+            </div>
+        }
+    </section>
+    
+</div>
+<div class="col-lg-3 col-md-2"></div>
+
+@* Add here Bootstrap modals *@
+<!-- Modal edit profile -->
+<div class="modal fade" id="modal-edit-profile">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit profile</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="edit-profile-form" method="post" asp-controller="EditProfile" asp-action="FromWeb">
+                    <div class="form-group">
+                        <label for="edit-name-field">Name</label>
+                        <input type="text" id="edit-name-field" class="form-control" name="newUsername">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-email-field">Email</label>
+                        <input type="email" id="edit-email-field" class="form-control" name="newEmail">
+                    </div>
+                    <input type="hidden" name="id" value="@ViewData["id"]">
+                    <input type="hidden" name="password" value="@ViewData["password"]">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-secondary mr-auto" id="password_btn" data-toggle="modal" href="#modal-password" aria-controls="my password"
+                   aria-selected="true">
+                    Change password
+                </a>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary" id="save-edited-profile" form="edit-profile-form">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal shared links -->
+<div class="modal fade" id="modal-shared-links">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content bg-dark">
+            <div class="modal-header">
+                <h5 class="modal-title">Shared links</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
                 @* Write here shared links table *@
                 <ul class="list-group">
                     @if (!Model.Shares.Any())
@@ -98,12 +150,25 @@
                     }
 
                 </ul>
-
             </div>
-            <div class="tab-pane fade" id="password_pane">
+        </div>
+    </div>
+</div>
+
+<!-- Modal change password -->
+<div class="modal fade" id="modal-password">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark">
+            <div class="modal-header">
+                <h5 class="modal-title">Change password</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
                 <h5>Change your password</h5>
                 <p>After this process, you will be asked to log in again.</p>
-                <form method="post">
+                <form method="post" id="change-password-form">
                     <input type="hidden" name="userId" value="@ViewData["userId"]">
                     <div class="form-group">
                         <label for="current_password_field">Current password</label>
@@ -123,12 +188,31 @@
                         <input type="password" name="new_password_conf" class="form-control"
                                id="new_password_conf_field" required autocomplete="false">
                     </div>
-                    <button type="submit" class="btn btn-primary">
-                        Change
-                    </button>
                 </form>
             </div>
-            <div class="tab-pane fade" id="people_pane">
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary ml-auto" data-dismiss="modal">
+                    Close
+                </button>
+                <button type="submit" class="btn btn-primary" form="change-password-form">
+                    Change
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal people -->
+<div class="modal fade" id="modal-people">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content bg-dark">
+            <div class="modal-header">
+                <h5 class="modal-title">People</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
                 <ul class="nav nav-pills mt-2 mb-2 justify-content-center">
                     <li class="nav-item">
                         <a href="#following-pane" class="nav-link active" data-toggle="tab">Following</a>
@@ -138,7 +222,6 @@
                     </li>
                 </ul>
                 <div class="tab-content">
-
                     <div class="tab-pane show active" id="following-pane">
                         <div class="profiles-list-container">
                             @foreach (User user in Model.Following)
@@ -169,43 +252,9 @@
                 </div>
             </div>
         </div>
-    </section>
-
-
-</div>
-<div class="col-lg-3 col-md-2"></div>
-
-<!-- Modals -->
-<div class="modal" id="modal-edit-profile">
-    <div class="modal-dialog">
-        <div class="modal-content bg-dark">
-            <div class="modal-header">
-                <h5 class="modal-title">Edit profile</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    &times;
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="edit-profile-form" method="post" asp-controller="EditProfile" asp-action="FromWeb">
-                    <div class="form-group">
-                        <label for="edit-name-field">Name</label>
-                        <input type="text" id="edit-name-field" class="form-control" name="newUsername">
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-email-field">Email</label>
-                        <input type="email" id="edit-email-field" class="form-control" name="newEmail">
-                    </div>
-                    <input type="hidden" name="id" value="@ViewData["id"]">
-                    <input type="hidden" name="password" value="@ViewData["password"]">
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-primary" id="save-edited-profile" form="edit-profile-form">Save</button>
-            </div>
-        </div>
     </div>
 </div>
+
 @if (Model.PasswordIsWrong)
 {
     <script>
