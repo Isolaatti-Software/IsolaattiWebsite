@@ -5,7 +5,10 @@
 * erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
 */
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using isolaatti_API.Classes;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -47,6 +50,12 @@ namespace isolaatti_API.Pages
                     ViewData["email"] = user.Email;
                     ViewData["userId"] = user.Id;
                     ViewData["password"] = user.Password;
+
+                    var followingIds = JsonSerializer.Deserialize<List<int>>(user.FollowingIdsJson);
+                    
+                    var followingNames = followingIds.Select(followingId => new IdToUser() {Id = followingId, Name = _db.Users.Find(followingId).Name}).ToList();
+
+                    ViewData["followingJSON"] = JsonSerializer.Serialize(followingNames);
                     
                     
                     return Page();

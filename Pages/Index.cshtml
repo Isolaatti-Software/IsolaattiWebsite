@@ -33,5 +33,12 @@
 
 @section Scripts
 {
+    <script>
+    let followingIdNameMap = new Map();
+    for (let e of @Html.Raw(ViewData["followingJSON"])) {
+        console.log(e);
+        followingIdNameMap.set(e.Id,e.Name);
+    }
+    </script>
     <script src="~/js/main_page.js"></script>
 }
