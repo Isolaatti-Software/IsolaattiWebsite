@@ -26,7 +26,7 @@
            let post = info.serverResponse;
            console.log(info.serverResponse);
            let deposit = document.getElementById("posts-deposit");
-           deposit.insertBefore(generatePostDOMElement(userData.id,post.textContent),deposit.firstChild);
+           deposit.insertBefore(generatePostDOMElement(userData.name,post.textContent),deposit.firstChild);
        }, (error) => {
            console.error(error);
        });
@@ -40,7 +40,7 @@
                 postDeposit.removeChild(spinnerElement);
                 event.serverResponse.forEach((post) => {
                     console.log(post);
-                    postDeposit.appendChild(generatePostDOMElement(post.userId,post.textContent));
+                    postDeposit.appendChild(generatePostDOMElement(followingIdNameMap.get(post.userId),post.textContent));
                     postsInDOM.push(post.id);
                 });
             }, (error) => {
@@ -56,7 +56,7 @@
             postDeposit.removeChild(spinnerElement);
             event.serverResponse.forEach((post) => {
                 console.log(post);
-                postDeposit.appendChild(generatePostDOMElement(post.userId,post.textContent));
+                postDeposit.appendChild(generatePostDOMElement(followingIdNameMap.get(post.userId),post.textContent));
                 postsInDOM.push(post.id);
             });
         }, (error) => {
