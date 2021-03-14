@@ -28,5 +28,6 @@ namespace isolaatti_API.Models
         public DbSet<SimpleTextPost> SimpleTextPosts { get; set; }
         public DbSet<ProjectComment> ProjectComments { get; set; }
         public DbSet<UserToken> UserTokens { get; set; }
+        public DbSet<UserSeenPostHistory> UserSeenPostHistories { get; set; }
     }
 }
