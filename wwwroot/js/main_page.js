@@ -30,16 +30,7 @@ function makePost(privacy, content, onComplete, onError) {
     let form = new FormData();
     form.append("userId", userData.id);
     form.append("password", userData.password);
-
-    let privacyNumber;
-    switch (privacy) {
-        case "private" : privacyNumber = 1; break;
-        case "isolaatti" : privacyNumber = 2; break;
-        case "everyone" : privacyNumber = 3; break;
-        default : privacyNumber = 1; break;
-    }
-    
-    form.append("privacy", privacyNumber);
+    form.append("privacy", privacy);
     form.append("content", content);
     
     let request = new XMLHttpRequest();

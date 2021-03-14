@@ -50,9 +50,33 @@
     <section id="your-posts-deposit" class="d-flex flex-column-reverse mt-3">
         @foreach (var post in Model.UserPosts)
         {
-            <div class="d-flex mb-2 rounded-border-black black-box-shadow flex-column p-2">
-                <p>@ViewData["name"]</p>
-                <p>@post.TextContent</p>
+            <div class="d-flex mb-2 rounded-border-black black-box-shadow flex-column p-2 post" postid="@post.Id" privacy="@post.Privacy">
+                <div class="d-flex justify-content-between">
+                    <p class="user-name">@ViewData["name"]</p>
+                    <div class="d-flex">
+                        <button data-target="#modal-edit-post" class="mr-1 btn btn-link" data-toggle="modal" data-postid="@post.Id">
+                            <i class="fas fa-pencil-alt"></i>
+                        </button>
+                        <button data-target="#modal-delete-post" class="ml-1 btn btn-link" data-toggle="modal" data-postid="@post.Id">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="d-flex privacy-icon-container">
+                    @if (post.Privacy == 1)
+                    {
+                        <i class="fas fa-user" title="Only you"></i>
+                    } 
+                    else if (post.Privacy == 2)
+                    {
+                        <i class="fas fa-user-friends" title="People on Isolaatti"></i>
+                    }
+                    else if (post.Privacy == 3)
+                    {
+                        <i class="fas fa-globe" title="All the world"></i>
+                    }
+                </div>
+                <p class="mt-2 post-content">@post.TextContent</p>
             </div>
         }
     </section>
@@ -255,6 +279,52 @@
     </div>
 </div>
 
+<!-- Modal delete post -->
+<div class="modal fade" id="modal-delete-post">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content bg-dark">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete post</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this post? This action cannot be undone</p>
+            </div>
+            <div class="modal-footer justify-content-end">
+                <button class="btn btn-secondary" data-dismiss="modal">No</button>
+                <button class="btn btn-primary" id="delete-post-modal-yes">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal edit post -->
+<div class="modal fade" id="modal-edit-post">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content bg-dark">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit post</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <select class="custom-select mb-2" id="edit-post-privacy-selector">
+                    <option value="1">Private</option>
+                    <option value="2">People on Isolaatti</option>
+                    <option value="3">Everyone</option>
+                </select>
+                <textarea class="form-control w-100" id="edit-post-modal-simple-post-textarea" placeholder="Say something to your followers" rows="1"></textarea>
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary mt-1" id="post-save-changes">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
 @if (Model.PasswordIsWrong)
 {
     <script>

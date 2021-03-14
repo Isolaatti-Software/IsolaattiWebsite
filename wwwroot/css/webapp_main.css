@@ -212,13 +212,13 @@ progress[orient=vertical] {
     box-shadow: 0 0 10px rgba(48, 9, 142,0.9);
 }
 
-#simple-post-textarea{
+#simple-post-textarea, #edit-post-modal-simple-post-textarea{
     resize: vertical;
     height: 50px;
     transition: height 0.1s ease-out;
 }
 
-#simple-post-textarea:focus {
+#simple-post-textarea:focus, #edit-post-modal-simple-post-textarea:focus {
     height: 50vh;
     transition: height 0.1s ease-in;
 }
@@ -238,4 +238,8 @@ progress[orient=vertical] {
     padding: 10px;
     box-sizing: border-box;
     flex-direction: column;
+}
+
+p.user-name {
+    margin-bottom: 0;
 }
