@@ -24,7 +24,8 @@
         <textarea class="form-control w-100" id="simple-post-textarea" placeholder="Say something to your followers" rows="1"></textarea>
         <button type="button" class="btn btn-primary mt-1" id="post-button">Post</button>
     </section>
-    <section id="posts-deposit" class="d-flex flex-column p-4 pt-1 rounded-border-black black-box-shadow mt-2 mb-3">
+    <h5>New activity</h5>
+    <section id="posts-deposit" class="d-flex flex-column pt-1 mt-2 mb-3 align-items-center">
         
     </section>
 </div>
@@ -32,12 +33,5 @@
 
 @section Scripts
 {
-    <script>
-    document.querySelector('#simple-post-textarea').addEventListener('focus', function(){
-        setTimeout(function (){
-            window.scroll({top:window.innerHeight,left: 0,behavior:'smooth'});
-        },200)
-    });
-    </script>
     <script src="~/js/main_page.js"></script>
 }

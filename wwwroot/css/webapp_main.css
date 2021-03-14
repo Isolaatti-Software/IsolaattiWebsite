@@ -214,13 +214,9 @@ progress[orient=vertical] {
 
 #simple-post-textarea, #edit-post-modal-simple-post-textarea{
     resize: vertical;
-    height: 50px;
+    height: 100px;
     transition: height 0.1s ease-out;
-}
-
-#simple-post-textarea:focus, #edit-post-modal-simple-post-textarea:focus {
-    height: 50vh;
-    transition: height 0.1s ease-in;
+    position:relative;
 }
 
 .horizontal-panel-container {
@@ -242,4 +238,8 @@ progress[orient=vertical] {
 
 p.user-name {
     margin-bottom: 0;
+}
+
+.post {
+    width: 100%;
 }
