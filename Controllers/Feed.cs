@@ -33,7 +33,7 @@ namespace isolaatti_API.Controllers
             
             foreach (var followingId in followingIds)
             {
-                posts.AddRange(Db.SimpleTextPosts.Where(post => post.UserId.Equals(followingId)));
+                posts.AddRange(Db.SimpleTextPosts.Where(post => post.UserId.Equals(followingId) && post.Privacy != 1));
             }
 
             foreach (var renderedPostId in renderedPosts)
