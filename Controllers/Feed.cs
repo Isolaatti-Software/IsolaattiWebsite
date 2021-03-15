@@ -56,7 +56,8 @@ namespace isolaatti_API.Controllers
                 if (Db.UserSeenPostHistories.Any(element => element.PostId == post.Id))
                 {
                     var historyToUpdate = Db.UserSeenPostHistories.Single(element =>
-                        element.UserId.Equals(user.Id) && (long)element.PostId == post.Id);
+                        element.UserId.Equals(user.Id) && element.PostId == post.Id);
+                    historyToUpdate.TimesSeen++;
                     Db.UserSeenPostHistories.Update(historyToUpdate);
                 }
                 else
