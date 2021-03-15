@@ -179,36 +179,85 @@ function getFeed(postsInDOM, onComplete, onError) {
     request.send(form);
 }
 
-function generatePostDOMElement(author, text, privacy, likes) {
+
+/* This function generates the equivalent to this HTML */
+/*
+<div class="d-flex mb-2 rounded-border-black flex-column p-2 post">
+    <div class="d-flex justify-content-between align-items-center">
+        <span class="user-name"><b>Name</b></span>
+    </div>
+    <div class="d-flex privacy-icon-container">
+        <i class="fas fa-user-friends" title="People on Isolaatti" aria-hidden="true"></i><span class="sr-only">People on Isolaatti</span>
+            or
+        <i class="fas fa-globe" title="All the world" aria-hidden="true"></i><span class="sr-only">Everyone</span>
+    </div>
+    <p class="mt-2 post-content">{content}</p>
+    <div class="d-flex justify-content-end">
+        <button class="btn btn-dark btn-sm" type="button">
+            <i class="fas fa-comments" aria-hidden="true"></i> {_}
+        </button>
+        <button class="btn btn-dark btn-sm" type="button">
+            <i class="fas fa-thumbs-up" aria-hidden="true"></i> {likes}
+        </button>
+     </div>
+</div>
+*/
+function generatePostDOMElement(author, text, privacy, likes, comments) {
     let container = document.createElement("div");
-    container.classList.add("d-flex", "mb-2", "rounded-border-black", "black-box-shadow", "flex-column", "p-2", "post");
-    
-    let authorParagraph = document.createElement("p");
-    authorParagraph.classList.add("user-name");
-    authorParagraph.innerHTML = author;
-    
-    let contentParagraph = document.createElement("p");
-    contentParagraph.classList.add("mt-2", "post-content");
-    contentParagraph.innerHTML = text;
-    
-    let privacyIcon = document.createElement("div");
-    privacyIcon.innerHTML = privacy;
-    
-    let numberOfLikes = document.createElement("p");
-    numberOfLikes.innerHTML = likes;
+    container.classList.add("d-flex","mb-2","rounded-border-black","flex-column","p-2","post");
     
     let topPart = document.createElement("div");
-    topPart.classList.add("d-flex");
+    topPart.classList.add("d-flex","justify-content-between","align-items-center");
     
-    let bodyPart = document.createElement("div");
-    bodyPart.classList.add("d-flex");
+    let privacyContainer = document.createElement("div");
+    privacyContainer.classList.add("d-flex","privacy-icon-container");
     
-    topPart.appendChild(authorParagraph);
-    topPart.appendChild(privacyIcon);
-    bodyPart.appendChild(contentParagraph);
+    let contentParagraph = document.createElement("p");
+    contentParagraph.classList.add("mt-2","post-content");
     
+    let bottomPart = document.createElement("div");
+    bottomPart.classList.add("d-flex","justify-content-end");
+    
+    // create and populate name span
+    let nameSpan = document.createElement("span");
+    nameSpan.classList.add("user-name");
+    nameSpan.innerHTML = '<b>' + author + '</b>';
+    
+    // create privacy icon
+    let privacyIcon = document.createElement("i");
+    privacyIcon.classList.add("fas");
+    switch(privacy) {
+        case 2 : privacyIcon.classList.add("fa-user-friends"); break;
+        case 3 : privacyIcon.classList.add("fa-globe"); break;
+    }
+    
+    // populate Post content paragraph
+    contentParagraph.innerHTML = text;
+    
+    // create and populate bottom buttons
+    let commentsButton = document.createElement("button");
+    commentsButton.classList.add("btn","btn-dark","btn-sm");
+    commentsButton.innerHTML = '<i class="fas fa-comments" aria-hidden="true"></i>' + " " + comments;
+    
+    let likeButton = document.createElement("button");
+    likeButton.classList.add("btn","btn-dark","btn-sm");
+    likeButton.innerHTML = '<i class="fas fa-thumbs-up" aria-hidden="true"></i>' + " " + likes;
+    
+    //  populate top part
+    topPart.appendChild(nameSpan);
+    
+    // populate privacy container
+    privacyContainer.appendChild(privacyIcon);
+    
+    // populate bottom part
+    bottomPart.appendChild(commentsButton);
+    bottomPart.appendChild(likeButton);
+    
+    // populate container
     container.appendChild(topPart);
-    container.appendChild(bodyPart);
+    container.appendChild(privacyContainer);
+    container.appendChild(contentParagraph);
+    container.appendChild(bottomPart);
     
     return container;
 }
