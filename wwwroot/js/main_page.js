@@ -9,6 +9,21 @@
     spinnerElement.classList.add("spinner-border");
     spinnerElement.id = "spinner-element";
     
+    let noContentDOMItem = document.createElement("div");
+    let updateFeedButton = document.createElement("button");
+    let noContentText = document.createElement("span");
+    noContentDOMItem.classList.add("d-flex","flex-column");
+    noContentText.innerHTML = "No more new content so far";
+    updateFeedButton.innerHTML = '<i class="fas fa-redo-alt"></i>'
+    updateFeedButton.classList.add("btn", "btn-link");
+    updateFeedButton.addEventListener("click", () => {
+        postsInDOM = [];
+        postDeposit.innerHTML = "";
+        putPosts();
+    });
+    noContentDOMItem.appendChild(noContentText);
+    noContentDOMItem.appendChild(updateFeedButton);
+    
     let postsInDOM = [];
     
     postButton.addEventListener("click", () => {
@@ -31,37 +46,55 @@
            console.error(error);
        });
     });
-    
-    window.onscroll = () => {
+
+    function onScroll() {
         if(document.body.scrollHeight - window.innerHeight === window.scrollY) {
             postDeposit.appendChild(spinnerElement);
             getFeed(JSON.stringify(postsInDOM), (event) => {
                 console.log(event);
                 postDeposit.removeChild(spinnerElement);
-                event.serverResponse.forEach((post) => {
-                    console.log(post);
-                    postDeposit.appendChild(generatePostDOMElement(followingIdNameMap.get(post.userId),post.textContent));
-                    postsInDOM.push(post.id);
-                });
+                if(event.serverResponse.length === 0) {
+                    window.onscroll = null;
+                    postDeposit.appendChild(noContentDOMItem);
+                } else {
+                    event.serverResponse.forEach((post) => {
+                        console.log(post);
+                        postDeposit.appendChild(generatePostDOMElement(followingIdNameMap.get(post.userId),post.textContent,
+                            post.privacy,post.numberOfLikes));
+                        postsInDOM.push(post.id);
+                    });
+                }
+
             }, (error) => {
                 console.error(error);
             });
         }
     }
     
-    document.addEventListener("DOMContentLoaded", () => {
+    function putPosts() {
         postDeposit.appendChild(spinnerElement);
         getFeed(JSON.stringify(postsInDOM), (event) => {
             console.log(event);
             postDeposit.removeChild(spinnerElement);
-            event.serverResponse.forEach((post) => {
-                console.log(post);
-                postDeposit.appendChild(generatePostDOMElement(followingIdNameMap.get(post.userId),post.textContent));
-                postsInDOM.push(post.id);
-            });
+            if(event.serverResponse.length === 0) {
+                postDeposit.appendChild(noContentDOMItem);
+            } else {
+                event.serverResponse.forEach((post) => {
+                    console.log(post);
+                    postDeposit.appendChild(generatePostDOMElement(followingIdNameMap.get(post.userId),
+                        post.textContent,post.privacy,post.numberOfLikes));
+                    postsInDOM.push(post.id);
+                    window.onscroll = onScroll;
+                });
+            }
+
         }, (error) => {
             console.error(error);
         });
+    }
+        
+    document.addEventListener("DOMContentLoaded", () => {
+        putPosts();
     });
 })();
 
@@ -146,7 +179,7 @@ function getFeed(postsInDOM, onComplete, onError) {
     request.send(form);
 }
 
-function generatePostDOMElement(author, text) {
+function generatePostDOMElement(author, text, privacy, likes) {
     let container = document.createElement("div");
     container.classList.add("d-flex", "mb-2", "rounded-border-black", "black-box-shadow", "flex-column", "p-2", "post");
     
@@ -158,6 +191,12 @@ function generatePostDOMElement(author, text) {
     contentParagraph.classList.add("mt-2", "post-content");
     contentParagraph.innerHTML = text;
     
+    let privacyIcon = document.createElement("div");
+    privacyIcon.innerHTML = privacy;
+    
+    let numberOfLikes = document.createElement("p");
+    numberOfLikes.innerHTML = likes;
+    
     let topPart = document.createElement("div");
     topPart.classList.add("d-flex");
     
@@ -165,6 +204,7 @@ function generatePostDOMElement(author, text) {
     bodyPart.classList.add("d-flex");
     
     topPart.appendChild(authorParagraph);
+    topPart.appendChild(privacyIcon);
     bodyPart.appendChild(contentParagraph);
     
     container.appendChild(topPart);
@@ -172,3 +212,4 @@ function generatePostDOMElement(author, text) {
     
     return container;
 }
+
