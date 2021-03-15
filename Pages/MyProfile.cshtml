@@ -47,17 +47,27 @@
             </li>
         </ul>
     </section>
-    <section id="your-posts-deposit" class="d-flex flex-column-reverse mt-3">
+    
+    <section class="rounded-border-black black-box-shadow mt-2 p-2">
+        <h5 class="m-2">Create</h5>
+        <div class="d-flex justify-content-around">
+            <a asp-page="Index" class="btn btn-primary">Post</a>
+            <a asp-page="NewProject" class="btn btn-primary">Project</a>
+        </div>
+    </section>
+    
+    <section id="your-posts-deposit" class="d-flex flex-column mt-3">
+        <h5 class="m-2">Your posts</h5>
         @foreach (var post in Model.UserPosts)
         {
-            <div class="d-flex mb-2 rounded-border-black black-box-shadow flex-column p-2 post" postid="@post.Id" privacy="@post.Privacy">
-                <div class="d-flex justify-content-between">
-                    <p class="user-name">@ViewData["name"]</p>
+            <div class="d-flex mb-2 rounded-border-black flex-column p-2 post" postid="@post.Id" privacy="@post.Privacy">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="user-name"><b>@ViewData["name"]</b></span>
                     <div class="d-flex">
-                        <button data-target="#modal-edit-post" class="mr-1 btn btn-link" data-toggle="modal" data-postid="@post.Id">
+                        <button data-target="#modal-edit-post" class="mr-1 btn btn-link btn-sm" data-toggle="modal" data-postid="@post.Id">
                             <i class="fas fa-pencil-alt"></i>
                         </button>
-                        <button data-target="#modal-delete-post" class="ml-1 btn btn-link" data-toggle="modal" data-postid="@post.Id">
+                        <button data-target="#modal-delete-post" class="ml-1 btn btn-link btn-sm" data-toggle="modal" data-postid="@post.Id">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
@@ -77,6 +87,14 @@
                     }
                 </div>
                 <p class="mt-2 post-content">@post.TextContent</p>
+                <div class="d-flex justify-content-end">
+                    <button class="btn btn-dark btn-sm" type="button">
+                        <i class="fas fa-comments"></i> {_}
+                    </button>
+                    <button class="btn btn-dark btn-sm" type="button">
+                        <i class="fas fa-thumbs-up"></i> @post.NumberOfLikes
+                    </button>
+                </div>
             </div>
         }
     </section>
