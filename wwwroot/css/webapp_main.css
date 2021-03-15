@@ -163,6 +163,7 @@ progress[orient=vertical] {
     display: flex;
     width: 100%;
     flex-wrap: wrap;
+    justify-content: center;
 }
 
 .user-profile-card {
@@ -174,7 +175,7 @@ progress[orient=vertical] {
     align-items: center;
     border: 1px solid white;
     border-radius: 20px;
-    margin: 20px;
+    margin: 10px;
     color: white!important;
 }
 
@@ -236,10 +237,14 @@ progress[orient=vertical] {
     flex-direction: column;
 }
 
-p.user-name {
-    margin-bottom: 0;
+span.user-name {
+    height: min-content;
 }
 
 .post {
     width: 100%;
+}
+
+#posts-deposit {
+    padding-bottom: 40px;
 }
