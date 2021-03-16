@@ -48,7 +48,9 @@ namespace isolaatti_API.isolaatti_lib
                 Uid = Guid.NewGuid().ToString(),
                 NotifyByEmail = true,
                 NotifyWhenProcessFinishes = true,
-                NotifyWhenProcessStarted = true
+                NotifyWhenProcessStarted = true,
+                FollowersIdsJson = "[]",
+                FollowingIdsJson = "[]"
             };
             try
             {
