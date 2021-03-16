@@ -106,7 +106,8 @@ namespace isolaatti_API.Pages
                         Following.Add(_db.Users.Find(followingId));
                     }
 
-                    UserPosts = _db.SimpleTextPosts.Where(post => post.UserId.Equals(user.Id));
+                    UserPosts = _db.SimpleTextPosts.Where(post => post.UserId.Equals(user.Id))
+                        .OrderByDescending(post => post.Id);
 
                     return Page();
                 }
