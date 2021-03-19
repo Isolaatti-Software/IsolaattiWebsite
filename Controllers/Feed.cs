@@ -29,16 +29,8 @@ namespace isolaatti_API.Controllers
             var posts = new List<SimpleTextPost>();
             var renderedPosts = JsonSerializer.Deserialize<List<int>>(postsInDom);
             
-            List<UserSeenPostHistory> userPostSeenHistory;
-            try 
-            {
-                userPostSeenHistory = Db.UserSeenPostHistories
-                    .Where(history => history.UserId.Equals(user.Id)).ToList();
-            }
-            catch(InvalidOperationException)
-            {
-                userPostSeenHistory = new List<UserSeenPostHistory>();
-            }
+            List<UserSeenPostHistory> userPostSeenHistory = Db.UserSeenPostHistories
+                .Where(history => history.UserId.Equals(user.Id)).ToList();
 
             foreach (var followingId in followingIds)
             {
@@ -62,7 +54,7 @@ namespace isolaatti_API.Controllers
 
             foreach (var post in posts)
             {
-                if (Db.UserSeenPostHistories.Any(element => element.PostId == post.Id))
+                if (Db.UserSeenPostHistories.Any(element => element.PostId == post.Id && element.UserId == user.Id))
                 {
                     var historyToUpdate = Db.UserSeenPostHistories.Single(element =>
                         element.UserId.Equals(user.Id) && element.PostId == post.Id);
