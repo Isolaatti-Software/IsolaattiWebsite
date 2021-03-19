@@ -34,7 +34,8 @@ namespace isolaatti_API.Controllers
 
             foreach (var followingId in followingIds)
             {
-                posts.AddRange(Db.SimpleTextPosts.Where(post => post.UserId.Equals(followingId) && post.Privacy != 1));
+                posts.AddRange(Db.SimpleTextPosts.Where(post => 
+                    post.UserId.Equals(followingId) && post.Privacy != 1));
             }
 
             foreach (var renderedPostId in renderedPosts)
@@ -52,9 +53,20 @@ namespace isolaatti_API.Controllers
 
             posts = posts.OrderByDescending(post => post.Id).Take(4).ToList();
 
+            var response = new List<ComposedResponse>();
             foreach (var post in posts)
             {
-                if (Db.UserSeenPostHistories.Any(element => element.PostId == post.Id && element.UserId == user.Id))
+                response.Add(new ComposedResponse()
+                {
+                    Id = post.Id,
+                    Privacy = post.Privacy,
+                    NumberOfLikes = post.NumberOfLikes,
+                    TextContent = post.TextContent,
+                    UserId = post.UserId,
+                    Liked = Db.Likes.Any(element => element.PostId == post.Id && element.UserId == user.Id)
+                });
+                if (Db.UserSeenPostHistories.Any(element => 
+                    element.PostId == post.Id && element.UserId == user.Id))
                 {
                     var historyToUpdate = Db.UserSeenPostHistories.Single(element =>
                         element.UserId.Equals(user.Id) && element.PostId == post.Id);
@@ -73,7 +85,19 @@ namespace isolaatti_API.Controllers
                 }
             }
             Db.SaveChanges();
-            return Ok(posts);
+            
+            
+            return Ok(response);
         }
+    }
+
+    class ComposedResponse
+    {
+        public long Id { get; set; }
+        public string TextContent { get; set; }
+        public int UserId { get; set; }
+        public long NumberOfLikes { get; set; }
+        public int Privacy { get; set; }
+        public bool Liked { get; set; }
     }
 }
