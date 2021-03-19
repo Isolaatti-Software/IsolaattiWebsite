@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
@@ -28,9 +29,17 @@ namespace isolaatti_API.Controllers
             var posts = new List<SimpleTextPost>();
             var renderedPosts = JsonSerializer.Deserialize<List<int>>(postsInDom);
             
-            var userPostSeenHistory = Db.UserSeenPostHistories
-                .Where(history => history.UserId.Equals(user.Id)).ToList();
-            
+            List<UserSeenPostHistory> userPostSeenHistory;
+            try 
+            {
+                userPostSeenHistory = Db.UserSeenPostHistories
+                    .Where(history => history.UserId.Equals(user.Id)).ToList();
+            }
+            catch(InvalidOperationException)
+            {
+                userPostSeenHistory = new List<UserSeenPostHistory>();
+            }
+
             foreach (var followingId in followingIds)
             {
                 posts.AddRange(Db.SimpleTextPosts.Where(post => post.UserId.Equals(followingId) && post.Privacy != 1));
