@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using isolaatti_API.Classes;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -53,10 +54,10 @@ namespace isolaatti_API.Controllers
 
             posts = posts.OrderByDescending(post => post.Id).Take(4).ToList();
 
-            var response = new List<ComposedResponse>();
+            var response = new List<ReturningPostsComposedResponse>();
             foreach (var post in posts)
             {
-                response.Add(new ComposedResponse()
+                response.Add(new ReturningPostsComposedResponse()
                 {
                     Id = post.Id,
                     Privacy = post.Privacy,
@@ -89,15 +90,5 @@ namespace isolaatti_API.Controllers
             
             return Ok(response);
         }
-    }
-
-    class ComposedResponse
-    {
-        public long Id { get; set; }
-        public string TextContent { get; set; }
-        public int UserId { get; set; }
-        public long NumberOfLikes { get; set; }
-        public int Privacy { get; set; }
-        public bool Liked { get; set; }
     }
 }
