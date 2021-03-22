@@ -5,6 +5,7 @@ using System.Text.Json;
 using isolaatti_API.Classes;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
+using Org.BouncyCastle.Bcpg;
 
 namespace isolaatti_API.Controllers
 {
@@ -88,6 +89,39 @@ namespace isolaatti_API.Controllers
             Db.SaveChanges();
             
             
+            return Ok(response);
+        }
+
+        [HttpPost]
+        [Route("GetUserPosts")]
+        public IActionResult GetUserPosts([FromForm] int userId, [FromForm] string password, [FromForm] int accountId)
+        {
+            var user = Db.Users.Find(userId);
+            if (user == null) return NotFound("User was not found");
+            if (!user.Password.Equals(password)) return Unauthorized("Password is not correct");
+            var account = Db.Users.Find(accountId);
+            if (account == null) 
+                return NotFound("That account does not exist. Please be sure the accountId parameter is correct");
+
+            var usersLikes = Db.Likes.Where(like => like.UserId == user.Id).ToList();
+
+            var posts = Db.SimpleTextPosts
+                .Where(post => post.UserId == account.Id)
+                .OrderByDescending(post => post.Id)
+                .ToList();
+                
+            
+            var response = posts.Select(post => new ReturningPostsComposedResponse()
+                {
+                    Id = post.Id,
+                    NumberOfLikes = post.NumberOfLikes,
+                    Privacy = post.Privacy,
+                    TextContent = post.TextContent,
+                    UserId = post.UserId,
+                    Liked = usersLikes.Any(like => like.PostId == post.Id && like.UserId == user.Id)
+                })
+                .ToList();
+                
             return Ok(response);
         }
     }
