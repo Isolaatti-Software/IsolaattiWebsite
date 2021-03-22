@@ -58,45 +58,39 @@
     
     <section id="your-posts-deposit" class="d-flex flex-column mt-3">
         <h5 class="m-2">Your posts</h5>
-        @foreach (var post in Model.UserPosts)
-        {
-            <div class="d-flex mb-2 rounded-border-black flex-column p-2 post" postid="@post.Id" privacy="@post.Privacy">
+        <div id="vue-container">
+            <div v-for="post in posts" 
+                 class="d-flex mb-2 rounded-border-black flex-column p-2 post" :postid="post.id" :privacy="post.privacy">
                 <div class="d-flex justify-content-between align-items-center">
                     <span class="user-name"><b>@ViewData["name"]</b></span>
                     <div class="d-flex">
-                        <button data-target="#modal-edit-post" class="mr-1 btn btn-link btn-sm" data-toggle="modal" data-postid="@post.Id">
+                        <button data-target="#modal-edit-post" class="mr-1 btn btn-link btn-sm" data-toggle="modal" :data-postid="post.id">
                             <i class="fas fa-pencil-alt"></i>
                         </button>
-                        <button data-target="#modal-delete-post" class="ml-1 btn btn-link btn-sm" data-toggle="modal" data-postid="@post.Id">
+                        <button data-target="#modal-delete-post" class="ml-1 btn btn-link btn-sm" data-toggle="modal" :data-postid="post.id">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
                 </div>
                 <div class="d-flex privacy-icon-container">
-                    @if (post.Privacy == 1)
-                    {
-                        <i class="fas fa-user" title="Only you"></i>
-                    } 
-                    else if (post.Privacy == 2)
-                    {
-                        <i class="fas fa-user-friends" title="People on Isolaatti"></i>
-                    }
-                    else if (post.Privacy == 3)
-                    {
-                        <i class="fas fa-globe" title="All the world"></i>
-                    }
+                    <i v-if="post.privacy === 1" class="fas fa-user" title="Only you"></i>
+                    <i v-if="post.privacy === 2" class="fas fa-user-friends" title="People on Isolaatti"></i>
+                    <i v-if="post.privacy === 3" class="fas fa-globe" title="All the world"></i>
                 </div>
-                <p class="mt-2 post-content">@post.TextContent</p>
+                <p class="mt-2 post-content">{{post.textContent}}</p>
                 <div class="d-flex justify-content-end">
                     <button class="btn btn-dark btn-sm" type="button">
                         <i class="fas fa-comments"></i> {_}
                     </button>
-                    <button class="btn btn-dark btn-sm" type="button">
-                        <i class="fas fa-thumbs-up"></i> @post.NumberOfLikes
+                    <button class="btn btn-dark btn-sm" type="button" v-if="!post.liked" v-on:click="likePost(post)">
+                        <i class="fas fa-thumbs-up"></i> {{post.numberOfLikes}}
+                    </button>
+                    <button class="btn btn-primary btn-sm" type="button" v-if="post.liked" v-on:click="unLikePost(post)">
+                        <i class="fas fa-thumbs-up"></i> {{post.numberOfLikes}}
                     </button>
                 </div>
             </div>
-        }
+        </div>
     </section>
     
 </div>
@@ -372,5 +366,6 @@ else if (ViewData["profile_open"].Equals("links"))
 
 @section Scripts
 {
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
     <script src="~/js/my_profile.js"></script>
 }

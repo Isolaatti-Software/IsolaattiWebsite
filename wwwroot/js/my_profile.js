@@ -144,6 +144,24 @@ function deleteShare(uid) {
     }
 }
 
+function getPosts(onComplete, onError) {
+    let formData = new FormData();
+    formData.append("userId", userData.id);
+    formData.append("password", userData.password);
+    
+    let request = new XMLHttpRequest();
+    request.open("POST", "/api/GetProfile/GetPosts");
+    request.onreadystatechange = () => {
+        if(request.readyState === XMLHttpRequest.DONE) {
+            switch(request.status) {
+                case 200: onComplete(JSON.parse(request.responseText)); break;
+                default: onError(JSON.parse(request.responseText)); break;
+            }
+        }
+    }
+    request.send(formData);
+}
+
 // Use this self called function to define events
 (function(){
     // "change password form" validation
@@ -163,11 +181,63 @@ function deleteShare(uid) {
     
     // this value is used to know what post to modify or delete with modals
     let currentPostIdForModal = 0;
-
     document.addEventListener("DOMContentLoaded", function(){
         // Filling the fields in edit profile modal with current information
         editEmailField.value = userData.email;
         editNameField.value = userData.name;
+
+        let vueContainer = new Vue({
+            el: '#vue-container',
+            data: {
+                posts: []
+            },
+            methods: {
+                likePost: function(post) {
+                    let formData = new FormData();
+                    formData.append("userId", userData.id)
+                    formData.append("password", userData.password);
+                    formData.append("postId", post.id);
+
+                    let request = new XMLHttpRequest();
+                    request.open("POST", "/api/Likes/LikePost");
+                    request.onreadystatechange = () => {
+                        if(request.readyState === XMLHttpRequest.DONE) {
+                            if(request.status === 200) {
+                                let modifiedPost = JSON.parse(request.responseText);
+                                let index = vueContainer.posts.findIndex(post => post.id === modifiedPost.id);
+                                Vue.set(vueContainer.posts,index,modifiedPost);
+                            }
+                        }
+                    }
+                    request.send(formData);
+                },
+                unLikePost: function(post) {
+                    let formData = new FormData();
+                    formData.append("userId", userData.id)
+                    formData.append("password", userData.password);
+                    formData.append("postId", post.id);
+
+                    let request = new XMLHttpRequest();
+                    request.open("POST", "/api/Likes/UnLikePost");
+                    request.onreadystatechange = () => {
+                        if(request.readyState === XMLHttpRequest.DONE) {
+                            if(request.status === 200) {
+                                let modifiedPost = JSON.parse(request.responseText);
+                                let index = vueContainer.posts.findIndex(post => post.id === modifiedPost.id);
+                                Vue.set(vueContainer.posts,index,modifiedPost);
+                            }
+                        }
+                    }
+                    request.send(formData);
+                }
+            }
+        })
+        
+        getPosts((response) => {
+            vueContainer.posts = response;
+        }, (error) => {
+            alert("Error getting your posts");
+        });
     });
 
     newPasswordConfField.addEventListener("keyup", function() {
@@ -254,5 +324,4 @@ function deleteShare(uid) {
           console.error(error);
        });
     });
-    
 })();
