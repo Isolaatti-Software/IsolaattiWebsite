@@ -4,6 +4,8 @@
 * This program is not allowed to be copied or reused without explicit permission.
 * erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
 */
+
+using System.Collections.Generic;
 using System.Linq;
 using isolaatti_API.Classes;
 using isolaatti_API.Models;
@@ -38,5 +40,37 @@ namespace isolaatti_API.Controllers
             }
             return null;
         }
+
+        [HttpPost]
+        [Route("GetPosts")]
+        public IActionResult GetPosts([FromForm] int userId, [FromForm] string password)
+        {
+            var user = Db.Users.Find(userId);
+            if (user == null) return NotFound("User was not found");
+            if (!user.Password.Equals(password)) return Unauthorized("Password is not correct");
+
+            var posts = Db.SimpleTextPosts
+                .Where(post => post.UserId == userId);
+            posts = posts.OrderByDescending(post => post.Id);
+
+            var likes = Db.Likes.Where(like => like.UserId.Equals(user.Id)).ToList();
+
+            List<ReturningPostsComposedResponse> response = new List<ReturningPostsComposedResponse>();
+            foreach (var post in posts)
+            {
+                response.Add(new ReturningPostsComposedResponse()
+                {
+                    Id = post.Id,
+                    Liked = likes.Any(like => like.PostId.Equals(post.Id)),
+                    NumberOfLikes = post.NumberOfLikes,
+                    Privacy = post.Privacy,
+                    TextContent = post.TextContent,
+                    UserId = post.UserId
+                });
+            }
+            
+            return Ok(response);
+        }
     }
+    
 }
