@@ -1,4 +1,5 @@
 using System.Linq;
+using isolaatti_API.Classes;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -37,10 +38,14 @@ namespace isolaatti_API.Controllers
             Db.SimpleTextPosts.Update(post);
             Db.SaveChanges();
             
-            return Ok(new
+            return Ok(new ReturningPostsComposedResponse()
             {
-                post,
-                liked = true
+                Id = post.Id,
+                Liked = true,
+                NumberOfLikes = post.NumberOfLikes,
+                Privacy = post.Privacy,
+                TextContent = post.TextContent,
+                UserId = post.UserId
             });
         }
 
@@ -63,10 +68,15 @@ namespace isolaatti_API.Controllers
             post.NumberOfLikes -= 1;
             Db.SimpleTextPosts.Update(post);
             Db.SaveChanges();
-            
-            return Ok(new {
-                post,
-                liked = false
+
+            return Ok(new ReturningPostsComposedResponse()
+            {
+                Id = post.Id,
+                Liked = false,
+                NumberOfLikes = post.NumberOfLikes,
+                Privacy = post.Privacy,
+                TextContent = post.TextContent,
+                UserId = post.UserId
             });
         }
     }
