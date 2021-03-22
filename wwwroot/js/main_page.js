@@ -41,7 +41,7 @@
            let post = info.serverResponse;
            console.log(info.serverResponse);
            let deposit = document.getElementById("posts-deposit");
-           deposit.insertBefore(generatePostDOMElement(userData.name,post.textContent),deposit.firstChild);
+           deposit.insertBefore(generatePostDOMElement(post.id, userData.name, post.textContent, post.privacy, post.numberOfLikes,0, false),deposit.firstChild);
        }, (error) => {
            console.error(error);
        });
@@ -59,8 +59,8 @@
                 } else {
                     event.serverResponse.forEach((post) => {
                         console.log(post);
-                        postDeposit.appendChild(generatePostDOMElement(followingIdNameMap.get(post.userId),post.textContent,
-                            post.privacy,post.numberOfLikes));
+                        postDeposit.appendChild(generatePostDOMElement(post.id,followingIdNameMap.get(post.userId),post.textContent,
+                            post.privacy,post.numberOfLikes,0, post.liked));
                         postsInDOM.push(post.id);
                     });
                 }
@@ -81,8 +81,8 @@
             } else {
                 event.serverResponse.forEach((post) => {
                     console.log(post);
-                    postDeposit.appendChild(generatePostDOMElement(followingIdNameMap.get(post.userId),
-                        post.textContent,post.privacy,post.numberOfLikes));
+                    postDeposit.appendChild(generatePostDOMElement(post.id,followingIdNameMap.get(post.userId),
+                        post.textContent,post.privacy,post.numberOfLikes,0, post.liked));
                     postsInDOM.push(post.id);
                     window.onscroll = onScroll;
                 });
@@ -179,6 +179,56 @@ function getFeed(postsInDOM, onComplete, onError) {
     request.send(form);
 }
 
+function likePost(postId, button) {
+    let formData = new FormData();
+    formData.append("userId", userData.id)
+    formData.append("password", userData.password);
+    formData.append("postId", postId);
+    
+    let request = new XMLHttpRequest();
+    request.open("POST", "/api/Likes/LikePost");
+    request.onreadystatechange = () => {
+        if(request.readyState === XMLHttpRequest.DONE) {
+            if(request.status === 200) {
+                let parsedResponse = JSON.parse(request.responseText);
+                button.classList.remove("btn-dark");
+                button.classList.add("btn-primary");
+                button.innerHTML = 
+                    '<i class="fas fa-thumbs-up" aria-hidden="true"></i>' + " " + parsedResponse.post.numberOfLikes;
+                button.onclick = () => {
+                    unLikePost(postId, button);
+                };
+            }
+        }
+    }
+    request.send(formData);
+}
+
+function unLikePost(postId, button) {
+    let formData = new FormData();
+    formData.append("userId", userData.id)
+    formData.append("password", userData.password);
+    formData.append("postId", postId);
+
+    let request = new XMLHttpRequest();
+    request.open("POST", "/api/Likes/UnLikePost");
+    request.onreadystatechange = () => {
+        if(request.readyState === XMLHttpRequest.DONE) {
+            if(request.status === 200) {
+                let parsedResponse = JSON.parse(request.responseText);
+                button.classList.remove("btn-primary");
+                button.classList.add("btn-dark");
+                button.innerHTML = 
+                    '<i class="fas fa-thumbs-up" aria-hidden="true"></i>' + " " + parsedResponse.post.numberOfLikes;
+                button.onclick = () => {
+                    likePost(postId, button);
+                }
+            }
+        }
+    }
+    request.send(formData);
+}
+
 
 /* This function generates the equivalent to this HTML */
 /*
@@ -202,7 +252,7 @@ function getFeed(postsInDOM, onComplete, onError) {
      </div>
 </div>
 */
-function generatePostDOMElement(author, text, privacy, likes, comments) {
+function generatePostDOMElement(postId, author, text, privacy, likes, comments, liked) {
     let container = document.createElement("div");
     container.classList.add("d-flex","mb-2","rounded-border-black","flex-column","p-2","post");
     
@@ -240,7 +290,18 @@ function generatePostDOMElement(author, text, privacy, likes, comments) {
     commentsButton.innerHTML = '<i class="fas fa-comments" aria-hidden="true"></i>' + " " + comments;
     
     let likeButton = document.createElement("button");
-    likeButton.classList.add("btn","btn-dark","btn-sm");
+    likeButton.classList.add("btn","btn-sm");
+    if(liked) {
+        likeButton.classList.add("btn-primary");
+        likeButton.onclick = () => {
+            unLikePost(postId, likeButton);
+        }
+    } else {
+        likeButton.classList.add("btn-dark");
+        likeButton.onclick = () => {
+            likePost(postId, likeButton);
+        }
+    }
     likeButton.innerHTML = '<i class="fas fa-thumbs-up" aria-hidden="true"></i>' + " " + likes;
     
     //  populate top part
