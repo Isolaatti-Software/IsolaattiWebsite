@@ -27,6 +27,7 @@ function onScroll() {
 
 function putPosts() {
     vueContainer.loading = true;
+    window.onscroll = null
     getFeed(JSON.stringify(postsInDOM), (response) => {
         vueContainer.loading = false;
         console.log(response);
@@ -37,6 +38,7 @@ function putPosts() {
             response.serverResponse.forEach((post) => {
                 vueContainer.posts.push(post);
                 postsInDOM.push(post.id);
+                window.onscroll = onScroll;
             });
         }
 
