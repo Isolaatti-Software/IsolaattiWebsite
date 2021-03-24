@@ -26,7 +26,42 @@
     </section>
     <h5>New activity</h5>
     <section id="posts-deposit" class="d-flex flex-column pt-1 mt-2 mb-3 align-items-center">
-        
+        <div v-for="post in posts" class="d-flex mb-2 rounded-border-black flex-column p-2 post">
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="user-name"><a :href="'/Profile?id=' + post.userId">{{followingIdNameMap.get(post.userId)}}</a> </span>
+            </div>
+            <div class="d-flex privacy-icon-container">
+                <div v-if="post.privacy === 2">
+                    <i class="fas fa-user-friends" title="People on Isolaatti" aria-hidden="true"></i><span class="sr-only">People on Isolaatti</span>
+                </div>
+                <div v-if="post.privacy === 3">
+                    <i class="fas fa-globe" title="All the world" aria-hidden="true"></i><span class="sr-only">Everyone</span>
+                </div>
+            </div>
+            <p class="mt-2 post-content">{{post.textContent}}</p>
+            <div class="d-flex justify-content-end">
+                <button class="btn btn-dark btn-sm" type="button">
+                    <i class="fas fa-comments" aria-hidden="true"></i> {_}
+                </button>
+                <button v-if="!post.liked" v-on:click="likePost(post)" class="btn btn-dark btn-sm" type="button">
+                    <i class="fas fa-thumbs-up" aria-hidden="true"></i> {{post.numberOfLikes}}
+                </button>
+                <button v-if="post.liked" v-on:click="unLikePost(post)" class="btn btn-primary btn-sm" type="button">
+                    <i class="fas fa-thumbs-up" aria-hidden="true"></i> {{post.numberOfLikes}}
+                </button>
+            </div>
+        </div>
+        <div v-if="loading" class="d-flex justify-content-center mt-2">
+            <div class="spinner-grow text-light" role="status">
+              <span class="sr-only">Loading more content...</span>
+            </div>
+        </div>
+        <div v-if="noMoreContent" class="d-flex flex-column align-items-center mt-2">
+            <p>No more content so far</p>
+            <button class="btn btn-primary" v-on:click="refresh">
+                <i class="fas fa-redo"></i>
+            </button>
+        </div>
     </section>
 </div>
 <div class="col-lg-3 col-md-2"></div>
@@ -40,5 +75,6 @@
         followingIdNameMap.set(e.Id,e.Name);
     }
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
     <script src="~/js/main_page.js"></script>
 }
