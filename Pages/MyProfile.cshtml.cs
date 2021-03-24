@@ -27,7 +27,7 @@ namespace isolaatti_API.Pages
         public List<ShareLink> Shares = new List<ShareLink>();
         public List<User> Followers = new List<User>();
         public List<User> Following = new List<User>();
-        public IQueryable<SimpleTextPost> UserPosts;
+
 
         public MyProfile(DbContextApp dbContextApp)
         {
@@ -68,13 +68,12 @@ namespace isolaatti_API.Pages
                     ViewData["userId"] = user.Id;
                     ViewData["password"] = user.Password;
                     ViewData["id"] = user.Id;
-
                     ViewData["profile_open"] = open;
-
                     ViewData["profile_updated"] = profileUpdate;
                     ViewData["emailNotAvailable"] = emailNotAvailable;
                     ViewData["nameNotAvailable"] = nameNotAvailable;
                     ViewData["statusData"] = statusData;
+                     
 
                     PasswordIsWrong = currentPasswordIsWrong;
                     var shares =
@@ -99,16 +98,18 @@ namespace isolaatti_API.Pages
                     {
                         Followers.Add(_db.Users.Find(followerId));
                     }
-
+                    
                     var followingIds = JsonSerializer.Deserialize<List<int>>(user.FollowingIdsJson);
                     foreach (var followingId in followingIds)
                     {
                         Following.Add(_db.Users.Find(followingId));
                     }
-
-                    UserPosts = _db.SimpleTextPosts.Where(post => post.UserId.Equals(user.Id))
-                        .OrderByDescending(post => post.Id);
-
+                    
+                    ViewData["numberOfFollowers"] = followersIds.Count;
+                    ViewData["numberOfFollowing"] = followingIds.Count;
+                    ViewData["numberOfLikes"] = _db.Likes.Count(like => like.TargetUserId.Equals(user.Id));
+                    ViewData["numberOfPosts"] = _db.SimpleTextPosts.Count(post => post.UserId.Equals(user.Id));
+                    
                     return Page();
                 }
                 

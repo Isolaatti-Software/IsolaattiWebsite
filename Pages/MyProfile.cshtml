@@ -7,8 +7,55 @@
     ViewData["Title"] = ViewData["name"];
 }
 
-<div class="col-lg-3 col-md-2"></div>
-<div class="col-lg-6 col-md-8">
+<div class="col-lg-2 col-md-3">
+        <section class="mt-3 p-2">
+            <div class="d-flex justify-content-center mb-2">
+                <div class="profile-pic">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+            <nav class="d-flex justify-content-center">
+                <button class="btn btn-primary btn-sm" id="edit-profile-button">Edit profile</button>
+            </nav>
+            <div class="d-flex flex-wrap mt-2">
+                <span class="text-white text-center mb-2 p-2 mr-1 badge badge-pill badge-info">
+                    Followers: <b>@ViewData["numberOfFollowers"]</b>
+                </span>
+                <span class="text-white text-center mb-2 p-2 mr-1 badge badge-pill badge-info">
+                    Following: <b>@ViewData["numberOfFollowing"]</b>
+                </span>
+                <span class="text-white text-center mb-2 p-2 mr-1 badge badge-pill badge-info">
+                    Likes: @ViewData["numberOfLikes"]
+                </span>
+                <span class="text-white text-center mb-2 p-2 mr-1 badge badge-pill badge-info">
+                    Posts: @ViewData["numberOfPosts"]
+                </span>
+            </div>
+            <p class="text-center m-0">@ViewData["name"]</p>
+            <p class="text-center m-0">@ViewData["email"]</p>
+            <ul class="nav nav-pills">
+                <li class="nav-item">
+                    <a class="nav-link" id="shared-links_tab" data-toggle="modal" href="#modal-shared-links" role="tab" aria-controls="shared links"
+                       aria-selected="true">
+                        Shared links
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="people_tab" data-toggle="modal" href="#modal-people" role="tab" aria-controls="people">
+                        People
+                    </a>
+                </li>
+            </ul>
+        </section>
+        
+        <section class="mt-2 p-2">
+            <div class="d-flex flex-column">
+                <a asp-page="Index" class="btn btn-primary mb-1">New Post</a>
+                <a asp-page="NewProject" class="btn btn-primary mb-2">New Project</a>
+            </div>
+        </section>
+</div>
+<div class="col-lg-7 col-md-9">
 
     @if ((bool) ViewData["profile_updated"])
     {
@@ -22,45 +69,13 @@
     {
         <div class="alert alert-warning"><strong>@ViewData["statusData"]</strong> is not available</div>
     }
-    <section class="rounded-border-black black-box-shadow mt-3 p-2">
-        <div class="d-flex justify-content-center">
-            <h1 class="display-1">
-                <i class="fas fa-user"></i>
-            </h1>
-        </div>
-        <nav class="d-flex justify-content-end">
-            <button class="btn btn-primary btn-sm" id="edit-profile-button">Edit profile</button>
-        </nav>
-        <h2 class="text-center">@ViewData["name"]</h2>
-        <h5 class="text-center">@ViewData["email"]</h5>
-        <ul class="nav nav-pills">
-            <li class="nav-item">
-                <a class="nav-link" id="shared-links_tab" data-toggle="modal" href="#modal-shared-links" role="tab" aria-controls="shared links"
-                   aria-selected="true">
-                    Shared links
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="people_tab" data-toggle="modal" href="#modal-people" role="tab" aria-controls="people">
-                    People
-                </a>
-            </li>
-        </ul>
-    </section>
-    
-    <section class="rounded-border-black black-box-shadow mt-2 p-2">
-        <h5 class="m-2">Create</h5>
-        <div class="d-flex justify-content-around">
-            <a asp-page="Index" class="btn btn-primary">Post</a>
-            <a asp-page="NewProject" class="btn btn-primary">Project</a>
-        </div>
-    </section>
+
     
     <section id="your-posts-deposit" class="d-flex flex-column mt-3">
         <h5 class="m-2">Your posts</h5>
         <div id="vue-container">
             <div v-for="post in posts" 
-                 class="d-flex mb-2 rounded-border-black flex-column p-2 post" :postid="post.id" :privacy="post.privacy">
+                 class="d-flex mb-2 flex-column p-2 post" :postid="post.id" :privacy="post.privacy">
                 <div class="d-flex justify-content-between align-items-center">
                     <span class="user-name"><b>@ViewData["name"]</b></span>
                     <div class="d-flex">
@@ -94,7 +109,7 @@
     </section>
     
 </div>
-<div class="col-lg-3 col-md-2"></div>
+<div class="col-lg-3"></div>
 
 @* Add here Bootstrap modals *@
 <!-- Modal edit profile -->

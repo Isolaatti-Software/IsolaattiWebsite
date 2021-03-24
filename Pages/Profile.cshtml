@@ -7,39 +7,33 @@
 }
 
 
-<div class="col-lg-3 col-md-2"></div>
-<div class="col-lg-6 col-md-8">
-    <nav class="d-flex flex-column justify-content-center mt-3 mb-4 p-3 rounded-border-black black-box-shadow">
+<div class="col-lg-2 col-md-3">
+    <header>
         <div class="d-flex justify-content-center">
             <div class="profile-pic">
                 <i class="fas fa-user"></i>
             </div>
         </div>
-        <h2 class="text-center">@ViewData["profile_name"]</h2>
-        <h5 class="text-center">@ViewData["profile_email"]</h5>
-        <div class="d-flex justify-content-between">
-            <div class="d-flex flex-nowrap overflow-auto">
-                <span class="text-white text-center mb-2 p-2 mr-1 badge badge-pill badge-info">
-                    Followers: <b>@ViewData["numberOfFollowers"]</b>
+        <p class="text-center m-0">@ViewData["profile_name"]</p>
+        <div class="d-flex justify-content-center flex-wrap">
+            <span class="text-white text-center mb-2 p-2 mr-1 badge badge-pill badge-info">
+                Followers: <b>@ViewData["numberOfFollowers"]</b>
+            </span>
+            <span class="text-white text-center mb-2 p-2 mr-1 badge badge-pill badge-info">
+                Following: <b>@ViewData["numberOfFollowing"]</b>
+            </span>
+            @if ((bool) ViewData["thisUserIsFollowingMe"])
+            {
+                <span class="text-white text-center mb-2 p-2 mr-1 badge badge-pill badge-success">
+                    <i class="fas fa-user-friends"></i> Follows you
                 </span>
-                <span class="text-white text-center mb-2 p-2 mr-1 badge badge-pill badge-info">
-                    Following: <b>@ViewData["numberOfFollowing"]</b>
-                </span>
-                @if ((bool) ViewData["thisUserIsFollowingMe"])
-                {
-                    <span class="text-white text-center mb-2 p-2 mr-1 badge badge-pill badge-success">
-                        <i class="fas fa-user-friends"></i> Follows you
-                    </span>
-                }
-            </div>
-            <div class="d-flex flex-nowrap overflow-auto">
-                <span class="text-white text-center mb-2 p-2 mr-1 badge badge-pill badge-info">
-                    Likes
-                </span>
-                <span class="text-white text-center mb-2 p-2 mr-1 badge badge-pill badge-info">
-                    Posts
-                </span>
-            </div>
+            }
+            <span class="text-white text-center mb-2 p-2 mr-1 badge badge-pill badge-info">
+                Likes: @ViewData["numberOfLikes"]
+            </span>
+            <span class="text-white text-center mb-2 p-2 mr-1 badge badge-pill badge-info">
+                Posts: @ViewData["numberOfPosts"]
+            </span>
         </div>
         <div class="d-flex">
             @if ((bool) ViewData["followingThisUser"])
@@ -51,47 +45,47 @@
                 <button class="btn btn-primary btn-sm mb-2 w-100" id="followButton">Follow <i class="fas fa-check"></i></button>
             }
         </div>
-    </nav>
-    <h5>Public projects</h5>
-    <section id="public-projects-section" class="d-flex black-box-shadow rounded-border-black mb-4 align-items-center justify-content-center" style="height: 200px">
-        <h5 class="m-2">This will be available very soon</h5>
-    </section>
+    </header>
+</div>
+<div class="col-lg-7 col-md-9">
+    
     <h5>Posts</h5>
-    <section class="d-flex flex-column">
-        @if (!Model.Posts.Any())
+
+        
+    <section id="vue-container" class="d-flex flex-column pt-1 mt-2 mb-3 align-items-center">
+        @if ((int)ViewData["numberOfPosts"] == 0)
         {
-            <h5 class="m-2 text-center">@ViewData["profile_name"] does not have any public post</h5> 
+            <h5 class="m-2 text-center">@ViewData["profile_name"] does not have any public post</h5>
         }
-        <div id="vue-container">
-            <div v-for="post in posts" class="d-flex mb-2 rounded-border-black flex-column p-2 post">
-                <div class="d-flex justify-content-between align-items-center">
-                    <span class="user-name"><b>@ViewData["profile_name"]</b></span>
+        <div v-for="post in posts" class="d-flex mb-2 flex-column p-2 post">
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="user-name"><b>@ViewData["profile_name"]</b></span>
+            </div>
+            <div class="d-flex privacy-icon-container">
+                <div v-if="post.privacy === 2">
+                    <i class="fas fa-user-friends" title="People on Isolaatti" aria-hidden="true"></i><span class="sr-only">People on Isolaatti</span>
                 </div>
-                <div class="d-flex privacy-icon-container">
-                    <div v-if="post.privacy === 2">
-                        <i class="fas fa-user-friends" title="People on Isolaatti" aria-hidden="true"></i><span class="sr-only">People on Isolaatti</span>
-                    </div>
-                    <div v-if="post.privacy === 3">
-                        <i class="fas fa-globe" title="All the world" aria-hidden="true"></i><span class="sr-only">Everyone</span>
-                    </div>
+                <div v-if="post.privacy === 3">
+                    <i class="fas fa-globe" title="All the world" aria-hidden="true"></i><span class="sr-only">Everyone</span>
                 </div>
-                <p class="mt-2 post-content">{{post.textContent}}</p>
-                <div class="d-flex justify-content-end">
-                    <button class="btn btn-dark btn-sm" type="button">
-                        <i class="fas fa-comments" aria-hidden="true"></i> {_}
-                    </button>
-                    <button v-if="!post.liked" v-on:click="likePost(post)" class="btn btn-dark btn-sm" type="button">
-                        <i class="fas fa-thumbs-up" aria-hidden="true"></i> {{post.numberOfLikes}}
-                    </button>
-                    <button v-if="post.liked" v-on:click="unLikePost(post)" class="btn btn-primary btn-sm" type="button">
-                        <i class="fas fa-thumbs-up" aria-hidden="true"></i> {{post.numberOfLikes}}
-                    </button>
-                </div>
+            </div>
+            <p class="mt-2 post-content">{{post.textContent}}</p>
+            <div class="d-flex justify-content-end">
+                <button class="btn btn-dark btn-sm" type="button">
+                    <i class="fas fa-comments" aria-hidden="true"></i> {_}
+                </button>
+                <button v-if="!post.liked" v-on:click="likePost(post)" class="btn btn-dark btn-sm" type="button">
+                    <i class="fas fa-thumbs-up" aria-hidden="true"></i> {{post.numberOfLikes}}
+                </button>
+                <button v-if="post.liked" v-on:click="unLikePost(post)" class="btn btn-primary btn-sm" type="button">
+                    <i class="fas fa-thumbs-up" aria-hidden="true"></i> {{post.numberOfLikes}}
+                </button>
             </div>
         </div>
     </section>
+
 </div>
-<div class="col-lg-3 col-md-2"></div>
+<div class="col-lg-3"></div>
 
 @section Scripts
 {
