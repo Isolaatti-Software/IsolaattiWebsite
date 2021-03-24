@@ -243,6 +243,7 @@ span.user-name {
 
 .post {
     width: 100%;
+    border-left: solid 2px #300d88;
 }
 
 #posts-deposit {
