@@ -32,7 +32,8 @@ namespace isolaatti_API.Controllers
             Db.Likes.Add(new Like()
             {
                 PostId = postId,
-                UserId = user.Id
+                UserId = user.Id,
+                TargetUserId = post.UserId
             });
             post.NumberOfLikes += 1;
             Db.SimpleTextPosts.Update(post);
