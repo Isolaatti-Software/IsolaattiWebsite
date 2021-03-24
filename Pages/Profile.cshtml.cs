@@ -60,7 +60,7 @@ namespace isolaatti_API.Pages
                     ViewData["numberOfFollowers"] = followersIds.Count();
                     ViewData["numberOfFollowing"] = followingUsersIds.Count();
                     
-                    ViewData["numberOfPosts"] = _db.SimpleTextPosts.Count(post => post.UserId.Equals(user.Id));
+                    ViewData["numberOfPosts"] = _db.SimpleTextPosts.Count(post => post.UserId.Equals(profile.Id));
                     return Page();
                 }
             }
