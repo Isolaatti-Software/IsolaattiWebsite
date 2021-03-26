@@ -249,3 +249,8 @@ span.user-name {
 #posts-deposit {
     padding-bottom: 40px;
 }
+
+#left-bar {
+    position:sticky;
+    top: 60px;
+}

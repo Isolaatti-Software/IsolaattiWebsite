@@ -8,52 +8,44 @@
 }
 
 <div class="col-lg-2 col-md-3">
-        <section class="mt-3 p-2">
-            <div class="d-flex justify-content-center mb-2">
-                <div class="profile-pic">
-                    <i class="fas fa-user"></i>
-                </div>
+    <aside id="left-bar">
+        <div class="d-flex justify-content-center mb-2">
+            <div class="profile-pic">
+                <i class="fas fa-user"></i>
             </div>
-            <nav class="d-flex justify-content-center">
-                <button class="btn btn-primary btn-sm" id="edit-profile-button">Edit profile</button>
-            </nav>
-            <div class="d-flex flex-wrap mt-2">
-                <span class="text-white text-center mb-2 p-2 mr-1 badge badge-pill badge-info">
-                    Followers: <b>@ViewData["numberOfFollowers"]</b>
-                </span>
-                <span class="text-white text-center mb-2 p-2 mr-1 badge badge-pill badge-info">
-                    Following: <b>@ViewData["numberOfFollowing"]</b>
-                </span>
-                <span class="text-white text-center mb-2 p-2 mr-1 badge badge-pill badge-info">
-                    Likes: @ViewData["numberOfLikes"]
-                </span>
-                <span class="text-white text-center mb-2 p-2 mr-1 badge badge-pill badge-info">
-                    Posts: @ViewData["numberOfPosts"]
-                </span>
-            </div>
-            <p class="text-center m-0 overflow-auto">@ViewData["name"]</p>
-            <p class="text-center m-0 overflow-auto">@ViewData["email"]</p>
-            <ul class="nav nav-pills">
-                <li class="nav-item">
-                    <a class="nav-link" id="shared-links_tab" data-toggle="modal" href="#modal-shared-links" role="tab" aria-controls="shared links"
-                       aria-selected="true">
-                        Shared links
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="people_tab" data-toggle="modal" href="#modal-people" role="tab" aria-controls="people">
-                        People
-                    </a>
-                </li>
-            </ul>
-        </section>
-        
+        </div>
+        <p class="text-center m-0 overflow-auto">@ViewData["name"]</p>
+        <nav class="d-flex justify-content-center">
+            <button class="btn btn-primary btn-sm" id="edit-profile-button">Edit profile</button>
+        </nav>
+        <div class="d-flex flex-wrap mt-2">
+            <a class="text-white text-center mb-2 p-2 mr-1 badge badge-pill badge-info"
+               data-toggle="modal" href="#modal-followers">
+                Followers: <b>@ViewData["numberOfFollowers"]</b>
+            </a>
+            <a class="text-white text-center mb-2 p-2 mr-1 badge badge-pill badge-info"
+               data-toggle="modal" href="#modal-following">
+                Following: <b>@ViewData["numberOfFollowing"]</b>
+            </a>
+            <span class="text-white text-center mb-2 p-2 mr-1 badge badge-pill badge-info">
+                Likes: @ViewData["numberOfLikes"]
+            </span>
+            <span class="text-white text-center mb-2 p-2 mr-1 badge badge-pill badge-info">
+                Posts: @ViewData["numberOfPosts"]
+            </span>
+            <a class="text-white text-center mb-2 p-2 mr-1 badge badge-pill badge-info"
+               id="shared-links_tab" data-toggle="modal" href="#modal-shared-links">
+                Shared links: @Model.Shares.Count
+            </a>
+        </div>
         <section class="mt-2 p-2">
             <div class="d-flex flex-column">
                 <a asp-page="Index" class="btn btn-primary mb-1">New Post</a>
                 <a asp-page="NewProject" class="btn btn-primary mb-2">New Project</a>
             </div>
         </section>
+    </aside>
+
 </div>
 <div class="col-lg-7 col-md-9">
 
@@ -70,14 +62,16 @@
         <div class="alert alert-warning"><strong>@ViewData["statusData"]</strong> is not available</div>
     }
 
-    
+
     <section id="your-posts-deposit" class="d-flex flex-column mt-3">
         <h5 class="m-2">Your posts</h5>
         <div id="vue-container">
-            <div v-for="post in posts" 
+            <div v-for="post in posts"
                  class="d-flex mb-2 flex-column p-2 post" :postid="post.id" :privacy="post.privacy">
                 <div class="d-flex justify-content-between align-items-center">
-                    <span class="user-name"><b>@ViewData["name"]</b></span>
+                    <span class="user-name">
+                        <b>@ViewData["name"]</b>
+                    </span>
                     <div class="d-flex">
                         <button data-target="#modal-edit-post" class="mr-1 btn btn-link btn-sm" data-toggle="modal" :data-postid="post.id">
                             <i class="fas fa-pencil-alt"></i>
@@ -107,7 +101,7 @@
             </div>
         </div>
     </section>
-    
+
 </div>
 <div class="col-lg-3"></div>
 
@@ -166,7 +160,6 @@
                         <div class="d-flex justify-content-center align-items-center" style="height: 350px">
                             <h6>You have not shared any project</h6>
                         </div>
-                            
                     }
                     @foreach (var share in Model.Shares)
                     {
@@ -253,53 +246,67 @@
     </div>
 </div>
 
-<!-- Modal people -->
-<div class="modal fade" id="modal-people">
+<!-- Modal followers -->
+<div class="modal fade" id="modal-followers">
     <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
         <div class="modal-content bg-dark">
             <div class="modal-header">
-                <h5 class="modal-title">People</h5>
+                <h5 class="modal-title">Followers</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     &times;
                 </button>
             </div>
             <div class="modal-body">
-                <ul class="nav nav-pills mt-2 mb-2 justify-content-center">
-                    <li class="nav-item">
-                        <a href="#following-pane" class="nav-link active" data-toggle="tab">Following</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#followers-pane" class="nav-link" data-toggle="tab">Followers</a>
-                    </li>
-                </ul>
-                <div class="tab-content">
-                    <div class="tab-pane show active" id="following-pane">
-                        <div class="profiles-list-container">
-                            @foreach (User user in Model.Following)
-                            {
-                                <a class="user-profile-card" asp-page="Profile" asp-route-id="@user.Id">
-                                    <div class="profile-pic">
-                                        <i class="fas fa-user"></i>
-                                    </div>
-                                    <h6>@user.Name</h6>
-                                </a>
-                            }
-                        </div>
-                    </div>
-                    <div class="tab-pane" id="followers-pane">
-                        <div class="profiles-list-container">
-                            @foreach (User user in Model.Followers)
-                            {
-                                <a class="user-profile-card"
-                                   asp-page="Profile" asp-route-id="@user.Id">
-                                    <div class="profile-pic">
-                                        <i class="fas fa-user"></i>
-                                    </div>
-                                    <h6>@user.Name</h6>
-                                </a>
-                            }
-                        </div>
-                    </div>
+                <div class="profiles-list-container">
+                    @if (!Model.Followers.Any())
+                    {
+                        <p class="m-3">
+                            Nobody is following you. You can start follwing someone so that you become known.
+                        </p>
+                    }
+                    @foreach (User user in Model.Followers)
+                    {
+                        <a class="user-profile-card"
+                           asp-page="Profile" asp-route-id="@user.Id">
+                            <div class="profile-pic">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <h6>@user.Name</h6>
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal following -->
+<div class="modal fade" id="modal-following">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content bg-dark">
+            <div class="modal-header">
+                <h5 class="modal-title">Following</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="profiles-list-container">
+                    @if (!Model.Following.Any())
+                    {
+                        <p class="m-3">
+                            You are not following anyone.
+                        </p>
+                    }
+                    @foreach (User user in Model.Following)
+                    {
+                        <a class="user-profile-card" asp-page="Profile" asp-route-id="@user.Id">
+                            <div class="profile-pic">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <h6>@user.Name</h6>
+                        </a>
+                    }
                 </div>
             </div>
         </div>
@@ -344,7 +351,7 @@
                     <option value="3">Everyone</option>
                 </select>
                 <textarea class="form-control w-100" id="edit-post-modal-simple-post-textarea" placeholder="Say something to your followers" rows="1"></textarea>
-                
+
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary mt-1" id="post-save-changes">Save</button>
