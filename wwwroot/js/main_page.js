@@ -194,6 +194,9 @@ let vueContainer = new Vue({
             postsInDOM = [];
             this.posts = [];
             putPosts();
+        },
+        compileMarkdown: function(raw) {
+            return marked(raw);
         }
     }
 });

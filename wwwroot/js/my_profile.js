@@ -229,6 +229,10 @@ function getPosts(onComplete, onError) {
                         }
                     }
                     request.send(formData);
+                },
+                compileMarkdown: function(raw) {
+                    if(raw === null) raw = "";
+                    return marked(raw);
                 }
             }
         })

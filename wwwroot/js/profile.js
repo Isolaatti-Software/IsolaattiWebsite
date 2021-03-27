@@ -140,6 +140,9 @@ function getPosts(accountId, onComplete, onError) {
                     }
                 }
                 request.send(formData);
+            },
+            compileMarkdown: function(raw) {
+                return marked(raw);
             }
         }
     });

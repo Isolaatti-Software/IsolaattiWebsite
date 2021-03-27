@@ -69,7 +69,7 @@
                     <i class="fas fa-globe" title="All the world" aria-hidden="true"></i><span class="sr-only">Everyone</span>
                 </div>
             </div>
-            <p class="mt-2 post-content">{{post.textContent}}</p>
+            <div class="mt-2 post-content" v-html="compileMarkdown(post.textContent)"></div>
             <div class="d-flex justify-content-end">
                 <button class="btn btn-dark btn-sm" type="button">
                     <i class="fas fa-comments" aria-hidden="true"></i> {_}
@@ -99,6 +99,7 @@
         userId: @ViewData["profile_id"]
     }
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
     <script src="~/js/profile.js"></script>
 }
