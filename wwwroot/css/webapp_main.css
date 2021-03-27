@@ -254,3 +254,17 @@ span.user-name {
     position:sticky;
     top: 60px;
 }
+
+#editing-section {
+    height: calc(100vh - 190px);
+    width: 100%;
+}
+
+#raw-post-markdown {
+    height: 100%;
+    width: 100%;
+}
+
+pre, code {
+    color: white;
+}

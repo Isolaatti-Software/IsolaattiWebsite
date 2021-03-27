@@ -1,0 +1,103 @@
+@page
+@model isolaatti_API.Pages.PostEditor
+
+@{
+    Layout = "Shared/_LayoutWebApp";
+}
+<div id="vue-container" class="container-fluid">
+    <header class="col-12">
+        <div class="d-flex justify-content-between align-items-center m-2">
+            <h5>New post</h5>
+            <button class="btn btn-primary" v-on:click="post">
+                Post
+            </button>
+        </div>
+    </header>
+    <div class="container-fluid">
+    
+        <div class="row">
+            <div class="col-md-6">
+                <select class="custom-select m-2" v-model="privacy">
+                    <option value="1">Private</option>
+                    <option value="2">People on Isolaatti</option>
+                    <option value="3">Everyone</option>
+                </select>
+                <section id="post-editor-text-formatting-options" class="ml-2 mb-1">
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-primary" v-on:click="insertHeading(1)">
+                            <b>H1</b>
+                        </button>
+                        <button class="btn btn-primary" v-on:click="insertHeading(2)">
+                            <b>H2</b>
+                        </button>
+                        <button class="btn btn-primary" v-on:click="insertHeading(3)">
+                            <b>H3</b>
+                        </button>
+                        <button class="btn btn-primary" v-on:click="insertHeading(4)">
+                            <b>H4</b>
+                        </button>
+                        <button class="btn btn-primary" v-on:click="insertHeading(5)">
+                            <b>H5</b>
+                        </button>
+                        <button class="btn btn-primary" v-on:click="insertHeading(6)">
+                            <b>H6</b>
+                        </button>
+                    </div>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-primary" v-on:click="surroundTextWith('bold')">
+                            <b>B</b>
+                        </button>
+                        <button class="btn btn-primary" v-on:click="surroundTextWith('italics')">
+                            <em>I</em>
+                        </button>
+                    </div>
+                </section>
+                <section id="editing-section" class="ml-2 mr-2">
+                    <textarea id="raw-post-markdown" class="form-control" :value="input" 
+                        ref="markdownTextarea" v-bind:selection-start.prop="selectionStart" 
+                        v-bind:selection-end.prop="selectionEnd" v-on:input="update" ></textarea>
+                </section>
+            </div>
+            <div class="col-md-6">
+                <h5>Preview</h5>
+                <div class="d-flex mb-2 flex-column p-2 post" 
+                     style="max-height: calc(100vh - 150px); overflow: auto; cursor: not-allowed">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="user-name">
+                            <a href="#">@ViewData["name"]</a>
+                        </span>
+                    </div>
+                    <div class="d-flex privacy-icon-container">
+                        <div v-if="privacy === '1'">
+                            <i class="fas fa-user" title="Only you"></i><span class="sr-only">People on Isolaatti</span>
+                        </div>
+                        <div v-if="privacy === '2'">
+                            <i class="fas fa-user-friends" title="People on Isolaatti" aria-hidden="true"></i><span class="sr-only">People on Isolaatti</span>
+                        </div>
+                        <div v-if="privacy === '3'">
+                            <i class="fas fa-globe" title="All the world" aria-hidden="true"></i><span class="sr-only">Everyone</span>
+                        </div>
+                    </div>
+                    <div class="mt-2 post-content" v-html="compiledMarkdown"></div>
+                    <div class="d-flex justify-content-end">
+                        <button class="btn btn-dark btn-sm" type="button">
+                            <i class="fas fa-comments" aria-hidden="true"></i> 0
+                        </button>
+                        <button class="btn btn-dark btn-sm" type="button">
+                            <i class="fas fa-thumbs-up" aria-hidden="true"></i> 0
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts
+{
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script src="~/js/PostEditor.js"></script>
+}
