@@ -220,6 +220,10 @@ progress[orient=vertical] {
     position:relative;
 }
 
+#edit-post-modal-simple-post-textarea {
+    height: 65vh!important;
+}
+
 .horizontal-panel-container {
     width: 100%;
     overflow: hidden;
