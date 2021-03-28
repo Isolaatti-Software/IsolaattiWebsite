@@ -12,6 +12,9 @@ const vue = new Vue({
     computed: {
         compiledMarkdown: function() {
             return marked(this.input, { sanitize: true});
+        },
+        postButtonDisabled: function() {
+            return this.input === null || this.input === "";
         }
     },
     methods: {
