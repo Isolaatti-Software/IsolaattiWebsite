@@ -170,14 +170,6 @@ function getPosts(onComplete, onError) {
     let editProfileButton = document.getElementById("edit-profile-button");
     let editNameField = document.getElementById("edit-name-field");
     let editEmailField = document.getElementById("edit-email-field");
-    let editPostTextarea = document.getElementById("edit-post-modal-simple-post-textarea");
-    let editPostPrivacySelector = document.getElementById("edit-post-privacy-selector");
-    let deletePostModalButtons = {
-        yes: document.querySelector('#delete-post-modal-yes')
-    }
-    let editPostModalButtons = {
-        save: document.querySelector('#post-save-changes')
-    }
     
     // this value is used to know what post to modify or delete with modals
     let currentPostIdForModal = 0;
@@ -185,11 +177,16 @@ function getPosts(onComplete, onError) {
         // Filling the fields in edit profile modal with current information
         editEmailField.value = userData.email;
         editNameField.value = userData.name;
+        
+        let posts;
 
         let vueContainer = new Vue({
             el: '#vue-container',
             data: {
-                posts: []
+                posts: [],
+                selectedPostForModalsId: 0,
+                textareaEditPost: "",
+                privacyEditPost: ""
             },
             methods: {
                 likePost: function(post) {
@@ -233,6 +230,47 @@ function getPosts(onComplete, onError) {
                 compileMarkdown: function(raw) {
                     if(raw === null) raw = "";
                     return marked(raw);
+                },
+                openEditPostModal: function(post) {
+                    this.selectedPostForModalsId = post.id;
+                    this.textareaEditPost = post.textContent;
+                    this.privacyEditPost = post.privacy;
+                    $('#modal-edit-post').modal('show');
+                },
+                openDeletePostModal: function(post) {
+                    this.selectedPostForModalsId = post.id;
+                    this.textareaEditPost = post.textContent;
+                    this.privacyEditPost = post.privacy;
+                    $('#modal-delete-post').modal('show');
+                },
+                confirmPostModification: function() {
+                    let postReference = this.posts.find(post => post.id === this.selectedPostForModalsId);
+                    let textChanged = postReference.textContent !== this.textareaEditPost;
+                    let privacyChanged = postReference.privacy !== this.privacyEditPost;
+                    let index = this.posts.findIndex(post => post.id === this.selectedPostForModalsId);
+                    
+                    if(textChanged) {
+                        editPost(this.selectedPostForModalsId,this.textareaEditPost,(event) => {
+                            Vue.set(vueContainer.posts, index, event.serverResponse);
+                        }, (error) => {
+
+                        }); 
+                    }
+                    if(privacyChanged){
+                        changePostPrivacy(this.selectedPostForModalsId,this.privacyEditPost,(event) => {
+                            Vue.set(vueContainer.posts, index, event.serverResponse);
+                        }, () => {
+                            
+                        });
+                    }
+                    $("#modal-edit-post").modal('hide');
+                },
+                confirmPostDeletion: function() {
+                    let index = this.posts.findIndex(post => post.id === this.selectedPostForModalsId);
+                    deletePost(this.selectedPostForModalsId, () => {
+                        this.posts.splice(index,1);
+                        $("#modal-delete-post").modal('hide');
+                    }, () => {})
                 }
             }
         })
@@ -252,80 +290,5 @@ function getPosts(onComplete, onError) {
                 newPasswordConfField.classList.remove("is-invalid");
             }
         }
-    });
-    
-    editProfileButton.addEventListener("click", function(event) {
-        $('#modal-edit-profile').modal('show');
-    });
-    
-    // when the "delete post modal" is shown, the variable for current post is set, 
-    // taking it from the button that opened the modal
-    $('#modal-delete-post').on('shown.bs.modal', (event) => {
-        console.log("se abre modal");
-        let button = $(event.relatedTarget);
-        currentPostIdForModal = button.data('postid');
-        console.log(currentPostIdForModal);
-    });
-
-    // when the "edit post modal" is shown, the variable for current post is set, 
-    // taking it from the button that opened the modal. Also, the value for the
-    // textarea where the user will modify the content is populated with the current content
-    $('#modal-edit-post').on('show.bs.modal', (event) => {
-        console.log("Se abre modal para editar post");
-        let button = $(event.relatedTarget);
-        currentPostIdForModal = button.data('postid');
-        editPostTextarea.value = 
-            document.querySelector(`div[postid="${currentPostIdForModal}"].post .post-content`).innerHTML;
-        let postContainer = document.querySelector(`div[postid="${currentPostIdForModal}"].post`);
-        editPostPrivacySelector.value = postContainer.attributes.getNamedItem("privacy").value;
-        console.log(currentPostIdForModal);
-    });
-    
-    // These events will call the corresponding functions to delete or modify. The post id parameter is taken from
-    // the variable set before (currentPostIdForModal)
-    deletePostModalButtons.yes.addEventListener("click", () => {
-        deletePostModalButtons.yes.innerHTML = 
-            'Deleting <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
-        deletePostModalButtons.yes.disabled = true;
-        deletePost(currentPostIdForModal,(event) => {
-           console.log(event);
-           deletePostModalButtons.yes.innerHTML = "Yes";
-            deletePostModalButtons.yes.disabled = false;
-           $('#modal-delete-post').modal('hide');
-           document.querySelector(`div[postid="${currentPostIdForModal}"].post`).remove();
-       }, () => {
-           
-       });
-    });
-    
-    editPostModalButtons.save.addEventListener("click", () => {
-        editPostModalButtons.save.innerHTML = 
-            'Saving <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
-        editPostModalButtons.save.disabled = true;
-        editPost(currentPostIdForModal,editPostTextarea.value,(event) => {
-           console.log(event);
-           editPostModalButtons.save.innerHTML = "Save";
-           editPostModalButtons.save.disabled = false;
-           $('#modal-edit-post').modal('hide');
-           let postContentInDOM = 
-               document.querySelector(`div[postid="${currentPostIdForModal}"].post .post-content`);
-           postContentInDOM.innerHTML = event.serverResponse.textContent;
-       }, (error)  => {
-           
-       });
-       changePostPrivacy(currentPostIdForModal,editPostPrivacySelector.value,(event) => {
-           console.log(event);
-           let privacyIconContainer = 
-               document.querySelector(`div[postid="${currentPostIdForModal}"].post .privacy-icon-container`);
-           switch(event.serverResponse.privacy) {
-               case 1 : privacyIconContainer.innerHTML = '<i class="fas fa-user" title="Only you"></i>'; break;
-               case 2 : privacyIconContainer.innerHTML = '<i class="fas fa-user-friends" title="People on Isolaatti"></i>';break;
-               case 3 : privacyIconContainer.innerHTML = '<i class="fas fa-globe" title="All the world"></i>'; break;
-           }
-           document.querySelector(`div[postid="${currentPostIdForModal}"].post`)
-               .attributes.getNamedItem("privacy").value = event.serverResponse.privacy;
-       }, (error) => {
-          console.error(error);
-       });
     });
 })();
