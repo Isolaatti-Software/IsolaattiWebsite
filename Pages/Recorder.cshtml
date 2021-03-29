@@ -10,12 +10,18 @@
 }
 @section Scripts
 {
+    <script>
+    let trackUrls = [];
+    trackUrls.push("@Model.Song.DrumsUrl");
+    trackUrls.push("@Model.Song.BassUrl");
+    trackUrls.push("@Model.Song.VoiceUrl");
+    trackUrls.push("@Model.Song.OtherUrl");
+    let duration = @ViewData["duration"];
+    </script>
     <script src="~/js/recorder.js"></script>
 }
-<audio src="@Model.Song.DrumsUrl" crossorigin="anonymous" preload="auto" class="track-audio-element" track-name="drums"></audio>
-<audio src="@Model.Song.BassUrl"  crossorigin="anonymous" preload="auto" class="track-audio-element" track-name="bass"></audio>
-<audio src="@Model.Song.VoiceUrl" crossorigin="anonymous" preload="auto" class="track-audio-element" track-name="vocals"></audio>
-<audio src="@Model.Song.OtherUrl" crossorigin="anonymous" preload="auto" class="track-audio-element" track-name="other"></audio>
+
 
 <h5>Recorder - @ViewData["track_name"]</h5>
 <a id="mix-player">Descargar</a>
+<button id="play">Play mix</button>

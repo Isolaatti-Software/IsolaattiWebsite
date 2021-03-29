@@ -23,7 +23,7 @@ namespace isolaatti_API.Pages
             return NotFound();
         }
         
-        public IActionResult OnPost(int projectId, string name)
+        public IActionResult OnPost(int projectId, string name, float duration)
         {
             var email = Request.Cookies["isolaatti_user_name"];
             var password = Request.Cookies["isolaatti_user_password"];
@@ -54,6 +54,7 @@ namespace isolaatti_API.Pages
                     if (Song == null) return NotFound();
 
                     ViewData["track_name"] = name;
+                    ViewData["duration"] = duration;
                     return Page();
 
                 }
