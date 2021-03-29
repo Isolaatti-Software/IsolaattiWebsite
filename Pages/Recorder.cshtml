@@ -1,0 +1,21 @@
+@page
+@model isolaatti_API.Pages.Recorder
+
+@{
+    Layout = "Shared/_LayoutWebApp";
+}
+@section CSS
+{
+    <link rel="stylesheet" href="~/css/recorder.css">
+}
+@section Scripts
+{
+    <script src="~/js/recorder.js"></script>
+}
+<audio src="@Model.Song.DrumsUrl" crossorigin="anonymous" preload="auto" class="track-audio-element" track-name="drums"></audio>
+<audio src="@Model.Song.BassUrl"  crossorigin="anonymous" preload="auto" class="track-audio-element" track-name="bass"></audio>
+<audio src="@Model.Song.VoiceUrl" crossorigin="anonymous" preload="auto" class="track-audio-element" track-name="vocals"></audio>
+<audio src="@Model.Song.OtherUrl" crossorigin="anonymous" preload="auto" class="track-audio-element" track-name="other"></audio>
+
+<h5>Recorder - @ViewData["track_name"]</h5>
+<a id="mix-player">Descargar</a>
