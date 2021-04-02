@@ -7,5 +7,6 @@ namespace isolaatti_API.Models
         public int UserId { get; set; }
         public long NumberOfLikes { get; set; }
         public int Privacy { get; set; }
+        public string AudioAttachedUrl { get; set; }
     }
 }
