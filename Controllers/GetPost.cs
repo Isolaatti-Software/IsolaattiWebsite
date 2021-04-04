@@ -27,7 +27,7 @@ namespace isolaatti_API.Controllers
             var post = _db.SimpleTextPosts.Find(postId);
             if (post == null || (post.Privacy == 1 && post.UserId != user.Id)) return NotFound("post not found");
             var liked = _db.Likes.Any(like => like.PostId.Equals(post.Id) && like.UserId.Equals(user.Id));
-            
+            var author = _db.Users.Find(post.UserId).Name;
             return Ok(new ReturningPostsComposedResponse()
             {
                 Id = post.Id,
@@ -35,7 +35,8 @@ namespace isolaatti_API.Controllers
                 NumberOfLikes = post.NumberOfLikes,
                 Privacy = post.Privacy,
                 TextContent = post.TextContent,
-                UserId = post.UserId
+                UserId = post.UserId,
+                UserName = author
             });
         }
     }
