@@ -38,6 +38,7 @@ namespace isolaatti_API.Pages
                             username = email,
                             notVerified = true
                         });
+                    
                     // here it's know that account is correct. Data binding!
                     ViewData["name"] = user.Name;
                     ViewData["email"] = user.Email;
@@ -51,6 +52,7 @@ namespace isolaatti_API.Pages
                     ViewData["profile_name"] = profile.Name;
                     ViewData["profile_email"] = profile.Email;
                     ViewData["profile_id"] = profile.Id;
+                    if (user.Id == profile.Id) return RedirectToPage("MyProfile");
 
                     var followingUsersIds = JsonSerializer.Deserialize<List<int>>(profile.FollowingIdsJson);
                     var followersIds = JsonSerializer.Deserialize<List<int>>(profile.FollowersIdsJson);

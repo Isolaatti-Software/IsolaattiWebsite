@@ -30,6 +30,5 @@ namespace isolaatti_API.Models
         public DbSet<UserToken> UserTokens { get; set; }
         public DbSet<UserSeenPostHistory> UserSeenPostHistories { get; set; }
         public DbSet<Like> Likes { get; set; }
-        public DbSet<AudioComment> AudioComments { get; set; }
     }
 }
