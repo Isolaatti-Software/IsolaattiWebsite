@@ -39,5 +39,32 @@ namespace isolaatti_API.Controllers
                 UserName = author
             });
         }
+
+        [HttpPost]
+        [Route("Comments")]
+        public IActionResult GetComments([FromForm] int userId, [FromForm] string password, [FromForm] long postId)
+        {
+            var user = _db.Users.Find(userId);
+            if (user == null) return NotFound("user not found");
+            if (!user.Password.Equals(password)) return Unauthorized("password is not correct");
+
+            var post = _db.SimpleTextPosts.Find(postId);
+            if (post == null || (post.Privacy == 1 && post.UserId != user.Id))
+                return Unauthorized("post does not exist or is private");
+
+            var comments = _db.Comments
+                .Where(comment => comment.SimpleTextPostId.Equals(post.Id))
+                .ToList()
+                .Select(com => new ReturningCommentComposedResponse()
+                {
+                    Id = com.Id,
+                    Privacy = com.Privacy,
+                    SimpleTextPostId = com.SimpleTextPostId,
+                    TextContent = com.TextContent,
+                    WhoWrote = com.WhoWrote,
+                    WhoWroteName = _db.Users.Find(com.WhoWrote).Name
+                });
+            return Ok(comments);
+        }
     }
 }
