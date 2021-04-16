@@ -1,13 +1,14 @@
 #comment-box {
-    width: 100%;
-    background-color: black;
+    max-width: 800px;
+    background-color: rgba(0,0,0,0.6);
     position: fixed;
-    bottom: 0;
+    bottom: calc(calc(50vh - 40px) * -1);
     left:0;
     right: 0;
     box-sizing: border-box;
-    height: 175px;
+    height: 50vh;
     z-index: 100;
+    border-radius: 10px;
 }
 
 #comment-textarea {
@@ -16,19 +17,19 @@
 
 @keyframes expandCommentBox {
     0%{
-        height: 175px;
+        bottom: calc(calc(50vh - 40px) * -1);
     }
     100%{
-        height: calc(100vh - 80px);
+        bottom: 0px;
     }
 }
 
 @keyframes shrinkCommentBox {
     0%{
-        height: calc(100vh - 80px);
+        bottom: 0px;
     }
     100%{
-        height: 175px;
+        bottom: calc(calc(50vh - 40px) * -1);
     }
 }
 
