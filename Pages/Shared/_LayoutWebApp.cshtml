@@ -30,10 +30,10 @@
 @if (ViewData["isAndroid"] == null || !(bool) ViewData["isAndroid"])
 {
     <nav class="nav custom-nav sticky-top">
-        <a href="/" class="nav-link custom-nav-link" id="isolaatti_brand">ISOLAATTI</a>
-        <a class="nav-link custom-nav-link" asp-page="Index" id="index-link"><i class="fas fa-home"></i> <span class="navbar-item-text">Posts</span></a>
+        <a href="/" class="nav-link custom-nav-link" id="isolaatti_brand"></a>
+        <a class="nav-link custom-nav-link" asp-page="Index" id="index-link"><i class="fas fa-home"></i> <span class="navbar-item-text">Home</span></a>
         <a class="nav-link custom-nav-link" asp-page="Songs" id="songs-link"><i class="fas fa-music"></i> <span class="navbar-item-text">Projects</span></a>
-        <a class="nav-link custom-nav-link" asp-page="OnQueue" id="onqueue-link"><i class="fas fa-th-list"></i> <span class="navbar-item-text">Queue</span></a>
+        @* <a class="nav-link custom-nav-link" asp-page="OnQueue" id="onqueue-link"><i class="fas fa-th-list"></i> <span class="navbar-item-text">Queue</span></a> *@
         <a class="nav-link custom-nav-link ml-auto mr-1" href="#" id="search-bar-button"><i class="fas fa-search"></i></a>
         <a class="nav-link custom-nav-link nav-link mr-1" asp-page="Notifications"><i class="fas fa-bell"></i></a>
         <div class="dropdown ">
