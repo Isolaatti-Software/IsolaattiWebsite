@@ -4,18 +4,18 @@
 
 @{
     Layout = "Shared/_LayoutWebApp";
-    ViewData["Title"] = "Collection";
+    ViewData["Title"] = "Projects";
 }
 <script>document.querySelector("#songs-link").classList.add("custom-active-nav-link")</script>
-<div class="col-lg-3 col-md-2">
-    <section id="new-project-area" class="d-flex flex-column pt-2 mt-2 mb-3 p-4">
+<div class="col-lg-3">
+    <section id="new-project-area" class="d-flex flex-column pt-2 mt-2 mb-3 p-2">
         <h5>New project</h5>
         <p>Upload an audio file and get "Drums", "Bass", "Vocals" and "Others". You can record your tracks and add them later</p>
         <a class="btn btn-primary" asp-page="NewProject">Create new project</a>
     </section>
 </div>
-<div class="col-lg-6 col-md-8">
-    <section class="d-flex flex-column pt-2 mt-2 mb-3 p-4">
+<div class="col-lg-6">
+    <section class="d-flex flex-column pt-2 mt-2 mb-3 p-2">
         <h5>Your projects</h5>
         @if (Model.SongsBeingProcessedList.Any())
         {
@@ -63,7 +63,7 @@
                 <tr>
                     <th scope="col">Name</th>
                     <th scope="col">Artist</th>
-                    <th></th>
+                    <th scope="col">Actions</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -158,7 +158,13 @@
         </div>
     </div>
 </div>
-<div class="col-lg-3 col-md-2"></div>
+<div class="col-lg-3">
+    <section class="d-flex flex-column pt-2 mt-2 mb-3 p-2">
+        <h5>Files on queue</h5>
+        <p>Manage your files on queue. You might want to remove some to prioritize cartain file.</p>
+        <a asp-page="OnQueue" class="btn-primary btn">On queue</a>
+    </section>
+</div>
 <script src="https://www.gstatic.com/firebasejs/7.23.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/7.23.0/firebase-storage.js"></script>
 
