@@ -3,23 +3,31 @@
    erik10cavazos@gmail.com
    Styles for sign in and sign out pages
 */
+@import url('https://fonts.googleapis.com/css2?family=Zen+Dots&display=swap');
 
 * {
     margin: 0;
     padding: 0;
 }
 body {
-    background-image: url("../res/imgs/simple_mixer.jpg");
     background-size:auto;
-    background-blend-mode:darken;
-    background-color: rgb(20, 3, 43);
+    background-color: rgb(29, 3, 64);
     color: white;
 }
-h1 > a {
+h1{
     color:white;
     text-decoration-style: unset;
+    font-family: 'Zen Dots', cursive;
+    margin-bottom: 30px;
+    margin-top: 20px;
 }
-h1 > a:hover {
-    color:white;
-    text-decoration-style: unset;
+
+.sign-in-up-form {
+    background-color: rgba(0,0,0,0.4);
+    padding: 40px;
+    border-radius: 10px;
+}
+
+.sign-in-up-form-container {
+    min-height: 100vh;
 }

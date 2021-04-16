@@ -14,13 +14,13 @@ body {
     align-items: center;
 }
 .custom-nav-link {
-    color:white;
+    color: rgba(255,255,255,0.5);
 }
 .custom-nav-link:hover {
-    color: rgba(255,255,255,0.5);
+    color:white;
 }
 .custom-active-nav-link {
-    color: rgba(255,255,255,0.5);
+    color:white;
 }
 #isolaatti_brand {
     /*background-color: rgba(98, 0, 238,0.9);!important;*/

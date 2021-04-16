@@ -3,69 +3,73 @@
 
 @{
     Layout = "Shared/_LayoutWebAppOutside";
-    ViewData["Title"] = "Make account";
+    ViewData["Title"] = "Sign up";
 }
-<h1><a asp-page="/Index">Isolaatti</a></h1>
-<h3>Make an account to join Isolaatti</h3>
-<p>You are about joining the biggest music source separation community worldwide. Can you handle it?</p>
-        @if (Model.LimitOfAccountsReached)
-        {
-            <div class="alert alert-info">
-                <h4 class="alert-heading">We're on preview phase</h4>
-                <p>At this stage, Isolaatti will only accept up to 50 accounts, so that the development server does not crash. Sorry for that!</p>
+
+<div class="d-flex flex-column align-items-center justify-content-center sign-in-up-form-container">
+    <h1>Isolaatti</h1>
+    
+    @if (Model.LimitOfAccountsReached)
+    {
+        <div class="alert alert-info">
+            <h4 class="alert-heading">We're on preview phase</h4>
+            <p>At this stage, Isolaatti will only accept up to 50 accounts, so that the development server does not crash. Sorry for that!</p>
+        </div>
+    }
+    <div class="d-flex justify-content-center align-items-center">
+        <form method="POST" id="make_account_form" class="sign-in-up-form">
+            <p>You are about joining the biggest music source separation community worldwide.</p>
+            <p>If you already have an account, what are you doing here? <a asp-page="LogIn">Log In!</a></p>
+            <hr/>
+            @if (Model.emailUsed)
+            {
+                <div class="alert alert-danger">
+                    The email address you entered is already in use.
+                </div>
+            }
+            @if (Model.nameUsed)
+            {
+                <div class="alert alert-danger">
+                    The name you entered is already in use.
+                </div>
+            }
+            @if (Model.AccountNotMade)
+            {
+                <div class="alert alert-danger">
+                    <h4 class="alert-heading">Sorry, your account could not be made</h4>
+                    <p>As told you at the message at the top of this page, Isolaatti is only accepting up to 50 accounts, this because the development server might crash</p>
+                </div>
+            }
+            <div class="form-group">
+                <label for="username_form_control">Username</label>
+                <input type="text" name="username" id="username_form_control" class="form-control"
+                       value='@ViewData["user_field"]'>
             </div>
-        }
-<div class="d-flex justify-content-center">
-    <form method="POST" id="make_account_form" style="max-width: 568px">
-        <p class="m-3">If you already have an account, what are you doing here? <a asp-page="LogIn">Log In!</a></p>
-        <hr/>
-        @if (Model.emailUsed)
-        {
-            <div class="alert alert-danger">
-                The email address you entered is already in use.
+            <div class="form-group">
+                <label for="email_form_control">Email</label>
+                <input type="email" name="email" id="email_form_control" class="form-control"
+                       value='@ViewData["email_field"]'>
             </div>
-        }
-        @if (Model.nameUsed)
-        {
-            <div class="alert alert-danger">
-                The name you entered is already in use.
+            <div class="form-group">
+                <label for="password_form_control">Password</label>
+                <input type="password" name="password" id="password_form_control" class="form-control">
             </div>
-        }
-        @if (Model.AccountNotMade)
-        {
-            <div class="alert alert-danger">
-                <h4 class="alert-heading">Sorry, your account could not be made</h4>
-                <p>As told you at the message at the top of this page, Isolaatti is only accepting up to 50 accounts, this because the development server might crash</p>
+            <div class="form-group">
+                <label for="confirm_password_form_control">Confirm password</label>
+                <input type="password" name="password" id="confirm_password_form_control" class="form-control">
             </div>
-        }
-        <div class="form-group">
-            <label for="username_form_control">Username</label>
-            <input type="text" name="username" id="username_form_control" class="form-control"
-                   value='@ViewData["user_field"]'>
-        </div>
-        <div class="form-group">
-            <label for="email_form_control">Email</label>
-            <input type="email" name="email" id="email_form_control" class="form-control"
-                   value='@ViewData["email_field"]'>
-        </div>
-        <div class="form-group">
-            <label for="password_form_control">Password</label>
-            <input type="password" name="password" id="password_form_control" class="form-control">
-        </div>
-        <div class="form-group">
-            <label for="confirm_password_form_control">Confirm password</label>
-            <input type="password" name="password" id="confirm_password_form_control" class="form-control">
-        </div>
-        <p>By continuing, you are accepting the <a href="~/terms_and_conditions.html" target="_blank">terms and conditions</a></p>
-        <p>
-            You will receive an e-mail with a link to confirm your e-mail
-            address.
-        </p>
-        <div class="d-flex justify-content-center">
-            <button class="btn btn-primary" type="submit">Make account now</button>
-        </div>
-    </form>
+            <p>By continuing, you are accepting the <a href="~/terms_and_conditions.html" target="_blank">terms and conditions</a></p>
+            <p>
+                You will receive an e-mail with a link to confirm your e-mail
+                address.
+            </p>
+            <div class="d-flex justify-content-center">
+                <button class="btn btn-primary" type="submit">Sign up</button>
+            </div>
+        </form>
+    </div>
 </div>
+
 @section Scripts
 {
     <script>
