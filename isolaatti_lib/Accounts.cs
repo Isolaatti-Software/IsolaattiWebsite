@@ -164,5 +164,50 @@ namespace isolaatti_API.isolaatti_lib
             }
             return true;
         }
+        public SessionToken CreateNewToken(int userId, string password)
+        {
+            var user = db.Users.Find(userId);
+            if (user == null) return null;
+            if (!user.Password.Equals(password)) return null;
+
+            var tokenObj = new SessionToken()
+            {
+                UserId = user.Id
+            };
+            db.SessionTokens.Add(tokenObj);
+            db.SaveChanges();
+            return tokenObj;
+        }
+        public User ValidateToken(string token)
+        {
+            try
+            {
+                var tokenObj = db.SessionTokens.Single(sessionToken => sessionToken.Token.Equals(token));
+                var user = db.Users.Find(tokenObj.UserId);
+                return user;
+            }
+            catch (InvalidOperationException)
+            {
+                return null;
+            }
+        }
+        public void RemoveAToken(string token)
+        {
+            try
+            {
+                var tokenObj = db.SessionTokens.Single(sessionToken => sessionToken.Token.Equals(token));
+                db.SessionTokens.Remove(tokenObj);
+                db.SaveChanges();
+            }
+            catch (InvalidOperationException)
+            {
+            }
+        }
+        public void RemoveAllUsersTokens(int userId)
+        {
+            var tokenObjs = db.SessionTokens.Where(sessionToken => sessionToken.UserId == userId);
+            db.SessionTokens.RemoveRange(tokenObjs);
+            db.SaveChanges();
+        }
     }
 }
