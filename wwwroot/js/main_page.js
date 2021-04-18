@@ -13,6 +13,8 @@ postButton.addEventListener("click", () => {
         postButton.innerHTML = "Post";
         postTextArea.value = "";
         postButton.disabled = false;
+        
+        vueContainer.posts.push(info.serverResponse);
 
     }, (error) => {
         console.error(error);
