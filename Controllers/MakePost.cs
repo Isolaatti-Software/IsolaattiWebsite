@@ -1,3 +1,4 @@
+using isolaatti_API.Classes;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -42,7 +43,16 @@ namespace isolaatti_API.Controllers
             Db.SimpleTextPosts.Add(newPost);
             Db.SaveChanges();
             
-            return Ok(newPost);
+            return Ok(new ReturningPostsComposedResponse()
+            {
+                Id = newPost.Id,
+                Liked = false,
+                NumberOfLikes = newPost.NumberOfLikes,
+                Privacy = newPost.Privacy,
+                TextContent = newPost.TextContent,
+                UserId = newPost.UserId,
+                UserName = user.Name
+            });
         }
 
         [HttpPost]
