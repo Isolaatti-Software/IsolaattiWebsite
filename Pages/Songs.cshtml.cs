@@ -6,6 +6,7 @@
 */
 using System;
 using System.Linq;
+using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -27,57 +28,30 @@ namespace isolaatti_API.Pages
         }
         public IActionResult OnGet()
         {
-            var email = Request.Cookies["isolaatti_user_name"];
-            var password = Request.Cookies["isolaatti_user_password"];
-
-            if (email == null || password == null)
-            {
-                return RedirectToPage("LogIn");
-            }
-
+            var accountsManager = new Accounts(_db);
+            var user = accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
+            if (user == null) return RedirectToPage("LogIn");
+            
+            // here it's know that account is correct. Data binding!
+            ViewData["name"] = user.Name;
+            ViewData["email"] = user.Email;
+            ViewData["userId"] = user.Id;
+            ViewData["password"] = user.Password;
+            // possible errors if there are no songs in the database (empty table)
             try
             {
-                var user = _db.Users.Single(user => user.Email.Equals(email));
-                if (user.Password.Equals(password))
-                {
-                    if (!user.EmailValidated)
-                        return RedirectToPage("LogIn", new
-                        {
-                            username = email,
-                            notVerified = true
-                        });
-                    // here it's know that account is correct. Data binding!
-                    ViewData["name"] = user.Name;
-                    ViewData["email"] = user.Email;
-                    ViewData["userId"] = user.Id;
-                    ViewData["password"] = user.Password;
-                    // possible errors if there are no songs in the database (empty table)
-                    try
-                    {
-                        // get songs
-                        SongsList = _db.Songs
-                            .Where(song => song.OwnerId.Equals(user.Id) && !song.IsBeingProcessed);
+                // get songs
+                SongsList = _db.Songs
+                    .Where(song => song.OwnerId.Equals(user.Id) && !song.IsBeingProcessed);
                     
-                        // get song that are being processed
-                        SongsBeingProcessedList = _db.Songs
-                            .Where(song => song.OwnerId.Equals(user.Id) && song.IsBeingProcessed);
-                    }
-                    catch (InvalidOperationException)
-                    {
-                    }
-                    return Page();
-                }
+                // get song that are being processed
+                SongsBeingProcessedList = _db.Songs
+                    .Where(song => song.OwnerId.Equals(user.Id) && song.IsBeingProcessed);
             }
             catch (InvalidOperationException)
             {
-                return RedirectToPage("LogIn");
             }
-            
-            return RedirectToPage("LogIn", new
-            {
-                badCredential = true,
-                username = email
-            });
+            return Page();
         }
     }
 }

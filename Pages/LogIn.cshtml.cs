@@ -44,13 +44,11 @@ namespace isolaatti_API.Pages
             WrongCredential = badCredential;
             NotVerifiedEmail = notVerified;
             JustVerifiedEmail = justVerified;
-            ExistingSession = Request.Cookies["isolaatti_user_name"] != null &&
-                              Request.Cookies["isolaatti_user_password"] != null &&
-                              !WrongCredential && !NotVerifiedEmail && !JustVerifiedEmail && !NewUser;
+            // ExistingSession = Request.Cookies["isolaatti_user_name"] != null &&
+            //                   Request.Cookies["isolaatti_user_password"] != null &&
+            //                   !WrongCredential && !NotVerifiedEmail && !JustVerifiedEmail && !NewUser;
             ChangedPassword = changedPassword;
 
-            if (ExistingSession)
-                ViewData["GuessedUsername"] = Request.Cookies["isolaatti_user_name"];
             if (NewUser || WrongCredential || NotVerifiedEmail || JustVerifiedEmail || ChangedPassword) 
                 ViewData["username_field"] = username;
             
@@ -64,23 +62,28 @@ namespace isolaatti_API.Pages
                 return Page();
             
             var accountsManager = new Accounts(_db);
-            var userData = accountsManager.LogIn(email, password);
-            if (userData.badPassword)
-                return RedirectToPage("LogIn", new
+            try
+            {
+                var user = _db.Users.Single(u => u.Email.Equals(email));
+                var sessionToken = accountsManager.CreateNewToken(user.Id, password);
+                if (sessionToken == null)
                 {
-                    badCredential = true,
-                    username = email
+                    return RedirectToPage("LogIn", new
+                    {
+                        badCredential = true,
+                        username = email
+                    });
+                }
+                Response.Cookies.Append("isolaatti_user_session_token", sessionToken.Token, new CookieOptions()
+                {
+                    Expires = new DateTimeOffset(DateTime.Today.AddMonths(1))
                 });
-            // store credentials cookies
-            Response.Cookies.Append("isolaatti_user_name", email, new CookieOptions()
+                return RedirectToPage("Index");
+            }
+            catch (InvalidOperationException)
             {
-                Expires = new DateTimeOffset(DateTime.Today.AddMonths(1))
-            });
-            Response.Cookies.Append("isolaatti_user_password", password, new CookieOptions()
-            {
-                Expires = new DateTimeOffset(DateTime.Today.AddMonths(1))
-            });
-            return RedirectToPage("Index");
+                return RedirectToPage("LogIn");
+            }
         }
     }
 }
