@@ -18,12 +18,8 @@
     @RenderSection("CSS", required:false)
     <script src="https://kit.fontawesome.com/fde197fc03.js" crossorigin="anonymous"></script>
     <script>
-    const userData = {
-          id:@ViewData["userId"],
-          name:"@ViewData["name"]",
-          email:"@ViewData["email"]",
-          password:"@ViewData["password"]"
-      };
+    const userData = {id:@ViewData["userId"],name:"@ViewData["name"]",email:"@ViewData["email"]"};
+    const sessionToken = '@Context.Request.Cookies["isolaatti_user_session_token"]';
     </script>
 </head>
 <body>
