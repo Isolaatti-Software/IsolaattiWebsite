@@ -24,6 +24,7 @@ namespace isolaatti_API.Controllers
         [HttpPost]
         public ActionResult<UserData> Index([FromForm] string email, [FromForm] string password)
         {
+            // TODO: generate and return new token instead
             Accounts accounts = new Accounts(dbContext);
             return accounts.LogIn(email, password);
         }

@@ -1,4 +1,5 @@
 using System.Linq;
+using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,28 +17,33 @@ namespace isolaatti_API.Controllers
         }
         
         [HttpPost]
-        public IActionResult Index([FromForm] int userId, [FromForm] string password, [FromForm] int notificationId)
+        public IActionResult Index([FromForm] string sessionToken, [FromForm] int notificationId)
         {
-            var user = _db.Users.Find(userId);
-            if (user == null) return NotFound("User does not exist");
-            if (!user.Password.Equals(password)) return Unauthorized();
+            var accountsManager = new Accounts(_db);
+            var user = accountsManager.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
+            
             var notification = _db.Notifications.Find(notificationId);
-            if (notification.UserId != userId) return Unauthorized("This notification is not yours");
+            if (notification.UserId != user.Id) return Unauthorized("This notification is not yours");
             _db.Notifications.Remove(notification);
+            
             _db.SaveChanges();
+            
             return Ok("Notification deleted successfully");
         }
 
         [Route("All")]
         [HttpPost]
-        public IActionResult DeleteAll([FromForm] int userId, [FromForm] string password)
+        public IActionResult DeleteAll([FromForm] string sessionToken, [FromForm] string password)
         {
-            var user = _db.Users.Find(userId);
-            if (user == null) return NotFound("User does not exist");
-            if (!user.Password.Equals(password)) return Unauthorized();
+            var accountsManager = new Accounts(_db);
+            var user = accountsManager.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
+            
             var notifications = _db.Notifications
-                .Where(notification => notification.UserId.Equals(userId));
+                .Where(notification => notification.UserId.Equals(user.Id));
             _db.Notifications.RemoveRange(notifications);
+            
             _db.SaveChanges();
             return Ok();
         }

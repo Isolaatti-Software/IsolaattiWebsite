@@ -1,3 +1,4 @@
+using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,13 +23,14 @@ namespace isolaatti_API.Controllers
         }
         
         [HttpPost]
-        public IActionResult Index([FromForm] int userId, [FromForm] string password, 
+        public IActionResult Index([FromForm] string sessionToken, [FromForm] string password, 
             [FromForm] int privacy = 1, 
             [FromForm] string content = "Well, this post was made without content. Why? Idk")
         {
-            var user = Db.Users.Find(userId);
-            if (user == null) return NotFound("User does not exist");
-            if (!user.Password.Equals(password)) return Unauthorized("Password is not correct");
+            var accountsManager = new Accounts(Db);
+            var user = accountsManager.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
+            
             // Yep, here I can create the post
             var newPost = new SimpleTextPost()
             {

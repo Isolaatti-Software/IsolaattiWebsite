@@ -8,6 +8,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using isolaatti_API.Classes;
+using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,43 +18,42 @@ namespace isolaatti_API.Controllers
     [Route("/api/[controller]")]
     public class GetProfile : ControllerBase
     {
-        private readonly DbContextApp Db;
+        private readonly DbContextApp _db;
 
         public GetProfile(DbContextApp _dbContext)
         {
-            Db = _dbContext;
+            _db = _dbContext;
         }
         [HttpPost]
-        public Profile Index([FromForm]int userId, [FromForm]string password)
+        public IActionResult Index([FromForm] string sessionToken)
         {
-            var user = Db.Users.Find(userId);
-            if (user.Password.Equals(password))
+            var accountsManager = new Accounts(_db);
+            var user = accountsManager.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
+            
+            var profile = new Profile()
             {
-                var profile = new Profile()
-                {
-                    Username = user.Name,
-                    Email = user.Email,
-                    NumberOfSongs = Db.Songs.Count(song => song.OwnerId.Equals(userId)),
-                    NumberOfLinks = Db.SharedSongs.Count(sharedLink => sharedLink.userId.Equals(userId))
-                };
-                return profile;
-            }
-            return null;
+                Username = user.Name,
+                Email = user.Email,
+                NumberOfSongs = _db.Songs.Count(song => song.OwnerId.Equals(user.Id)),
+                NumberOfLinks = _db.SharedSongs.Count(sharedLink => sharedLink.userId.Equals(user.Id))
+            };
+            return Ok(profile);
         }
 
         [HttpPost]
         [Route("GetPosts")]
-        public IActionResult GetPosts([FromForm] int userId, [FromForm] string password)
+        public IActionResult GetPosts([FromForm] string sessionToken)
         {
-            var user = Db.Users.Find(userId);
-            if (user == null) return NotFound("User was not found");
-            if (!user.Password.Equals(password)) return Unauthorized("Password is not correct");
+            var accountsManager = new Accounts(_db);
+            var user = accountsManager.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
 
-            var posts = Db.SimpleTextPosts
-                .Where(post => post.UserId == userId);
+            var posts = _db.SimpleTextPosts
+                .Where(post => post.UserId == user.Id);
             posts = posts.OrderByDescending(post => post.Id);
 
-            var likes = Db.Likes.Where(like => like.UserId.Equals(user.Id)).ToList();
+            var likes = _db.Likes.Where(like => like.UserId.Equals(user.Id)).ToList();
 
             List<ReturningPostsComposedResponse> response = new List<ReturningPostsComposedResponse>();
             foreach (var post in posts)

@@ -1,5 +1,6 @@
 using System.Linq;
 using isolaatti_API.Classes;
+using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,11 +19,11 @@ namespace isolaatti_API.Controllers
         
         [HttpPost]
         [Route("LikePost")]
-        public IActionResult LikePost([FromForm] int userId, [FromForm] string password, [FromForm] long postId)
+        public IActionResult LikePost([FromForm]string sessionToken, [FromForm] long postId)
         {
-            var user = Db.Users.Find(userId);
-            if (user == null) return NotFound("User was not found");
-            if (!user.Password.Equals(password)) return Unauthorized("Password is not correct");
+            var accountsManager = new Accounts(Db);
+            var user = accountsManager.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
             
             var post = Db.SimpleTextPosts.Find(postId);
             if (post == null) return Unauthorized("Post does not exist");
@@ -53,11 +54,11 @@ namespace isolaatti_API.Controllers
 
         [HttpPost]
         [Route("UnLikePost")]
-        public IActionResult UnLikePost([FromForm] int userId, [FromForm] string password, [FromForm] long postId)
+        public IActionResult UnLikePost([FromForm]string sessionToken, [FromForm] long postId)
         {
-            var user = Db.Users.Find(userId);
-            if (user == null) return NotFound("User was not found");
-            if (!user.Password.Equals(password)) return Unauthorized("Password is not correct");
+            var accountsManager = new Accounts(Db);
+            var user = accountsManager.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
             
             var post = Db.SimpleTextPosts.Find(postId);
             if (post == null) return Unauthorized("Post does not exist");

@@ -4,6 +4,8 @@
 * This program is not allowed to be copied or reused without explicit permission.
 * erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
 */
+
+using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,9 +23,12 @@ namespace isolaatti_API.Controllers
         }
 
         [HttpPost]
-        public void Index([FromForm] int userId, [FromForm] int what, [FromForm] bool value)
+        public IActionResult Index([FromForm] string sessionToken, [FromForm] int what, [FromForm] bool value)
         {
-            User user = db.Users.Find(userId);
+            var accountsManager = new Accounts(db);
+            var user = accountsManager.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
+            
             switch (what)
             {
                 case 0: user.NotifyByEmail = value;
@@ -35,6 +40,8 @@ namespace isolaatti_API.Controllers
             }
             db.Users.Update(user);
             db.SaveChanges();
+            
+            return Ok();
         }
     }
 }

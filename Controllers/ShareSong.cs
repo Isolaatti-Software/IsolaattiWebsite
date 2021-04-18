@@ -6,6 +6,7 @@
 */
 using System;
 using System.Linq;
+using isolaatti_API.isolaatti_lib;
 using Microsoft.AspNetCore.Mvc;
 using isolaatti_API.Models;
 
@@ -22,33 +23,30 @@ namespace isolaatti_API.Controllers
             db = _dbContextApp;
         }
         [HttpPost]
-        public IActionResult Index([FromForm] int userId, [FromForm] string passwd, [FromForm] int songId)
+        public IActionResult Index([FromForm] string sessionToken, [FromForm] int songId)
         {
-            User userWhoShares = db.Users.Find(userId);
+            var accountsManager = new Accounts(db);
+            var user = accountsManager.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
             
-            if (userWhoShares.Password == passwd)
+            // this means that the same song had already been shared
+            if (db.SharedSongs.Any(shares => shares.SharedSongId.Equals(songId)))
             {
-                // this means that the same song had already been shared
-                if (db.SharedSongs.Any(shares => shares.SharedSongId.Equals(songId)))
-                {
-                    var existingShareUid = db.SharedSongs.Single(sh => sh.SharedSongId.Equals(songId)).uid;
-                    return Ok($"https://{Request.HttpContext.Request.Host.Value}/publicAPI/Shared?uid={existingShareUid}");
-                }
-                SongShares share = new SongShares()
-                {
-                    userId = userId,
-                    SharedSongId = songId,
-                    uid = Guid.NewGuid().ToString()
-                };
-                
-                // returns uid, client will create the link using this uid
-                db.SharedSongs.Add(share);
-                db.SaveChanges();
-                return Ok($"https://{Request.HttpContext.Request.Host.Value}/publicAPI/Shared?uid={share.uid}");
+                var existingShareUid = db.SharedSongs.Single(sh => sh.SharedSongId.Equals(songId)).uid;
+                return Ok($"https://{Request.HttpContext.Request.Host.Value}/publicAPI/Shared?uid={existingShareUid}");
             }
-
-            // in case the password is incorrect
-            return Unauthorized("err_pwd");
+            
+            var share = new SongShares()
+            {
+                userId = user.Id,
+                SharedSongId = songId,
+                uid = Guid.NewGuid().ToString()
+            };
+                
+            // returns uid, client will create the link using this uid
+            db.SharedSongs.Add(share);
+            db.SaveChanges();
+            return Ok($"https://{Request.HttpContext.Request.Host.Value}/publicAPI/Shared?uid={share.uid}");
         }
     }
 }

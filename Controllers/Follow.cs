@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Text.Json;
+using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,11 +18,11 @@ namespace isolaatti_API.Controllers
         }
         
         [HttpPost]
-        public IActionResult Index([FromForm] int userId, [FromForm] string password, [FromForm] int userToFollowId)
+        public IActionResult Index([FromForm] string sessionToken, [FromForm] int userToFollowId)
         {
-            var user = Db.Users.Find(userId);
-            if (user == null) return NotFound("User not found");
-            if (!user.Password.Equals(password)) return Unauthorized("Password is wrong");
+            var accountsManager = new Accounts(Db);
+            var user = accountsManager.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
 
             var userToFollow = Db.Users.Find(userToFollowId);
             if (userToFollow == null) return NotFound("User to follow was not found");
@@ -50,11 +51,11 @@ namespace isolaatti_API.Controllers
         
         [Route("Unfollow")]
         [HttpPost]
-        public IActionResult Unfollow([FromForm] int userId, [FromForm] string password, [FromForm] int userToUnfollowId)
+        public IActionResult Unfollow([FromForm] string sessionToken, [FromForm] int userToUnfollowId)
         {
-            var user = Db.Users.Find(userId);
-            if (user == null) return NotFound("User not found");
-            if (!user.Password.Equals(password)) return Unauthorized("Password is wrong");
+            var accountsManager = new Accounts(Db);
+            var user = accountsManager.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
             
             var userToUnfollow = Db.Users.Find(userToUnfollowId);
             if (userToUnfollow == null) return NotFound("User to unfollow was not found");
@@ -77,21 +78,21 @@ namespace isolaatti_API.Controllers
 
         [Route("Following")]
         [HttpPost]
-        public IActionResult Following([FromForm] int userId, [FromForm] string password)
+        public IActionResult Following([FromForm] string sessionToken)
         {
-            var user = Db.Users.Find(userId);
-            if (user == null) return NotFound("User not found");
-            if (!user.Password.Equals(password)) return Unauthorized("Password is wrong");
+            var accountsManager = new Accounts(Db);
+            var user = accountsManager.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
             return Ok(JsonSerializer.Serialize(user.FollowingIdsJson));
         }
 
         [Route("Followers")]
         [HttpPost]
-        public IActionResult Followers([FromForm] int userId, [FromForm] string password)
+        public IActionResult Followers([FromForm] string sessionToken)
         {
-            var user = Db.Users.Find(userId);
-            if (user == null) return NotFound("User not found");
-            if (!user.Password.Equals(password)) return Unauthorized("Password is wrong");
+            var accountsManager = new Accounts(Db);
+            var user = accountsManager.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
             return Ok(JsonSerializer.Serialize(user.FollowingIdsJson));
         }
     }

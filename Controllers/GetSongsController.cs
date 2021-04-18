@@ -5,6 +5,7 @@
 * erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
 */
 using System.Linq;
+using isolaatti_API.isolaatti_lib;
 using Microsoft.AspNetCore.Mvc;
 using isolaatti_API.Models;
 
@@ -20,18 +21,26 @@ namespace isolaatti_API.Controllers
             _db = dbContextApp;
         }
         [HttpPost]
-        public IQueryable<Song> Index([FromForm] int userId)
+        public IActionResult Index([FromForm] string sessionToken)
         {
-            return _db.Songs
-                .Where(song => song.OwnerId.Equals(userId) && !song.IsBeingProcessed);
+            var accountsManager = new Accounts(_db);
+            var user = accountsManager.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
+            
+            return Ok(_db.Songs
+                .Where(song => song.OwnerId.Equals(user.Id) && !song.IsBeingProcessed));
         }
 
         [HttpPost]
         [Route("Processing")]
-        public IQueryable<Song> Processing([FromForm] int userId)
+        public IActionResult Processing([FromForm] string sessionToken)
         {
-            return _db.Songs
-                .Where(song => song.OwnerId.Equals(userId) && song.IsBeingProcessed);
+            var accountsManager = new Accounts(_db);
+            var user = accountsManager.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
+
+            return Ok(_db.Songs
+                .Where(song => song.OwnerId.Equals(user.Id) && song.IsBeingProcessed));
         }
     }
 }

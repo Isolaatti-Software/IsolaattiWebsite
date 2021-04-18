@@ -1,4 +1,5 @@
 using System.Linq;
+using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,18 +16,18 @@ namespace isolaatti_API.Controllers
             Db = dbContextApp;
         }
         [HttpPost]
-        public IActionResult Index([FromForm]int userId, [FromForm]string password, 
+        public IActionResult Index([FromForm] string sessionToken, 
             [FromForm]string newEmail, [FromForm]string newUsername)
         {
-            var user = Db.Users.Find(userId);
-            if (user == null) return NotFound("User was not found, can't edit profile");
-            if (!user.Password.Equals(password)) return Unauthorized("Password is not correct, can't edit profile");
+            var accountsManager = new Accounts(Db);
+            var user = accountsManager.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
             
             // find if there is someone else with the same username or email
             var foundRepeatedName = Db.Users
-                .Any(account => account.Name.Equals(newUsername) && !account.Id.Equals(userId));
+                .Any(account => account.Name.Equals(newUsername) && !account.Id.Equals(user.Id));
             var foundRepeatedEmail = Db.Users
-                .Any(account => account.Email.Equals(newEmail) && !account.Id.Equals(userId));
+                .Any(account => account.Email.Equals(newEmail) && !account.Id.Equals(user.Id));
 
             if (foundRepeatedEmail && foundRepeatedName) return Unauthorized("isolaatti_status:1");
             if (foundRepeatedEmail) return Unauthorized("isolaatti_status:2");
@@ -42,15 +43,17 @@ namespace isolaatti_API.Controllers
 
         [HttpPost]
         [Route("FromWeb")]
-        public IActionResult FromWeb([FromForm]int id, [FromForm] string password, [FromForm] string newUsername, [FromForm] string newEmail)
+        public IActionResult FromWeb([FromForm] string newUsername, 
+            [FromForm] string newEmail)
         {
-            var user = Db.Users.Find(id);
-            if (user == null) return NotFound("User was not found");
-            if (!user.Password.Equals(password)) return Unauthorized();
+            var accountsManager = new Accounts(Db);
+            var sessionToken = Request.Cookies["isolaatti_user_session_token"];
+            var user = accountsManager.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
             
             // verify if name or email is used by someone else
-            var nameRepeated = Db.Users.Any(_ => _.Name.Equals(newUsername) && !_.Id.Equals(id));
-            var emailRepeated = Db.Users.Any(_ => _.Email.Equals(newEmail) && !_.Id.Equals(id));
+            var nameRepeated = Db.Users.Any(_ => _.Name.Equals(newUsername) && !_.Id.Equals(user.Id));
+            var emailRepeated = Db.Users.Any(_ => _.Email.Equals(newEmail) && !_.Id.Equals(user.Id));
 
             if (!nameRepeated && !emailRepeated)
             {

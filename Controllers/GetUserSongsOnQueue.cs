@@ -5,6 +5,7 @@
 * erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
 */
 using System.Linq;
+using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,27 +15,38 @@ namespace isolaatti_API.Controllers
     [ApiController]
     public class GetUserSongsOnQueue : Controller
     {
-        private readonly DbContextApp _dbContextApp;
+        private readonly DbContextApp _db;
 
         public GetUserSongsOnQueue(DbContextApp dbContextApp)
         {
-            _dbContextApp = dbContextApp;
+            _db = dbContextApp;
         }
         [HttpPost]
-        public IQueryable<SongQueue> Index([FromForm]string userId)
+        public IActionResult Index([FromForm]string sessionToken)
         {
+            var accountsManager = new Accounts(_db);
+            var user = accountsManager.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
+            
             var elements =
-                _dbContextApp.SongsQueue
-                    .Where(element => element.UserId.Equals(userId) && !element.Reserved);
-            return elements;
+                _db.SongsQueue
+                    .Where(element => element.UserId.Equals(user.Id.ToString()) && 
+                                      !element.Reserved);
+            
+            return Ok(elements);
         }
 
         [HttpPost]
         [Route("Count")]
-        public int Count([FromForm]string userId)
+        public IActionResult Count([FromForm]string sessionToken)
         {
-            return _dbContextApp.SongsQueue
-                .Count(element => element.UserId.Equals(userId) && !element.Reserved);
+            var accountsManager = new Accounts(_db);
+            var user = accountsManager.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
+            
+            return Ok(_db.SongsQueue
+                .Count(element => element.UserId.Equals(user.Id.ToString()) && 
+                                  !element.Reserved));
         }
     }
 }

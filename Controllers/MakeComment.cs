@@ -1,4 +1,5 @@
 using isolaatti_API.Classes;
+using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,12 +17,12 @@ namespace isolaatti_API.Controllers
         }
         
         [HttpPost]
-        public IActionResult Index([FromForm] int userId, [FromForm] string password, [FromForm] long postId, 
+        public IActionResult Index([FromForm] string sessionToken, [FromForm] long postId, 
             [FromForm] string content)
         {
-            var user = _db.Users.Find(userId);
-            if (user == null) return NotFound("user not found");
-            if (!user.Password.Equals(password)) return Unauthorized("password is not correct");
+            var accountsManager = new Accounts(_db);
+            var user = accountsManager.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
 
             var post = _db.SimpleTextPosts.Find(postId);
             if (post == null || (post.Privacy == 1 && post.UserId != user.Id)) 

@@ -6,6 +6,7 @@
 */
 using System.Collections.Generic;
 using System.Linq;
+using isolaatti_API.isolaatti_lib;
 using Microsoft.AspNetCore.Mvc;
 using isolaatti_API.Models;
 
@@ -21,11 +22,15 @@ namespace isolaatti_API.Controllers
             db = dbContextApp;
         }
         [HttpPost]
-        public ActionResult<IEnumerable<Notification>> Index([FromForm]int userId)
+        public ActionResult<IEnumerable<Notification>> Index([FromForm] string sessionToken)
         {
+            var accountsManager = new Accounts(db);
+            var user = accountsManager.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
+            
             var notifications =
                 db.Notifications
-                    .Where(notification => notification.UserId.Equals(userId))
+                    .Where(notification => notification.UserId.Equals(user.Id))
                     .ToArray();
             notifications = notifications.OrderByDescending(notification => notification.Id).ToArray();
             return notifications;

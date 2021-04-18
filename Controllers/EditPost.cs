@@ -1,3 +1,4 @@
+using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,12 +17,12 @@ namespace isolaatti_API.Controllers
         
         [HttpPost]
         [Route("TextContent")]
-        public IActionResult EditTextContent([FromForm] int userId, [FromForm] string password, 
+        public IActionResult EditTextContent([FromForm] string sessionToken, 
             [FromForm] long postId, [FromForm] string newContent)
         {
-            var user = Db.Users.Find(userId);
-            if (user == null) return NotFound("User was not found");
-            if (!user.Password.Equals(password)) return Unauthorized("Password is not correct");
+            var accountsManager = new Accounts(Db);
+            var user = accountsManager.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
 
             var post = Db.SimpleTextPosts.Find(postId);
             if (!post.UserId.Equals(user.Id)) return Unauthorized("You cannot edit a post that is not yours.");
@@ -36,12 +37,11 @@ namespace isolaatti_API.Controllers
 
         [HttpPost]
         [Route("Delete")]
-        public IActionResult DeletePost([FromForm] int userId, [FromForm] string password, 
-            [FromForm] long postId)
+        public IActionResult DeletePost([FromForm] string sessionToken, [FromForm] long postId)
         {
-            var user = Db.Users.Find(userId);
-            if (user == null) return NotFound("User was not found");
-            if (!user.Password.Equals(password)) return Unauthorized("Password is not correct");
+            var accountsManager = new Accounts(Db);
+            var user = accountsManager.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
 
             var post = Db.SimpleTextPosts.Find(postId);
             if (!post.UserId.Equals(user.Id)) return Unauthorized("You cannot delete a post that is not yours");
@@ -55,12 +55,12 @@ namespace isolaatti_API.Controllers
 
         [HttpPost]
         [Route("ChangePrivacy")]
-        public IActionResult ChangePrivacy([FromForm] int userId, [FromForm] string password, 
-            [FromForm] long postId, [FromForm] int privacyNumber)
+        public IActionResult ChangePrivacy([FromForm] string sessionToken, [FromForm] long postId, 
+            [FromForm] int privacyNumber)
         {
-            var user = Db.Users.Find(userId);
-            if (user == null) return NotFound("User was not found");
-            if (!user.Password.Equals(password)) return Unauthorized("Password is not correct");
+            var accountsManager = new Accounts(Db);
+            var user = accountsManager.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
             
             var post = Db.SimpleTextPosts.Find(postId);
             if (!post.UserId.Equals(user.Id)) return Unauthorized("You cannot change the privacy of a post that is not yours");

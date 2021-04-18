@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using isolaatti_API.Classes;
+using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Org.BouncyCastle.Bcpg;
@@ -21,11 +22,11 @@ namespace isolaatti_API.Controllers
         }
         
         [HttpPost]
-        public IActionResult Index([FromForm] int userId,[FromForm] string password,[FromForm] string postsInDom)
+        public IActionResult Index([FromForm] string sessionToken,[FromForm] string postsInDom)
         {
-            var user = Db.Users.Find(userId);
-            if (user == null) return NotFound("User was not found");
-            if (!user.Password.Equals(password)) return Unauthorized("Password is not correct");
+            var accountsManager = new Accounts(Db);
+            var user = accountsManager.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
 
             var followingIds = JsonSerializer.Deserialize<List<int>>(user.FollowingIdsJson);
             var posts = new List<SimpleTextPost>();
@@ -95,11 +96,12 @@ namespace isolaatti_API.Controllers
 
         [HttpPost]
         [Route("GetUserPosts")]
-        public IActionResult GetUserPosts([FromForm] int userId, [FromForm] string password, [FromForm] int accountId)
+        public IActionResult GetUserPosts([FromForm] string sessionToken, [FromForm] int accountId)
         {
-            var user = Db.Users.Find(userId);
-            if (user == null) return NotFound("User was not found");
-            if (!user.Password.Equals(password)) return Unauthorized("Password is not correct");
+            var accountsManager = new Accounts(Db);
+            var user = accountsManager.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
+            
             var account = Db.Users.Find(accountId);
             if (account == null) 
                 return NotFound("That account does not exist. Please be sure the accountId parameter is correct");

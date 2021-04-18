@@ -1,3 +1,4 @@
+using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,11 +15,13 @@ namespace isolaatti_API.Controllers
             Db = dbContextApp;
         }
         [HttpPost]
-        public IActionResult Index(int userId, string password, int songId, string name, string downloadUrl)
+        public IActionResult Index([FromForm] string sessionToken,[FromForm] int songId,[FromForm] string name,
+            [FromForm] string downloadUrl)
         {
-            var user = Db.Users.Find(userId);
-            if (user == null) return Unauthorized("User does not exist");
-            if (!user.Password.Equals(password)) return Unauthorized("Wrong password");
+            var accountsManager = new Accounts(Db);
+            var user = accountsManager.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
+            
             var song = Db.Songs.Find(songId);
             if (song == null) return NotFound("Track was not added because song was not found");
             var newCustomTrack = new CustomTrack()

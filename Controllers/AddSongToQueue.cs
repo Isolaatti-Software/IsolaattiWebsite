@@ -4,6 +4,8 @@
 * This program is not allowed to be copied or reused without explicit permission.
 * erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
 */
+
+using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,19 +21,23 @@ namespace isolaatti_API.Controllers
             Db = dbContextApp;
         }
         [HttpPost]
-        public void Index([FromForm]string userId, [FromForm] string songName, [FromForm] string url,[FromForm] string songArtist="Unknown")
+        public IActionResult Index([FromForm] string sessionToken, [FromForm] string songName, [FromForm] string url,[FromForm] string songArtist="Unknown")
         {
+            var accountsManager = new Accounts(Db);
+            var user = accountsManager.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
             SongQueue songQueue = new SongQueue()
             {
                 AudioSourceUrl = url,
                 Reserved = false,
                 SongName = songName,
                 SongArtist = songArtist,
-                UserId = userId
+                UserId = user.Id.ToString()
             };
 
             Db.SongsQueue.Add(songQueue);
             Db.SaveChanges();
+            return Ok();
         }
     }
 }

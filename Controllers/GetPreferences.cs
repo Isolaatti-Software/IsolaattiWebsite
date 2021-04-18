@@ -5,6 +5,7 @@
 * erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
 */
 using isolaatti_API.Classes;
+using isolaatti_API.isolaatti_lib;
 using Microsoft.AspNetCore.Mvc;
 using isolaatti_API.Models;
 
@@ -13,16 +14,18 @@ namespace isolaatti_API.Controllers
     [Route("/api/[controller]")]
     public class GetPreferences : Controller
     {
-        private readonly DbContextApp db;
+        private readonly DbContextApp _db;
 
         public GetPreferences(DbContextApp dbContextApp)
         {
-            db = dbContextApp;
+            _db = dbContextApp;
         }
         [HttpPost]
-        public ActionResult<UserPreferences> Index(int userId)
+        public ActionResult<UserPreferences> Index([FromForm] string sessionToken)
         {
-            User user = db.Users.Find(userId);
+            var accountsManager = new Accounts(_db);
+            var user = accountsManager.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
             return new UserPreferences()
             {
                 EmailNotifications = user.NotifyByEmail,

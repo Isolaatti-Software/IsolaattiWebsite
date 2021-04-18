@@ -5,6 +5,7 @@
 * erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
 */
 using System;
+using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,24 +15,26 @@ namespace isolaatti_API.Controllers
     [ApiController]
     public class DeleteElementFromQueue : Controller
     {
-        private readonly DbContextApp _dbContextApp;
+        private readonly DbContextApp _db;
         public DeleteElementFromQueue(DbContextApp dbContextApp)
         {
-            _dbContextApp = dbContextApp;
+            _db = dbContextApp;
         }
         [HttpPost]
-        public bool Index([FromForm]int id, [FromForm]int userId, [FromForm]string password)
+        public IActionResult Index([FromForm] string sessionToken, [FromForm]int id)
         {
+            var accountsManager = new Accounts(_db);
+            var user = accountsManager.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
             try
             {
-                _dbContextApp.SongsQueue.Remove(
-                    _dbContextApp.SongsQueue.Find(id));
-                _dbContextApp.SaveChanges();
-                return true;
+                _db.SongsQueue.Remove(_db.SongsQueue.Find(id));
+                _db.SaveChanges();
+                return Ok();
             }
-            catch (NullReferenceException e)
+            catch (NullReferenceException)
             {
-                return false;
+                return NotFound("Element with id " + id + " was not found");
             }
         }
     }

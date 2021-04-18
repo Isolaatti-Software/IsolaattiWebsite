@@ -4,6 +4,8 @@
 * This program is not allowed to be copied or reused without explicit permission.
 * erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
 */
+
+using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,17 +21,17 @@ namespace isolaatti_API.Controllers
         {
             Db = _dbContext;
         }
-        public bool Index([FromForm] int userId, [FromForm] string password, [FromForm] string newPassword)
+        public IActionResult Index([FromForm] string sessionToken, [FromForm] int userId, [FromForm] string password, [FromForm] string newPassword)
         {
-            var user = Db.Users.Find(userId);
-            if (user.Password.Equals(password))
-            {
-                user.Password = newPassword;
-                Db.Users.Update(user);
-                Db.SaveChanges();
-                return true;
-            }
-            return false;
+            var accountsManager = new Accounts(Db);
+            var user = accountsManager.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
+            
+            user.Password = newPassword;
+            Db.Users.Update(user);
+            Db.SaveChanges();
+            
+            return Ok();
         }
     }
 }

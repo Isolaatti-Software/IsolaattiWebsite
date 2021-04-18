@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using isolaatti_API.Classes;
+using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,12 +27,16 @@ namespace isolaatti_API.Controllers
         
         [Route("SetColor")]
         [HttpPost]
-        public IActionResult SetColor([FromForm] int songId, [FromForm] string trackName, [FromForm] string htmlHexColor)
+        public IActionResult SetColor([FromForm] string sessionToken,[FromForm] int songId, [FromForm] string trackName, [FromForm] string htmlHexColor)
         {
+            var accountsManager = new Accounts(Db);
+            var user = accountsManager.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
+            
             var song = Db.Songs.Find(songId);
             if (song == null) return NotFound("Track not found");
-
-
+            if (song.OwnerId != user.Id) return Unauthorized();
+            
             try
             {
                 var tracksProperties = JsonSerializer.Deserialize<List<TrackPreferences>>(song.TracksSettings);

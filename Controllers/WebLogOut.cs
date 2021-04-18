@@ -4,6 +4,9 @@
 * This program is not allowed to be copied or reused without explicit permission.
 * erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
 */
+
+using isolaatti_API.isolaatti_lib;
+using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace isolaatti_API.Controllers
@@ -11,11 +14,18 @@ namespace isolaatti_API.Controllers
     [Route("[controller]")]
     public class WebLogOut : Controller
     {
+        private readonly DbContextApp _db;
+
+        public WebLogOut(DbContextApp dbContextApp)
+        {
+            _db = dbContextApp;
+        }
         // GET
         public IActionResult Index()
         {
-            Response.Cookies.Delete("isolaatti_user_name");
-            Response.Cookies.Delete("isolaatti_user_password");
+            var accountsManager = new Accounts(_db);
+            accountsManager.RemoveAToken(Request.Cookies["isolaatti_user_session_token"]);
+            Response.Cookies.Delete("isolaatti_user_session_token");
             return RedirectToPage("/Index");
         }
     }

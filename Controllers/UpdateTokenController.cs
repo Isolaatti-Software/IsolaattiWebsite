@@ -4,6 +4,8 @@
 * This program is not allowed to be copied or reused without explicit permission.
 * erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
 */
+
+using isolaatti_API.isolaatti_lib;
 using Microsoft.AspNetCore.Mvc;
 using isolaatti_API.Models;
 
@@ -18,13 +20,19 @@ namespace isolaatti_API.Controllers
         {
             db = dbContextApp;
         }
+        
         [HttpPost]
-        public void Index([FromForm]int userId, [FromForm]string token)
+        public IActionResult Index([FromForm] string sessionToken, [FromForm] string token)
         {
-            User user = db.Users.Find(userId);
+            var accountsManager = new Accounts(db);
+            var user = accountsManager.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
+            
             user.GoogleToken = token;
             db.Users.Update(user);
             db.SaveChanges();
+            
+            return Ok();
         }
     }
 }
