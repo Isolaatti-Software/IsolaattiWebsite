@@ -1,6 +1,6 @@
 #comment-box {
     max-width: 800px;
-    background-color: rgba(0,0,0,0.6);
+    background-color: rgba(0,0,0,0.8);
     position: fixed;
     bottom: calc(calc(50vh - 40px) * -1);
     left:0;
