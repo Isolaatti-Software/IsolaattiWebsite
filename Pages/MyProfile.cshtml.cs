@@ -116,13 +116,9 @@ namespace isolaatti_API.Pages
                     currentPasswordIsWrong = true
                 });
             }
-
-
-            return RedirectToPage("LogIn", new
-            {
-                changedPassword = true,
-                username = _db.Users.Find(userId).Email
-            });
+            
+            accountsManager.RemoveAllUsersTokens(userId);
+            return Redirect("WebLogOut");
         }
         private ShareLink CastAnonymousObjectIntoShareLink(Object queryObject)
         {
