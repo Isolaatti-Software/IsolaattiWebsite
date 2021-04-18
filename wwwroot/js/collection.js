@@ -11,7 +11,7 @@
 //                    Web api calls
 /* /api/DeleteSong                 :   Method: POST
 *                                     Description: "Deletes the record indicated by the id. Returns the uid of that project and the urls"
-*                                     Form data parameters: songId, userId and password
+*                                     Form data parameters: sessionToken
 * 
 * /api/IsTrackUrlUsedBySomeoneElse:   Method: POST
 *                                     Description: "Returns true if the url passed is used by an user other that the current
@@ -24,8 +24,7 @@ function deleteSong(songId) {
     if(confirm("Do you really want to delete that song?")) {
         let formData = new FormData();
         formData.append("songId", songId);
-        formData.append("userId", userData.id);
-        formData.append("password", userData.password);
+        formData.append("sessionToken", sessionToken);
 
         let request = new XMLHttpRequest();
         request.open("POST", "/api/DeleteSong");

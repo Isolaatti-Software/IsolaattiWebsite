@@ -28,6 +28,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // starts call to API
         let XMLHttpRequestObj = new XMLHttpRequest();
         let formData = new FormData();
+        formData.append("sessionToken", sessionToken);
         formData.append("songId", songId);
         formData.append("songName", newName);
         formData.append("songArtist", newArtist);
@@ -61,8 +62,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Here request to get link is made
         let formData = new FormData();
         formData.append("songId", songId);
-        formData.append("userId", userData.id);
-        formData.append("passwd", userData.password);
+        formData.append("sessionToken", sessionToken);
 
         let request = new XMLHttpRequest();
         request.open("POST", "/api/ShareSong");

@@ -1,8 +1,7 @@
 // Threads page
 (function () {
     let form = new FormData();
-    form.append("userId", userData.id);
-    form.append("password", userData.password);
+    form.append("sessionToken", sessionToken);
     form.append("postId", threadToReadId);
 
     let request = new XMLHttpRequest();
@@ -28,8 +27,7 @@
                 methods: {
                     likePost: function (post) {
                         let formData = new FormData();
-                        formData.append("userId", userData.id)
-                        formData.append("password", userData.password);
+                        formData.append("sessionToken", sessionToken);
                         formData.append("postId", post.id);
 
                         let request = new XMLHttpRequest();
@@ -48,8 +46,7 @@
                     },
                     unLikePost: function (post) {
                         let formData = new FormData();
-                        formData.append("userId", userData.id)
-                        formData.append("password", userData.password);
+                        formData.append("sessionToken", sessionToken);
                         formData.append("postId", post.id);
 
                         let request = new XMLHttpRequest();
@@ -69,8 +66,7 @@
                     makeComment: function () {
                         console.log("Se hizo el comentario!!");
                         let form = new FormData();
-                        form.append("userId", userData.id);
-                        form.append("password", userData.password);
+                        form.append("sessionToken", sessionToken);
                         form.append("postId",this.post.id);
                         form.append("content", this.commentTextarea);
                         
@@ -217,8 +213,7 @@
                     },
                     getComments: function() {
                         let form = new FormData();
-                        form.append("userId", userData.id);
-                        form.append("password", userData.password);
+                        form.append("sessionToken", sessionToken);
                         form.append("postId", this.post.id);
                         
                         let request = new XMLHttpRequest();

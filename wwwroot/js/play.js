@@ -285,6 +285,7 @@ trackSettingsModal.find(".modal-footer #track-settings-modal-accept-button")
             .style.backgroundColor = trackSettingsModalData.currentColor;
         
         let formDataColor = new FormData();
+        formDataColor.append("sessionToken", sessionToken);
         formDataColor.append("songId", songData.id);
         formDataColor.append("trackName", trackSettingsModalData.trackName);
         formDataColor.append("htmlHexColor", trackSettingsModalData.currentColor);

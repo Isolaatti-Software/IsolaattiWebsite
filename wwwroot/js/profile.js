@@ -9,8 +9,7 @@
 
 function getPosts(accountId, onComplete, onError) {
     let formData = new FormData();
-    formData.append("userId", userData.id);
-    formData.append("password", userData.password);
+    formData.append("sessionToken", sessionToken);
     formData.append("accountId", accountId);
     
     let request = new XMLHttpRequest();
@@ -32,8 +31,7 @@ function getPosts(accountId, onComplete, onError) {
         followButton.disabled = true;
         if(followingThisUser) {
             let formData = new FormData();
-            formData.append("userId", userData.id);
-            formData.append("password", userData.password);
+            formData.append("sessionToken", sessionToken);
             formData.append("userToUnfollowId", thisProfileId);
             
             let request = new XMLHttpRequest();
@@ -63,8 +61,7 @@ function getPosts(accountId, onComplete, onError) {
             request.send(formData);
         } else {
             let formData = new FormData();
-            formData.append("userId", userData.id);
-            formData.append("password", userData.password);
+            formData.append("sessionToken", sessionToken);
             formData.append("userToFollowId", thisProfileId);
 
             let request = new XMLHttpRequest();
@@ -105,8 +102,7 @@ function getPosts(accountId, onComplete, onError) {
         methods: {
             likePost: function(post) {
                 let formData = new FormData();
-                formData.append("userId", userData.id)
-                formData.append("password", userData.password);
+                formData.append("sessionToken", sessionToken);
                 formData.append("postId", post.id);
 
                 let request = new XMLHttpRequest();
@@ -124,8 +120,7 @@ function getPosts(accountId, onComplete, onError) {
             },
             unLikePost: function(post) {
                 let formData = new FormData();
-                formData.append("userId", userData.id)
-                formData.append("password", userData.password);
+                formData.append("sessionToken", sessionToken);
                 formData.append("postId", post.id);
 
                 let request = new XMLHttpRequest();

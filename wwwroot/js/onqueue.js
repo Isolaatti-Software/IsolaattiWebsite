@@ -11,8 +11,7 @@ function deleteElementFromQueue(elementId) {
     if(confirm("Do you really want to delete that song from the queue?")) {
         let formData = new FormData();
         formData.append("id", elementId);
-        formData.append("userId", userData.id);
-        formData.append("password", userData.password);
+        formData.append("sessionToken", sessionToken);
         
         let request = new XMLHttpRequest();
         request.open("POST","/api/DeleteElementFromQueue");

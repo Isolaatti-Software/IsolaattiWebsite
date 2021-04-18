@@ -126,8 +126,7 @@ const vue = new Vue({
         },
         post: function() {
             let form = new FormData();
-            form.append("userId", userData.id);
-            form.append("password", userData.password);
+            form.append("sessionToken", sessionToken);
             form.append("privacy", this.privacy);
             form.append("content", this.input);
 

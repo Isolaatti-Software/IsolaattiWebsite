@@ -8,8 +8,7 @@
 */
 function deletePost(postId, onComplete, onError) {
     let form = new FormData();
-    form.append("userId",userData.id);
-    form.append("password", userData.password);
+    form.append("sessionToken", sessionToken);
     form.append("postId",postId);
 
     let request = new XMLHttpRequest();
@@ -46,8 +45,7 @@ function deletePost(postId, onComplete, onError) {
 
 function editPost(postId, newContent, onComplete, onError) {
     let form = new FormData();
-    form.append("userId", userData.id);
-    form.append("password", userData.password);
+    form.append("sessionToken", sessionToken);
     form.append("postId", postId);
     form.append("newContent", newContent);
 
@@ -84,8 +82,7 @@ function editPost(postId, newContent, onComplete, onError) {
 
 function changePostPrivacy(postId, privacyNumber, onComplete, onError) {
     let form = new FormData();
-    form.append("userId",userData.id);
-    form.append("password", userData.password);
+    form.append("sessionToken", sessionToken);
     form.append("postId",postId);
     form.append("privacyNumber", privacyNumber);
 
@@ -129,8 +126,7 @@ function copyLinkToClipboard(button,link){
 
 function deleteShare(uid) {
     let formData = new FormData();
-    formData.append("userId", userData.id);
-    formData.append("pwd", userData.password);
+    formData.append("sessionToken", sessionToken);
     formData.append("uid", uid);
 
     let request = new XMLHttpRequest();
@@ -146,8 +142,7 @@ function deleteShare(uid) {
 
 function getPosts(onComplete, onError) {
     let formData = new FormData();
-    formData.append("userId", userData.id);
-    formData.append("password", userData.password);
+    formData.append("sessionToken", sessionToken);
     
     let request = new XMLHttpRequest();
     request.open("POST", "/api/GetProfile/GetPosts");
@@ -191,8 +186,7 @@ function getPosts(onComplete, onError) {
             methods: {
                 likePost: function(post) {
                     let formData = new FormData();
-                    formData.append("userId", userData.id)
-                    formData.append("password", userData.password);
+                    formData.append("sessionToken", sessionToken);
                     formData.append("postId", post.id);
 
                     let request = new XMLHttpRequest();
@@ -210,8 +204,7 @@ function getPosts(onComplete, onError) {
                 },
                 unLikePost: function(post) {
                     let formData = new FormData();
-                    formData.append("userId", userData.id)
-                    formData.append("password", userData.password);
+                    formData.append("sessionToken", sessionToken);
                     formData.append("postId", post.id);
 
                     let request = new XMLHttpRequest();

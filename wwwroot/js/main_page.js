@@ -49,8 +49,7 @@ function putPosts() {
 
 function makePost(privacy, content, onComplete, onError) {
     let form = new FormData();
-    form.append("userId", userData.id);
-    form.append("password", userData.password);
+    form.append("sessionToken", sessionToken);
     form.append("privacy", privacy);
     form.append("content", content);
 
@@ -91,8 +90,7 @@ function makePost(privacy, content, onComplete, onError) {
 
 function getFeed(postsInDOM, onComplete, onError) {
     let form = new FormData();
-    form.append("userId", userData.id);
-    form.append("password", userData.password);
+    form.append("sessionToken", sessionToken);
     form.append("postsInDom", postsInDOM);
 
     let request = new XMLHttpRequest();
@@ -152,8 +150,7 @@ let vueContainer = new Vue({
     methods: {
         likePost: function (post) {
             let formData = new FormData();
-            formData.append("userId", userData.id)
-            formData.append("password", userData.password);
+            formData.append("sessionToken", sessionToken);
             formData.append("postId", post.id);
 
             let request = new XMLHttpRequest();
@@ -171,8 +168,7 @@ let vueContainer = new Vue({
         },
         unLikePost: function (post) {
             let formData = new FormData();
-            formData.append("userId", userData.id)
-            formData.append("password", userData.password);
+            formData.append("sessionToken", sessionToken);
             formData.append("postId", post.id);
 
             let request = new XMLHttpRequest();

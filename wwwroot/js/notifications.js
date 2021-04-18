@@ -10,8 +10,7 @@
 function deleteNotifications() {
     if(confirm("Do you really want to delete all notifications?")) {
         let formData = new FormData();
-        formData.append("userId", userData.id);
-        formData.append("password", userData.password);
+        formData.append("sessionToken", sessionToken);
         
         let request = new XMLHttpRequest();
         request.open("POST", "/api/DeleteNotification/All");
@@ -31,8 +30,7 @@ function deleteNotifications() {
 function deleteNotification(id) {
     if(confirm("Do you really want to delete this notification?")) {
         let formData = new FormData();
-        formData.append("userId", userData.id);
-        formData.append("password", userData.password);
+        formData.append("sessionToken", sessionToken);
         formData.append("notificationId", id);
 
         let request = new XMLHttpRequest();

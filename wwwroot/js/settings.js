@@ -27,7 +27,7 @@
 
 function setPreference(what, value) {
     let formData = new FormData();
-    formData.append("userId", userData.id);
+    formData.append("sessionToken", sessionToken);
     formData.append("what",what);
     formData.append("value", value);
     

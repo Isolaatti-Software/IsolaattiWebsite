@@ -70,7 +70,7 @@ buttonUploadFile.addEventListener("click",function () {
 
 function registerFile(fileUrl, songName, songArtist) {
     let formData = new FormData();
-    formData.append("userId",userData.id);
+    formData.append("sessionToken", sessionToken);
     formData.append("songName", songName);
     formData.append("url", fileUrl);
     
