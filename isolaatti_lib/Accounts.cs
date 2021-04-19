@@ -13,9 +13,9 @@ using System.Linq;
 using System.Net.Mail;
 using isolaatti_API.Classes;
 using isolaatti_API.Models;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using MimeKit;
 using SmtpClient = MailKit.Net.Smtp.SmtpClient;
+using Microsoft.AspNetCore.Identity;
 
 namespace isolaatti_API.isolaatti_lib
 {
@@ -40,11 +40,13 @@ namespace isolaatti_API.isolaatti_lib
             {
                 return "3";
             }
+
+            var passwordHasher = new PasswordHasher<string>();
             User newUser = new User()
             {
                 Name = username,
                 Email = email,
-                Password = password,
+                Password = passwordHasher.HashPassword(email,password),
                 Uid = Guid.NewGuid().ToString(),
                 NotifyByEmail = true,
                 NotifyWhenProcessFinishes = true,
@@ -65,18 +67,23 @@ namespace isolaatti_API.isolaatti_lib
             }
         }
 
-        public UserData LogIn(string email, string password)
+        public string LogIn(string email, string password)
         {
+            var passwordHasher = new PasswordHasher<string>();
+            
             if(!db.Users.Any(user => user.Email.Equals(email)))
             {
-                return new UserData(false);
+                return null;
             }
             User userToEnter = db.Users.Single(user => user.Email.Equals(email));
-            if(userToEnter.Password == password)
+            var passwordVerificationResult =
+                passwordHasher.VerifyHashedPassword(email, userToEnter.Password, password);
+            if(passwordVerificationResult == PasswordVerificationResult.Success)
             {
-                return new UserData(userToEnter.Id, db);
+                return CreateNewToken(userToEnter.Id, password).Token;
             }
-            return new UserData(true); //bad password (see UserData class for more info)
+
+            return null; //bad password
         }
         
         /*This method is called internally when a new account was created successfully*/
@@ -143,32 +150,28 @@ namespace isolaatti_API.isolaatti_lib
 
         public bool ChangeAPassword(int userId, string currentPassword, string newPassword)
         {
-            try
-            {
-                var user = db.Users.Find(userId);
-                if (user.Password.Equals(currentPassword))
-                {
-                    user.Password = newPassword;
-                }
-                else
-                {
-                    return false;
-                }
-
-                db.Users.Update(user);
-                db.SaveChanges();
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            var user = db.Users.Find(userId);
+            if (user == null) return false;
+            var passwordHasher = new PasswordHasher<string>();
+            var verificationResult = 
+                passwordHasher.VerifyHashedPassword(user.Email, user.Password, currentPassword);
+            if (verificationResult == PasswordVerificationResult.Failed) return false;
+            
+            var newPasswordHashed = passwordHasher.HashPassword(user.Email, newPassword);
+            user.Password = newPasswordHashed;
+            db.Users.Update(user);
+            db.SaveChanges();
             return true;
+
         }
-        public SessionToken CreateNewToken(int userId, string password)
+        public SessionToken CreateNewToken(int userId, string plainTextPassword)
         {
             var user = db.Users.Find(userId);
             if (user == null) return null;
-            if (!user.Password.Equals(password)) return null;
+            var passwordHasher = new PasswordHasher<string>();
+            var passwordVerificationResult = 
+                passwordHasher.VerifyHashedPassword(user.Email, user.Password, plainTextPassword);
+            if (passwordVerificationResult == PasswordVerificationResult.Failed) return null;
 
             var tokenObj = new SessionToken()
             {
