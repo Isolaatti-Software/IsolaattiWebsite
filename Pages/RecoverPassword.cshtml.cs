@@ -3,6 +3,7 @@ using System.Linq;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Identity;
 
 namespace isolaatti_API.Pages
 {
@@ -41,7 +42,8 @@ namespace isolaatti_API.Pages
             {
                 var token = Db.UserTokens.Single(userToken => userToken.Token.Equals(token_s));
                 var user = Db.Users.Find(token.UserId);
-                user.Password = newPassword;
+                var passwordHasher = new PasswordHasher<String>();
+                user.Password = passwordHasher.HashPassword(user.Email,newPassword);
                 Db.Users.Update(user);
                 Db.UserTokens.Remove(token);
                 Db.SaveChanges();
