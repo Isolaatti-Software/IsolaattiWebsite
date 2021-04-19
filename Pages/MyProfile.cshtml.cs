@@ -15,7 +15,6 @@ using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Org.BouncyCastle.Asn1.X509;
 
 namespace isolaatti_API.Pages
 {
