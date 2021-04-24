@@ -6,9 +6,33 @@
     left:0;
     right: 0;
     box-sizing: border-box;
-    height: 50vh;
+    height: 384px;
     z-index: 100;
     border-radius: 10px;
+}
+
+@media screen and (max-height: 768px) {
+    #comment-box {
+        height: 50vh;
+    }
+
+    @keyframes expandCommentBox {
+        0%{
+            bottom: calc(calc(50vh - 40px) * -1);
+        }
+        100%{
+            bottom: 0px;
+        }
+    }
+
+    @keyframes shrinkCommentBox {
+        0%{
+            bottom: 0px;
+        }
+        100%{
+            bottom: calc(calc(50vh - 40px) * -1);
+        }
+    }
 }
 
 #comment-textarea {
@@ -17,7 +41,7 @@
 
 @keyframes expandCommentBox {
     0%{
-        bottom: calc(calc(50vh - 40px) * -1);
+        bottom: calc(calc(384px - 40px) * -1);
     }
     100%{
         bottom: 0px;
@@ -29,7 +53,7 @@
         bottom: 0px;
     }
     100%{
-        bottom: calc(calc(50vh - 40px) * -1);
+        bottom: calc(calc(384px - 40px) * -1);
     }
 }
 
