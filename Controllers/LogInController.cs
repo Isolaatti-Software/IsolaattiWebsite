@@ -4,9 +4,10 @@
 * This program is not allowed to be copied or reused without explicit permission.
 * erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
 */
+
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using isolaatti_API.Models;
-using isolaatti_API.Classes;
 using isolaatti_API.isolaatti_lib;
 
 namespace isolaatti_API.Controllers
@@ -24,9 +25,23 @@ namespace isolaatti_API.Controllers
         [HttpPost]
         public IActionResult Index([FromForm] string email, [FromForm] string password)
         {
-            // TODO: generate and return new token instead
-            Accounts accounts = new Accounts(dbContext);
-            return Ok(accounts.LogIn(email, password));
+            var user = dbContext.Users.Single(_user => _user.Email.Equals(email));
+            if (user == null) return NotFound("User not found");
+            
+            var accounts = new Accounts(dbContext);
+            var tokenObj = accounts.CreateNewToken(user.Id, password);
+            if (tokenObj == null) return Unauthorized("Could not get session. Password might be wrong");
+            return Ok(tokenObj.Token);
+        }
+
+        [Route("Verify")]
+        [HttpPost]
+        public IActionResult GetUserData([FromForm] string sessionToken)
+        {
+            var accounts = new Accounts(dbContext);
+            var user = accounts.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("token is not valid");
+            return Ok("ok");
         }
     }
 }
