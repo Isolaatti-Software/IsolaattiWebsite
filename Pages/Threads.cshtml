@@ -67,7 +67,7 @@
 
         <section id="comment-box" class="d-flex flex-column justify-content-between p-2 ml-auto mr-auto" ref="commentBox">
             <div class="d-flex mb-1">
-                <div class="btn-group btn-group-sm">
+                <div class="btn-group btn-group-sm overflow-auto">
                     <button class="btn btn-primary" v-on:click="insertHeading(1)">
                         <b>H1</b>
                     </button>
@@ -95,7 +95,7 @@
                         <em>I</em>
                     </button>
                 </div>
-                <button class="btn btn-secondary btn-sm ml-1" data-target="#help-modal" data-toggle="modal">
+                <button class="btn btn-secondary btn-sm ml-1 mr-2" data-target="#help-modal" data-toggle="modal">
                     <i class="fas fa-question"></i>
                 </button>
                 <button class="btn btn-sm btn-primary ml-auto" v-on:click="toggleCommentBoxFullSize" ref="buttonToggleComSize">
