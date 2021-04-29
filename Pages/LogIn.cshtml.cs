@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Razor.Language.Intermediate;
 
 namespace isolaatti_API.Pages
 {
+    [IgnoreAntiforgeryToken]
     public class LogIn : PageModel
     {
         private DbContextApp _db;
@@ -55,7 +56,7 @@ namespace isolaatti_API.Pages
             
             return Page();
         }
-
+        
         public IActionResult OnPost(string email, string password)
         {
             if (email == null || password == null)
@@ -65,6 +66,7 @@ namespace isolaatti_API.Pages
             try
             {
                 var user = _db.Users.Single(u => u.Email.Equals(email));
+                accountsManager.DefineHttpRequestObject(Request);
                 var sessionToken = accountsManager.CreateNewToken(user.Id, password);
                 if (sessionToken == null)
                 {

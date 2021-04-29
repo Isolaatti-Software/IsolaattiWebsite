@@ -38,7 +38,7 @@
     
     <div class="d-flex justify-content-center align-items-center">
         
-        <form method="POST" class="sign-in-up-form">
+        <form method="POST" class="sign-in-up-form" asp-antiforgery="false">
             <h4>Sign in</h4>
             @if (Model.WrongCredential)
             {

@@ -29,6 +29,7 @@ namespace isolaatti_API.Controllers
             if (user == null) return NotFound("User not found");
             
             var accounts = new Accounts(dbContext);
+            accounts.DefineHttpRequestObject(Request);
             var tokenObj = accounts.CreateNewToken(user.Id, password);
             if (tokenObj == null) return Unauthorized("Could not get session. Password might be wrong");
             return Ok(tokenObj.Token);
