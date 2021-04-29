@@ -278,3 +278,9 @@ span.user-name {
 pre, code {
     color: white;
 }
+
+#title-bar>h6 {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
