@@ -46,6 +46,7 @@
     <p>Currently, you have these authorized sessions.</p>
     <table class="table table-hover table-responsive-md bg-dark text-white">
         <thead>
+        <th></th>
         <th>Current</th>
         <th>Reference IP Address</th>
         <th>User Agent</th>
@@ -56,11 +57,14 @@
         {
             <tr>
                 <td>
+                    <input type="checkbox" name="">
+                </td>
+                <td>
                     @if (ViewData["curentSessionToken"].Equals(sessionToken.Token))
                     {
                         <i class="fas fa-check"></i>
                     }
-                    <input type="checkbox" name="">
+                    
                 </td>
                 <td>@sessionToken.IpAddress</td>
                 <td>@sessionToken.UserAgent</td>
