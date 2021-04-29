@@ -13,15 +13,18 @@ using System.Linq;
 using System.Net.Mail;
 using isolaatti_API.Classes;
 using isolaatti_API.Models;
+using Microsoft.AspNetCore.Http;
 using MimeKit;
 using SmtpClient = MailKit.Net.Smtp.SmtpClient;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Net.Http.Headers;
 
 namespace isolaatti_API.isolaatti_lib
 {
     public class Accounts
     {
         private readonly DbContextApp db;
+        private HttpRequest _request;
         public Accounts(DbContextApp db)
         {
             this.db = db;
@@ -164,6 +167,11 @@ namespace isolaatti_API.isolaatti_lib
             return true;
 
         }
+
+        public void DefineHttpRequestObject(HttpRequest request)
+        {
+            _request = request;
+        }
         public SessionToken CreateNewToken(int userId, string plainTextPassword)
         {
             var user = db.Users.Find(userId);
@@ -175,7 +183,10 @@ namespace isolaatti_API.isolaatti_lib
 
             var tokenObj = new SessionToken()
             {
-                UserId = user.Id
+                UserId = user.Id,
+                IpAddress = _request.HttpContext.Connection.RemoteIpAddress.ToString(),
+                UserAgent = _request.Headers
+                    .ContainsKey(HeaderNames.UserAgent) ? _request.Headers[HeaderNames.UserAgent].ToString() : "Not provided"
             };
             db.SessionTokens.Add(tokenObj);
             db.SaveChanges();
