@@ -33,6 +33,10 @@ namespace isolaatti_API.Pages
             ViewData["query"] = q;
 
             var allAccounts = _db.Users;
+            if (q == null || string.IsNullOrWhiteSpace(q))
+            {
+                return Page();
+            }
             var normalizedQuery = q.ToLower();
             normalizedQuery = QueryNormalization.ReplaceAccents(normalizedQuery);
             // here search for people
