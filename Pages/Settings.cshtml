@@ -7,31 +7,61 @@
 }
 <div class="col-lg-3 col-md-2"></div>
 <div class="col-lg-6 col-md-8">
-   <h1>Settings</h1>
-   <h3 class="mt-1">Notifications</h3>
-   <div class="d-flex flex-column mt-2">
-       <div class="custom-control custom-switch mb-2">
-           <input type="checkbox" class="custom-control-input" id="notifyByEmail">
-           <label class="custom-control-label" for="notifyByEmail">Send notifications by e-mail</label>
-       </div>
-       <div class="custom-control custom-switch mb-2">
-           <input type="checkbox" class="custom-control-input" id="notifyWhenProcessStarts">
-           <label class="custom-control-label" for="notifyWhenProcessStarts">Notify when server starts to process your song</label>
-       </div>
-       <div class="custom-control custom-switch mb-2">
-           <input type="checkbox" class="custom-control-input" id="notifyWhenProcessFinishes">
-           <label class="custom-control-label" for="notifyWhenProcessFinishes">Notify when your song is ready</label>
-       </div>
-   </div>
-   <h3 class="mt-1">Your password</h3>
-   <p><a asp-page="MyProfile" asp-route-open="password">Go to profile to change password</a></p>
-   <h3 class="mt-1">Your songs</h3>
-   <p>You have @ViewData["number_of_songs"] songs out of 10</p>
-   <p><a asp-page="Songs">Go to collection</a></p>
-   <p><a href="javascript: deleteAllSongs();">Delete all your songs</a></p>
-   <h3 class="mt-1">Your shares</h3>
-   <p><a asp-page="MyProfile" asp-route-open="links">Go to your shares</a></p>
-    <p><a href="javascript: deleteAllShares();">Delete all your shares</a></p>
+    <h1>Settings</h1>
+    <h3 class="mt-1">Notifications</h3>
+    <div class="d-flex flex-column mt-2">
+        <div class="custom-control custom-switch mb-2">
+            <input type="checkbox" class="custom-control-input" id="notifyByEmail">
+            <label class="custom-control-label" for="notifyByEmail">Send notifications by e-mail</label>
+        </div>
+        <div class="custom-control custom-switch mb-2">
+            <input type="checkbox" class="custom-control-input" id="notifyWhenProcessStarts">
+            <label class="custom-control-label" for="notifyWhenProcessStarts">Notify when server starts to process your song</label>
+        </div>
+        <div class="custom-control custom-switch mb-2">
+            <input type="checkbox" class="custom-control-input" id="notifyWhenProcessFinishes">
+            <label class="custom-control-label" for="notifyWhenProcessFinishes">Notify when your song is ready</label>
+        </div>
+    </div>
+    <h3 class="mt-1">Your password</h3>
+    <p>
+        <a asp-page="MyProfile" asp-route-open="password">Go to profile to change password</a>
+    </p>
+    <h3 class="mt-1">Your songs</h3>
+    <p>You have @ViewData["number_of_songs"] songs out of 10</p>
+    <p>
+        <a asp-page="Songs">Go to collection</a>
+    </p>
+    <p>
+        <a href="javascript: deleteAllSongs();">Delete all your songs</a>
+    </p>
+    <h3 class="mt-1">Your shares</h3>
+    <p>
+        <a asp-page="MyProfile" asp-route-open="links">Go to your shares</a>
+    </p>
+    <p>
+        <a href="javascript: deleteAllShares();">Delete all your shares</a>
+    </p>
+    <h3 class="mt-1">Your sessions</h3>
+    <p>Currently, you have these authorized sessions.</p>
+    <table>
+        <thead>
+        <th>Reference IP Address</th>
+        <th>User Agent</th>
+        <th>Creation date</th>
+        </thead>
+        <tbody>
+        
+        </tbody>
+        @foreach (var sessionToken in Model.SessionTokens)
+        {
+            <tr>
+                <td>@sessionToken.IpAddress</td>
+                <td>@sessionToken.UserAgent</td>
+                <td>@sessionToken.Date</td>
+            </tr>
+        }
+    </table>
 </div>
 <div class="col-lg-3 col-md-2"></div>
 <script>
@@ -39,6 +69,7 @@ document.querySelector("#notifyWhenProcessFinishes").checked = "@ViewData["notif
 document.querySelector("#notifyByEmail").checked = "@ViewData["notify_by_email"]" === "True";
 document.querySelector("#notifyWhenProcessStarts").checked = "@ViewData["notify_when_starts"]" === "True";
 </script>
+
 @section Scripts
 {
     <script src="~/js/settings.js"></script>

@@ -18,6 +18,7 @@ namespace isolaatti_API.Pages
     public class Settings : PageModel
     {
         private readonly DbContextApp _db;
+        public List<SessionToken> SessionTokens;
         
         public Settings(DbContextApp dbContextApp)
         {
@@ -41,6 +42,8 @@ namespace isolaatti_API.Pages
             ViewData["notify_when_finish"] = user.NotifyWhenProcessFinishes;
 
             ViewData["number_of_songs"] = _db.Songs.Count(song => song.OwnerId.Equals(user.Id));
+            SessionTokens = _db.SessionTokens.Where(sessionToken => sessionToken.UserId == user.Id).ToList();
+            
 
             return Page();
         }
