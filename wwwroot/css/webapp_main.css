@@ -8,6 +8,8 @@ body {
     background-color: rgb(55,55,75);
     color:white;
     scroll-behavior: smooth;
+    min-height: 100vh;
+    position: relative;
 }
 .custom-nav {
     background-color: rgba(48, 9, 142,0.9);
@@ -283,4 +285,18 @@ pre, code {
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
+}
+
+footer#footer {
+    position: absolute;
+    padding: 15px;
+    color:white;
+    bottom: 0;
+    width: 100%;
+    margin-top: 20px;
+}
+
+footer#footer>a, footer#footer>span {
+    margin-left: 8px;
+    display: inline-block;
 }
