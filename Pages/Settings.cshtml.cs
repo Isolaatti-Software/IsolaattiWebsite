@@ -43,7 +43,7 @@ namespace isolaatti_API.Pages
 
             ViewData["number_of_songs"] = _db.Songs.Count(song => song.OwnerId.Equals(user.Id));
             SessionTokens = _db.SessionTokens.Where(sessionToken => sessionToken.UserId == user.Id).ToList();
-            
+            ViewData["curentSessionToken"] = Request.Cookies["isolaatti_user_session_token"];
 
             return Page();
         }
