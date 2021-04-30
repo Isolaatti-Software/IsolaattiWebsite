@@ -1,0 +1,263 @@
+/* 
+   Erik Cavazos, 2021 
+   erik10cavazos@gmail.com
+   Styles for informative page
+*/
+
+/* External fonts */
+@import url('https://fonts.googleapis.com/css2?family=Zen+Dots&display=swap');
+
+/*************************************************************/
+/* Rules */
+* {
+    margin: 0;
+    padding: 0;
+}
+html {
+    scroll-behavior: smooth;
+}
+body {
+    background-color: #110a1a;
+}
+header {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    height: auto;
+    animation: vary-color 6s linear infinite alternate-reverse;
+
+    background-blend-mode: color-burn;
+    background-position: center;
+    z-index: 2000;
+    width: 100%;
+    
+    color: white;
+
+    font-family: sans-serif;
+}
+
+/*@media screen and (max-width: 1024px){*/
+/*    #isolaatti{*/
+/*        margin-top: auto;*/
+/*        font-size: 0.6em;*/
+/*    }*/
+/*    .slogan {*/
+/*        margin-top: auto;*/
+/*        margin-bottom: 20px;*/
+/*        font-size: 0.6em*/
+/*    }*/
+/*}*/
+
+#isolaatti{
+    margin-top: auto;
+    font-size: 3em;
+    text-align: center;
+    font-family: 'Zen Dots', cursive;
+}
+.slogan {
+    margin-top: auto;
+    margin-bottom: 20px;
+    font-size: 2em;
+    text-align: center;
+}
+
+@keyframes vary-color {
+    0%{
+        background-color: #221155;
+    }
+    25%{
+        background-color: #3d0da3;
+    }
+    75%{
+        background-color: #0a075c;
+    }
+    100%{
+        background-color: #510727;
+    }
+}
+
+
+section {
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    flex-direction: column;
+}
+
+footer {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    min-height: 150px;
+    box-sizing: border-box;
+    box-shadow: black;
+    background-color: #3d0da3;
+    flex-wrap: wrap;
+}
+
+.bottom-info-item {
+    color: white;
+    margin: 30px;
+    font-family: sans-serif;
+    font-size: 1.5em;
+}
+
+.links {
+    display: flex;
+    flex-direction: column;
+}
+
+.links::before {
+    content: "Contact me";
+    color: white;
+    font-family: sans-serif;
+    text-align: center;
+}
+
+.links > div {
+    display: flex;
+    justify-content: center;
+
+}
+
+.link {
+    margin: 0 5px;
+}
+.link a{
+
+    color:white;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.flex {
+    display: flex;
+}
+
+.nav-buttons a{
+    padding: 15px;
+    margin: 15px;
+    color: white;
+    font-family: sans-serif;
+    border-radius: 10px;
+    border: 1px white solid;
+    text-decoration: none;
+}
+
+.nav-buttons a:hover {
+    background-color: #000;
+}
+
+#isolaatti-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    border: 1px white solid;
+    margin-left: 10px;
+    border-radius: 10px;
+    background-image: url('../icon.png');
+    background-size: cover;
+}
+
+section article {
+    width: 100%;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    color:white;
+    font-family: sans-serif;
+    box-sizing: border-box;
+    flex-direction: column;
+    min-height: 300px;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 10px rgba(48, 9, 142,0.9);;
+}
+
+section article:nth-child(1){
+    background-image: url('../res/imgs/ia.jpeg');
+    background-blend-mode: hard-light;
+    background-color: black;
+    background-attachment: fixed;
+}
+
+section article:nth-child(2) {
+    background-image: url('../res/imgs/mixer.png');
+
+    background-position: center;
+    background-position: left;
+    background-blend-mode:color-burn;
+    background-color: rgb(72, 1, 1);
+    background-attachment: fixed;
+}
+
+section article:nth-child(3){
+    background-color: rgb(0, 26, 130);
+    background-blend-mode:color-burn;
+    background-image: url('../res/imgs/posting.jpeg');
+    background-position:bottom;
+    background-attachment: fixed;
+}
+
+section article > h4 {
+    font-size: 2em;
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    text-align: center;
+}
+section article p {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+section article > .article-ilustration {
+    margin-top: auto;
+}
+
+section article > .article-ilustration ul li {
+    display: inline-block;
+    margin: 5px;
+}
+
+.article-ilustration a {
+    color:white;
+}
+
+
+.ingredients{
+    display: flex;
+    flex-direction: column;
+}
+
+.ingredients::before{
+    content: "Ingredients";
+    text-align: center;
+    color:white;
+    font-family: sans-serif;
+}
+
+.ingredients div {
+    display: flex;
+    justify-content: center;
+}
+
+span.ingredient {
+    margin: 0 5px;
+    color: white;
+    font-family: sans-serif;
+}
