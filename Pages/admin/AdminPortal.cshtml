@@ -3,101 +3,89 @@
 
 @{
     Layout = "Shared/_LayoutAdminPortal";
-    ViewData["Title"] = "Home";
+    ViewData["Title"] = "Inicio";
 }
 
-
-@if (Model.CredentialsAreValid)
-{
-    <h1 class="mt-4">Welcome, @ViewData["username"]</h1>
-}
-
-<ul class="nav nav-tabs" id="myTab" role="tablist">
-    
-    <li class="nav-item">
-        <a class="nav-link active" id="home-tab" data-toggle="tab" href="#allSongs" role="tab" aria-controls="home" aria-selected="true">All songs</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" id="profile-tab" data-toggle="tab" href="#allUsers" role="tab" aria-controls="profile" aria-selected="false">All users</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" id="contact-tab" data-toggle="tab" href="#summary" role="tab" aria-controls="contact" aria-selected="false">Summary</a>
-    </li>
-</ul>
-<div class="tab-content" id="myTabContent">
-    <div class="tab-pane fade show active" id="allSongs" role="tabpanel" aria-labelledby="home-tab">
-        <div class="table-responsive">
-            <table class="table table-dark">
-                <thead>
-                <tr>
-                    <th>Id</th>
-                    <th>UID</th>
-                    <th>User Id</th>
-                    <th>Name</th>
-                    <th>Artist</th>
-                    <th>Drums track</th>
-                    <th>Bass track</th>
-                    <th>Vocals track</th>
-                    <th>Other track</th>
-                </tr>
-                </thead>
-                <tbody>
-                @foreach (var song in Model.Songs)
-                {
-                    <tr>
-                        <td>@song.Id</td>
-                        <td>@song.Uid</td>
-                        <td>@song.OwnerId</td>
-                        <td>@song.OriginalFileName</td>
-                        <td>@song.Artist</td>
-                        <td><a href="@song.DrumsUrl">Go</a></td>
-                        <td><a href="@song.BassUrl">Go</a></td>
-                        <td><a href="@song.VoiceUrl">Go</a></td>
-                        <td><a href="@song.OtherUrl">Go</a></td>
-                    </tr>
-                }
-                </tbody>
-            </table>
+<div class="d-flex flex-column m-3">
+    <h1 class="mt-4">Inicio</h1>
+    <h4>Usuarios</h4>
+    <div class="d-flex">
+        <div class="card m-1 bg-dark text-white">
+            <div class="card-header">
+                Usuarios
+            </div>
+            <div class="card-body">
+                <p>Número de usuarios: @ViewData["numeroDeUsuarios"]</p>
+                <h5 class="card-title">Ultimos 5 usuarios</h5>
+                <ul class="list-group">
+                    @foreach (var user in Model.Last5Users)
+                    {
+                        <li class="list-group-item bg-dark text-white">
+                            @user.Name<br>
+                            <small>@user.Email</small>
+                        </li>
+                    }
+                </ul>
+            </div>
+            <div class="card-footer">
+                <a asp-page="/admin/ListUsers">Buscar usuario</a>
+            </div>
         </div>
-
-    </div>
-    <div class="tab-pane fade" id="allUsers" role="tabpanel" aria-labelledby="profile-tab">
-        <div class="responsive-table">
-            <table class="table table-dark">
-                <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Username</th>
-                    <th>Email</th>
-                    <th>Danger Zone</th>
-                </tr>
-                </thead>
-                <tbody>
-                @foreach (var user in Model.Users)
-                {
-                    <tr>
-                        <td>@user.Id</td>
-                        <td>@user.Name</td>
-                        <td>@user.Email</td>
-                        <td>
-                            <form asp-page="DeleteUserAccount" method="get">
-                                <input type="hidden" name="id" value="@user.Id">
-                                <input type="hidden" name="adminId" value="@Model.account.Id">
-                                <button type="submit" class="btn btn-danger">Delete</button>
-                            </form>
-                            
-                        </td>
-                    </tr>
-                }
-                </tbody>
-            </table>
+        <div class="card m-1 bg-dark text-white">
+            <div class="card-header">
+                Proyectos
+            </div>
+            <div class="card-body">
+                <p>Número de proyectos: @ViewData["numeroDeProyectos"]</p>
+            </div>
+            <div class="card-footer">
+                <a href="#">Buscar proyectos</a>
+            </div>
+        </div>
+        <div class="card m-1 bg-dark text-white">
+            <div class="card-header">
+                Publicaciones
+            </div>
+            <div class="card-body">
+                <p>Número de publicaciones: @ViewData["numeroDePublicaciones"]</p>
+            </div>
+            <div class="card-footer">
+                <a href="#">Buscar publicaciones</a>
+            </div>
         </div>
     </div>
-    <div class="tab-pane fade" id="summary" role="tabpanel" aria-labelledby="contact-tab">
-        <h4>Total users: @Model.Users.Count()</h4>
-        <h4>Total songs: @Model.Songs.Count()</h4>
-
+    <h4 class="mt-2">Servicio demucs (autorizaciones no implementadas aun)</h4>
+    <div class="d-flex">
+        <div class="card bg-dark text-white">
+            <div class="card-header">
+                Colaboradores autorizados
+            </div>
+            <div class="card-body">
+                <p>Numero de colaboradores autorizados</p>
+                <p>
+                    <a href="#">Crear autorización</a>
+                </p>
+            </div>
+            <div class="card-header">
+                <a href="#">Ver autorizaciones</a>
+            </div>
+        </div>
+    </div>
+    <h4 class="mt-4">Accesos API (control no implementado aun)</h4>
+    <div class="d-flex">
+        <div class="card bg-dark text-white">
+            <div class="card-header">
+                Claves autorizadas
+            </div>
+            <div class="card-body">
+                <p>Numero de desarrolladores autorizados</p>
+                <p>
+                    <a href="#">Crear clave de API</a>
+                </p>
+            </div>
+            <div class="card-header">
+                <a href="#">Ver claves</a>
+            </div>
+        </div>
     </div>
 </div>
-
-

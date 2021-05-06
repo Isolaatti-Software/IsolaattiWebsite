@@ -1,39 +1,42 @@
-/*
-* Isolaatti project
-* Erik Cavazos, 2020
-* This program is not allowed to be copied or reused without explicit permission.
-* erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
-*/
+using System.Collections.Generic;
 using System.Linq;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Org.BouncyCastle.Ocsp;
 
 namespace isolaatti_API.Pages.admin
 {
-    public class AccountSettings : PageModel
+    public class ListUsers : PageModel
     {
-        private readonly DbContextApp db;
-        public AccountSettings(DbContextApp _dbContext)
+        private readonly DbContextApp _db;
+        public List<User> Users;
+
+        public ListUsers(DbContextApp dbContextApp)
         {
-            db = _dbContext;
+            _db = dbContextApp;
         }
-        public IActionResult OnGet(string status="")
+        
+        public IActionResult OnGet([FromQuery] string queryS)
         {
             var tokenOnCookie = Request.Cookies["isolaatti_admin_session"];
             if(tokenOnCookie == null) return RedirectToPage("LogIn");
             
-            var adminAccounts = new AdminAccounts(db);
+            var adminAccounts = new AdminAccounts(_db);
             var user = adminAccounts.ValidateSessionToken(tokenOnCookie);
             if(user == null) return RedirectToPage("LogIn");
             
             // data binding here
             ViewData["username"] = user.name;
-            ViewData["email"] = user.email;
-            ViewData["status"] = status;
-
+            if (queryS != null)
+            {
+                Users = _db.Users.Where(user => user.Email.Equals(queryS)).ToList();
+            }
+            else
+            {
+                Users = _db.Users.ToList().TakeLast(100).ToList();
+            }
+            
             return Page();
         }
     }

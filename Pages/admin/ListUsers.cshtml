@@ -1,0 +1,36 @@
+@page
+@model isolaatti_API.Pages.admin.ListUsers
+
+@{
+    Layout = "Shared/_LayoutAdminPortal";
+}
+<div class="flex flex-column m-3">
+    <h1>Buscador de usuarios</h1>
+    <div class="d-flex m-3">
+        <form method="get">
+            <div class="d-flex flex-column">
+                <input type="text" name="queryS" class="form-control"/>
+                <button class="btn btn-primary mt-1" type="submit">Buscar por correo</button>
+            </div>
+        </form>
+    </div>
+    <div class="d-flex">
+        <table class="table table-dark">
+            <thead>
+            <th>Id</th>
+            <th>Nombre</th>
+            <th>Correo electrónico</th>
+            </thead>
+            <tbody>
+            @foreach (var user in Model.Users)
+            {
+                <tr>
+                    <td>@user.Id</td>
+                    <td>@user.Name</td>
+                    <td>@user.Email</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>

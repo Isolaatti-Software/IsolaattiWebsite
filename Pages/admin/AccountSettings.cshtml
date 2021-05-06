@@ -1,51 +1,61 @@
 @page
+@using isolaatti_API.isolaatti_lib
 @model isolaatti_API.Pages.admin.AccountSettings
 
 @{
     Layout = "Shared/_LayoutAdminPortal";
-    ViewData["Title"] = "Account settings";
+    ViewData["Title"] = "Ajustes de cuenta";
 }
-<h1 class="mt-4">Account settings</h1>
-@if (Model.WantToShowAlert)
+@if ((string)ViewData["status"] == AdminAccounts.StatusPasswordChangedSuccess)
 {
-    <div class="alert alert-info">
-        @ViewData["alertContent"]
-    </div>
+    <div class="alert alert-success">Contraseña cambiada exitosamente.</div>
+} else if ((string)ViewData["status"] == AdminAccounts.StatusCurrentPasswordIsIncorrect)
+{
+    <div class="alert alert-danger">La contraseña actual proporcionada es incorrecta.</div>
+} else if ((string) ViewData["status"] == AdminAccounts.StatusNewPasswordVerificationFailed)
+{
+    <div class="alert alert-danger">Confirma la nueva contraseña de manera correcta.</div>
+} else if ((string) ViewData["status"] == AdminAccounts.StatusEmailIsNotValid)
+{
+    <div class="alert alert-danger">La dirrección de correo no es válida</div>
+} else if ((string) ViewData["status"] == AdminAccounts.StatusEmailChangedSuccessfully)
+{
+    <div class="alert alert-success">Dirección cambiada exitosamente</div>
 }
-<div class="card mt-2">
-    <div class="card-header">Email</div>
-    <div class="card-body">
-        <form asp-page="AccountSettings" method="post">
-            <div class="form-group">
-                <label for="emailTextbox">Email address</label>
-                <input type="email" id="emailTextbox" value="" name="newEmail" class="form-control"/>
-            </div>
-            <input type="hidden" name="action" value="changeEmailAddress"/>
-            <button type="submit" class="btn btn-primary">Accept</button>
-        </form>
+<div class="d-flex flex-column m-3">
+    <h1 class="mt-4">Ajustes de cuenta</h1>
+    <div class="card mt-2 bg-dark text-white">
+        <div class="card-header">Correo electrónico</div>
+        <div class="card-body">
+            <form asp-controller="ChangeEmail" asp-action="Index" method="post">
+                <div class="form-group">
+                    <label for="emailTextbox">Dirección de correo</label>
+                    <input type="email" id="emailTextbox" value="@ViewData["email"]" name="newEmail" class="form-control"/>
+                </div>
+                <input type="hidden" name="action" value="changeEmailAddress"/>
+                <button type="submit" class="btn btn-primary">Actualizar</button>
+            </form>
+        </div>
+    </div>
+    <div class="card mt-2 bg-dark text-white">
+        <div class="card-header">Cambio de contraseña</div>
+        <div class="card-body">
+            <form method="post" asp-controller="ChangeAdminPassword" asp-action="Index">
+                <div class="form-group">
+                    <label for="currentPassword">Contraseña actual</label>
+                    <input type="password" id="currentPassword" name="currentPassword" class="form-control"/>
+                </div>
+                <div class="form-group">
+                    <label for="newPassword">Nueva contraseña</label>
+                    <input type="password" id="newPassword" name="newPassword" class="form-control"/>
+                </div>
+                <div class="form-group">
+                    <label for="newPasswordConfirm">Confirmación de nueva contraseña</label>
+                    <input type="password" id="newPasswordConfirm" name="newPasswordConfirm" class="form-control"/>
+                </div>
+                <input type="hidden" name="action" value="changePassword"/>
+                <button type="submit" class="btn btn-primary">Cambiar</button>
+            </form>
+        </div>
     </div>
 </div>
-<div class="card mt-2">
-    <div class="card-header">Change password</div>
-    <div class="card-body">
-        <form asp-page="AccountSettings" method="post">
-            <div class="form-group">
-                <label for="currentPassword">Your current password</label>
-                <input type="password" id="currentPassword" name="currentPassword" class="form-control"/>
-            </div>
-            <div class="form-group">
-                <label for="newPassword">A new password</label>
-                <input type="password" id="newPassword" name="newPassword" class="form-control"/>
-            </div>
-            <div class="form-group">
-                <label for="newPasswordConfirm">Confirm new password</label>
-                <input type="password" id="newPasswordConfirm" name="newPasswordConfirm" class="form-control"/>
-            </div>
-            
-            
-            <input type="hidden" name="action" value="changePassword"/>
-            <button type="submit" class="btn btn-primary">Change password!</button>
-        </form>
-    </div>
-</div>
-

@@ -7,6 +7,7 @@
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
+using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -28,16 +29,15 @@ namespace isolaatti_API.Pages.admin
         }
         public IActionResult OnGet(string view = null, string delete = null, int id = -1, string from = null)
         {
-            var username = Request.Cookies["name"];
-            var password = Request.Cookies["password"];
-
-            if (username == null || password == null) return RedirectToPage("LogIn");
-            if (!_db.AdminAccounts.Any(ac => ac.name.Equals(username))) return RedirectToPage("LogIn");
-            var account = _db.AdminAccounts.Single(ac => ac.name.Equals(username));
-            if (!account.password.Equals(password)) return RedirectToPage("LogIn");
-
-            // here is safe
-            ViewData["username"] = account.name;
+            var tokenOnCookie = Request.Cookies["isolaatti_admin_session"];
+            if(tokenOnCookie == null) return RedirectToPage("LogIn");
+            
+            var adminAccounts = new AdminAccounts(_db);
+            var user = adminAccounts.ValidateSessionToken(tokenOnCookie);
+            if(user == null) return RedirectToPage("LogIn");
+            
+            // data binding here
+            ViewData["username"] = user.name;
             // should 
             if (view == "alsoPast")
             {

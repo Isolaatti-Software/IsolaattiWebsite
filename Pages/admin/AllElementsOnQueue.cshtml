@@ -4,7 +4,7 @@
 
 @{
     Layout = "Shared/_LayoutAdminPortal";
-    ViewData["Title"] = "General Queue";
+    ViewData["Title"] = "Cola general";
 }
 @if (ViewData["alert"] != null)
 {
@@ -12,66 +12,68 @@
         @ViewData["alert"]
     </div>
 }
-<h1 class="mt-4">General queue</h1>
-<div class="d-flex justify-content-end m-2 sticky-top" style="top:56px">
-    @if (Model.IsDefaultViewMode)
-    {
+<div class="d-flex flex-column m-3">
+    <h1 class="mt-4">Cola general de demucs</h1>
+    <div class="d-flex justify-content-end m-2 sticky-top" style="top:56px">
+        @if (Model.IsDefaultViewMode)
+        {
+            <form method="get" class="m-1">
+                <input type="hidden" name="view" value="alsoPast">
+                <button type="submit" class="btn btn-primary">Ver elementos anteriores también</button>
+            </form>
+        }
+        else
+        {
+            <form method="get" class="m-1">
+                <button type="submit" class="btn btn-primary">Solo ver elementos pendientes</button>
+            </form>
+        }
+        
         <form method="get" class="m-1">
-            <input type="hidden" name="view" value="alsoPast">
-            <button type="submit" class="btn btn-primary">View past elements too</button>
+            <input type="hidden" name="delete" value="all">
+            <input type="hidden" name="from" value='@ViewData["from"]'>
+            <button type="submit" class="btn btn-danger">Limpiar todo</button>
         </form>
-    }
-    else
-    {
         <form method="get" class="m-1">
-            <button type="submit" class="btn btn-primary">View pending elements only</button>
+            <input type="hidden" name="delete" value="onlyPending">
+            <input type="hidden" name="from" value='@ViewData["from"]'>
+            <button type="submit" class="btn btn-danger">Limpiar solo elementos pendientes</button>
         </form>
-    }
-    
-    <form method="get" class="m-1">
-        <input type="hidden" name="delete" value="all">
-        <input type="hidden" name="from" value='@ViewData["from"]'>
-        <button type="submit" class="btn btn-danger">Clear all elements</button>
-    </form>
-    <form method="get" class="m-1">
-        <input type="hidden" name="delete" value="onlyPending">
-        <input type="hidden" name="from" value='@ViewData["from"]'>
-        <button type="submit" class="btn btn-danger">Clear pending elements</button>
-    </form>
-    <form method="get" class="m-1">
-        <input type="hidden" name="delete" value="onlyPast">
-        <input type="hidden" name="from" value='@ViewData["from"]'>
-        <button type="submit" class="btn btn-danger">Clear past elements</button>
-    </form>
-</div>
-<table class="table table-dark">
-    <thead>
-    <tr>
-        <th>Id</th>
-        <th>Name</th>
-        <th>User</th>
-        <th>Url</th>
-    </tr>
-    
-    </thead>
-    <tbody>
-    @foreach (SongQueue element in Model.GeneralQueue)
-    {
+        <form method="get" class="m-1">
+            <input type="hidden" name="delete" value="onlyPast">
+            <input type="hidden" name="from" value='@ViewData["from"]'>
+            <button type="submit" class="btn btn-danger">Limpiar elementos anteriores</button>
+        </form>
+    </div>
+    <table class="table table-dark">
+        <thead>
         <tr>
-            <td>@element.Id</td>
-            <td>@element.SongName</td>
-            <td>@element.UserId</td>
-            <td><a href="@element.AudioSourceUrl" target="_blank">Go</a></td>
-            <td>
-                <form method="get">
-                    <input type="hidden" name="delete" value="single">
-                    <input type="hidden" name="id" value="@element.Id">
-                    <input type="hidden" name="from" value='@ViewData["from"]'>
-                    <button type="submit" class="btn btn-danger">Delete</button>
-                </form>
-                
-            </td>
+            <th>Id</th>
+            <th>Nombre</th>
+            <th>Usuario</th>
+            <th>Url</th>
         </tr>
-    }
-    </tbody>
-</table>
+        
+        </thead>
+        <tbody>
+        @foreach (SongQueue element in Model.GeneralQueue)
+        {
+            <tr>
+                <td>@element.Id</td>
+                <td>@element.SongName</td>
+                <td>@element.UserId</td>
+                <td><a href="@element.AudioSourceUrl" target="_blank">Go</a></td>
+                <td>
+                    <form method="get">
+                        <input type="hidden" name="delete" value="single">
+                        <input type="hidden" name="id" value="@element.Id">
+                        <input type="hidden" name="from" value='@ViewData["from"]'>
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                    
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

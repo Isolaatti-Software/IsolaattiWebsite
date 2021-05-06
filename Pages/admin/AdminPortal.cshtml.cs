@@ -7,6 +7,7 @@
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
+using isolaatti_API.isolaatti_lib;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using isolaatti_API.Models;
@@ -15,79 +16,33 @@ namespace isolaatti_API.Pages.admin
 {
     public class AdminPortal : PageModel
     {
-        // credentials
-        private string username;
-        private string password;
-        
-        // state
-        public bool CredentialsAreValid;
-        
-        // data to show in tables
-        public IEnumerable<Song> Songs;
-        public IEnumerable<User> Users;
-        
         //db
         private readonly DbContextApp db;
-
-        public AdminAccount account;
+        public List<User> Last5Users;
         public AdminPortal(DbContextApp _dbContextApp)
         {
             db = _dbContextApp;
         }
 
-        // this is called when this page is requested directly
         public IActionResult OnGet()
         {
-            // look for credentials in cookies
-            var username = Request.Cookies["name"];
-            var password = Request.Cookies["password"];
-            if (db.AdminAccounts.Any(ac => ac.name.Equals(username)))
-            {
-                var user = db.AdminAccounts.Single(ac => ac.name.Equals(username));
-                if (user.password.Equals(password))
-                {
-                    return LogIn(user.name,user.password);
-                }
-                
-            }
-
-            // when the page is requested without parameters and no cookies have been found
-            return RedirectToPage("LogIn");
+            var tokenOnCookie = Request.Cookies["isolaatti_admin_session"];
+            if(tokenOnCookie == null) return RedirectToPage("LogIn");
+            
+            var adminAccounts = new AdminAccounts(db);
+            var user = adminAccounts.ValidateSessionToken(tokenOnCookie);
+            if(user == null) return RedirectToPage("LogIn");
+            
+            // data binding here
+            ViewData["username"] = user.name;
+            var users = db.Users.ToList();
+            var projects = db.Songs.ToList();
+            var posts = db.SimpleTextPosts.ToList();
+            Last5Users = users.TakeLast(5).ToList();
+            ViewData["numeroDeUsuarios"] = users.Count;
+            ViewData["numeroDeProyectos"] = projects.Count;
+            ViewData["numeroDePublicaciones"] = posts.Count;
+            return Page();
         }
-        public IActionResult OnPost(string username, string password)
-        {
-            return LogIn(username,password);
-        }
-
-        private IActionResult LogIn(string username, string password)
-        {
-            if (username == null || password == null) return RedirectToPage("LogIn",new {invalidsession = true});
-
-            if (db.AdminAccounts.Any(acc => acc.name.Equals(username)))
-            {
-                account = db.AdminAccounts.Single(ac => ac.name.Equals(username));
-                CredentialsAreValid = account.password.Equals(password);
-
-                // account exists but password is incorrect
-                if (!CredentialsAreValid) return RedirectToPage("LogIn",new {accounterror = true}) ;
-                
-                // name and password are both correct
-                ViewData["username"] = account.name;
-                this.username = account.name;
-                this.password = account.password;
-                
-                // store data to show in tables
-                Songs = db.Songs.ToArray();
-                Users = db.Users.ToArray();
-                
-                Response.Cookies.Append("name", account.name);
-                Response.Cookies.Append("password",account.password);
-                return Page();
-
-            }
-            // when the account doesn't exist'
-            return RedirectToPage("LogIn", new {accounterror = true});
-        }
-
     }
 }

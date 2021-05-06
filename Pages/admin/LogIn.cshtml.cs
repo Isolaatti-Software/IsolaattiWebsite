@@ -4,9 +4,14 @@
 * This program is not allowed to be copied or reused without explicit permission.
 * erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
 */
+
+using System;
 using System.Linq;
+using isolaatti_API.isolaatti_lib;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using isolaatti_API.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace isolaatti_API.Pages.admin
 {
@@ -40,6 +45,23 @@ namespace isolaatti_API.Pages.admin
                 ViewData["AlertContent"] = "Error, please try again";
             }
         }
+
+        public IActionResult OnPost(string email, string password)
+        {
+            if (password == null) return Page();
+            
+            var adminAccounts = new AdminAccounts(db);
+            var adminAccount = db.AdminAccounts.Single(account => account.email.Equals(email));
+            if(adminAccount == null) return RedirectToPage("/admin/LogIn", new {loginagain = false});
+            
+            var token = adminAccounts.CreateSessionToken(adminAccount.Id, password);
+            if(token == null) return RedirectToPage("/admin/LogIn", new {loginagain = false});
+            
+            Response.Cookies.Append("isolaatti_admin_session",token,new CookieOptions() {
+                Expires = new DateTimeOffset(DateTime.Today.AddMonths(1))
+            });
+            return RedirectToPage("AdminPortal");
+        }
         
         /*
          * This method is called if the default account (username: admin, password: password) doesn't exist'.
@@ -47,14 +69,8 @@ namespace isolaatti_API.Pages.admin
          */
         private void CreateDefaultAccount()
         {
-            var newAccount = new AdminAccount()
-            {
-                name="admin",
-                password = "default",
-                email = "change.me@example.com"
-            };
-            db.AdminAccounts.Add(newAccount);
-            db.SaveChanges();
+            var adminAccounts = new AdminAccounts(db);
+            adminAccounts.MakeAccount("admin", "change.me@example.com", "default");
         }
     }
 }
