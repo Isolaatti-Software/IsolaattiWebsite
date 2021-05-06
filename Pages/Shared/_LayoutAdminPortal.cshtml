@@ -3,25 +3,33 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Isolaatti</title>
+    <title>@ViewData["Title"] - Administración Isolaatti</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" 
           integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
     <link rel="shortcut icon" href="~/icon.png">
 
 
 </head>
-<body>
+<body class="bg-dark text-white">
 
-<nav class="navbar sticky-top navbar-expand-lg bg-dark navbar-dark">
+<nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-primary">
     <div class="navbar-header">
-            <a asp-page="/Index" class="navbar-brand">Isolaatti Administrator</a>
+            <a asp-page="/admin/Index" class="navbar-brand">Administración Isolaatti</a>
         </div>
     <div class="navbar-collapse collapse">
         <ul class="nav navbar-nav">
-            <li class="nav-item"><a asp-page="/admin/AdminPortal" class="nav-link">Home</a></li>
-            <li class="nav-item"><a asp-page="/admin/UsersUsageData" class="nav-link">Users' usage data</a></li>
-            <li class="nav-item"><a asp-page="/admin/AllElementsOnQueue" class="nav-link">General queue</a></li>
-            <li class="nav-item"><a asp-page="/admin/Diffusion" class="nav-link">Diffusion</a></li>
+            <li class="nav-item"><a asp-page="/admin/AdminPortal" class="nav-link">Inicio</a></li>
+            <li class="nav-item"><a asp-page="/admin/AllElementsOnQueue" class="nav-link">Cola general de demucs</a></li>
+            <li class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
+                    Herramientas de desarrollo
+                </a>
+                <div class="dropdown-menu">
+                    <a asp-page="/admin/HerramientasDesarrollo/WipeFeedHistory" class="dropdown-item">Limpiar historial de feed</a>
+                    <a asp-page="/admin/HerramientasDesarrollo/NotificationMaker" class="dropdown-item">Creador de notificaciones</a>
+                    <a asp-page="/admin/HerramientasDesarrollo/UserSessionAdm" class="dropdown-item">Gestión de sesiones</a>
+                </div>
+            </li>
         </ul>
     </div>
     <ul class="nav navbar-nav ml-auto">
@@ -30,9 +38,9 @@
                 @ViewData["username"]
             </a>
             <div class="dropdown-menu dropdown-menu-lg-right" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item" asp-page="AccountSettings">Account settings</a>
+                <a class="dropdown-item" asp-page="AccountSettings">Ajustes</a>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" asp-page="LogOut">Log out</a>
+                <a class="dropdown-item" asp-page="LogOut">Cerrar sesión</a>
             </div>
             
         </li>
@@ -40,7 +48,7 @@
     
 </nav>
 <div class="container">
- @RenderBody()   
+    @RenderBody()
 </div>
 
 
