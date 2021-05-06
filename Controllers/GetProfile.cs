@@ -65,7 +65,8 @@ namespace isolaatti_API.Controllers
                     NumberOfLikes = post.NumberOfLikes,
                     Privacy = post.Privacy,
                     TextContent = post.TextContent,
-                    UserId = post.UserId
+                    UserId = post.UserId,
+                    UserName = user.Name
                 });
             }
             
