@@ -14,9 +14,9 @@
 
 <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-primary">
     <div class="navbar-header">
-            <a asp-page="/admin/Index" class="navbar-brand">Administración Isolaatti</a>
-        </div>
-    <div class="navbar-collapse collapse">
+        <a asp-page="/admin/Index" class="navbar-brand">Administración Isolaatti</a>
+    </div>
+    <div class="navbar-collapse collapse" id="admin_main_bar">
         <ul class="nav navbar-nav">
             <li class="nav-item"><a asp-page="/admin/AdminPortal" class="nav-link">Inicio</a></li>
             <li class="nav-item"><a asp-page="/admin/AllElementsOnQueue" class="nav-link">Cola general de demucs</a></li>
@@ -45,7 +45,9 @@
             
         </li>
     </ul>
-    
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#admin_main_bar">
+        <span class="navbar-toggler-icon"></span>
+    </button>
 </nav>
 <div class="container">
     @RenderBody()
