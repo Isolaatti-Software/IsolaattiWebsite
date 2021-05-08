@@ -28,7 +28,11 @@ isolaattiMixer.prepareMix(function(){
     document.querySelector("#play_pause_button").disabled = false;
     defineEvents();
     timeLabel.innerHTML = `--/${getClockFormatFromSeconds(isolaattiMixer.getDuration())}`;
-    document.getElementById("new-track-form").elements[2].value = isolaattiMixer.getDuration();
+    let newTrackForm = document.getElementById("new-track-form");
+    if(newTrackForm !== null) {
+    newTrackForm.elements[2].value = isolaattiMixer.getDuration();
+    }
+    
     isolaattiMixer.getAudioAnalyserNode().fftSize = 64;
     let localStorage = window.localStorage;
 
