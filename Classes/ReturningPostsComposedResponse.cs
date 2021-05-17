@@ -7,6 +7,7 @@ namespace isolaatti_API.Classes
         public int UserId { get; set; }
         public string UserName { get; set; }
         public long NumberOfLikes { get; set; }
+        public long NumberOfComments { get; set; }
         public int Privacy { get; set; }
         public bool Liked { get; set; }
     }
