@@ -6,6 +6,7 @@ namespace isolaatti_API.Models
         public string TextContent { get; set; }
         public int WhoWrote { get; set; }
         public long SimpleTextPostId { get; set; }
+        public int TargetUser { get; set; }
         public int Privacy { get; set; }
         public string AudioUrl { get; set; }
     }
