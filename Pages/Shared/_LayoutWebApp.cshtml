@@ -21,8 +21,6 @@
     const userData = {id:@ViewData["userId"],name:"@ViewData["name"]",email:"@ViewData["email"]"};
     const sessionToken = '@Context.Request.Cookies["isolaatti_user_session_token"]';
     </script>
-    
-    <script data-ad-client="ca-pub-3749854383361805" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 </head>
 <body>
 @if (ViewData["isAndroid"] == null || !(bool) ViewData["isAndroid"])
@@ -71,25 +69,10 @@
 }
 
 <div class="container-fluid p-0">
-    <div class="row m-0">@RenderBody()</div></div>
-<footer id="footer">
-    <a href="https://erik-swdev.isolaatti.com" target="_blank">
-        erik-swdev
-    </a>
-    <a href="https://isolaatti.com/documentos/terminos_y_condiciones_isolaatti-esp_original.pdf" target="_blank">
-        Terms and conditions
-    </a>
-    <a href="https://isolaatti.com/documentos/politica_de_privacidad_isolaatti-esp_original.pdf" target="_blank">
-        Privacy policy
-    </a>
-    <a href="https://erik-swdev.isolaatti.com/isolaatti.html#android" target="_blank">
-        Android app
-    </a>
-    <a href="https://isolaatti.com/" target="_blank">
-        About
-    </a>
-</footer>
-
+    <div class="row m-0">
+        @RenderBody()
+    </div>
+</div>
 
 <!-- JS, Popper.js, and jQuery -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
@@ -114,6 +97,7 @@ document.getElementById("search-bar-button").addEventListener("click", function 
     }
 });
 </script>
+<script src="~/lib/jquery.signalR-2.4.1.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
 @RenderSection("Scripts", required: false)
 <script src="~/js/realtime-notifications.js"></script>
