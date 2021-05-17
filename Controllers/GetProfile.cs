@@ -54,7 +54,8 @@ namespace isolaatti_API.Controllers
             posts = posts.OrderByDescending(post => post.Id);
 
             var likes = _db.Likes.Where(like => like.UserId.Equals(user.Id)).ToList();
-
+            var comments = _db.Comments.Where(comment => comment.TargetUser.Equals(user.Id)).ToList();
+            
             List<ReturningPostsComposedResponse> response = new List<ReturningPostsComposedResponse>();
             foreach (var post in posts)
             {
@@ -63,6 +64,7 @@ namespace isolaatti_API.Controllers
                     Id = post.Id,
                     Liked = likes.Any(like => like.PostId.Equals(post.Id)),
                     NumberOfLikes = post.NumberOfLikes,
+                    NumberOfComments = comments.Count(comment => comment.SimpleTextPostId.Equals(post.Id)),
                     Privacy = post.Privacy,
                     TextContent = post.TextContent,
                     UserId = post.UserId,

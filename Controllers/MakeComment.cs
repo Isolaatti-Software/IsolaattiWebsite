@@ -34,7 +34,8 @@ namespace isolaatti_API.Controllers
                 Privacy = 2,
                 SimpleTextPostId = post.Id,
                 TextContent = content,
-                WhoWrote = user.Id
+                WhoWrote = user.Id,
+                TargetUser = post.UserId
             };
             _db.Comments.Add(newComment);
             _db.SaveChanges();
