@@ -300,3 +300,31 @@ footer#footer>a, footer#footer>span {
     margin-left: 8px;
     display: inline-block;
 }
+
+.flat-card-dark {
+    background-color: #110a1a;
+    padding: 30px;
+    border-radius: 5px;
+}
+
+.song-item {
+    width: 200px;
+    border-radius: 5px;
+    border: 1px solid #6200EE;
+    display: flex;
+    flex-direction: column;
+}
+
+.song-item a:hover {
+    text-decoration: none;
+}
+
+.song-item .song-item-icon {
+    width: 100%;
+    height: 110px;
+    color:white;
+    font-size: larger;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
