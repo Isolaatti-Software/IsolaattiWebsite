@@ -1,0 +1,32 @@
+@page
+@model isolaatti_API.Pages.DownloadProject
+
+@{
+    Layout = "Shared/_LayoutWebApp";
+}
+<div class="col-12">
+    <h4 class="mt-2">Download project</h4>
+    
+    <div class="d-flex flex-column mt-2 mb-3 flat-card-dark">
+        <div class="d-flex flex-column">
+            <h5>Download tracks</h5>
+            <h6>@ViewData["projectName"] - @ViewData["projectArtist"]</h6>
+        </div>
+        <div class="d-flex">
+            @foreach (var track in Model.Tracks)
+            {
+                <div class="song-item m-2">
+                    <a href="@track.Value" target="_blank">
+                        <div class="song-item-icon">
+                            <i class="fas fa-music"></i>
+                        </div>
+                        <div class="d-flex flex-column small mr-1 ml-1 text-white">
+                            <span>@track.Key</span>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+        
+    </div>
+</div>
