@@ -95,7 +95,7 @@ footer {
     min-height: 150px;
     box-sizing: border-box;
     box-shadow: black;
-    background-color: #3d0da3;
+    background: linear-gradient(90deg,#221155,black);
     flex-wrap: wrap;
 }
 
@@ -198,26 +198,29 @@ section article:nth-child(2) {
     background-position: center;
     background-position: left;
     background-blend-mode:color-burn;
-    background-color: rgb(72, 1, 1);
+    background-color: rgb(47, 1, 72);
     background-attachment: fixed;
 }
 
 section article:nth-child(3){
     background-color: rgb(0, 26, 130);
-    background-blend-mode:color-burn;
+    background-blend-mode:darken;
     background-image: url('../res/imgs/posting_isolaatti.png');
     background-position:bottom;
     background-attachment: fixed;
 }
 
 section article:nth-child(4) {
-    background-color: rgb(0, 26, 130);
-    background-blend-mode:darken;
+    background-color: rgb(0, 68, 16);
+    background-blend-mode:color-burn;
     background-image: url('../res/imgs/coding.png');
     background-position:bottom;
     background-attachment: fixed;
 }
-
+section article p {
+    background-color: black;
+    padding: 20px;
+}
 section article > h4 {
     font-size: 2em;
     width: 100%;
