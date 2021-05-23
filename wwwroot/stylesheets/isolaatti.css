@@ -183,7 +183,6 @@ section article {
     min-height: 300px;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 0 10px rgba(48, 9, 142,0.9);;
 }
 
 section article:nth-child(1){
@@ -206,7 +205,15 @@ section article:nth-child(2) {
 section article:nth-child(3){
     background-color: rgb(0, 26, 130);
     background-blend-mode:color-burn;
-    background-image: url('../res/imgs/posting.jpeg');
+    background-image: url('../res/imgs/posting_isolaatti.png');
+    background-position:bottom;
+    background-attachment: fixed;
+}
+
+section article:nth-child(4) {
+    background-color: rgb(0, 26, 130);
+    background-blend-mode:darken;
+    background-image: url('../res/imgs/coding.png');
     background-position:bottom;
     background-attachment: fixed;
 }
