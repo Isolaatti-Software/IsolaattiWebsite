@@ -313,6 +313,7 @@ footer#footer>a, footer#footer>span {
     border: 1px solid #6200EE;
     display: flex;
     flex-direction: column;
+    margin-bottom: 20px;
 }
 
 .song-item a:hover {
