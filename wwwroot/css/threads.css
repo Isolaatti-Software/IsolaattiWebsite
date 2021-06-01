@@ -41,7 +41,7 @@
 
 @keyframes expandCommentBox {
     0%{
-        bottom: calc(calc(384px - 40px) * -1);
+        bottom: calc(calc(50vh - 40px) * -1);
     }
     100%{
         bottom: 0px;
@@ -53,7 +53,7 @@
         bottom: 0px;
     }
     100%{
-        bottom: calc(calc(384px - 40px) * -1);
+        bottom: calc(calc(50vh - 40px) * -1);
     }
 }
 
