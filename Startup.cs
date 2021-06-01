@@ -8,6 +8,7 @@ using System.IO;
 using System.Net;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
+using isolaatti_API.Hubs;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -39,6 +40,7 @@ namespace isolaatti_API
             });
             services.AddControllers();
             services.AddRazorPages();
+            services.AddSignalR();
 
             services.AddDbContext<DbContextApp>(options =>
             {
@@ -74,6 +76,7 @@ namespace isolaatti_API
             {
                 endpoints.MapControllers();
                 endpoints.MapRazorPages();
+                endpoints.MapHub<NotificationsHub>("/notifications_hub");
             });
             app.UseForwardedHeaders(new ForwardedHeadersOptions()
             {
