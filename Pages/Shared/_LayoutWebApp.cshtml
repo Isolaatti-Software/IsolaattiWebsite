@@ -75,26 +75,7 @@
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
-<script>
-document.getElementById("search-bar-button").addEventListener("click", function () {
-    let searchBar = document.getElementById("search-bar");
-    if (searchBar.classList.contains("d-none")) { 
-        searchBar.classList.replace("d-none","d-flex");
-        searchBar.style.animation = "appear-search-bar";
-        searchBar.style.animationDuration = "0.3s";
-    }
-    else if (searchBar.classList.contains("d-flex")) {
-        searchBar.style.animation = "disappear-search-bar";
-        searchBar.style.animationDuration = "0.3s";
-        let timeOut = setTimeout(function (){
-            searchBar.classList.replace("d-flex", "d-none");
-            clearTimeout(timeOut);
-        }, 300);
-        
-    }
-});
-</script>
-<script src="~/lib/jquery.signalR-2.4.1.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/3.1.7/signalr.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
 @RenderSection("Scripts", required: false)
 <script src="~/js/realtime-notifications.js"></script>

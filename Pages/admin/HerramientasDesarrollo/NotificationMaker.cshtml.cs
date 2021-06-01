@@ -1,17 +1,20 @@
+using isolaatti_API.Hubs;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.SignalR;
 
 namespace isolaatti_API.Pages.admin.HerramientasDesarrollo
 {
     public class NotificationMaker : PageModel
     {
         private readonly DbContextApp _db;
-
-        public NotificationMaker(DbContextApp dbContextApp)
+        private readonly IHubContext<NotificationsHub> _hubContext;
+        public NotificationMaker(DbContextApp dbContextApp, IHubContext<NotificationsHub> hubContext)
         {
             _db = dbContextApp;
+            _hubContext = hubContext;
         }
         
         public IActionResult OnGet()
@@ -26,6 +29,17 @@ namespace isolaatti_API.Pages.admin.HerramientasDesarrollo
             // data binding here
             ViewData["username"] = user.name;
 
+            return Page();
+        }
+
+        public IActionResult OnPost(int userId, string msg)
+        {
+            var sessionsId = NotificationsHub.Sessions[userId];
+            foreach (var id in sessionsId)
+            {
+                _hubContext.Clients.Client(id)
+                    .SendAsync("hola", msg);
+            }
             return Page();
         }
     }
