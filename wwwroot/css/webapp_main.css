@@ -329,3 +329,6 @@ footer#footer>a, footer#footer>span {
     align-items: center;
     justify-content: center;
 }
+.post-content {
+    overflow: auto;
+}
