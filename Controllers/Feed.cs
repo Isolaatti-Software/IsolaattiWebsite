@@ -41,6 +41,11 @@ namespace isolaatti_API.Controllers
                     post.UserId.Equals(followingId) && post.Privacy != 1));
             }
 
+            posts.AddRange(Db.SimpleTextPosts.Where(post => 
+                post.UserId.Equals(user.Id)
+                )
+            );
+
             foreach (var renderedPostId in renderedPosts)
             {
                 posts.RemoveAll(post => post.Id.Equals(renderedPostId));
@@ -54,7 +59,7 @@ namespace isolaatti_API.Controllers
                 posts.RemoveAll(post => post.Id.Equals(historySeen.PostId));
             }
 
-            posts = posts.OrderByDescending(post => post.Id).Take(4).ToList();
+            posts = posts.OrderByDescending(post => post.Id).Take(15).ToList();
 
             var response = new List<ReturningPostsComposedResponse>();
             foreach (var post in posts)
