@@ -33,7 +33,7 @@ namespace isolaatti_API.Controllers
             if (db.SharedSongs.Any(shares => shares.SharedSongId.Equals(songId)))
             {
                 var existingShareUid = db.SharedSongs.Single(sh => sh.SharedSongId.Equals(songId)).uid;
-                return Ok($"https://{Request.HttpContext.Request.Host.Value}/publicAPI/Shared?uid={existingShareUid}");
+                return Ok($"https://{Request.HttpContext.Request.Host.Value}/public/Shared?uid={existingShareUid}");
             }
             
             var share = new SongShares()
