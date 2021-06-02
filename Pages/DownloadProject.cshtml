@@ -3,6 +3,7 @@
 
 @{
     Layout = "Shared/_LayoutWebApp";
+    ViewData["Title"] = $"Download tracks | {ViewData["projectName"]} - {ViewData["projectArtist"]}";
 }
 <div class="col-12">
     <h4 class="mt-2">Download project</h4>
@@ -12,7 +13,7 @@
             <h5>Download tracks</h5>
             <h6>@ViewData["projectName"] - @ViewData["projectArtist"]</h6>
         </div>
-        <div class="d-flex">
+        <div class="d-flex flex-wrap">
             @foreach (var track in Model.Tracks)
             {
                 <div class="song-item m-2">
