@@ -69,7 +69,7 @@ namespace isolaatti_API.Pages
                     Name = song.OriginalFileName,
                     Artist = song.Artist,
                     Uid = share.uid,
-                    Url = $"https://{Request.HttpContext.Request.Host.Value}/publicAPI/Shared?uid={share.uid}"
+                    Url = $"https://{Request.HttpContext.Request.Host.Value}/PublicContent/Shared?uid={share.uid}"
                 };
 
             foreach (var share in shares)
