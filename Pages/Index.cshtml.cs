@@ -38,11 +38,6 @@ namespace isolaatti_API.Pages
             ViewData["email"] = user.Email;
             ViewData["userId"] = user.Id;
             ViewData["password"] = user.Password;
-
-            var followingIds = JsonSerializer.Deserialize<List<int>>(user.FollowingIdsJson);
-            var followingNames = followingIds.Select(followingId =>
-                new IdToUser() {Id = followingId, Name = _db.Users.Find(followingId).Name}).ToList();
-            ViewData["followingJSON"] = JsonSerializer.Serialize(followingNames);
             
             return Page();
         }

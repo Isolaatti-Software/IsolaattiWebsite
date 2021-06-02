@@ -143,7 +143,6 @@ let vueContainer = new Vue({
     el: "#posts-deposit",
     data: {
         posts: [],
-        followingIdNameMap: followingIdNameMap, // this object is generated in the HTML, by the server
         loading: false,
         noMoreContent: false
     },
