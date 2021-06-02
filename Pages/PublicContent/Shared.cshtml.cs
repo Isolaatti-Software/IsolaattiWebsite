@@ -14,7 +14,7 @@ using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace isolaatti_API.Pages.publicAPI
+namespace isolaatti_API.Pages.PublicContent
 {
     public class Shared : PageModel
     {
