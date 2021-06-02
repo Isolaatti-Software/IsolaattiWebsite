@@ -127,7 +127,8 @@ namespace isolaatti_API.Controllers
                     Privacy = post.Privacy,
                     TextContent = post.TextContent,
                     UserId = post.UserId,
-                    Liked = usersLikes.Any(like => like.PostId == post.Id && like.UserId == user.Id)
+                    Liked = usersLikes.Any(like => like.PostId == post.Id && like.UserId == user.Id),
+                    NumberOfComments = Db.Comments.Count(comment => comment.SimpleTextPostId.Equals(post.Id))
                 })
                 .ToList();
                 
