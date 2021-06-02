@@ -42,7 +42,7 @@
             <div class="mt-2 post-content" v-html="compileMarkdown(post.textContent)"></div>
             <div class="d-flex justify-content-end">
                 <a class="btn btn-dark btn-sm" :href="`/Threads/${post.id}`">
-                    <i class="fas fa-comments" aria-hidden="true"></i> {_}
+                    <i class="fas fa-comments" aria-hidden="true"></i> {{post.numberOfComments}}
                 </a>
                 <button v-if="!post.liked" v-on:click="likePost(post)" class="btn btn-dark btn-sm" type="button">
                     <i class="fas fa-thumbs-up" aria-hidden="true"></i> {{post.numberOfLikes}}
