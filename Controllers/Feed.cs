@@ -72,7 +72,8 @@ namespace isolaatti_API.Controllers
                     TextContent = post.TextContent,
                     UserId = post.UserId,
                     Liked = Db.Likes.Any(element => element.PostId == post.Id && element.UserId == user.Id),
-                    UserName = Db.Users.Find(post.UserId).Name
+                    UserName = Db.Users.Find(post.UserId).Name,
+                    NumberOfComments = Db.Comments.Count(comment => comment.SimpleTextPostId.Equals(post.Id))
                 });
                 if (Db.UserSeenPostHistories.Any(element => 
                     element.PostId == post.Id && element.UserId == user.Id))
