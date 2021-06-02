@@ -24,7 +24,22 @@ namespace isolaatti_API.Pages
         {
             var accountsManager = new Accounts(_db);
             var user = accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
-            if (user == null) return RedirectToPage("LogIn");
+            ThisPost = _db.SimpleTextPosts.Find(id);
+            
+            if (ThisPost == null) return NotFound();
+            
+            if (user == null && ThisPost.Privacy != 3)
+            {
+                return RedirectToPage("LogIn");
+            }
+
+            if (user == null && ThisPost.Privacy == 3)
+            {
+                return RedirectToPage("/PublicContent/PublicThreadViewer", new
+                {
+                    id = ThisPost.Id
+                });
+            }
             
             // here it's know that account is correct. Data binding!
             ViewData["name"] = user.Name;
@@ -35,12 +50,7 @@ namespace isolaatti_API.Pages
             var followingIds = JsonSerializer.Deserialize<List<int>>(user.FollowingIdsJson);
                     
             var followingNames = followingIds.Select(followingId => new IdToUser() {Id = followingId, Name = _db.Users.Find(followingId).Name}).ToList();
-
             ViewData["followingJSON"] = JsonSerializer.Serialize(followingNames);
-
-            ThisPost = _db.SimpleTextPosts.Find(id);
-            if (ThisPost == null) return NotFound();
-
             ViewData["thisPostAuthor"] = _db.Users.Find(ThisPost.UserId).Name;
             return Page();
         }
