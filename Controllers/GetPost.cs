@@ -67,5 +67,37 @@ namespace isolaatti_API.Controllers
                 });
             return Ok(comments);
         }
+
+        [HttpPost]
+        [Route("PublicThread")]
+        public IActionResult PublicThread([FromForm] long id)
+        {
+            var post = _db.SimpleTextPosts.Find(id);
+            if (!(post is {Privacy: 3})) return NotFound();
+            var author = _db.Users.Find(post.UserId).Name;
+            return Ok(new
+            {
+                comments = _db.Comments
+                    .Where(comment => comment.SimpleTextPostId.Equals(post.Id))
+                    .ToList().Select(com => new ReturningCommentComposedResponse()
+                    {
+                        Id = com.Id,
+                        Privacy = com.Privacy,
+                        SimpleTextPostId = com.SimpleTextPostId,
+                        TextContent = com.TextContent,
+                        WhoWrote = com.WhoWrote,
+                        WhoWroteName = _db.Users.Find(com.WhoWrote).Name
+                    }),
+                post = new ReturningPostsComposedResponse()
+                {
+                    Id = post.Id,
+                    NumberOfLikes = post.NumberOfLikes,
+                    Privacy = post.Privacy,
+                    TextContent = post.TextContent,
+                    UserId = post.UserId,
+                    UserName = author
+                }
+            });
+        }
     }
 }
