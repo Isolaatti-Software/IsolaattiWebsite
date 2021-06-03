@@ -10,9 +10,7 @@ namespace isolaatti_API.Pages.PublicContent
     public class PublicThreadViewer : PageModel
     {
         private readonly DbContextApp _db;
-        public SimpleTextPost ThisSimpleTextPost;
-        public List<Comment> ThisSimpleTextPostComments;
-
+        
         public PublicThreadViewer(DbContextApp dbContext)
         {
             _db = dbContext;
@@ -23,11 +21,9 @@ namespace isolaatti_API.Pages.PublicContent
             var post = _db.SimpleTextPosts.Find(id);
             if (post == null) return NotFound();
             if (post.Privacy != 3) return NotFound();
-            
-            ThisSimpleTextPost = post;
-            ThisSimpleTextPostComments =
-                _db.Comments.Where(comment => comment.SimpleTextPostId.Equals(post.Id)).ToList();
-            
+
+            ViewData["threadId"] = post.Id;
+
             var accountsManager = new Accounts(_db);
             var user = accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
             if (user != null)
@@ -40,11 +36,6 @@ namespace isolaatti_API.Pages.PublicContent
             
             return Page();
         }
-
-        public string GetUserNameById(int id)
-        {
-            var user = _db.Users.Find(id);
-            return user.Name;
-        }
+        
     }
 }

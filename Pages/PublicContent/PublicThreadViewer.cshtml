@@ -3,41 +3,34 @@
 
 @{
     Layout = "Shared/_LayoutPublicContent";
-    ViewData["Title"] = $"Thread {Model.ThisSimpleTextPost.Id}";
+    ViewData["Title"] = $"Thread {ViewData["threadId"]}";
 }
 @section Scripts
 {
+    <script>const postId = @ViewData["threadId"];</script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
     <script src="~/js/publicThread.js"></script>
 }
 <div class="row">
     <div class="col-12">
         <div class="alert alert-info">Hey, you can read this thread because it's public. If you want to interact, please <a asp-page="/MakeAccount">make an account</a>.</div>
-        <div class="d-flex flex-column">
+        <div class="d-flex flex-column" id="vue-container">
             <div class="d-flex mb-2 flex-column p-2 post">
                 <div class="d-flex justify-content-between align-items-center">
                     <span class="user-name">
-                        @Model.GetUserNameById(Model.ThisSimpleTextPost.UserId)
+                        {{thread.post.userName}}
                     </span>
                 </div>
-                <div class="mt-2 post-content markdown" id="post-content-container">
-                    @Model.ThisSimpleTextPost.TextContent
-                </div>
+                <div class="mt-2 post-content" v-html="compileMarkdown(thread.post.textContent)"></div>
             </div>
             <div class="d-flex flex-column ml-4 comments-container">
-                @foreach(var comment in Model.ThisSimpleTextPostComments)
-                {
-                    <div class="post d-flex mb-2 flex-column p-2">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="user-name">
-                                @Model.GetUserNameById(comment.WhoWrote)
-                            </span>
-                        </div>
-                        <div class="mt-2 post-content markdown">
-                            @comment.TextContent
-                        </div>
+                <div class="post d-flex mb-2 flex-column p-2" v-for="comment in thread.comments">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="user-name">{{comment.whoWroteName}}</span>
                     </div>
-                }
+                    <div class="mt-2 post-content" v-html="compileMarkdown(comment.textContent)"></div>
+                </div>
             </div>
         </div>
     </div>
