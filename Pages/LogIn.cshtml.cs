@@ -40,6 +40,9 @@ namespace isolaatti_API.Pages
             bool justVerified=false,
             bool changedPassword=false)
         {
+            var accountsManager = new Accounts(_db);
+            var user = accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
+            if (user != null) return RedirectToPage("/Index");
             
             NewUser = newUser;
             WrongCredential = badCredential;
