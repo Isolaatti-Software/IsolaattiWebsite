@@ -3,6 +3,8 @@
    erik10cavazos@gmail.com
    Styles for all /WebApp pages (used at layout)
 */
+/* External fonts */
+@import url('https://fonts.googleapis.com/css2?family=Zen+Dots&display=swap');
 
 body {
     background-color: rgb(55,55,75);
@@ -25,21 +27,49 @@ body {
     color:white;
 }
 #isolaatti_brand {
-    /*background-color: rgba(98, 0, 238,0.9);!important;*/
-    height: 35px;
-    width: 35px;
-    margin: 5px;
-    background-image: url("../icon.png");
-    background-position: center;
-    background-size: cover;
     display: flex;
+    align-items: center;
     justify-content: center;
-    border-radius: 5px;
-    border: 1px white solid;
+    width: 35px;
+    height: 35px;
+    margin: 10px;
+    border-radius: 10px;
+    text-decoration: none;
+    filter: drop-shadow(16px 16px 30px #3e0063);
+    background: conic-gradient(from 45deg at 50% 50%, #2f0148, #000000, #2f0148, #000000 );
+}
+#isolaatti_brand:before {
+    content: "Is";
+    font-family: 'Zen Dots', cursive;
+    color: white;
+    font-size: 25px;
+    text-shadow: -3px 4px #11022b;
+    text-decoration: none;
+}
+
+#mobile-search-button-appear, #search-bar-mobile-button-close {
+    display: none;
 }
 @media screen and (max-width: 576px) {
     .navbar-item-text {
         display: none;
+    }
+    #search-bar-fixed-top{
+        position: absolute;
+        top:-60px;
+        left:0;
+        right: 0;
+        padding: 5px;
+        background-color: black;
+        z-index: 10;
+        transition: top;
+        transition-duration: 0.5s;
+    }
+    #songs-link{
+        margin-right: auto;
+    }
+    #mobile-search-button-appear, #search-bar-mobile-button-close {
+        display: block;
     }
 }
 

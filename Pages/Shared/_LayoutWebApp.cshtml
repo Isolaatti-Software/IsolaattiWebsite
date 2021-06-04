@@ -25,15 +25,21 @@
 <body>
 @if (ViewData["isAndroid"] == null || !(bool) ViewData["isAndroid"])
 {
-    <nav class="d-flex custom-nav sticky-top">
+    <nav class="d-flex custom-nav sticky-top" id="isolaatti-top-bar">
         <a href="/" class="nav-link custom-nav-link" id="isolaatti_brand"></a>
         <a class="nav-link custom-nav-link" asp-page="Index" id="index-link"><i class="fas fa-home"></i> <span class="navbar-item-text">Home</span></a>
         <a class="nav-link custom-nav-link" asp-page="Songs" id="songs-link"><i class="fas fa-music"></i> <span class="navbar-item-text">Projects</span></a>
         @* <a class="nav-link custom-nav-link" asp-page="OnQueue" id="onqueue-link"><i class="fas fa-th-list"></i> <span class="navbar-item-text">Queue</span></a> *@
-        <div class="d-flex flex-grow-1">
+        <div class="d-flex flex-grow-1" id="search-bar-fixed-top">
+            <button type="button" class="btn btn-dark btn-sm mr-1" id="search-bar-mobile-button-close">
+                <i class="far fa-window-close"></i>
+            </button>
             <input type="text" class="form-control search-bar-on-top flex-grow-1" form="form-search" name="q" placeholder="Search for people, projects, and threads"/>
             <button class="btn btn-primary btn-sm ml-1" type="submit" form="form-search"><i class="fas fa-search"></i></button>
         </div>
+        <a href="#" class="nav-link custom-nav-link" id="mobile-search-button-appear">
+            <i class="fas fa-search"></i>
+        </a>
         <div class="dropdown">
             <a class="nav-link custom-nav-link nav-link ml-auto mr-1" href="#" role="button" id="dropdownNotificationsMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-bell"></i>
@@ -79,5 +85,16 @@
 <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
 @RenderSection("Scripts", required: false)
 <script src="~/js/realtime-notifications.js"></script>
+<script>
+let searchBar = document.querySelector("#search-bar-fixed-top");
+let buttonAppearSearchBar = document.querySelector("#mobile-search-button-appear");
+let buttonCloseSearchBar = document.querySelector("#search-bar-mobile-button-close");
+buttonAppearSearchBar.addEventListener("click",function (){
+    searchBar.style.top = "0";
+});
+buttonCloseSearchBar.addEventListener("click", function (){
+    searchBar.style.top = "-60px";
+});
+</script>
 </body>
 </html>
