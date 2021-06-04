@@ -132,26 +132,26 @@ isolaattiMixer.setOnMixEnded(function(event){
 
 // hide top bar button
 let hideTopBarButton = document.querySelector("#hide-top-bar-button");
-let topBar = document.querySelector("nav.nav.custom-nav.sticky-top");
+let topBar = document.querySelector("#isolaatti-top-bar");
 hideTopBarButton.addEventListener("click", function() {
     
     if(document.fullscreenElement === null) {
         document.documentElement.requestFullscreen().then(r => {
-            topBar.style.display = "none";
+            topBar.classList.replace("d-flex","d-none")
             hideTopBarButton.innerHTML = '<i class="fas fa-chevron-down"></i>';
         });
     } else {
         document.exitFullscreen().then(r => {
-            topBar.style.display = "flex";
+            topBar.classList.replace("d-none","d-flex");
             hideTopBarButton.innerHTML = '<i class="fas fa-chevron-up"></i>';
         })
     }
     document.documentElement.onfullscreenchange = () => {
         if(document.fullscreenElement === null){
-            topBar.style.display = "flex";
+            topBar.classList.replace("d-none","d-flex");
             hideTopBarButton.innerHTML = '<i class="fas fa-chevron-up"></i>';
         } else {
-            topBar.style.display = "none";
+            topBar.classList.replace("d-flex","d-none")
             hideTopBarButton.innerHTML = '<i class="fas fa-chevron-down"></i>';
         }
     }
