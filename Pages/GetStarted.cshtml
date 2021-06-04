@@ -22,88 +22,106 @@
 </head>
 
 <body>
-  <header>
-    <nav>
-      <a href="/" id="isolaatti-icon">
+<header>
+  <nav>
+    <a href="/" id="isolaatti-icon">
         
-      </a>
-      <div class="nav-buttons flex">
-        <a asp-page="LogIn">Sign in</a>
-        <a asp-page="MakeAccount">Sign up</a>
-      </div>
-    </nav>
-    <div id="isolaatti">Isolaatti</div>
-    <div class="slogan">The greatest music source separation community</div>
-  </header>
-  <section>
-    <article>
-      <h4>Drums, Bass and Vocals tracks for free</h4>
-      <p>You just need to upload an audio file. Isolaatti will use AI to get those tracks.</p>
-      <div class="article-ilustration"><a href="https://github.com/facebookresearch/demucs">Powered by demucs</a></div>
-    </article>
-    <article>
-      <h4>Built-in web mixer</h4>
-      <p>Once you've got the tracks, you can manipulate volumes, panning and more of each one, and record new tracks directly on the browser as well.</p>
-      <p><a href="https://erik-swdev.isolaatti.com/isolaatti.html">Read more</a></p>
-    </article>
-    <article>
-      <h4>Community</h4>
-      <p>You've created a project that you'd like people to see? You can share it with other people on Isolaatti and even allow them to collaborate!</p>
-      <div class="article-ilustration">
-        <ul>
-          <li>Posting</li>
-          <li>Colaboration</li>
-          <li>Real time interaction</li>
-          <li>Instant messaging on mixer</li>
-        </ul>
-      </div>
-    </article>
-    <article>
-      <h4>Support this project</h4>
-      <p>This project is being actively developed. You can support me by giving me feedback, suggestions, and comments.</p>
-    </article>
-  </section>
+    </a>
+    <div class="nav-buttons flex">
+      <a asp-page="LogIn">Sign in</a>
+      <a asp-page="MakeAccount">Sign up</a>
+    </div>
+  </nav>
+  <div id="isolaatti">Isolaatti</div>
+  <div class="slogan">The greatest music source separation community</div>
+</header>
+<section>
+  <article>
+    <h4>Drums, Bass and Vocals tracks for free</h4>
+    <p>You just need to upload an audio file. Isolaatti will use AI to get those tracks.</p>
+    <div class="article-ilustration"><a href="https://github.com/facebookresearch/demucs">Powered by demucs</a></div>
+  </article>
+  <article>
+    <h4>Built-in web mixer</h4>
+    <p>Once you've got the tracks, you can manipulate volumes, panning and more of each one, and record new tracks directly on the browser as well.</p>
+    <p><a href="https://erik-swdev.isolaatti.com/isolaatti.html">Read more</a></p>
+  </article>
+  <article>
+    <h4>Community</h4>
+    <p>You've created a project that you'd like people to see? You can share it with other people on Isolaatti and even allow them to collaborate!</p>
+    <div class="article-ilustration">
+      <ul>
+        <li>Posting</li>
+        <li style="text-decoration: line-through">Colaboration</li>
+        <li style="text-decoration: line-through">Real time interaction</li>
+        <li style="text-decoration: line-through">Instant messaging on mixer</li>
+      </ul>
+    </div>
+  </article>
+  <article>
+    <h4>Support this project</h4>
+    <p>This project is being actively developed. You can support me by giving me feedback, suggestions, and comments.</p>
+  </article>
+  <article>
+    <div>
+      <h1 id="android-app-comming-soon">Android app is comming soon</h1>
+    </div>
+    <img id="img-isolaatti-android" src="~/res/imgs/isolaatti-android.png">
+  </article>
+</section>
 <footer>
-    <div class="bottom-info-item">
-      erikswdevlab#isolaatti
-    </div>
-    <div class="ingredients">
-      <div>
-        <span class="ingredient">
-          C#
-        </span>
-        <span class="ingredient">
-          <i class="fab fa-js-square"></i>
-        </span>
-        <span class="ingredient">
-          <i class="fab fa-python"></i>
-        </span>
-        <span class="ingredient">
-          <i class="fab fa-java"></i>
-        </span>
-        <span class="ingredient">
-          <i class="fas fa-coffee"></i>
-        </span>
-        <span class="ingredient">
-          <i class="fas fa-heart"></i>
-        </span>
+  <div class="bottom-info-item">
+    erikswdevlab#isolaatti
+  </div>
+  <div class="ingredients">
+    <div>
+      <span class="ingredient">
+        C#
+      </span>
+      <span class="ingredient">
+        <i class="fab fa-js-square"></i>
+      </span>
+      <span class="ingredient">
+        <i class="fab fa-python"></i>
+      </span>
+      <span class="ingredient">
+        <i class="fab fa-java"></i>
+      </span>
+      <span class="ingredient">
+        <i class="fas fa-coffee"></i>
+      </span>
+      <span class="ingredient">
+        <i class="fas fa-heart"></i>
+      </span>
         
+    </div>
+  </div>
+  <div class="links">
+    <div>
+      <div class="link">
+        <a href="https://facebook.com/isolaatti"><i class="fab fa-facebook"></i></a>
+      </div>
+      <div class="link">
+        <a href="mailto:erik10cavazos@gmail.com"><i class="fas fa-envelope"></i></a>
+      </div>
+      <div class="link">
+        <a href="https://erik-swdev.isolaatti.com"><i class="fas fa-globe"></i></a>
       </div>
     </div>
-    <div class="links">
-      <div>
-        <div class="link">
-          <a href="https://facebook.com/isolaatti"><i class="fab fa-facebook"></i></a>
-        </div>
-        <div class="link">
-          <a href="mailto:erik10cavazos@gmail.com"><i class="fas fa-envelope"></i></a>
-        </div>
-        <div class="link">
-          <a href="https://erik-swdev.isolaatti.com"><i class="fas fa-globe"></i></a>
-        </div>
-      </div>
-    </div>
-  </footer>
+  </div>
+</footer>
+<script>
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      document.querySelector("#img-isolaatti-android").classList.add("img-isolaatti-android_appear");
+    }
+  })
+});
+
+observer.observe(document.querySelector("#android-app-comming-soon"));
+</script>
 </body>
+
 <!-- Bidvertiser2054297 -->
 </html>

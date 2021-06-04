@@ -18,6 +18,10 @@ html {
 }
 body {
     background-color: #110a1a;
+    overflow-x: hidden;
+}
+a {
+    color:white;
 }
 header {
     display: flex;
@@ -26,7 +30,7 @@ header {
     align-items: center;
 
     height: auto;
-    animation: vary-color 6s linear infinite alternate-reverse;
+    animation: vary-color 10s linear infinite alternate-reverse;
 
     background-blend-mode: color-burn;
     background-position: center;
@@ -163,11 +167,20 @@ nav {
     justify-content: center;
     width: 60px;
     height: 60px;
-    border: 1px white solid;
     margin-left: 10px;
+    margin-top: 20px;
     border-radius: 10px;
-    background-image: url('../icon.png');
-    background-size: cover;
+    text-decoration: none;
+    filter: drop-shadow(16px 16px 30px #3e0063);
+    background: conic-gradient(from 45deg at 50% 50%, #2f0148, #000000, #2f0148, #000000 );
+}
+#isolaatti-icon:before {
+    content: "Is";
+    font-family: 'Zen Dots', cursive;
+    color: white;
+    font-size: 40px;
+    text-shadow: -3px 4px #11022b;
+    text-decoration: none;
 }
 
 section article {
@@ -203,8 +216,8 @@ section article:nth-child(2) {
 }
 
 section article:nth-child(3){
-    background-color: rgb(0, 26, 130);
-    background-blend-mode:darken;
+    background-color: rgb(1, 10, 42);
+    background-blend-mode:saturation;
     background-image: url('../res/imgs/posting_isolaatti.png');
     background-position:bottom;
     background-attachment: fixed;
@@ -217,9 +230,38 @@ section article:nth-child(4) {
     background-position:bottom;
     background-attachment: fixed;
 }
+section article:nth-child(5) {
+    justify-content: space-around!important;
+    flex-direction: row;
+}
+#android-app-comming-soon{
+    font-size: 2.7em;
+    font-family: 'Zen Dots', cursive;
+    margin-bottom: 30px;
+    max-width: 50%;
+}
+
+#img-isolaatti-android{
+    margin-right: -100%;
+    
+}
+
+.img-isolaatti-android_appear {
+    animation: 1s appear-android-img linear forwards;
+}
+
+@keyframes appear-android-img {
+    0%{
+        margin-right: -100%;
+    }
+    100%{
+        margin-right: 0;
+    }
+}
 section article p {
     background-color: black;
     padding: 20px;
+    max-width: 500px;
 }
 section article > h4 {
     font-size: 2em;
@@ -241,7 +283,7 @@ section article > .article-ilustration {
 
 section article > .article-ilustration ul li {
     display: inline-block;
-    margin: 5px;
+    margin: 10px;
 }
 
 .article-ilustration a {
