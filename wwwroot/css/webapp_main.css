@@ -50,6 +50,12 @@ body {
 #mobile-search-button-appear, #search-bar-mobile-button-close {
     display: none;
 }
+#search-bar-fixed-top {
+    max-width: 400px;
+}
+#songs-link{
+    margin-right: auto;
+}
 @media screen and (max-width: 576px) {
     .navbar-item-text {
         display: none;
@@ -57,16 +63,13 @@ body {
     #search-bar-fixed-top{
         position: absolute;
         top:-60px;
-        left:0;
-        right: 0;
         padding: 5px;
         background-color: black;
         z-index: 10;
         transition: top;
         transition-duration: 0.5s;
-    }
-    #songs-link{
-        margin-right: auto;
+        width: 100%!important;
+        max-width: 100%;
     }
     #mobile-search-button-appear, #search-bar-mobile-button-close {
         display: block;
