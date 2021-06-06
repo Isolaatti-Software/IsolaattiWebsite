@@ -5,6 +5,10 @@
     Layout = "Shared/_LayoutWebApp";
     ViewData["Title"] = $"Audio mixer - {Model.song.OriginalFileName} ";
 }
+@section CSS
+{
+    <link href="~/css/play.css" rel="stylesheet">
+}
 <div class="col-12 p-0">
 <!-- Base tracks -->
 <audio src="@Model.song.DrumsUrl" crossorigin="anonymous" preload="auto" class="track-audio-element" track-name="drums"></audio>
@@ -56,7 +60,7 @@
         <input type="range" class="custom-range" id="seek-position-slider" min="0" value="0">
     </div>
 </div>
-<div class="container-fluid mt-2 pl-0 pr-0">
+<div class="container-fluid mt-2 pl-0 pr-0" id="workspace-container">
     <div class="row m-1">
         <div class="col-lg-2 col-md-3 col-sm-3 p-0">
             <div id="master-output-controls" class="mr-1 d-flex flex-column h-100">
@@ -258,11 +262,7 @@
         </div>
     </div>
 </div>
-<div class="d-flex mt-2" id="workspace-container">
-        
-        
-</div>
-    
+
 </div>
 <!-- Modals -->
 <div class="modal" tabindex="-1" id="modal-performance-settings">
@@ -357,11 +357,15 @@
         </div>
     </div>
 </div>
+<div class="d-flex align-items-center" id="audio-player-bottom-bar">
+    <span id="audio-player-bottom-bar-text-state"></span>
+</div>
 @section Scripts
 {
     <script>
     let songData = {id : @ViewData["songId"]}
+    const statusText = document.querySelector("#audio-player-bottom-bar-text-state");
     </script>
-    <script src="https://erik-everardo.github.io/isolaatti-js-web-audio-mixer/isolaattiaudiomixer.js" crossorigin="anonymous"></script>
+    <script src="~/js/isolaattiaudiomixer.js"></script>
     <script src="~/js/play.js"></script>
 }

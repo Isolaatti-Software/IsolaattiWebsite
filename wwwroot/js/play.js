@@ -14,6 +14,8 @@ let stopButton = document.querySelector("#stop_button");
 let mainGainLabel = document.querySelector("#mix_gain_label");
 let mainGainBar = document.querySelector("#mainGainBar");
 
+
+statusText.innerHTML = "Preparing mixer...";
 let isolaattiMixer = new IsolaattiAudioMixer(mediaElements, function(event){
     /* Handle here slider of current position */
     seekPositionSlider.value = event.target.currentTime;
@@ -25,12 +27,13 @@ let isolaattiMixer = new IsolaattiAudioMixer(mediaElements, function(event){
 
 isolaattiMixer.prepareMix(function(){
     console.log("Mixer is ready!!");
+    statusText.innerHTML = "Mix is ready";
     document.querySelector("#play_pause_button").disabled = false;
     defineEvents();
     timeLabel.innerHTML = `--/${getClockFormatFromSeconds(isolaattiMixer.getDuration())}`;
     let newTrackForm = document.getElementById("new-track-form");
     if(newTrackForm !== null) {
-    newTrackForm.elements[2].value = isolaattiMixer.getDuration();
+        newTrackForm.elements[2].value = isolaattiMixer.getDuration();
     }
     
     isolaattiMixer.getAudioAnalyserNode().fftSize = 64;
@@ -162,9 +165,11 @@ function defineEvents() {
     playButton.addEventListener("click", function() {
         if(isolaattiMixer.playing){
             isolaattiMixer.pauseMix();
+            statusText.innerHTML = "Paused";
             playButton.innerHTML = '<i class="fas fa-play"></i>';
         } else {
             isolaattiMixer.playMix();
+            statusText.innerHTML = "Playing";
             playButton.innerHTML = '<i class="fas fa-pause"></i>';
         }
     });
@@ -303,11 +308,13 @@ trackSettingsModal.find(".modal-footer #track-settings-modal-accept-button")
               switch (requestToChangeColor.status) {
                   case 200 : // everything ok
                       trackSettingsModal.modal('hide');
+                      statusText.innerHTML = `${trackSettingsModalData.trackName} color changed`;
                       break;
                   case 500 : // probably name of track doesn't point to any track
                       // close modal
                       trackSettingsModal.modal('hide');
                       alert("Could not save color. Please report this...");
+                      statusText.innerHTML = "Could not save color. Please report this...";
                       break;
                   default : // this should not happen ??
                       trackSettingsModal.modal('hide');
@@ -315,6 +322,4 @@ trackSettingsModal.find(".modal-footer #track-settings-modal-accept-button")
               }
           }  
         };
-        
-        
 });

@@ -1,0 +1,25 @@
+@media screen and (max-width: 576px) {
+    #audio-player-bottom-bar {
+        display: none;
+    }
+}
+body {
+    position: relative;
+    min-height: 100vh;
+}
+
+#audio-player-bottom-bar {
+    position: fixed;
+    bottom: 0px;
+    width: 100%;
+    background-color: black;
+    height: 40px;
+}
+
+#workspace-container {
+    min-height: 470px;
+}
+
+#audio-player-bottom-bar span {
+    margin-left: 5px;
+}
