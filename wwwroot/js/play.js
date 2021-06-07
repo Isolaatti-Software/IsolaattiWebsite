@@ -104,6 +104,7 @@ isolaattiMixer.prepareMix(function(){
                    drawGainBarOfTrack(name,track.getAudioAnalyserNode())
                },parseInt(selector.value)));
             });
+            statusText.innerHTML = "Gain bars enabled";
         } else {
             // disabling master bar
             clearInterval(mainGainBarIntervalId);
@@ -116,6 +117,7 @@ isolaattiMixer.prepareMix(function(){
                    value.value = 0; 
                 });
             });
+            statusText.innerHTML = "Gain bars disabled";
         }
     });
     
@@ -130,6 +132,7 @@ isolaattiMixer.prepareMix(function(){
 
 isolaattiMixer.setOnMixEnded(function(event){
     playButton.innerHTML = '<i class="fas fa-play"></i>';
+    statusText.innerHTML = "Stopped";
     seekPositionSlider.value = 0;
 });
 
@@ -178,6 +181,7 @@ function defineEvents() {
        isolaattiMixer.pauseMix();
        playButton.innerHTML = '<i class="fas fa-play"></i>';
        isolaattiMixer.seekTo(0);
+       statusText.innerHTML = "Stopped";
     });
     
     // seeking slider
