@@ -13,7 +13,7 @@ postButton.addEventListener("click", () => {
         postButton.innerHTML = "Post";
         postTextArea.value = "";
         postButton.disabled = false;
-        
+        putPosts();
     }, (error) => {
         console.error(error);
     });
