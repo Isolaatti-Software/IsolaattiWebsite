@@ -5,6 +5,10 @@ let postTextArea = document.querySelector("#simple-post-textarea");
 let postsInDOM = [];
 
 postButton.addEventListener("click", () => {
+    if(postTextArea.value === "") {
+        alert("Come on, you can't upload an empty post");
+        return;
+    }
     postButton.disabled = true;
     postButton.innerHTML =
         "Posting " + '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
@@ -48,6 +52,10 @@ function putPosts() {
 }
 
 function makePost(privacy, content, onComplete, onError) {
+    if(content === "") {
+        alert("Come on, you can't upload an empty post");
+        return;
+    }
     let form = new FormData();
     form.append("sessionToken", sessionToken);
     form.append("privacy", privacy);
