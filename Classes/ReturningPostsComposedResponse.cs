@@ -1,14 +1,20 @@
+using isolaatti_API.Models;
+
 namespace isolaatti_API.Classes
 {
-    public class ReturningPostsComposedResponse
+    public class ReturningPostsComposedResponse : SimpleTextPost
     {
-        public long Id { get; set; }
-        public string TextContent { get; set; }
-        public int UserId { get; set; }
+        public ReturningPostsComposedResponse(SimpleTextPost post)
+        {
+            Id = post.Id;
+            TextContent = post.TextContent;
+            UserId = post.UserId;
+            NumberOfLikes = post.NumberOfLikes;
+            Privacy = post.Privacy;
+            AudioAttachedUrl = post.AudioAttachedUrl;
+        }
         public string UserName { get; set; }
-        public long NumberOfLikes { get; set; }
         public long NumberOfComments { get; set; }
-        public int Privacy { get; set; }
         public bool Liked { get; set; }
     }
 }
