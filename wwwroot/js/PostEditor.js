@@ -1,5 +1,6 @@
 
 let markdownInput = document.getElementById("raw-post-markdown");
+let audioContext = new AudioContext();
 
 const vue = new Vue({
     el: "#vue-container",
@@ -7,7 +8,21 @@ const vue = new Vue({
         input: "",
         selectionStart: 0,
         selectionEnd: 0,
-        privacy: "2"
+        privacy: "2",
+        audio: {
+            recording: false,
+            url: "",
+            timeInSeconds: 0,
+            recorded: false,
+            consolidated: false,
+            recorder: {
+                mediaRecorder: null,
+                mediaStream: null,
+                audioData: [],
+                audioPlayer: new Audio(),
+                resultantBlob: null
+            }
+        }
     },
     computed: {
         compiledMarkdown: function() {
@@ -15,6 +30,9 @@ const vue = new Vue({
         },
         postButtonDisabled: function() {
             return this.input === null || this.input === "";
+        },
+        addAudioButtonText: function() {
+            return (this.audio.consolidated) ? "Audio recorded" : "Record audio";
         }
     },
     methods: {
@@ -129,20 +147,109 @@ const vue = new Vue({
             form.append("sessionToken", sessionToken);
             form.append("privacy", this.privacy);
             form.append("content", this.input);
-
-            let request = new XMLHttpRequest();
-            request.open("POST", "/api/MakePost");
-            request.onreadystatechange = () => {
-                if (request.readyState === XMLHttpRequest.DONE) {
-                    switch (request.status) {
-                        case 200: window.location = "/"; break;
-                        case 404: alert(request.responseText); break;
-                        case 401: alert(request.responseText); break;
-                        case 500: alert(request.responseText); break;
+            // this means that there is a blob to upload
+            if(this.audio.consolidated) {
+                let storageRef = storage.ref();
+                let date = new Date();
+                
+                // the resource has this pattern: /audio_posts/{userId}/{name of file}
+                // where name of file follows this rule: {date}-{hours}-{minutes}-{seconds}_audio.webm
+                let uploadTask = storageRef
+                        .child(`audio_posts/${userData.id}/${date.toDateString()}-${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}_audio.webm`);
+                uploadTask.put(this.audio.recorder.resultantBlob).then(function(snapshot) {
+                    uploadTask.getDownloadURL().then(function(url) {
+                        form.append("audioUrl",url);
+                        sendPostRequest();
+                    });
+                });
+            } else {
+                sendPostRequest();
+            }
+            function sendPostRequest() {
+                let request = new XMLHttpRequest();
+                request.open("POST", "/api/MakePost");
+                request.onreadystatechange = () => {
+                    if (request.readyState === XMLHttpRequest.DONE) {
+                        switch (request.status) {
+                            case 200: window.location = "/"; break;
+                            case 404: alert(request.responseText); break;
+                            case 401: alert(request.responseText); break;
+                            case 500: alert(request.responseText); break;
+                        }
                     }
-                }
-            };
-            request.send(form);
+                };
+                request.send(form);
+            }
+
+            
+        },
+        requestMicrophone: function() {
+            let audioStreamPromise = navigator.mediaDevices.getUserMedia({audio:true, video:false})
+
+            audioStreamPromise.then((stream) => {
+                this.audio.recorder.mediaStream = stream;
+            });
+        },
+        startRecording: function() {
+            this.audio.consolidated = false;
+            this.audio.timeInSeconds = 0;
+            this.audio.recorder.mediaRecorder = new MediaRecorder(this.audio.recorder.mediaStream,{
+                mimeType: 'audio/webm; codecs=opus',
+                bitsPerSecond: 128000
+            });
+            this.audio.recorder.mediaRecorder.start();
+            let globalThis = this;
+            
+            // start interval that will be updating the progress bar.
+            // stop this interval when recording ends
+            let interval = setInterval(function() {
+                globalThis.audio.timeInSeconds += 1;
+            },1000);
+            
+            // This timer is what limits the duration up to 2 minutes (120 seconds)
+            let timer = setTimeout(function(){
+                globalThis.stopRecording();
+                clearInterval(interval);
+            }, 120*1000);
+            
+            this.audio.recorder.mediaRecorder.ondataavailable = function(e) {
+                globalThis.audio.recorder.audioData.push(e.data);
+                console.log("Data pushed...");
+            }
+            this.audio.recorder.mediaRecorder.onstop = function() {
+                clearTimeout(timer);
+                clearInterval(interval);
+                globalThis.audio.recorder.resultantBlob = 
+                    new Blob(globalThis.audio.recorder.audioData, {'type':'audio/webm; codecs=opus'});
+            }
+            this.audio.recording = true;
+        },
+        stopRecording: function() {
+            this.audio.recorder.mediaRecorder.stop();
+            this.audio.recording = false;
+            this.audio.recorded = true;
+        },
+        playRecord: function() {
+            this.audio.recorder.audioPlayer.src = window.URL.createObjectURL(this.audio.recorder.resultantBlob);
+            this.audio.recorder.audioPlayer.volume = 1;
+            this.audio.recorder.audioPlayer.play().then(function() {
+                console.log("Playing recorded audio");
+            }).catch(function(error) {
+                console.error("Can't play recorded audio: " + error);
+            });
+        },
+        resetRecording: function() {
+            this.audio.recording = false;
+            this.audio.recorded = false;
+            this.audio.recorder.resultantBlob = null;
+            this.audio.recorder.audioData = [];
+            this.audio.recorder.audioPlayer.pause();
+            this.audio.consolidated = false;
+            this.audio.timeInSeconds = 0;
+        },
+        consolidate: function() {
+            this.audio.consolidated = true;
+            $('#add-audio-modal').modal('hide');
         }
     }
-})
+});

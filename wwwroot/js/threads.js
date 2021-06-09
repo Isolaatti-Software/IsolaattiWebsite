@@ -17,7 +17,11 @@
                     commentTextarea: "",
                     selectionStart: 0,
                     selectionEnd: 0,
-                    comments: []
+                    comments: [],
+                    audioPlayer: new Audio(),
+                    audioUrl: "",
+                    playing: false,
+                    paused: false
                 },
                 computed: {
                   makeCommentButtonDisabled: function() {
@@ -224,12 +228,36 @@
                             }
                         }
                         request.send(form);
+                    },
+                    playAudio: function(url) {
+                        if(this.audioUrl !== url) {
+                            this.audioPlayer.pause();
+                            this.audioUrl = url
+                            this.audioPlayer.src = url;
+                            this.audioPlayer.play();
+                            this.paused = false;
+                        } else {
+                            if(!this.audioPlayer.paused) {
+                                this.audioPlayer.pause()
+                                this.paused = true;
+                                this.playing = false;
+                            } else {
+                                this.audioPlayer.play();
+                                this.playing = true;
+                                this.paused = false;
+                            }
+                        }
+                        this.playing = true;
                     }
                 },
                 mounted: function() {
                     this.$nextTick(function() {
                         this.getComments();
                     });
+                    let globalThis = this;
+                    this.audioPlayer.onended = function() {
+                        globalThis.audioUrl = "";
+                    }
                 }
             })
         }

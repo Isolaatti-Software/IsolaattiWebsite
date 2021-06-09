@@ -1,6 +1,6 @@
 /*
 * Isolaatti project
-* Erik Cavazos, 2020
+* Erik Cavazos, 2020, 2021
 * This program is not allowed to be copied or reused without explicit permission.
 * erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
 * 
@@ -181,7 +181,11 @@ function getPosts(onComplete, onError) {
                 posts: [],
                 selectedPostForModalsId: 0,
                 textareaEditPost: "",
-                privacyEditPost: ""
+                privacyEditPost: "",
+                audioPlayer: new Audio(),
+                audioUrl: "",
+                playing: false,
+                paused: false
             },
             methods: {
                 likePost: function(post) {
@@ -264,7 +268,35 @@ function getPosts(onComplete, onError) {
                         this.posts.splice(index,1);
                         $("#modal-delete-post").modal('hide');
                     }, () => {})
+                },
+                playAudio: function(url) {
+                    if(this.audioUrl !== url) {
+                        this.audioPlayer.pause();
+                        this.audioUrl = url
+                        this.audioPlayer.src = url;
+                        this.audioPlayer.play();
+                        this.paused = false;
+                    } else {
+                        if(!this.audioPlayer.paused) {
+                            this.audioPlayer.pause()
+                            this.paused = true;
+                            this.playing = false;
+                        } else {
+                            this.audioPlayer.play();
+                            this.playing = true;
+                            this.paused = false;
+                        }
+                    }
+                    this.playing = true;
                 }
+            },
+            mounted: function() {
+                this.$nextTick(function() {
+                    let globalThis = this;
+                    this.audioPlayer.onended = function() {
+                        globalThis.audioUrl = "";
+                    }
+                });
             }
         })
         
