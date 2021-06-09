@@ -40,15 +40,11 @@ namespace isolaatti_API.Controllers
             Db.SimpleTextPosts.Update(post);
             Db.SaveChanges();
             
-            return Ok(new ReturningPostsComposedResponse()
+            return Ok(new ReturningPostsComposedResponse(post)
             {
-                Id = post.Id,
-                Liked = true,
-                NumberOfLikes = post.NumberOfLikes,
-                Privacy = post.Privacy,
-                TextContent = post.TextContent,
-                UserId = post.UserId,
-                UserName = Db.Users.Find(post.UserId).Name
+                UserName = Db.Users.Find(post.UserId).Name,
+                NumberOfComments = Db.Comments.Count(comment => comment.SimpleTextPostId.Equals(post.Id)),
+                Liked = Db.Likes.Any(element => element.PostId == post.Id && element.UserId == user.Id)
             });
         }
 
@@ -72,15 +68,11 @@ namespace isolaatti_API.Controllers
             Db.SimpleTextPosts.Update(post);
             Db.SaveChanges();
 
-            return Ok(new ReturningPostsComposedResponse()
+            return Ok(new ReturningPostsComposedResponse(post)
             {
-                Id = post.Id,
-                Liked = false,
-                NumberOfLikes = post.NumberOfLikes,
-                Privacy = post.Privacy,
-                TextContent = post.TextContent,
-                UserId = post.UserId,
-                UserName = Db.Users.Find(post.UserId).Name
+                UserName = Db.Users.Find(post.UserId).Name,
+                NumberOfComments = Db.Comments.Count(comment => comment.SimpleTextPostId.Equals(post.Id)),
+                Liked = Db.Likes.Any(element => element.PostId == post.Id && element.UserId == user.Id)
             });
         }
     }

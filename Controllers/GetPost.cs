@@ -3,7 +3,6 @@ using isolaatti_API.Classes;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
-using Org.BouncyCastle.Bcpg;
 
 namespace isolaatti_API.Controllers
 {
@@ -29,15 +28,11 @@ namespace isolaatti_API.Controllers
             if (post == null || (post.Privacy == 1 && post.UserId != user.Id)) return NotFound("post not found");
             var liked = _db.Likes.Any(like => like.PostId.Equals(post.Id) && like.UserId.Equals(user.Id));
             var author = _db.Users.Find(post.UserId).Name;
-            return Ok(new ReturningPostsComposedResponse()
+            return Ok(new ReturningPostsComposedResponse(post)
             {
-                Id = post.Id,
-                Liked = liked,
-                NumberOfLikes = post.NumberOfLikes,
-                Privacy = post.Privacy,
-                TextContent = post.TextContent,
-                UserId = post.UserId,
-                UserName = author
+                UserName = _db.Users.Find(post.UserId).Name,
+                NumberOfComments = _db.Comments.Count(comment => comment.SimpleTextPostId.Equals(post.Id)),
+                Liked = _db.Likes.Any(element => element.PostId == post.Id && element.UserId == user.Id)
             });
         }
 
@@ -88,14 +83,10 @@ namespace isolaatti_API.Controllers
                         WhoWrote = com.WhoWrote,
                         WhoWroteName = _db.Users.Find(com.WhoWrote).Name
                     }),
-                post = new ReturningPostsComposedResponse()
+                post = new ReturningPostsComposedResponse(post)
                 {
-                    Id = post.Id,
-                    NumberOfLikes = post.NumberOfLikes,
-                    Privacy = post.Privacy,
-                    TextContent = post.TextContent,
-                    UserId = post.UserId,
-                    UserName = author
+                UserName = _db.Users.Find(post.UserId).Name,
+                NumberOfComments = _db.Comments.Count(comment => comment.SimpleTextPostId.Equals(post.Id)),
                 }
             });
         }

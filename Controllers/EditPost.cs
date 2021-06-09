@@ -1,4 +1,5 @@
 using System.Linq;
+using isolaatti_API.Classes;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -77,7 +78,12 @@ namespace isolaatti_API.Controllers
             Db.SimpleTextPosts.Update(post);
             Db.SaveChanges();
             
-            return Ok(post);
+            return Ok(new ReturningPostsComposedResponse(post)
+            {
+                UserName = Db.Users.Find(post.UserId).Name,
+                NumberOfComments = Db.Comments.Count(comment => comment.SimpleTextPostId.Equals(post.Id)),
+                Liked = Db.Likes.Any(element => element.PostId == post.Id && element.UserId == user.Id)
+            });
         }
     }
 }
