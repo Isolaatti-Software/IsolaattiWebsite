@@ -22,4 +22,6 @@ body {
 
 #audio-player-bottom-bar span {
     margin-left: 5px;
+    color:white;
+    font-size: small;
 }

@@ -7,8 +7,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Zen+Dots&display=swap');
 
 body {
-    background-color: rgb(55,55,75);
-    color:white;
+    /*background-color: rgb(55,55,75);*/
+    /*color:white;*/
     scroll-behavior: smooth;
     min-height: 100vh;
     position: relative;
@@ -126,6 +126,8 @@ progress[orient=vertical] {
     z-index: 900;
     position: sticky;
     top:0;
+    font-size: medium;
+    color: white;
 }
 
 #seek-position-slider{
@@ -311,7 +313,7 @@ span.user-name {
 }
 
 pre, code {
-    color: white;
+    color: black;
 }
 
 #title-bar>h6 {
@@ -338,6 +340,7 @@ footer#footer>a, footer#footer>span {
     background-color: #110a1a;
     padding: 30px;
     border-radius: 5px;
+    color:white;
 }
 
 .song-item {
