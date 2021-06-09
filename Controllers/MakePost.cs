@@ -1,3 +1,4 @@
+using System.Linq;
 using isolaatti_API.Classes;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
@@ -26,7 +27,8 @@ namespace isolaatti_API.Controllers
         [HttpPost]
         public IActionResult Index([FromForm] string sessionToken, [FromForm] string password, 
             [FromForm] int privacy = 1, 
-            [FromForm] string content = "Well, this post was made without content. Why? Idk")
+            [FromForm] string content = "Well, this post was made without content. Why? Idk",
+            [FromForm] string audioUrl = null)
         {
             var accountsManager = new Accounts(Db);
             var user = accountsManager.ValidateToken(sessionToken);
@@ -37,21 +39,18 @@ namespace isolaatti_API.Controllers
             {
                 UserId = user.Id,
                 TextContent = content,
-                Privacy = privacy
+                Privacy = privacy,
+                AudioAttachedUrl = audioUrl
             };
 
             Db.SimpleTextPosts.Add(newPost);
             Db.SaveChanges();
             
-            return Ok(new ReturningPostsComposedResponse()
+            return Ok(new ReturningPostsComposedResponse(newPost)
             {
-                Id = newPost.Id,
-                Liked = false,
-                NumberOfLikes = newPost.NumberOfLikes,
-                Privacy = newPost.Privacy,
-                TextContent = newPost.TextContent,
-                UserId = newPost.UserId,
-                UserName = user.Name
+                UserName = Db.Users.Find(newPost.UserId).Name,
+                NumberOfComments = Db.Comments.Count(comment => comment.SimpleTextPostId.Equals(newPost.Id)),
+                Liked = Db.Likes.Any(element => element.PostId == newPost.Id && element.UserId == user.Id)
             });
         }
 
