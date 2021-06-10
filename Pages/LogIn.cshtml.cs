@@ -69,6 +69,14 @@ namespace isolaatti_API.Pages
             try
             {
                 var user = _db.Users.Single(u => u.Email.Equals(email));
+                if (!accountsManager.IsUserEmailVerified(user.Id))
+                {
+                    return RedirectToPage(new
+                    {
+                        notVerified = true,
+                        username = user.Email
+                    });
+                }
                 accountsManager.DefineHttpRequestObject(Request);
                 var sessionToken = accountsManager.CreateNewToken(user.Id, password);
                 if (sessionToken == null)

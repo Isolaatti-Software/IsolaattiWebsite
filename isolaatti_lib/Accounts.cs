@@ -70,6 +70,11 @@ namespace isolaatti_API.isolaatti_lib
             }
         }
 
+        public bool IsUserEmailVerified(int userId)
+        {
+            var user = db.Users.Find(userId);
+            return user.EmailValidated;
+        }
         public string LogIn(string email, string password)
         {
             var passwordHasher = new PasswordHasher<string>();
@@ -92,7 +97,7 @@ namespace isolaatti_API.isolaatti_lib
         /*This method is called internally when a new account was created successfully*/
         private bool SendValidationEmail(int id, string validationCode)
         {
-            string link = $"http://isolaattiapi.azurewebsites.net/validateAccount?id={id}&code={validationCode}";
+            string link = $"https://{_request.HttpContext.Request.Host.Value}/validateAccount?id={id}&code={validationCode}";
             string userEmailAddress = db.Users.Find(id).Email;
             string htmlBody = String.Format( @"
                 <html>
