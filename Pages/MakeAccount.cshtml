@@ -40,6 +40,12 @@
                     <p>As told you at the message at the top of this page, Isolaatti is only accepting up to 50 accounts, this because the development server might crash</p>
                 </div>
             }
+            @if (ViewData.ContainsKey("error_msg"))
+            {
+                <div class="alert alert-danger">
+                    @ViewData["error_msg"]
+                </div>
+            }
             <div class="form-group">
                 <label for="username_form_control">Username</label>
                 <input type="text" name="username" id="username_form_control" class="form-control"

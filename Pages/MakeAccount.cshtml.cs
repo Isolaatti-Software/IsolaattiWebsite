@@ -40,6 +40,11 @@ namespace isolaatti_API.Pages
                 ViewData["email_field"] = email;
             }
 
+            if (error.Equals("couldnotsendemail"))
+            {
+                ViewData["error_msg"] = "We could not verify your email address, maybe it doesn't exist";
+            }
+
             AccountNotMade = limitOfAccounts;
             LimitOfAccountsReached = _db.Users.Count() >= 50;
 
@@ -57,6 +62,7 @@ namespace isolaatti_API.Pages
                 return Page();
             }
             var accountManager = new Accounts(_db);
+            accountManager.DefineHttpRequestObject(Request);
             var result = accountManager.MakeAccount(username, email, password);
             switch (result)
             {
@@ -77,6 +83,12 @@ namespace isolaatti_API.Pages
                     {
                         email = email,
                         error="nameused"
+                    });
+                default:
+                    return RedirectToPage("MakeAccount", new
+                    {
+                        email = email,
+                        error = "couldnotsendemail"
                     });
             }
             return Page();
