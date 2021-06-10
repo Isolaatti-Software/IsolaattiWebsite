@@ -11,7 +11,6 @@
 using System;
 using System.Linq;
 using System.Net.Mail;
-using isolaatti_API.Classes;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Http;
 using MimeKit;
