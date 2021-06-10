@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
@@ -6,7 +5,6 @@ using isolaatti_API.Classes;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
-using Org.BouncyCastle.Bcpg;
 
 namespace isolaatti_API.Controllers
 {
