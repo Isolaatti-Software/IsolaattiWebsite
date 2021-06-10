@@ -30,25 +30,19 @@ namespace isolaatti_API.Controllers
 
             var followingIds = JsonSerializer.Deserialize<List<int>>(user.FollowingIdsJson);
             var posts = new List<SimpleTextPost>();
-            var renderedPosts = JsonSerializer.Deserialize<List<int>>(postsInDom);
+            var renderedPosts = JsonSerializer.Deserialize<List<long>>(postsInDom);
             
             List<UserSeenPostHistory> userPostSeenHistory = Db.UserSeenPostHistories
                 .Where(history => history.UserId.Equals(user.Id)).ToList();
 
-            foreach (var followingId in followingIds)
-            {
-                posts.AddRange(Db.SimpleTextPosts.Where(post => 
-                    post.UserId.Equals(followingId) && post.Privacy != 1));
-            }
-
+            // these are all the posts from all the people the user follows and the user itself
             posts.AddRange(Db.SimpleTextPosts.Where(post => 
-                post.UserId.Equals(user.Id)
-                )
-            );
+                ((post.Privacy != 1 && followingIds.Contains(post.UserId)) 
+                 || post.UserId.Equals(user.Id)) && !renderedPosts.Contains(post.Id)));
 
+            
             foreach (var renderedPostId in renderedPosts)
             {
-                posts.RemoveAll(post => post.Id.Equals(renderedPostId));
                 userPostSeenHistory.RemoveAll(element => element.PostId.Equals(renderedPostId));
             }
 
@@ -67,7 +61,6 @@ namespace isolaatti_API.Controllers
                 response.Add(new ReturningPostsComposedResponse(post)
                 {
                     UserName = Db.Users.Find(post.UserId).Name,
-                    NumberOfComments = Db.Comments.Count(comment => comment.SimpleTextPostId.Equals(post.Id)),
                     Liked = Db.Likes.Any(element => element.PostId == post.Id && element.UserId == user.Id)
                 });
                 if (Db.UserSeenPostHistories.Any(element => 
@@ -118,7 +111,6 @@ namespace isolaatti_API.Controllers
             var response = posts.Select(post => new ReturningPostsComposedResponse(post) 
                 {
                     UserName = Db.Users.Find(post.UserId).Name,
-                    NumberOfComments = Db.Comments.Count(comment => comment.SimpleTextPostId.Equals(post.Id)),
                     Liked = Db.Likes.Any(element => element.PostId == post.Id && element.UserId == user.Id)
                 })
                 .ToList();
