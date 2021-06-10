@@ -50,11 +50,8 @@ namespace isolaatti_API.Controllers
             if (user == null) return Unauthorized("Token is not valid");
 
             var posts = _db.SimpleTextPosts
-                .Where(post => post.UserId == user.Id);
-            posts = posts.OrderByDescending(post => post.Id);
-            
-            var likes = _db.Likes.Where(like => like.UserId.Equals(user.Id)).ToList();
-            var comments = _db.Comments.Where(comment => comment.TargetUser.Equals(user.Id)).ToList();
+                .Where(post => post.UserId == user.Id)
+                .OrderByDescending(post => post.Id).ToList();
             
             List<ReturningPostsComposedResponse> response = new List<ReturningPostsComposedResponse>();
             foreach (var post in posts.ToList())
