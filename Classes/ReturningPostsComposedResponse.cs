@@ -12,6 +12,7 @@ namespace isolaatti_API.Classes
             NumberOfLikes = post.NumberOfLikes;
             Privacy = post.Privacy;
             AudioAttachedUrl = post.AudioAttachedUrl;
+            NumberOfComments = post.NumberOfComments;
         }
         public string UserName { get; set; }
         public bool Liked { get; set; }
