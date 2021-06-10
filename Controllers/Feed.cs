@@ -107,7 +107,7 @@ namespace isolaatti_API.Controllers
             if (account == null) 
                 return NotFound("That account does not exist. Please be sure the accountId parameter is correct");
 
-            var usersLikes = Db.Likes.Where(like => like.UserId == user.Id).ToList();
+            // var usersLikes = Db.Likes.Where(like => like.UserId == user.Id).ToList();
 
             var posts = Db.SimpleTextPosts
                 .Where(post => post.UserId == account.Id)
