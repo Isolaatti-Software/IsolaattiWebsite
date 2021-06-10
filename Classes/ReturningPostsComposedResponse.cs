@@ -14,7 +14,6 @@ namespace isolaatti_API.Classes
             AudioAttachedUrl = post.AudioAttachedUrl;
         }
         public string UserName { get; set; }
-        public long NumberOfComments { get; set; }
         public bool Liked { get; set; }
     }
 }
