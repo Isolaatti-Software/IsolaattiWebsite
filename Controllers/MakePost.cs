@@ -49,7 +49,6 @@ namespace isolaatti_API.Controllers
             return Ok(new ReturningPostsComposedResponse(newPost)
             {
                 UserName = Db.Users.Find(newPost.UserId).Name,
-                NumberOfComments = Db.Comments.Count(comment => comment.SimpleTextPostId.Equals(newPost.Id)),
                 Liked = Db.Likes.Any(element => element.PostId == newPost.Id && element.UserId == user.Id)
             });
         }
