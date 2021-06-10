@@ -24,7 +24,8 @@ postButton.addEventListener("click", () => {
 });
 
 function onScroll() {
-    if (document.body.scrollHeight - window.innerHeight  === window.scrollY) {
+    console.log(document.body.scrollHeight * 0.50,window.scrollY);
+    if (Math.trunc(document.body.scrollHeight * 0.5) >= Math.trunc(window.scrollY)) {
         putPosts();
     }
 }
