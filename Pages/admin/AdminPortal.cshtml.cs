@@ -5,7 +5,6 @@
 * erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
 */
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
 using isolaatti_API.isolaatti_lib;
 using Microsoft.AspNetCore.Mvc;

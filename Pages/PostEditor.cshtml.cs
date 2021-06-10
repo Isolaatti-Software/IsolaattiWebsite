@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Hosting;

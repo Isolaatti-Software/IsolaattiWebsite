@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Net.Mail;
-using System.Threading.Tasks;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;

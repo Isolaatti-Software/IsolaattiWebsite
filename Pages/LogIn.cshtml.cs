@@ -11,7 +11,6 @@ using isolaatti_API.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Razor.Language.Intermediate;
 
 namespace isolaatti_API.Pages
 {

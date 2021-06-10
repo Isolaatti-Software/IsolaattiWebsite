@@ -5,7 +5,6 @@
 * erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
 */
 using Microsoft.EntityFrameworkCore;
-using isolaatti_API.Models;
 namespace isolaatti_API.Models
 {
     public class DbContextApp : DbContext
