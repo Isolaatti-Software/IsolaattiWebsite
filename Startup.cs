@@ -55,10 +55,9 @@ namespace isolaatti_API
             });
             services.Configure<ForwardedHeadersOptions>(options =>
             {
-                options.KnownProxies.Add(IPAddress.Parse("159.203.108.20"));
+                // options.KnownProxies.Add(IPAddress.Parse("159.203.108.20"));
+                options.KnownProxies.Add(IPAddress.Parse("127.0.0.1"));
             });
-
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
