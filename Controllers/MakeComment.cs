@@ -1,3 +1,4 @@
+using System.Linq;
 using isolaatti_API.Classes;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
@@ -39,6 +40,7 @@ namespace isolaatti_API.Controllers
             };
             _db.Comments.Add(newComment);
             _db.SaveChanges();
+            AsyncDatabaseUpdates.UpdateNumberOfComments(_db, post.Id);
             return Ok(new ReturningCommentComposedResponse()
             {
                 Id = newComment.Id,
