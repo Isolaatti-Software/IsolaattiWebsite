@@ -1,0 +1,43 @@
+@page
+@model isolaatti_API.Pages.Reports.ReportPostOrComment
+
+@{
+    Layout = "Shared/_LayoutWebApp";
+    ViewData["Title"] = "Report post or comment";
+}
+<div class="col-lg-3">
+    
+</div>
+<div class="col-lg-6">
+    <h3>Make report</h3>
+    <p>Thanks for making this report, we will review it as soon as possible. Owner of the content won't 
+        be notified about who reported it.
+    </p>
+    
+    <form method="post">
+        <input type="hidden" name="typeOfReport" value="@ViewData["type"]"/>
+        <input type="hidden" name="id" value="@ViewData["contentId"]"/>
+        <div class="form-group">
+            <label>Category of infraction</label>
+            <select class="custom-select" required name="category">
+                <option value="1">Uploading protected content (piracy)</option>
+                <option value="2">Hate incitement</option>
+                <option value="3">Other</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Describe what made you think this content should be reviewed</label>
+            <textarea name="userReason" class="form-control"></textarea>
+        </div>
+        <div class="form-group d-flex justify-content-end">
+            <button type="submit" class="btn btn-primary">
+                Send to review
+            </button>
+        </div>
+    </form>
+</div>
+<div class="col-lg-3">
+    
+</div>
+
+

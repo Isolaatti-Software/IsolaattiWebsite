@@ -1,0 +1,13 @@
+@page
+@model isolaatti_API.Pages.admin.Tools.ViewContent
+
+@{
+    Layout = "Shared/_LayoutAdminPortal";
+    ViewData["Title"] = "Visor de contenido";
+}
+<div class="m-3">
+    <p>Tipo: @ViewData["type"]</p>
+    <pre style="color: green">
+@ViewData["content"]
+</pre>
+</div>

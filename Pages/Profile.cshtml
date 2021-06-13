@@ -60,6 +60,17 @@
         <div v-for="post in posts" class="d-flex mb-2 flex-column p-2 post">
             <div class="d-flex justify-content-between align-items-center">
                 <span class="user-name"><b>@ViewData["profile_name"]</b></span>
+                <div class="dropdown dropleft">
+                    <button class="btn btn-primary btn-sm" data-toggle="dropdown" aria-haspopup="true">
+                        <i class="fas fa-ellipsis-h"></i>
+                    </button>
+                    <div class="dropdown-menu">
+                        <a href="#" class="dropdown-item" v-if="post.userId===userId">Edit</a>
+                        <a href="#" class="dropdown-item">Share</a>
+                        <a href="#" class="dropdown-item" v-if="post.userId===userId">Delete</a>
+                        <a :href=`/Reports/ReportPostOrComment?postId=${post.id}` class="dropdown-item" target="_blank">Report</a>
+                    </div>
+                </div>
             </div>
             <div class="d-flex privacy-icon-container">
                 <div v-if="post.privacy === 2">
