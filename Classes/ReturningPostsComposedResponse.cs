@@ -13,6 +13,7 @@ namespace isolaatti_API.Classes
             Privacy = post.Privacy;
             AudioAttachedUrl = post.AudioAttachedUrl;
             NumberOfComments = post.NumberOfComments;
+            ThemeJson = post.ThemeJson;
         }
         public string UserName { get; set; }
         public bool Liked { get; set; }

@@ -9,5 +9,6 @@ namespace isolaatti_API.Models
         public long NumberOfComments { get; set; }
         public int Privacy { get; set; }
         public string AudioAttachedUrl { get; set; }
+        public string ThemeJson { get; set; }
     }
 }
