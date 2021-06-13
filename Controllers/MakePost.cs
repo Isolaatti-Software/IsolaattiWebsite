@@ -28,7 +28,8 @@ namespace isolaatti_API.Controllers
         public IActionResult Index([FromForm] string sessionToken, [FromForm] string password, 
             [FromForm] int privacy = 1, 
             [FromForm] string content = "Well, this post was made without content. Why? Idk",
-            [FromForm] string audioUrl = null)
+            [FromForm] string audioUrl = null,
+            [FromForm] string themeJson = null)
         {
             var accountsManager = new Accounts(Db);
             var user = accountsManager.ValidateToken(sessionToken);
@@ -40,7 +41,8 @@ namespace isolaatti_API.Controllers
                 UserId = user.Id,
                 TextContent = content,
                 Privacy = privacy,
-                AudioAttachedUrl = audioUrl
+                AudioAttachedUrl = audioUrl,
+                ThemeJson = themeJson
             };
 
             Db.SimpleTextPosts.Add(newPost);
