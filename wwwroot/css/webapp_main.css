@@ -286,6 +286,14 @@ progress[orient=vertical] {
 
 span.user-name {
     height: min-content;
+    background-color: rgba(0,0,0,0.6);
+    padding: 2px;
+    color:white;
+    margin-bottom: 8px;
+}
+span.user-name a{
+    color:white;
+    font-weight: bold;
 }
 
 .post {
