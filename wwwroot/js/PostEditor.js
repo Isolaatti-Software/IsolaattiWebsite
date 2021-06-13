@@ -22,6 +22,15 @@ const vue = new Vue({
                 audioPlayer: new Audio(),
                 resultantBlob: null
             }
+        },
+        theme: {
+            fontColor: "#000",
+            backgroundColor: "#d9d9d9",
+            border: {
+                color: "#d9d9d9",
+                type: "solid",
+                size: "0px"
+            }
         }
     },
     computed: {
@@ -33,6 +42,13 @@ const vue = new Vue({
         },
         addAudioButtonText: function() {
             return (this.audio.consolidated) ? "Audio recorded" : "Record audio";
+        },
+        postThemeCSSStyle: function() {
+            return `color: ${this.theme.fontColor};
+                background-color: ${this.theme.backgroundColor};
+                border: ${this.theme.border.size} ${this.theme.border.type} ${this.theme.border.color} 
+                max-height: calc(100vh - 150px); 
+                overflow: auto; cursor: not-allowed`;
         }
     },
     methods: {
@@ -147,6 +163,7 @@ const vue = new Vue({
             form.append("sessionToken", sessionToken);
             form.append("privacy", this.privacy);
             form.append("content", this.input);
+            form.append("themeJson", JSON.stringify(this.theme));
             // this means that there is a blob to upload
             if(this.audio.consolidated) {
                 let storageRef = storage.ref();

@@ -6,173 +6,248 @@
     ViewData["Title"] = "Post Editor";
 }
 <div id="vue-container" class="container-fluid">
-    <header class="col-12">
-        <div class="d-flex justify-content-between align-items-center">
-            <h5 class="m-3"><i class="fas fa-edit"></i> Post Editor</h5>
-            <button class="btn btn-primary" v-on:click="post" v-bind:disabled="postButtonDisabled">
-                <i class="fas fa-upload"></i> Post
-            </button>
-        </div>
-    </header>
-    <div class="container-fluid">
-    
-        <div class="row">
-            <div class="col-md-6">
-                <div class="d-flex align-items-center">
-                    <select class="custom-select m-2 w-100" v-model="privacy">
-                        <option value="1">Private</option>
-                        <option value="2">People on Isolaatti</option>
-                        <option value="3">Everyone</option>
-                    </select>
-                    <button class="btn btn-secondary btn-sm ml-auto mr-2" data-target="#help-modal" data-toggle="modal">
-                        <i class="fas fa-question"></i>
+<header class="col-12">
+    <div class="d-flex justify-content-between align-items-center">
+        <h5 class="m-3"><i class="fas fa-edit"></i> Post Editor</h5>
+        <button class="btn btn-primary" v-on:click="post" v-bind:disabled="postButtonDisabled">
+            <i class="fas fa-upload"></i> Post
+        </button>
+    </div>
+</header>
+<div class="container-fluid">
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="d-flex align-items-center">
+                <select class="custom-select m-2 w-100 custom-select-sm" v-model="privacy" title="Select privacy">
+                    <option value="1">Private</option>
+                    <option value="2">People on Isolaatti</option>
+                    <option value="3">Everyone</option>
+                </select>
+                <button class="btn btn-secondary btn-sm ml-auto mr-1" title="Theme" 
+                        data-target="#theme-modal" data-toggle="modal">
+                    <i class="fas fa-palette"></i>
+                </button>
+                <button class="btn btn-secondary btn-sm" title="Help" 
+                        data-target="#help-modal" data-toggle="modal">
+                    <i class="fas fa-question"></i>
+                </button>
+            </div>
+            <section id="post-editor-text-formatting-options" class="ml-2 mb-1 d-flex w-100">
+                <div class="btn-group btn-group-sm mr-1 overflow-auto">
+                    <button class="btn btn-primary" v-on:click="insertHeading(1)">
+                        <b>H1</b>
+                    </button>
+                    <button class="btn btn-primary" v-on:click="insertHeading(2)">
+                        <b>H2</b>
+                    </button>
+                    <button class="btn btn-primary" v-on:click="insertHeading(3)">
+                        <b>H3</b>
+                    </button>
+                    <button class="btn btn-primary" v-on:click="insertHeading(4)">
+                        <b>H4</b>
+                    </button>
+                    <button class="btn btn-primary" v-on:click="insertHeading(5)">
+                        <b>H5</b>
+                    </button>
+                    <button class="btn btn-primary" v-on:click="insertHeading(6)">
+                        <b>H6</b>
                     </button>
                 </div>
-                <section id="post-editor-text-formatting-options" class="ml-2 mb-1 d-flex w-100">
-                    <div class="btn-group btn-group-sm mr-1 overflow-auto">
-                        <button class="btn btn-primary" v-on:click="insertHeading(1)">
-                            <b>H1</b>
-                        </button>
-                        <button class="btn btn-primary" v-on:click="insertHeading(2)">
-                            <b>H2</b>
-                        </button>
-                        <button class="btn btn-primary" v-on:click="insertHeading(3)">
-                            <b>H3</b>
-                        </button>
-                        <button class="btn btn-primary" v-on:click="insertHeading(4)">
-                            <b>H4</b>
-                        </button>
-                        <button class="btn btn-primary" v-on:click="insertHeading(5)">
-                            <b>H5</b>
-                        </button>
-                        <button class="btn btn-primary" v-on:click="insertHeading(6)">
-                            <b>H6</b>
-                        </button>
-                    </div>
-                    <div class="btn-group btn-group-sm mr-1">
-                        <button class="btn btn-primary" v-on:click="surroundTextWith('bold')">
-                            <b>B</b>
-                        </button>
-                        <button class="btn btn-primary" v-on:click="surroundTextWith('italics')">
-                            <em>I</em>
-                        </button>
-                    </div>
-                    <button class="btn btn-primary btn-sm ml-auto" v-on:click="requestMicrophone()" data-target="#add-audio-modal" data-toggle="modal">
-                        <i class="fas fa-microphone"></i> {{addAudioButtonText}}
+                <div class="btn-group btn-group-sm mr-1">
+                    <button class="btn btn-primary" v-on:click="surroundTextWith('bold')">
+                        <b>B</b>
                     </button>
-                    
-                </section>
-                <section id="editing-section" class="ml-2 mr-2 w-100">
-                    <textarea id="raw-post-markdown" class="form-control" :value="input" 
+                    <button class="btn btn-primary" v-on:click="surroundTextWith('italics')">
+                        <em>I</em>
+                    </button>
+                </div>
+                <button class="btn btn-primary btn-sm ml-auto" v-on:click="requestMicrophone()" data-target="#add-audio-modal" data-toggle="modal">
+                    <i class="fas fa-microphone"></i> {{addAudioButtonText}}
+                </button>
+
+            </section>
+            <section id="editing-section" class="ml-2 mr-2 w-100">
+                <textarea id="raw-post-markdown" class="form-control" :value="input" 
                         ref="markdownTextarea" v-bind:selection-start.prop="selectionStart" 
                         v-bind:selection-end.prop="selectionEnd" v-on:input="update" ></textarea>
-                </section>
-            </div>
-            <div class="col-md-6">
-                <h5>Preview</h5>
-                <div class="d-flex mb-2 flex-column p-2 post" 
-                     style="max-height: calc(100vh - 150px); overflow: auto; cursor: not-allowed">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="user-name">
-                            <a href="#">@ViewData["name"]</a>
-                        </span>
+            </section>
+        </div>
+        <div class="col-md-6">
+            <h5>Preview</h5>
+            <div class="d-flex mb-2 flex-column p-2 post"
+                 :style="postThemeCSSStyle">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="user-name">
+                        <a href="#">@ViewData["name"]</a>
+                    </span>
+                </div>
+                <div class="d-flex privacy-icon-container">
+                    <div v-if="privacy === '1'">
+                        <i class="fas fa-user" title="Only you"></i><span class="sr-only">People on Isolaatti</span>
                     </div>
-                    <div class="d-flex privacy-icon-container">
-                        <div v-if="privacy === '1'">
-                            <i class="fas fa-user" title="Only you"></i><span class="sr-only">People on Isolaatti</span>
-                        </div>
-                        <div v-if="privacy === '2'">
-                            <i class="fas fa-user-friends" title="People on Isolaatti" aria-hidden="true"></i><span class="sr-only">People on Isolaatti</span>
-                        </div>
-                        <div v-if="privacy === '3'">
-                            <i class="fas fa-globe" title="All the world" aria-hidden="true"></i><span class="sr-only">Everyone</span>
-                        </div>
+                    <div v-if="privacy === '2'">
+                        <i class="fas fa-user-friends" title="People on Isolaatti" aria-hidden="true"></i><span class="sr-only">People on Isolaatti</span>
                     </div>
-                    <div class="mt-2 post-content" v-html="compiledMarkdown"></div>
-                    <div class="d-flex justify-content-end">
-                        <button class="btn btn-dark btn-sm" type="button">
-                            <i class="fas fa-comments" aria-hidden="true"></i> 0
-                        </button>
-                        <button class="btn btn-dark btn-sm" type="button">
-                            <i class="fas fa-thumbs-up" aria-hidden="true"></i> 0
-                        </button>
+                    <div v-if="privacy === '3'">
+                        <i class="fas fa-globe" title="All the world" aria-hidden="true"></i><span class="sr-only">Everyone</span>
                     </div>
+                </div>
+                <div class="mt-2 post-content" v-html="compiledMarkdown"></div>
+                <div class="d-flex justify-content-end">
+                    <button class="btn btn-dark btn-sm" type="button">
+                        <i class="fas fa-comments" aria-hidden="true"></i> 0
+                    </button>
+                    <button class="btn btn-dark btn-sm" type="button">
+                        <i class="fas fa-thumbs-up" aria-hidden="true"></i> 0
+                    </button>
                 </div>
             </div>
         </div>
     </div>
-    <div class="modal fade" id="add-audio-modal">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="fas fa-microphone"></i> Add audio</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times</span>
-                    </button>
-                </div>
-                <div class="modal-body d-flex flex-column">
-                    <progress max="120" v-bind:value="audio.timeInSeconds"></progress>
-                    <span>{{audio.timeInSeconds}} seconds</span>
-                </div>
-                <div class="modal-footer d-flex flex-column">
-                    <div class="d-flex">
-                        @* This group shows to allow user to start recording *@
-                        <div class="btn-group" v-if="!audio.recording && !audio.recorded">
-                            <button class="btn btn-danger" v-on:click="startRecording()" v-bind:disabled="audio.recorder.mediaStream == null">
-                                Start recording
-                            </button>
-                        </div>
-
-                        @* This group is shown when an audio is being recorded*@
-                        <div class="btn btn-group" v-if="audio.recording">
-                            <button class="btn btn-primary" v-on:click="stopRecording()">
-                                Stop
-                            </button>
-                        </div>
-
-                        @* This group shows when an audio has been recorded *@
-                        <div class="btn-group" v-if="audio.recorded">
-                            <button class="btn btn-info" v-on:click="playRecord()">
-                                <i class="fas fa-play"></i>
-                            </button>
-                            <button class="btn btn-dark" v-on:click="resetRecording()">
-                                Discard
-                            </button>
-                            <button class="btn btn-primary" v-on:click="consolidate()">
-                                Continue
-                            </button>
+</div>
+<div class="modal fade" id="theme-modal">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-palette"></i> Theme
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Customize your post's theme
+                </p>
+                <div class="card mb-1">
+                    <div class="card-header">
+                        <h6 class="card-title">Font color</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <input type="color" class="form-control form-control-sm" 
+                                   v-model="theme.fontColor">
                         </div>
                     </div>
-                    
                 </div>
+                <div class="card mb-1">
+                    <div class="card-header">
+                        <h6 class="card-title">Background color</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <input type="color" class="form-control form-control-sm"
+                                   v-model="theme.backgroundColor">
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="card-title">Border</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label>Color</label>
+                            <input type="color" class="form-control form-control-sm" 
+                                   v-model="theme.border.color">
+                        </div>
+                        <div class="form-group">
+                            <label>Type</label>
+                            <select class="custom-select custom-select-sm"
+                                    v-model="theme.border.type">
+                                <option value="none">None</option>
+                                <option value="solid">Solid</option>
+                                <option value="dotted">Dotted</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Size</label>
+                            <input type="text" class="form-control form-control-sm"
+                                   v-model="theme.border.size"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-end">
+                <span>Changes are automatically saved</span>
             </div>
         </div>
     </div>
-    <div class="modal fade" id="help-modal">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Help</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+</div>
+<div class="modal fade" id="add-audio-modal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-microphone"></i> Add audio</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times</span>
+                </button>
+            </div>
+            <div class="modal-body d-flex flex-column">
+                <progress max="120" v-bind:value="audio.timeInSeconds" class="w-100"></progress>
+                <span>{{audio.timeInSeconds}} seconds</span>
+            </div>
+            <div class="modal-footer d-flex flex-column">
+                <div class="d-flex">
+                    @* This group shows to allow user to start recording *@
+                    <div class="btn-group" v-if="!audio.recording && !audio.recorded">
+                        <button class="btn btn-danger" v-on:click="startRecording()" v-bind:disabled="audio.recorder.mediaStream == null">
+                            Start recording
+                        </button>
+                    </div>
+
+                    @* This group is shown when an audio is being recorded*@
+                    <div class="btn btn-group" v-if="audio.recording">
+                        <button class="btn btn-primary" v-on:click="stopRecording()">
+                            Stop
+                        </button>
+                    </div>
+
+                    @* This group shows when an audio has been recorded *@
+                    <div class="btn-group" v-if="audio.recorded">
+                        <button class="btn btn-info" v-on:click="playRecord()">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <button class="btn btn-dark" v-on:click="resetRecording()">
+                            Discard
+                        </button>
+                        <button class="btn btn-primary" v-on:click="consolidate()">
+                            Continue
+                        </button>
+                    </div>
                 </div>
-                <div class="modal-body">
-                    <h5>Privacy</h5>
-                    <ul>
-                        <li>Private: only you can see your post.</li>
-                        <li>People on Isolaatti: every user that has an account can see your post.</li>
-                        <li>Everyone: your post can be seen even without an account.</li>
-                    </ul>
-                    <h5><i class="fab fa-markdown"></i> What is Markdown</h5>
-                    <p>Markdown is a special syntax that allows you to give format to plain text. It can be rendered to HTML, which is what is done internally.</p>
-                    <h5 class="mt-2">Basics</h5>
-                    <h6>Paragraphs</h6>
-                    <p>Separate paragrahs by adding two break lines. Note that if you don't add a second break line, the content will be read as the same paragraph.</p>
-                    <h6>Heading</h6>
-                    <p>There are six heading levels (H1 to H6). Those are defined as follows:</p>
-                    <code>
-                        <pre>
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="help-modal">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Help</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h5>Privacy</h5>
+                <ul>
+                    <li>Private: only you can see your post.</li>
+                    <li>People on Isolaatti: every user that has an account can see your post.</li>
+                    <li>Everyone: your post can be seen even without an account.</li>
+                </ul>
+                <h5><i class="fab fa-markdown"></i> What is Markdown</h5>
+                <p>Markdown is a special syntax that allows you to give format to plain text. It can be rendered to HTML, which is what is done internally.</p>
+                <h5 class="mt-2">Basics</h5>
+                <h6>Paragraphs</h6>
+                <p>Separate paragrahs by adding two break lines. Note that if you don't add a second break line, the content will be read as the same paragraph.</p>
+                <h6>Heading</h6>
+                <p>There are six heading levels (H1 to H6). Those are defined as follows:</p>
+                <code>
+                    <pre>
     # This is header 1
     ## This is header 2
     ### This is header 3
@@ -180,66 +255,81 @@
     ##### This is header 5
     ###### This is header 6
     </pre>
-                    </code>
-                    <p>Which will render like this</p>
-                    <h1>This is header 1</h1>
-                    <h2>This is header 2</h2>
-                    <h3>This is header 3</h3>
-                    <h4>This is header 4</h4>
-                    <h5>This is header 5</h5>
-                    <h6>This is header 6</h6>
-                    <hr/>
-                    
-                    <h6>Bold and italics</h6>
-                    <p>You can make text bold and/or italics. To do that use the following:</p>
-                    <code><pre>
+                </code>
+                <p>Which will render like this</p>
+                <h1>This is header 1</h1>
+                <h2>This is header 2</h2>
+                <h3>This is header 3</h3>
+                <h4>This is header 4</h4>
+                <h5>This is header 5</h5>
+                <h6>This is header 6</h6>
+                <hr/>
+
+                <h6>Bold and italics</h6>
+                <p>You can make text bold and/or italics. To do that use the following:</p>
+                <code>
+                    <pre>
     **This is bold** *This is italics* ***This is bold and italics***
     </pre>
-                    </code>
-                    <p>Which will render like this:</p>
-                    <p>
-                        <b>This is bold</b> <i>This is italics</i> <b><i>This is bold and italics</i></b>
-                    </p>
-                    <hr/>
-                    
-                    <h6>Links</h6>
-                    <p>There are three ways of defining a link.</p>
-                    <p>If you will use the URL just once you can make:</p>
-                    <code><pre>
+                </code>
+                <p>Which will render like this:</p>
+                <p>
+                    <b>This is bold</b> <i>This is italics</i>
+                    <b>
+                        <i>This is bold and italics</i>
+                    </b>
+                </p>
+                <hr/>
+
+                <h6>Links</h6>
+                <p>There are three ways of defining a link.</p>
+                <p>If you will use the URL just once you can make:</p>
+                <code>
+                    <pre>
     [This is a link](https://isolaatti.com/)
-    </pre></code>
-                    <p>That will render like this:</p>
-                    <p><a href="https://isolaatti.com/">This is a link</a></p>
-                    <hr/>
-                    
-                    <p>But, if you want to use the same URL more than once, you can declare the URL and then use it many times. Make it like so:</p>
-                    <code><pre>
+    </pre>
+                </code>
+                <p>That will render like this:</p>
+                <p>
+                    <a href="https://isolaatti.com/">This is a link</a>
+                </p>
+                <hr/>
+
+                <p>But, if you want to use the same URL more than once, you can declare the URL and then use it many times. Make it like so:</p>
+                <code>
+                    <pre>
     Well, here is my [website]. And yes, to show it again, here is my [website]
     
     [website]: https://erik-swdev.isolaatti.com/
-    </pre></code>
-                    <p>Which will render like this:</p>
-                    <p>
-                        Well, here is my <a href="https://erik-swdev.isolaatti.com/">website</a> . And yes, to show it again, here is my <a href="https://erik-swdev.isolaatti.com/">website</a>
-                    </p>
-                    <hr/>
-                    
-                    <p>If you just want to show the URL as the text of the link, make this:</p>
-                    <code><pre>
+    </pre>
+                </code>
+                <p>Which will render like this:</p>
+                <p>
+                    Well, here is my <a href="https://erik-swdev.isolaatti.com/">website</a> . And yes, to show it again, here is my <a href="https://erik-swdev.isolaatti.com/">website</a>
+                </p>
+                <hr/>
+
+                <p>If you just want to show the URL as the text of the link, make this:</p>
+                <code>
+                    <pre>
     &lt;https://erik-swdev.isolaatti.com&gt;
-    </pre></code>
-                    <p>Which will be rendered simply:</p>
-                    <p><a href="https://erik-swdev.isolaatti.com">https://erik-swdev.isolaatti.com</a></p>
-                    <hr/>
-                    
-                    <h5>Get more information</h5>
-                    <p>This text is not exhaustive, you can make much more using Markdown, such as tables, quotes, lists. 
-                        In order to get more information about how to do such and more things, we recommend you to read <a href="https://www.markdownguide.org/basic-syntax/" target="_blank">this guide</a>.
-                    </p>
-                </div>
+    </pre>
+                </code>
+                <p>Which will be rendered simply:</p>
+                <p>
+                    <a href="https://erik-swdev.isolaatti.com">https://erik-swdev.isolaatti.com</a>
+                </p>
+                <hr/>
+
+                <h5>Get more information</h5>
+                <p>
+                    This text is not exhaustive, you can make much more using Markdown, such as tables, quotes, lists.
+                    In order to get more information about how to do such and more things, we recommend you to read <a href="https://www.markdownguide.org/basic-syntax/" target="_blank">this guide</a>.
+                </p>
             </div>
         </div>
     </div>
+</div>
 </div>
 
 
