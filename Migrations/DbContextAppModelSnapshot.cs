@@ -40,6 +40,24 @@ namespace isolaatti_API.Migrations
                     b.ToTable("AdminAccounts");
                 });
 
+            modelBuilder.Entity("isolaatti_API.Models.AdminAccountSessionToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("AccountId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Token")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AdminAccountSessionTokens");
+                });
+
             modelBuilder.Entity("isolaatti_API.Models.Comment", b =>
                 {
                     b.Property<long>("Id")
@@ -47,10 +65,16 @@ namespace isolaatti_API.Migrations
                         .HasColumnType("bigint")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("AudioUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("Privacy")
                         .HasColumnType("int");
 
-                    b.Property<int>("SimpleTextPostId")
+                    b.Property<long>("SimpleTextPostId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("TargetUser")
                         .HasColumnType("int");
 
                     b.Property<string>("TextContent")
@@ -62,6 +86,30 @@ namespace isolaatti_API.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Comments");
+                });
+
+            modelBuilder.Entity("isolaatti_API.Models.CommentReport", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("Category")
+                        .HasColumnType("int");
+
+                    b.Property<long>("CommentId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("UserReason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Viewed")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CommentReports");
                 });
 
             modelBuilder.Entity("isolaatti_API.Models.CustomTrack", b =>
@@ -139,6 +187,30 @@ namespace isolaatti_API.Migrations
                     b.ToTable("Notifications");
                 });
 
+            modelBuilder.Entity("isolaatti_API.Models.PostReport", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("Category")
+                        .HasColumnType("int");
+
+                    b.Property<long>("PostId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("UserReason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Viewed")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PostReports");
+                });
+
             modelBuilder.Entity("isolaatti_API.Models.ProcessingServerList", b =>
                 {
                     b.Property<int>("Id")
@@ -178,12 +250,45 @@ namespace isolaatti_API.Migrations
                     b.ToTable("ProjectComments");
                 });
 
+            modelBuilder.Entity("isolaatti_API.Models.SessionToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("IpAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Token")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserAgent")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SessionTokens");
+                });
+
             modelBuilder.Entity("isolaatti_API.Models.SimpleTextPost", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("AudioAttachedUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("NumberOfComments")
+                        .HasColumnType("bigint");
 
                     b.Property<long>("NumberOfLikes")
                         .HasColumnType("bigint");
