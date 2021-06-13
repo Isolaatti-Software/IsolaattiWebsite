@@ -18,7 +18,7 @@ namespace isolaatti_API.Controllers
         
         [HttpPost]
         public IActionResult Index([FromForm] string sessionToken, [FromForm] long postId, 
-            [FromForm] string content)
+            [FromForm] string content, [FromForm] string audioUrl = null)
         {
             var accountsManager = new Accounts(_db);
             var user = accountsManager.ValidateToken(sessionToken);
@@ -35,7 +35,8 @@ namespace isolaatti_API.Controllers
                 SimpleTextPostId = post.Id,
                 TextContent = content,
                 WhoWrote = user.Id,
-                TargetUser = post.UserId
+                TargetUser = post.UserId,
+                AudioUrl = audioUrl
             };
             _db.Comments.Add(newComment);
             _db.SaveChanges();
