@@ -9,9 +9,16 @@
 <script>document.querySelector("#index-link").classList.add("custom-active-nav-link")</script>
 <div class="col-lg-3 col-md-2"></div>
 <div class="col-lg-6 col-md-8">
-    
-    <section class="d-flex flex-column p-4 pt-1 mt-2 mb-3" id="posting-area">
-        <h5 class="mb-2">Post</h5>
+    <section class="d-flex flex-column pt-1 mt-2 mb-3" id="posting-area">
+        <div class="d-flex">
+            <h5 class="ml-2 mt-2"><i class="fas fa-pencil-alt"></i> Quick Text Post</h5>
+            <div class="d-flex ml-auto mb-2 flex-shrink-0">
+                <a href="#help-modal" class="btn btn-secondary" data-toggle="modal">
+                    <i class="fas fa-question"></i>
+                </a>
+            </div>
+        </div>
+        <p class="mt-2">Use Post Editor to upload audios. Click on help button to see all it can do.</p>
         <div class="d-flex">
             <select class="custom-select mb-2" id="privacy-selector">
                 <option value="1">Private</option>
@@ -21,16 +28,11 @@
             <div class="d-flex ml-1 mb-2 flex-shrink-0">
                 <a asp-page="PostEditor" class="btn btn-secondary">Post Editor</a>
             </div>
-            <div class="d-flex ml-1 mb-2 flex-shrink-0">
-                <a href="#help-modal" class="btn btn-secondary" data-toggle="modal">
-                    <i class="fas fa-question"></i>
-                </a>
-            </div>
         </div>
         <textarea class="form-control w-100" id="simple-post-textarea" placeholder="Say something to your followers. Markdown is compatible" rows="1"></textarea>
         <button type="button" class="btn btn-primary mt-1" id="post-button">Post</button>
     </section>
-    <h5>New activity</h5>
+    <h5 class="ml-2 mt-2"><i class="far fa-newspaper"></i> New activity</h5>
     <section id="posts-deposit" class="d-flex flex-column pt-1 mt-2 mb-3 align-items-center">
         <div v-for="post in posts" class="d-flex mb-2 flex-column p-2 post">
             <div class="d-flex justify-content-between align-items-center">
@@ -83,7 +85,7 @@
             </div>
         </div>
         <div v-if="noMoreContent" class="d-flex flex-column align-items-center mt-2">
-            <p>No more content so far</p>
+            <p>You've seen all new activity for now. Refresh in a while...</p>
             <button class="btn btn-primary" v-on:click="refresh">
                 <i class="fas fa-redo"></i>
             </button>
@@ -107,16 +109,19 @@
                         <li>People on Isolaatti: every user that has an account can see your post.</li>
                         <li>Everyone: your post can be seen even without an account.</li>
                     </ul>
+                    <hr/>
                     <h5>Audio posts</h5>
                     <p>
                         You can record audio and attach it to your posts. The limit is 2 minutes. To record an audio,
                         use the <strong>Post Editor</strong>
                     </p>
+                    <hr/>
                     <h5>Post editor</h5>
                     <p>
                         The Post Editor is the best way to write long posts (and as said above, needed to record audios).
                         There you will find some markdown helpers and a live preview of your post.
                     </p>
+                    <hr/>
                     <h5><i class="fab fa-markdown"></i> What is Markdown</h5>
                     <p>Markdown is a special syntax that allows you to give format to plain text. It can be rendered to HTML, which is what is done internally.</p>
                     <h5 class="mt-2">Basics</h5>

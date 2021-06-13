@@ -7,10 +7,10 @@
 }
 <div id="vue-container" class="container-fluid">
     <header class="col-12">
-        <div class="d-flex justify-content-between align-items-center m-2">
-            <h5>New post</h5>
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="m-3"><i class="fas fa-edit"></i> Post Editor</h5>
             <button class="btn btn-primary" v-on:click="post" v-bind:disabled="postButtonDisabled">
-                Post
+                <i class="fas fa-upload"></i> Post
             </button>
         </div>
     </header>

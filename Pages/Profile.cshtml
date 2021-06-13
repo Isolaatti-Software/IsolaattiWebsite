@@ -48,62 +48,61 @@
     </header>
 </div>
 <div class="col-lg-7 col-md-9">
-    
-    <h5>Posts</h5>
-
-        
-    <section id="vue-container" class="d-flex flex-column pt-1 mt-2 mb-3 align-items-center">
-        @if ((int)ViewData["numberOfPosts"] == 0)
-        {
-            <h5 class="m-2 text-center">@ViewData["profile_name"] does not have any public post</h5>
-        }
-        <div v-if="loading" class="d-flex justify-content-center mt-2">
-            <div class="spinner-border" role="status">
-                <span class="sr-only">Loading more content...</span>
+    <section class="mt-3 d-flex flex-column">
+        <h5 class="m-3"><i class="far fa-newspaper"></i> Posts</h5>
+        <section id="vue-container" class="d-flex flex-column pt-1 mt-2 mb-3 align-items-center">
+            @if ((int)ViewData["numberOfPosts"] == 0)
+            {
+                <h5 class="m-2 text-center">@ViewData["profile_name"] does not have any public post</h5>
+            }
+            <div v-if="loading" class="d-flex justify-content-center mt-2">
+                <div class="spinner-border" role="status">
+                    <span class="sr-only">Loading more content...</span>
+                </div>
             </div>
-        </div>
-        <div v-for="post in posts" class="d-flex mb-2 flex-column p-2 post">
-            <div class="d-flex justify-content-between align-items-center">
-                <span class="user-name"><b>@ViewData["profile_name"]</b></span>
-                <div class="dropdown dropleft">
-                    <button class="btn btn-primary btn-sm" data-toggle="dropdown" aria-haspopup="true">
-                        <i class="fas fa-ellipsis-h"></i>
-                    </button>
-                    <div class="dropdown-menu">
-                        <a href="#" class="dropdown-item" v-if="post.userId===userId">Edit</a>
-                        <a href="#" class="dropdown-item">Share</a>
-                        <a href="#" class="dropdown-item" v-if="post.userId===userId">Delete</a>
-                        <a :href=`/Reports/ReportPostOrComment?postId=${post.id}` class="dropdown-item" target="_blank">Report</a>
+            <div v-for="post in posts" class="d-flex mb-2 flex-column p-2 post">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="user-name"><b>@ViewData["profile_name"]</b></span>
+                    <div class="dropdown dropleft">
+                        <button class="btn btn-primary btn-sm" data-toggle="dropdown" aria-haspopup="true">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a href="#" class="dropdown-item" v-if="post.userId===userId">Edit</a>
+                            <a href="#" class="dropdown-item">Share</a>
+                            <a href="#" class="dropdown-item" v-if="post.userId===userId">Delete</a>
+                            <a :href=`/Reports/ReportPostOrComment?postId=${post.id}` class="dropdown-item" target="_blank">Report</a>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="d-flex privacy-icon-container">
-                <div v-if="post.privacy === 2">
-                    <i class="fas fa-user-friends" title="People on Isolaatti" aria-hidden="true"></i><span class="sr-only">People on Isolaatti</span>
+                <div class="d-flex privacy-icon-container">
+                    <div v-if="post.privacy === 2">
+                        <i class="fas fa-user-friends" title="People on Isolaatti" aria-hidden="true"></i><span class="sr-only">People on Isolaatti</span>
+                    </div>
+                    <div v-if="post.privacy === 3">
+                        <i class="fas fa-globe" title="All the world" aria-hidden="true"></i><span class="sr-only">Everyone</span>
+                    </div>
                 </div>
-                <div v-if="post.privacy === 3">
-                    <i class="fas fa-globe" title="All the world" aria-hidden="true"></i><span class="sr-only">Everyone</span>
+                <div class="d-flex mt-1" v-if="post.audioAttachedUrl!=null">
+                    <button type="button" class="btn btn-primary btn-sm" v-on:click="playAudio(post.audioAttachedUrl)">
+                        <i class="fas fa-play" v-if="post.audioAttachedUrl !== audioUrl || paused"></i>
+                        <i class="fas fa-pause" v-else></i>
+                    </button>
+                </div>
+                <div class="mt-2 post-content" v-html="compileMarkdown(post.textContent)"></div>
+                <div class="d-flex justify-content-end">
+                    <a class="btn btn-dark btn-sm" :href="`/Threads/${post.id}`">
+                        <i class="fas fa-comments" aria-hidden="true"></i> {{post.numberOfComments}}
+                    </a>
+                    <button v-if="!post.liked" v-on:click="likePost(post)" class="btn btn-dark btn-sm" type="button">
+                        <i class="fas fa-thumbs-up" aria-hidden="true"></i> {{post.numberOfLikes}}
+                    </button>
+                    <button v-if="post.liked" v-on:click="unLikePost(post)" class="btn btn-primary btn-sm" type="button">
+                        <i class="fas fa-thumbs-up" aria-hidden="true"></i> {{post.numberOfLikes}}
+                    </button>
                 </div>
             </div>
-            <div class="d-flex mt-1" v-if="post.audioAttachedUrl!=null">
-                <button type="button" class="btn btn-primary btn-sm" v-on:click="playAudio(post.audioAttachedUrl)">
-                    <i class="fas fa-play" v-if="post.audioAttachedUrl !== audioUrl || paused"></i>
-                    <i class="fas fa-pause" v-else></i>
-                </button>
-            </div>
-            <div class="mt-2 post-content" v-html="compileMarkdown(post.textContent)"></div>
-            <div class="d-flex justify-content-end">
-                <a class="btn btn-dark btn-sm" :href="`/Threads/${post.id}`">
-                    <i class="fas fa-comments" aria-hidden="true"></i> {{post.numberOfComments}}
-                </a>
-                <button v-if="!post.liked" v-on:click="likePost(post)" class="btn btn-dark btn-sm" type="button">
-                    <i class="fas fa-thumbs-up" aria-hidden="true"></i> {{post.numberOfLikes}}
-                </button>
-                <button v-if="post.liked" v-on:click="unLikePost(post)" class="btn btn-primary btn-sm" type="button">
-                    <i class="fas fa-thumbs-up" aria-hidden="true"></i> {{post.numberOfLikes}}
-                </button>
-            </div>
-        </div>
+        </section>
     </section>
 
 </div>
