@@ -185,7 +185,8 @@ function getPosts(onComplete, onError) {
                 audioPlayer: new Audio(),
                 audioUrl: "",
                 playing: false,
-                paused: false
+                paused: false,
+                loading: true
             },
             methods: {
                 likePost: function(post) {
@@ -302,6 +303,7 @@ function getPosts(onComplete, onError) {
         
         getPosts((response) => {
             vueContainer.posts = response;
+            vueContainer.loading = false;
         }, (error) => {
             alert("Error getting your posts");
         });

@@ -101,7 +101,8 @@ function getPosts(accountId, onComplete, onError) {
             audioPlayer: new Audio(),
             audioUrl: "",
             playing: false,
-            paused: false
+            paused: false,
+            loading: true
         },
         methods: {
             likePost: function(post) {
@@ -175,7 +176,8 @@ function getPosts(accountId, onComplete, onError) {
     });
     
     getPosts(accountData.userId, (responseObject) => {
-        vueContainer.posts = responseObject
+        vueContainer.posts = responseObject;
+        vueContainer.loading = false;
     }, () => {
         alert("Could not get posts");
     });
