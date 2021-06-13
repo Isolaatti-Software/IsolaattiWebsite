@@ -6,8 +6,21 @@
     ViewData["Title"] = "Visor de contenido";
 }
 <div class="m-3">
-    <p>Tipo: @ViewData["type"]</p>
-    <pre style="color: green">
+    <h1>Visor de contenido</h1>
+    <section class="mt-2">
+        <p>Tipo: @ViewData["type"]</p>
+    </section>
+    @if (ViewData["audioURL"] != null)
+    {
+        <section class="mt-2">
+            <p>Audio adjunto</p>
+            <audio controls src="@ViewData["audioURL"]" preload="auto"></audio>
+        </section>
+    }
+    <section class="mt-2">
+        <p>Texto en crudo</p>
+        <pre style="color: green; background: black; padding: 10px; width: 100%">
 @ViewData["content"]
 </pre>
+    </section>
 </div>
