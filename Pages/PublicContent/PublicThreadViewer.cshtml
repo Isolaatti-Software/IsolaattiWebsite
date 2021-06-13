@@ -35,6 +35,12 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <span class="user-name">{{comment.whoWroteName}}</span>
                     </div>
+                    <div class="d-flex mt-1" v-if="comment.audioUrl !== null">
+                        <button type="button" class="btn btn-primary btn-sm" v-on:click="playAudio(comment.audioUrl)">
+                            <i class="fas fa-play" v-if="comment.audioUrl !== audioUrl || paused"></i>
+                            <i class="fas fa-pause" v-else></i>
+                        </button>
+                    </div>
                     <div class="mt-2 post-content" v-html="compileMarkdown(comment.textContent)"></div>
                 </div>
             </div>
