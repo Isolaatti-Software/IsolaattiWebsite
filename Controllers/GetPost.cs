@@ -57,7 +57,8 @@ namespace isolaatti_API.Controllers
                     SimpleTextPostId = com.SimpleTextPostId,
                     TextContent = com.TextContent,
                     WhoWrote = com.WhoWrote,
-                    WhoWroteName = _db.Users.Find(com.WhoWrote).Name
+                    WhoWroteName = _db.Users.Find(com.WhoWrote).Name,
+                    AudioUrl = com.AudioUrl
                 });
             return Ok(comments);
         }
