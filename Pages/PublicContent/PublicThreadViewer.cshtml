@@ -16,7 +16,7 @@
     <div class="col-12">
         <div class="alert alert-info">Hey, you can read this thread because it's public. If you want to interact, please <a asp-page="/MakeAccount">make an account</a>.</div>
         <div class="d-flex flex-column" id="vue-container">
-            <div class="d-flex mb-2 flex-column p-2 post">
+            <div class="d-flex mb-2 flex-column p-2 post" :style="getPostStyle(thread.post.themeJson)">
                 <div class="d-flex justify-content-between align-items-center">
                     <span class="user-name">
                         {{thread.post.userName}}

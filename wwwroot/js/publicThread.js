@@ -38,6 +38,14 @@
                                 }
                             }
                             this.playing = true;
+                        },
+                        getPostStyle: function(themeDefinitionJson) {
+                            if(themeDefinitionJson === null)
+                                return "";
+                            const theme = JSON.parse(themeDefinitionJson);
+                            return `color: ${theme.fontColor};
+                        background-color: ${theme.backgroundColor};
+                        border: ${theme.border.size} ${theme.border.type} ${theme.border.color}`;
                         }
                     },
                     mounted: function() {
