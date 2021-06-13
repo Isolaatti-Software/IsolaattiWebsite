@@ -9,88 +9,92 @@
 <script>document.querySelector("#index-link").classList.add("custom-active-nav-link")</script>
 <div class="col-lg-3 col-md-2"></div>
 <div class="col-lg-6 col-md-8">
-    <section class="d-flex flex-column pt-1 mt-2 mb-3" id="posting-area">
-        <div class="d-flex">
-            <h5 class="ml-2 mt-2"><i class="fas fa-pencil-alt"></i> Quick Text Post</h5>
-            <div class="d-flex ml-auto mb-2 flex-shrink-0">
-                <a href="#help-modal" class="btn btn-secondary" data-toggle="modal">
-                    <i class="fas fa-question"></i>
-                </a>
-            </div>
-        </div>
-        <p class="mt-2">Use Post Editor to upload audios. Click on help button to see all it can do.</p>
-        <div class="d-flex">
-            <select class="custom-select mb-2" id="privacy-selector">
-                <option value="1">Private</option>
-                <option value="2">People on Isolaatti</option>
-                <option value="3">Everyone</option>
-            </select>
-            <div class="d-flex ml-1 mb-2 flex-shrink-0">
-                <a asp-page="PostEditor" class="btn btn-secondary">Post Editor</a>
-            </div>
-        </div>
-        <textarea class="form-control w-100" id="simple-post-textarea" placeholder="Say something to your followers. Markdown is compatible" rows="1"></textarea>
-        <button type="button" class="btn btn-primary mt-1" id="post-button">Post</button>
-    </section>
-    <h5 class="ml-2 mt-2"><i class="far fa-newspaper"></i> New activity</h5>
-    <section id="posts-deposit" class="d-flex flex-column pt-1 mt-2 mb-3 align-items-center">
-        <div v-for="post in posts" class="d-flex mb-2 flex-column p-2 post">
-            <div class="d-flex justify-content-between align-items-center">
-                <span class="user-name"><a :href="'/Profile?id=' + post.userId">{{post.userName}}</a> </span>
-                <div class="dropdown dropleft">
-                    <button class="btn btn-primary btn-sm" data-toggle="dropdown" aria-haspopup="true">
-                        <i class="fas fa-ellipsis-h"></i>
+    @* <section class="d-flex flex-column pt-1 mt-2 mb-3" id="posting-area"> *@
+    @*     <div class="d-flex"> *@
+    @*         <h5 class="ml-2 mt-2"><i class="fas fa-pencil-alt"></i> Quick Text Post</h5> *@
+    @*         <div class="d-flex ml-auto mb-2 flex-shrink-0"> *@
+    @*             <a href="#help-modal" class="btn btn-secondary" data-toggle="modal"> *@
+    @*                 <i class="fas fa-question"></i> *@
+    @*             </a> *@
+    @*         </div> *@
+    @*     </div> *@
+    @*     <p class="mt-2">Use Post Editor to upload audios. Click on help button to see all it can do.</p> *@
+    @*     <div class="d-flex"> *@
+    @*         <select class="custom-select mb-2" id="privacy-selector"> *@
+    @*             <option value="1">Private</option> *@
+    @*             <option value="2">People on Isolaatti</option> *@
+    @*             <option value="3">Everyone</option> *@
+    @*         </select> *@
+    @*         <div class="d-flex ml-1 mb-2 flex-shrink-0"> *@
+    @*             <a asp-page="PostEditor" class="btn btn-secondary">Post Editor</a> *@
+    @*         </div> *@
+    @*     </div> *@
+    @*     <textarea class="form-control w-100" id="simple-post-textarea" placeholder="Say something to your followers. Markdown is compatible" rows="1"></textarea> *@
+    @*     <button type="button" class="btn btn-primary mt-1" id="post-button">Post</button> *@
+    @* </section> *@
+    <main class="mt-4">
+        <h5 class="ml-2 mt-2"><i class="far fa-newspaper"></i> New activity</h5>
+        <section id="posts-deposit" class="d-flex flex-column pt-1 mt-2 mb-3 align-items-center">
+            <div v-for="post in posts" class="d-flex mb-2 flex-column p-2 post">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="user-name"><a :href="'/Profile?id=' + post.userId">{{post.userName}}</a> </span>
+                    <div class="dropdown dropleft">
+                        <button class="btn btn-primary btn-sm" data-toggle="dropdown" aria-haspopup="true">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a href="#" class="dropdown-item" v-if="post.userId===userId">Edit</a>
+                            <a href="#" class="dropdown-item">Share</a>
+                            <a href="#" class="dropdown-item" v-if="post.userId===userId">Delete</a>
+                            <a :href=`/Reports/ReportPostOrComment?postId=${post.id}` class="dropdown-item" target="_blank">Report</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex privacy-icon-container">
+                    <div v-if="post.privacy === 1">
+                        <i class="fas fa-user" title="Private" aria-hidden="true"></i><span class="sr-only">Only you</span>
+                    </div>
+                    <div v-if="post.privacy === 2">
+                        <i class="fas fa-user-friends" title="People on Isolaatti" aria-hidden="true"></i><span class="sr-only">People on Isolaatti</span>
+                    </div>
+                    <div v-if="post.privacy === 3">
+                        <i class="fas fa-globe" title="All the world" aria-hidden="true"></i><span class="sr-only">Everyone</span>
+                    </div>
+                </div>
+                <div class="d-flex mt-1" v-if="post.audioAttachedUrl!=null">
+                    <button type="button" class="btn btn-primary btn-sm" v-on:click="playAudio(post.audioAttachedUrl)">
+                        <i class="fas fa-play" v-if="post.audioAttachedUrl !== audioUrl || paused"></i>
+                        <i class="fas fa-pause" v-else></i>
                     </button>
-                    <div class="dropdown-menu">
-                        <a href="#" class="dropdown-item" v-if="post.userId===userId">Edit</a>
-                        <a href="#" class="dropdown-item">Share</a>
-                        <a href="#" class="dropdown-item" v-if="post.userId===userId">Delete</a>
-                        <a :href=`/Reports/ReportPostOrComment?postId=${post.id}` class="dropdown-item" target="_blank">Report</a>
+                </div>
+                <div class="mt-2 post-content" v-html="compileMarkdown(post.textContent)"></div>
+                <div class="d-flex justify-content-end">
+                    <div class="btn-group btn-group-sm">
+                        <a class="btn btn-dark btn-sm" :href="`/Threads/${post.id}`">
+                            <i class="fas fa-comments" aria-hidden="true"></i> {{post.numberOfComments}}
+                        </a>
+                        <button v-if="!post.liked" v-on:click="likePost(post)" class="btn btn-dark btn-sm" type="button">
+                            <i class="fas fa-thumbs-up" aria-hidden="true"></i> {{post.numberOfLikes}}
+                        </button>
+                        <button v-if="post.liked" v-on:click="unLikePost(post)" class="btn btn-primary btn-sm" type="button">
+                            <i class="fas fa-thumbs-up" aria-hidden="true"></i> {{post.numberOfLikes}}
+                        </button>
                     </div>
                 </div>
             </div>
-            <div class="d-flex privacy-icon-container">
-                <div v-if="post.privacy === 1">
-                    <i class="fas fa-user" title="Private" aria-hidden="true"></i><span class="sr-only">Only you</span>
-                </div>
-                <div v-if="post.privacy === 2">
-                    <i class="fas fa-user-friends" title="People on Isolaatti" aria-hidden="true"></i><span class="sr-only">People on Isolaatti</span>
-                </div>
-                <div v-if="post.privacy === 3">
-                    <i class="fas fa-globe" title="All the world" aria-hidden="true"></i><span class="sr-only">Everyone</span>
+            <div v-if="loading" class="d-flex justify-content-center mt-2">
+                <div class="spinner-border" role="status">
+                    <span class="sr-only">Loading more content...</span>
                 </div>
             </div>
-            <div class="d-flex mt-1" v-if="post.audioAttachedUrl!=null">
-                <button type="button" class="btn btn-primary btn-sm" v-on:click="playAudio(post.audioAttachedUrl)">
-                    <i class="fas fa-play" v-if="post.audioAttachedUrl !== audioUrl || paused"></i>
-                    <i class="fas fa-pause" v-else></i>
+            <div v-if="noMoreContent" class="d-flex flex-column align-items-center mt-2">
+                <p>You've seen all new activity for now. Refresh in a while...</p>
+                <button class="btn btn-primary" v-on:click="refresh">
+                    <i class="fas fa-redo"></i>
                 </button>
             </div>
-            <div class="mt-2 post-content" v-html="compileMarkdown(post.textContent)"></div>
-            <div class="d-flex justify-content-end">
-                <a class="btn btn-dark btn-sm" :href="`/Threads/${post.id}`">
-                    <i class="fas fa-comments" aria-hidden="true"></i> {{post.numberOfComments}}
-                </a>
-                <button v-if="!post.liked" v-on:click="likePost(post)" class="btn btn-dark btn-sm" type="button">
-                    <i class="fas fa-thumbs-up" aria-hidden="true"></i> {{post.numberOfLikes}}
-                </button>
-                <button v-if="post.liked" v-on:click="unLikePost(post)" class="btn btn-primary btn-sm" type="button">
-                    <i class="fas fa-thumbs-up" aria-hidden="true"></i> {{post.numberOfLikes}}
-                </button>
-            </div>
-        </div>
-        <div v-if="loading" class="d-flex justify-content-center mt-2">
-            <div class="spinner-border" role="status">
-              <span class="sr-only">Loading more content...</span>
-            </div>
-        </div>
-        <div v-if="noMoreContent" class="d-flex flex-column align-items-center mt-2">
-            <p>You've seen all new activity for now. Refresh in a while...</p>
-            <button class="btn btn-primary" v-on:click="refresh">
-                <i class="fas fa-redo"></i>
-            </button>
-        </div>
-    </section>
+        </section>
+    </main>
 </div>
 <div class="col-lg-3 col-md-2"></div>
 <div class="modal fade" id="help-modal">

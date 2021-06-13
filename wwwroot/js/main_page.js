@@ -4,24 +4,24 @@ let postTextArea = document.querySelector("#simple-post-textarea");
 
 let postsInDOM = [];
 
-postButton.addEventListener("click", () => {
-    if(postTextArea.value === "") {
-        alert("Come on, you can't upload an empty post");
-        return;
-    }
-    postButton.disabled = true;
-    postButton.innerHTML =
-        "Posting " + '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
-    makePost(privacyModeSelector.value, postTextArea.value, (info) => {
-        console.log("post made");
-        postButton.innerHTML = "Post";
-        postTextArea.value = "";
-        postButton.disabled = false;
-        putPosts();
-    }, (error) => {
-        console.error(error);
-    });
-});
+// postButton.addEventListener("click", () => {
+//     if(postTextArea.value === "") {
+//         alert("Come on, you can't upload an empty post");
+//         return;
+//     }
+//     postButton.disabled = true;
+//     postButton.innerHTML =
+//         "Posting " + '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+//     makePost(privacyModeSelector.value, postTextArea.value, (info) => {
+//         console.log("post made");
+//         postButton.innerHTML = "Post";
+//         postTextArea.value = "";
+//         postButton.disabled = false;
+//         putPosts();
+//     }, (error) => {
+//         console.error(error);
+//     });
+// });
 
 function onScroll() {
     console.log(document.body.scrollHeight * 0.50,window.scrollY);
@@ -52,50 +52,50 @@ function putPosts() {
     });
 }
 
-function makePost(privacy, content, onComplete, onError) {
-    if(content === "") {
-        alert("Come on, you can't upload an empty post");
-        return;
-    }
-    let form = new FormData();
-    form.append("sessionToken", sessionToken);
-    form.append("privacy", privacy);
-    form.append("content", content);
-
-    let request = new XMLHttpRequest();
-    request.open("POST", "/api/MakePost");
-    request.onreadystatechange = () => {
-        if (request.readyState === XMLHttpRequest.DONE) {
-            switch (request.status) {
-                case 200:
-                    onComplete({
-                        statusCode: request.status,
-                        serverResponse: JSON.parse(request.responseText)
-                    });
-                    break;
-                case 404:
-                    onError({
-                        statusCode: 404,
-                        serverResponse: request.responseText
-                    });
-                    break;
-                case 401 :
-                    onError({
-                        statusCode: 401,
-                        serverResponse: request.responseText
-                    });
-                    break;
-                case 500 :
-                    onError({
-                        statusCode: 500,
-                        serverResponse: "Unknown error, please report to developer"
-                    });
-                    break;
-            }
-        }
-    };
-    request.send(form);
-}
+// function makePost(privacy, content, onComplete, onError) {
+//     if(content === "") {
+//         alert("Come on, you can't upload an empty post");
+//         return;
+//     }
+//     let form = new FormData();
+//     form.append("sessionToken", sessionToken);
+//     form.append("privacy", privacy);
+//     form.append("content", content);
+//
+//     let request = new XMLHttpRequest();
+//     request.open("POST", "/api/MakePost");
+//     request.onreadystatechange = () => {
+//         if (request.readyState === XMLHttpRequest.DONE) {
+//             switch (request.status) {
+//                 case 200:
+//                     onComplete({
+//                         statusCode: request.status,
+//                         serverResponse: JSON.parse(request.responseText)
+//                     });
+//                     break;
+//                 case 404:
+//                     onError({
+//                         statusCode: 404,
+//                         serverResponse: request.responseText
+//                     });
+//                     break;
+//                 case 401 :
+//                     onError({
+//                         statusCode: 401,
+//                         serverResponse: request.responseText
+//                     });
+//                     break;
+//                 case 500 :
+//                     onError({
+//                         statusCode: 500,
+//                         serverResponse: "Unknown error, please report to developer"
+//                     });
+//                     break;
+//             }
+//         }
+//     };
+//     request.send(form);
+// }
 
 function getFeed(postsInDOM, onComplete, onError) {
     let form = new FormData();
