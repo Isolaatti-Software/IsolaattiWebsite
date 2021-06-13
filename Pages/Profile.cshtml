@@ -14,28 +14,42 @@
                 <i class="fas fa-user"></i>
             </div>
         </div>
-        <p class="text-center m-0 overflow-auto">@ViewData["profile_name"]</p>
-        <div class="d-flex justify-content-center flex-wrap">
-            <span class="text-white text-center mb-2 p-2 mr-1 badge badge-pill badge-info">
-                Followers: <b>@ViewData["numberOfFollowers"]</b>
-            </span>
-            <span class="text-white text-center mb-2 p-2 mr-1 badge badge-pill badge-info">
-                Following: <b>@ViewData["numberOfFollowing"]</b>
-            </span>
+        <p class="text-center m-0 overflow-auto">
+            @ViewData["profile_name"]
+        </p>
+        <div class="d-flex mt-2 flex-column">
+            <div class="btn-group btn-group-sm">
+                <a class="btn btn-link"
+                   data-toggle="modal" href="#modal-followers">
+                    Followers: <b>@ViewData["numberOfFollowers"]</b>
+                </a>
+                <a class="btn btn-link"
+                   data-toggle="modal" href="#modal-following">
+                    Following: <b>@ViewData["numberOfFollowing"]</b>
+                </a>
+            </div>
             @if ((bool) ViewData["thisUserIsFollowingMe"])
             {
-                <span class="text-white text-center mb-2 p-2 mr-1 badge badge-pill badge-success">
+                <span class="text-center mb-2 p-2 mr-1 badge badge-pill badge-success">
                     <i class="fas fa-user-friends"></i> Follows you
                 </span>
             }
-            <span class="text-white text-center mb-2 p-2 mr-1 badge badge-pill badge-info">
-                Likes: @ViewData["numberOfLikes"]
-            </span>
-            <span class="text-white text-center mb-2 p-2 mr-1 badge badge-pill badge-info">
-                Posts: @ViewData["numberOfPosts"]
-            </span>
+            <div class="card">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Likes 
+                        <span class="badge badge-primary badge-pill">@ViewData["numberOfLikes"]</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Posts
+                        <div class="badge badge-primary badge-pill">
+                            @ViewData["numberOfPosts"]
+                        </div>
+                    </li>
+                </ul>
+            </div>
         </div>
-        <div class="d-flex">
+        <div class="d-flex mt-1">
             @if ((bool) ViewData["followingThisUser"])
             {
                 <button class="btn btn-primary btn-sm mb-2 w-100" id="followButton">Unfollow <i class="fas fa-times"></i></button>
