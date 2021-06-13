@@ -101,7 +101,7 @@ namespace isolaatti_API.Controllers
             // var usersLikes = Db.Likes.Where(like => like.UserId == user.Id).ToList();
 
             var posts = Db.SimpleTextPosts
-                .Where(post => post.UserId == account.Id)
+                .Where(post => post.UserId == account.Id && !post.Privacy.Equals(1))
                 .OrderByDescending(post => post.Id)
                 .ToList();
                 
