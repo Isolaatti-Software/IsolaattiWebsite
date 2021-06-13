@@ -31,5 +31,7 @@ namespace isolaatti_API.Models
         public DbSet<Like> Likes { get; set; }
         public DbSet<SessionToken> SessionTokens { get; set; }
         public DbSet<AdminAccountSessionToken> AdminAccountSessionTokens { get; set; }
+        public DbSet<PostReport> PostReports { get; set; }
+        public DbSet<CommentReport> CommentReports { get; set; }
     }
 }
