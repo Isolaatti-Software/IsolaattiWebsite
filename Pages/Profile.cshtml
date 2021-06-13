@@ -74,7 +74,8 @@
                     <span class="sr-only">Loading more content...</span>
                 </div>
             </div>
-            <div v-for="post in posts" class="d-flex mb-2 flex-column p-2 post">
+            <div v-for="post in posts" class="d-flex mb-2 flex-column p-2 post"
+                 :style="getPostStyle(post.themeJson)">
                 <div class="d-flex justify-content-between align-items-center">
                     <span class="user-name"><b>@ViewData["profile_name"]</b></span>
                     <div class="dropdown dropleft">
