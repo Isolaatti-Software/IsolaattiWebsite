@@ -13,6 +13,25 @@
 
 @section Scripts
 {
+    <script src="https://www.gstatic.com/firebasejs/7.23.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.23.0/firebase-storage.js"></script>
+    <script>
+    var firebaseConfig = {
+        apiKey: "AIzaSyDZHVXLR_1imwVb2mCArnYpdbNx6XUPZBQ",
+        authDomain: "isolaatti-b6641.firebaseapp.com",
+        databaseURL: "https://isolaatti-b6641.firebaseio.com",
+        projectId: "isolaatti-b6641",
+        storageBucket: "isolaatti-b6641.appspot.com",
+        messagingSenderId: "556033448926",
+        appId: "1:556033448926:web:35759afc37d6a1585b1b4f",
+        measurementId: "G-JQV4WX75RK"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    var storage = firebase.storage();
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>const threadToReadId = @Model.ThisPost.Id;</script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="~/js/threads.js"></script>
@@ -26,6 +45,17 @@
                 <span class="user-name">
                     <a :href="`/Profile?id=${post.userId}`">{{post.userName}}</a>
                 </span>
+                <div class="dropdown dropleft">
+                    <button class="btn btn-primary btn-sm" data-toggle="dropdown" aria-haspopup="true">
+                        <i class="fas fa-ellipsis-h"></i>
+                    </button>
+                    <div class="dropdown-menu">
+                        <a href="#" class="dropdown-item" v-if="post.userId===userId">Edit</a>
+                        <a href="#" class="dropdown-item">Share</a>
+                        <a href="#" class="dropdown-item" v-if="post.userId===userId">Delete</a>
+                        <a :href=`/Reports/ReportPostOrComment?postId=${post.id}` class="dropdown-item" target="_blank">Report</a>
+                    </div>
+                </div>
             </div>
             <div class="d-flex privacy-icon-container">
                 <div v-if="post.privacy === 2">
@@ -57,6 +87,22 @@
                     <span class="user-name">
                         <a :href="`/Profile?id=${comment.whoWrote}`">{{comment.whoWroteName}}</a>
                     </span>
+                    <div class="dropdown dropleft">
+                        <button class="btn btn-primary btn-sm" data-toggle="dropdown" aria-haspopup="true">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a href="#" class="dropdown-item" v-if="comment.whoWrote===userId">Edit</a>
+                            <a href="#" class="dropdown-item" v-if="comment.whoWrote===userId">Delete</a>
+                            <a :href=`/Reports/ReportPostOrComment?commentId=${comment.id}` class="dropdown-item" target="_blank">Report</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex mt-1" v-if="comment.audioUrl !== null">
+                    <button type="button" class="btn btn-primary btn-sm" v-on:click="playAudio(comment.audioUrl)">
+                        <i class="fas fa-play" v-if="comment.audioUrl !== audioUrl || paused"></i>
+                        <i class="fas fa-pause" v-else></i>
+                    </button>
                 </div>
                 <div class="d-flex privacy-icon-container">
                     <div v-if="comment.privacy === 2">
@@ -114,8 +160,8 @@
                         v-bind:selection-start.prop="selectionStart" v-bind:selection-end.prop="selectionEnd"></textarea>
             </div>
             <div class="d-flex justify-content-between">
-                <button class="btn btn-primary mt-1 mb-1">
-                    <i class="fas fa-microphone"></i> Add audio
+                <button class="btn btn-primary mt-1 mb-1" data-target="#add-audio-modal" data-toggle="modal" v-on:click="requestMicrophone()">
+                    <i class="fas fa-microphone"></i> {{addAudioButtonText}}
                 </button>
                 <button class="btn btn-primary mt-1 mb-1" v-on:click="makeComment"
                         v-bind:disabled="makeCommentButtonDisabled">
@@ -123,6 +169,53 @@
                 </button>
             </div>
         </section>
+        <div class="modal fade" id="add-audio-modal">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title"><i class="fas fa-microphone"></i> Add audio</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times</span>
+                            </button>
+                        </div>
+                        <div class="modal-body d-flex flex-column">
+                            <progress max="120" v-bind:value="audio.timeInSeconds"></progress>
+                            <span>{{audio.timeInSeconds}} seconds</span>
+                        </div>
+                        <div class="modal-footer d-flex flex-column">
+                            <div class="d-flex">
+                                @* This group shows to allow user to start recording *@
+                                <div class="btn-group" v-if="!audio.recording && !audio.recorded">
+                                    <button class="btn btn-danger" v-on:click="startRecording()" v-bind:disabled="audio.recorder.mediaStream == null">
+                                        Start recording
+                                    </button>
+                                </div>
+        
+                                @* This group is shown when an audio is being recorded*@
+                                <div class="btn btn-group" v-if="audio.recording">
+                                    <button class="btn btn-primary" v-on:click="stopRecording()">
+                                        Stop
+                                    </button>
+                                </div>
+        
+                                @* This group shows when an audio has been recorded *@
+                                <div class="btn-group" v-if="audio.recorded">
+                                    <button class="btn btn-info" v-on:click="playRecord()">
+                                        <i class="fas fa-play"></i>
+                                    </button>
+                                    <button class="btn btn-dark" v-on:click="resetRecording()">
+                                        Discard
+                                    </button>
+                                    <button class="btn btn-primary" v-on:click="consolidate()">
+                                        Continue
+                                    </button>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
     </div>
 </div>
 <div class="col-lg-3 col-md-3"></div>
