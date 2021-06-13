@@ -152,7 +152,7 @@ let vueContainer = new Vue({
     el: "#posts-deposit",
     data: {
         posts: [],
-        loading: false,
+        loading: true,
         noMoreContent: false,
         audioPlayer: new Audio(),
         audioUrl: "",
