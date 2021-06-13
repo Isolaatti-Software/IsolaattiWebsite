@@ -151,6 +151,8 @@ document.addEventListener("DOMContentLoaded", () => {
 let vueContainer = new Vue({
     el: "#posts-deposit",
     data: {
+        sessionToken: sessionToken,
+        userData: userData,
         posts: [],
         loading: true,
         noMoreContent: false,
@@ -162,7 +164,7 @@ let vueContainer = new Vue({
     methods: {
         likePost: function (post) {
             let formData = new FormData();
-            formData.append("sessionToken", sessionToken);
+            formData.append("sessionToken", this.sessionToken);
             formData.append("postId", post.id);
 
             let request = new XMLHttpRequest();
@@ -180,7 +182,7 @@ let vueContainer = new Vue({
         },
         unLikePost: function (post) {
             let formData = new FormData();
-            formData.append("sessionToken", sessionToken);
+            formData.append("sessionToken", this.sessionToken);
             formData.append("postId", post.id);
 
             let request = new XMLHttpRequest();
@@ -225,6 +227,14 @@ let vueContainer = new Vue({
                 }
             }
             this.playing = true;
+        },
+        getPostStyle: function(themeDefinitionJson) {
+            if(themeDefinitionJson === null)
+                return "";
+            const theme = JSON.parse(themeDefinitionJson);
+            return `color: ${theme.fontColor};
+                background-color: ${theme.backgroundColor};
+                border: ${theme.border.size} ${theme.border.type} ${theme.border.color}`;
         }
     },
     mounted: function() {

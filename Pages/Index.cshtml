@@ -7,7 +7,31 @@
     ViewData["Title"] = "Home";
 }
 <script>document.querySelector("#index-link").classList.add("custom-active-nav-link")</script>
-<div class="col-lg-3 col-md-2"></div>
+<div class="col-lg-3 col-md-2">
+
+        <ul class="nav flex-md-column overflow-auto flex-grow-0 mt-md-4" id="left-bar">
+            <li class="nav-item">
+                <a asp-page="Songs" class="nav-link">
+                    <i class="fas fa-music"></i> Music de-mixer
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <i class="fas fa-drum"></i> Just play
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <i class="fas fa-broadcast-tower"></i> Streaming
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <i class="fas fa-record-vinyl"></i> Record a masterpiece
+                </a>
+            </li>
+        </ul>
+</div>
 <div class="col-lg-6 col-md-8">
     @* <section class="d-flex flex-column pt-1 mt-2 mb-3" id="posting-area"> *@
     @*     <div class="d-flex"> *@
@@ -35,7 +59,8 @@
     <main class="mt-4">
         <h5 class="ml-2 mt-2"><i class="far fa-newspaper"></i> New activity</h5>
         <section id="posts-deposit" class="d-flex flex-column pt-1 mt-2 mb-3 align-items-center">
-            <div v-for="post in posts" class="d-flex mb-2 flex-column p-2 post">
+            <div v-for="post in posts" class="d-flex mb-2 flex-column p-2 post" 
+                 :style="getPostStyle(post.themeJson)">
                 <div class="d-flex justify-content-between align-items-center">
                     <span class="user-name"><a :href="'/Profile?id=' + post.userId">{{post.userName}}</a> </span>
                     <div class="dropdown dropleft">
@@ -43,9 +68,9 @@
                             <i class="fas fa-ellipsis-h"></i>
                         </button>
                         <div class="dropdown-menu">
-                            <a href="#" class="dropdown-item" v-if="post.userId===userId">Edit</a>
+                            <a href="#" class="dropdown-item" v-if="post.userId===userData.id">Edit</a>
                             <a href="#" class="dropdown-item">Share</a>
-                            <a href="#" class="dropdown-item" v-if="post.userId===userId">Delete</a>
+                            <a href="#" class="dropdown-item" v-if="post.userId===userData.id">Delete</a>
                             <a :href=`/Reports/ReportPostOrComment?postId=${post.id}` class="dropdown-item" target="_blank">Report</a>
                         </div>
                     </div>
