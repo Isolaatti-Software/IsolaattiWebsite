@@ -59,7 +59,7 @@ namespace isolaatti_API.Pages
             return Page();
         }
         
-        public IActionResult OnPost(string email, string password)
+        public IActionResult OnPost(string email = null, string password = null)
         {
             if (email == null || password == null)
                 return Page();

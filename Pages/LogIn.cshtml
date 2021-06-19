@@ -33,13 +33,19 @@
     </div>
 }
 
-<div class="d-flex flex-column align-items-center justify-content-center sign-in-up-form-container">
-    <h1>Isolaatti</h1>
-    
-    <div class="d-flex justify-content-center align-items-center">
+<div class="d-flex col-lg-7 col-md-6 flex-column">
+        <h1><a href="/" id="isolaatti-icon"></a> Isolaatti</h1>
+        <h3>Say it louder, deeper!</h3>
+        <div class="mt-auto p-3">
+            <p>We need cookies to keep you signed in in this browser. Please, don't disable cookies.</p>
+        </div>
         
+    </div>
+    
+    <div class="col-lg-5 col-md-6 justify-content-end align-items-center">
         <form method="POST" class="sign-in-up-form" asp-antiforgery="false">
             <h4>Sign in</h4>
+            <p><a asp-page="MakeAccount">Sign up</a></p>
             @if (Model.WrongCredential)
             {
                 <div class="alert alert-danger">
@@ -52,16 +58,15 @@
                     Please, verify your email, a verification email was sent
                 </div>
             }
-            <p>Don't have an account? <a asp-page="MakeAccount">Make an account</a></p>
-            <hr/>
             <div class="form-group">
                 <label for="email_form_control">Email</label>
                 <input type="email" name="email" id="email_form_control" class="form-control"
-                       value='@ViewData["username_field"]'>
+                       value='@ViewData["username_field"]' required>
             </div>
             <div class="form-group">
                 <label for="password_form_control">Password</label>
-                <input type="password" name="password" id="password_form_control" class="form-control">
+                <input type="password" name="password" 
+                id="password_form_control" class="form-control" required>
             </div>
             <div class="form-group">
                 <a asp-page="ForgotPassword">Forgot password</a>
@@ -71,4 +76,4 @@
             </div>
         </form>
     </div>
-</div>
+
