@@ -149,7 +149,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 let vueContainer = new Vue({
-    el: "#posts-deposit",
+    el: "#vue-container",
     data: {
         sessionToken: sessionToken,
         userData: userData,
@@ -159,7 +159,8 @@ let vueContainer = new Vue({
         audioPlayer: new Audio(),
         audioUrl: "",
         playing: false,
-        paused: false
+        paused: false,
+        postLinkToShare: ""
     },
     methods: {
         likePost: function (post) {
@@ -235,6 +236,30 @@ let vueContainer = new Vue({
             return `color: ${theme.fontColor};
                 background-color: ${theme.backgroundColor};
                 border: ${theme.border.size} ${theme.border.type} ${theme.border.color}`;
+        },
+        copyToClipboard: function(relativeUrl) {
+            let absoluteUrl = `${window.location.protocol}//${window.location.host}${relativeUrl}`;
+            navigator.clipboard.writeText(absoluteUrl).then(function() {
+                alert("Se copió el texto al portapapeles");
+            });
+        },
+        deletePost: function(postId) {
+            if(!confirm("Are your sure you want to delete this post?")) {
+                return;
+            }
+            let globalThis = this;
+            let form = new FormData();
+            form.append("sessionToken", sessionToken);
+            form.append("postId", postId);
+            
+            let request = new XMLHttpRequest();
+            request.open("POST", "/api/EditPost/Delete");
+            request.onload = function() {
+                if(request.status === 200) {
+                    globalThis.refresh();
+                }
+            }
+            request.send(form);
         }
     },
     mounted: function() {

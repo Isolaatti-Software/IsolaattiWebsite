@@ -79,97 +79,36 @@
                     <span class="sr-only">Loading more content...</span>
                 </div>
             </div>
-            <div v-for="post in posts"
-                 class="d-flex mb-2 flex-column p-2 post" :postid="post.id" :privacy="post.privacy"
-                 :style="getPostStyle(post.themeJson)">
-                <div class="d-flex justify-content-between align-items-center">
-                    <span class="user-name">
-                        <b>@ViewData["name"]</b>
-                    </span>
-                    <div class="d-flex">
-                        <button class="mr-1 btn btn-link btn-sm" v-on:click="openEditPostModal(post)">
-                            <i class="fas fa-pencil-alt"></i>
-                        </button>
-                        <button class="ml-1 btn btn-link btn-sm" v-on:click="openDeletePostModal(post)">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="d-flex privacy-icon-container">
-                    <i v-if="post.privacy === 1" class="fas fa-user" title="Only you"></i>
-                    <i v-if="post.privacy === 2" class="fas fa-user-friends" title="People on Isolaatti"></i>
-                    <i v-if="post.privacy === 3" class="fas fa-globe" title="All the world"></i>
-                </div>
-                <div class="d-flex mt-1" v-if="post.audioAttachedUrl!=null">
-                    <button type="button" class="btn btn-primary btn-sm" v-on:click="playAudio(post.audioAttachedUrl)">
-                        <i class="fas fa-play" v-if="post.audioAttachedUrl !== audioUrl || paused"></i>
-                        <i class="fas fa-pause" v-else></i>
-                    </button>
-                </div>
-                <div class="mt-2 post-content" v-html="compileMarkdown(post.textContent)"></div>
-                <div class="d-flex justify-content-end">
-                    <div class="btn-group btn-group-sm">
-                        <a class="btn btn-dark btn-sm" :href="`/Threads/${post.id}`">
-                            <i class="fas fa-comments"></i> {{post.numberOfComments}}
-                        </a>
-                        <button class="btn btn-dark btn-sm" type="button" v-if="!post.liked" v-on:click="likePost(post)">
-                            <i class="fas fa-thumbs-up"></i> {{post.numberOfLikes}}
-                        </button>
-                        <button class="btn btn-primary btn-sm" type="button" v-if="post.liked" v-on:click="unLikePost(post)">
-                            <i class="fas fa-thumbs-up"></i> {{post.numberOfLikes}}
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Modal edit post -->
-            <div class="modal fade" id="modal-edit-post">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Edit post</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                &times;
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <select class="custom-select mb-2" id="edit-post-privacy-selector" v-model="privacyEditPost">
-                                <option value="1">Private</option>
-                                <option value="2">People on Isolaatti</option>
-                                <option value="3">Everyone</option>
-                            </select>
-                            <textarea class="form-control w-100" id="edit-post-modal-simple-post-textarea" 
-                                    placeholder="Say something to your followers" rows="1" v-model="textareaEditPost"></textarea>
-
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-primary mt-1" v-on:click="confirmPostModification">Save</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <post-template v-for="post in posts" :post="post"
+                           v-on:like="likePost(post)"
+                           v-on:un-like="unLikePost(post)"
+                           v-model="postLinkToShare"
+                           v-on:delete="deletePost(post.id)"
+                           v-on:play-audio="playAudio(post.audioAttachedUrl)"
+                           :audio-url="audioUrl"
+                           :paused="paused">
+            </post-template>
             
-            <!-- Modal delete post -->
-            <div class="modal fade" id="modal-delete-post">
-                <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+            <div class="modal fade" id="modal-share-post">
+                <div class="modal-dialog-centered modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title">Delete post</h5>
+                            <h5 class="modal-title">
+                                Share post
+                            </h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                &times;
+                                <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
                         <div class="modal-body">
-                            <p>Are you sure you want to delete this post? This action cannot be undone</p>
-                        </div>
-                        <div class="modal-footer justify-content-end">
-                            <button class="btn btn-secondary" data-dismiss="modal">No</button>
-                            <button class="btn btn-primary" v-on:click="confirmPostDeletion">Yes</button>
+                            <p>
+                                Use this link to share post
+                            </p>
+                            <button class="btn btn-primary" v-on:click="copyToClipboard(postLinkToShare)">Copy to clipboard</button>
                         </div>
                     </div>
                 </div>
             </div>
-
         </div>
     </section>
 </div>
@@ -413,6 +352,6 @@ else if (ViewData["profile_open"].Equals("links"))
 @section Scripts
 {
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    
+    <script src="~/js/VueComponents/postComponent.js"></script>
     <script src="~/js/my_profile.js"></script>
 }

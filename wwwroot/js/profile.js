@@ -102,7 +102,8 @@ function getPosts(accountId, onComplete, onError) {
             audioUrl: "",
             playing: false,
             paused: false,
-            loading: true
+            loading: true,
+            postLinkToShare: ""
         },
         methods: {
             likePost: function(post) {
@@ -171,6 +172,12 @@ function getPosts(accountId, onComplete, onError) {
                 return `color: ${theme.fontColor};
                         background-color: ${theme.backgroundColor};
                         border: ${theme.border.size} ${theme.border.type} ${theme.border.color}`;
+            },
+            copyToClipboard: function(relativeUrl) {
+                let absoluteUrl = `${window.location.protocol}//${window.location.host}${relativeUrl}`;
+                navigator.clipboard.writeText(absoluteUrl).then(function() {
+                    alert("Se copió el texto al portapapeles");
+                });
             }
         },
         mounted: function() {

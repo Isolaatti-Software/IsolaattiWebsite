@@ -178,6 +178,7 @@ function getPosts(onComplete, onError) {
         let vueContainer = new Vue({
             el: '#vue-container',
             data: {
+                sessionToken: sessionToken,
                 posts: [],
                 selectedPostForModalsId: 0,
                 textareaEditPost: "",
@@ -186,7 +187,8 @@ function getPosts(onComplete, onError) {
                 audioUrl: "",
                 playing: false,
                 paused: false,
-                loading: true
+                loading: true,
+                postLinkToShare: ""
             },
             methods: {
                 likePost: function(post) {
@@ -229,47 +231,6 @@ function getPosts(onComplete, onError) {
                     if(raw === null) raw = "";
                     return marked(raw);
                 },
-                openEditPostModal: function(post) {
-                    this.selectedPostForModalsId = post.id;
-                    this.textareaEditPost = post.textContent;
-                    this.privacyEditPost = post.privacy;
-                    $('#modal-edit-post').modal('show');
-                },
-                openDeletePostModal: function(post) {
-                    this.selectedPostForModalsId = post.id;
-                    this.textareaEditPost = post.textContent;
-                    this.privacyEditPost = post.privacy;
-                    $('#modal-delete-post').modal('show');
-                },
-                confirmPostModification: function() {
-                    let postReference = this.posts.find(post => post.id === this.selectedPostForModalsId);
-                    let textChanged = postReference.textContent !== this.textareaEditPost;
-                    let privacyChanged = postReference.privacy !== this.privacyEditPost;
-                    let index = this.posts.findIndex(post => post.id === this.selectedPostForModalsId);
-                    
-                    if(textChanged) {
-                        editPost(this.selectedPostForModalsId,this.textareaEditPost,(event) => {
-                            Vue.set(vueContainer.posts, index, event.serverResponse);
-                        }, (error) => {
-
-                        }); 
-                    }
-                    if(privacyChanged){
-                        changePostPrivacy(this.selectedPostForModalsId,this.privacyEditPost,(event) => {
-                            Vue.set(vueContainer.posts, index, event.serverResponse);
-                        }, () => {
-                            
-                        });
-                    }
-                    $("#modal-edit-post").modal('hide');
-                },
-                confirmPostDeletion: function() {
-                    let index = this.posts.findIndex(post => post.id === this.selectedPostForModalsId);
-                    deletePost(this.selectedPostForModalsId, () => {
-                        this.posts.splice(index,1);
-                        $("#modal-delete-post").modal('hide');
-                    }, () => {})
-                },
                 playAudio: function(url) {
                     if(this.audioUrl !== url) {
                         this.audioPlayer.pause();
@@ -297,6 +258,40 @@ function getPosts(onComplete, onError) {
                     return `color: ${theme.fontColor};
                         background-color: ${theme.backgroundColor};
                         border: ${theme.border.size} ${theme.border.type} ${theme.border.color}`;
+                },
+                copyToClipboard: function(relativeUrl) {
+                    let absoluteUrl = `${window.location.protocol}//${window.location.host}${relativeUrl}`;
+                    navigator.clipboard.writeText(absoluteUrl).then(function() {
+                        alert("Se copió el texto al portapapeles");
+                    });
+                },
+                deletePost: function(postId) {
+                    if(!confirm("Are your sure you want to delete this post?")) {
+                        return;
+                    }
+                    let globalThis = this;
+                    let form = new FormData();
+                    form.append("sessionToken", sessionToken);
+                    form.append("postId", postId);
+
+                    let request = new XMLHttpRequest();
+                    request.open("POST", "/api/EditPost/Delete");
+                    request.onload = function() {
+                        if(request.status === 200) {
+                            globalThis.refresh();
+                        }
+                    }
+                    request.send(form);
+                },
+                refresh: function() {
+                    postsInDOM = [];
+                    this.posts = [];
+                    getPosts((response) => {
+                        vueContainer.posts = response;
+                        vueContainer.loading = false;
+                    }, (error) => {
+                        alert("Error getting your posts");
+                    });
                 }
             },
             mounted: function() {
