@@ -31,7 +31,10 @@ const vue = new Vue({
                 type: "solid",
                 size: "0px"
             }
-        }
+        },
+        editing: editExistingPost,
+        existingAudioUrl: null,
+        editingPostId: editPostId
     },
     computed: {
         compiledMarkdown: function() {
@@ -164,8 +167,11 @@ const vue = new Vue({
             form.append("privacy", this.privacy);
             form.append("content", this.input);
             form.append("themeJson", JSON.stringify(this.theme));
+            if(this.editing) {
+                form.append("postId", this.editingPostId)
+            }
             // this means that there is a blob to upload
-            if(this.audio.consolidated) {
+            if(this.audio.consolidated && this.existingAudioUrl === null) {
                 let storageRef = storage.ref();
                 let date = new Date();
                 
@@ -266,7 +272,51 @@ const vue = new Vue({
         },
         consolidate: function() {
             this.audio.consolidated = true;
+            
+            // makes this null because a new audio will be uploaded
+            this.existingAudioUrl = null;
+            
             $('#add-audio-modal').modal('hide');
+        },
+        save: function() {
+            
         }
+    },
+    mounted: function() {
+        let globalThis = this;
+        this.$nextTick(function() {
+            if(editExistingPost) {
+                
+                // get the post that user wants to edit
+                let form = new FormData();
+                form.append("sessionToken", sessionToken);
+                form.append("postId", editPostId);
+                
+                let request = new XMLHttpRequest();
+                request.open("POST", "/api/GetPost");
+                request.onload = function() {
+                    let post = JSON.parse(request.responseText);
+                    globalThis.input = post.textContent;
+                    globalThis.privacy = post.privacy;
+                    if(post.audioAttachedUrl !== null) {
+                        // set state variables
+                        globalThis.audio.consolidated = true;
+                        globalThis.audio.recorded = true;
+                        globalThis.existingAudioUrl = post.audioAttachedUrl;
+                        // download audio an put it into a blob
+                        fetch(post.audioAttachedUrl)
+                            .then(res => res.blob())
+                            .then(blob => globalThis.audio.recorder.resultantBlob = blob)
+                    }
+                    let theme = JSON.parse(post.themeJson);
+                    globalThis.theme.fontColor = theme.fontColor;
+                    globalThis.theme.backgroundColor = theme.backgroundColor;
+                    globalThis.theme.border.size = theme.border.size;
+                    globalThis.theme.border.type = theme.border.type;
+                    globalThis.theme.border.color = theme.border.color;
+                }
+                request.send(form);
+            }
+        });
     }
 });
