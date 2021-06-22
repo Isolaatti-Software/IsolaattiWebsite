@@ -7,6 +7,10 @@
 }
 @section css
 {
+    <meta proerty="og-title"
+          content="About Isolaatti"/>
+    <meta property="og:description"
+          content="Say it louder, deeper! Your voice has more power than you think" />
     <link rel="stylesheet" href="~/stylesheets/isolaatti.css">
 }
 <div class="d-flex col-12 flex-column">
@@ -26,7 +30,7 @@
             <small>Foto de Karolina Grabowska en Pexels</small>
         </article>
         <article>
-            <h4>Keyboard and drumpad directly in the browser</h4>
+            <h4>Keyboard and drum pad directly in the browser</h4>
             <p>Record, mix and share (This feature is not available yet)</p>
             <div id="image-keys"></div>
             <small>Foto de Stas Knop en Pexels</small>
@@ -52,7 +56,7 @@
         </p>
         <p>
             In november 2020, I decided to work on the project again and made the web version. It still was a demucs UI app, but now it had
-            a better audio player. But still, no many people would try it, as it was for a "very specific target". 
+            a better audio player. But still, no many people would use it, as it was only for a "very specific target". 
         </p>
         <p>
             I countinued to work a couple of months, until March 2021. It was time to add more features to the application (web version).
@@ -65,14 +69,78 @@
             I could add audio posting" and that's basically where I'm now.
         </p>
         <p>
-            It was not that straightforward, many errors were still present and I had to fixed them first. And also, many changes to backend
-            aplication had to be made. At this time, I almost completely abandonded mobile version (I was just adding new features to the web app).
+            It was not that straightforward, many errors were still present and I had to fix them first. And also, many changes to the backend
+            aplication had to be made. At this time, I almost completely abandonded the mobile version (I was just adding new features to the web app).
         </p>
         <h4>About the future of the mobile application</h4>
         <p>
-            As I said, Isolaatti was specifically for Android devices, developed using the Android SDK and Kotlin programming language. 
-            I like that way of working, but I would be too much work if a wanted to develop a version for iOS. So, a stopped working on this version, 
-            and started a new project, from scratch, using Flutter, which allows me to deploy for Android and iOS.
+            As I said, Isolaatti was specifically developed for Android devices, using the Android SDK and Kotlin programming language. 
+            I like that way of working, but it would be way too much work if a wanted to develop a version for iOS. So, a stopped working on this version, 
+            and started a new project, from scratch, using Flutter, which allows me to develop for Android and iOS, from the same base code in Dart 
+            programming language.
         </p>
+        
+        <h4>
+            Technical details
+        </h4>
+        <p>
+            This might not be the right place to show code (I won't), but it's important to let people to know that 
+            the platform is running on a stable development stack.
+        </p>
+        <h5>
+            Server application
+        </h5>
+        <p>
+            This is all made in <strong>.NET Core 3.1</strong> and <strong>ASP.NET Core 3.1</strong>. The web version is served from here and some
+            components are delivered directly in HTML. This also has the REST API, which allows the mobile versions and web app
+            to interact with the server app.
+        </p>
+        <h5>
+            Web version
+        </h5>
+        <p>
+            The web version is served from the server app, using Razor Pages. However, not all actions are performed in
+            the old school way (sending forms and reloading the page). Here is where Vue.js comes in. Vue.js is used to
+            render those UI components that have to be dinamic. JavaScript is the most important part of this.
+        </p>
+        <p>
+            For UI design, some <strong>Bootstrap</strong> stuff is used, but I also have custom CSS (almost everything). 
+            Icons are from <strong>Fontawesome</strong>.
+        </p>
+        <h5>
+            Mobile version
+        </h5>
+        <p>
+            I have started developing this version using <strong>Flutter</strong>, the new Google SDK for multiplatform 
+            development. I can't give much detail, as this is not what I'm focused now.
+        </p>
+        <h5>
+            Hosting and servers
+        </h5>
+        <p>
+            The server application runs on a single core virtual machine with 1GB of memory provided by 
+            <strong>Digital Ocean</strong>. Digital Ocean doesn't offer automatically deployment for ASP.NET apps, 
+            so I had to manually set the server up. NGINX is the inverse proxy, so thanks to them.
+        </p>
+        <h5>
+            Load balancing
+        </h5>
+        <p>
+            There is not load balancing, I'm looking for options. This basically would allow more people to use the app 
+            at the same time without any performance issue. An entry point server could receive all the traffic and then 
+            distribute it to the other machines, that's one way of doing it, I'll see.
+        </p>
+        <h5>
+            Database server
+        </h5>
+        <p>
+            This is very important, even if I wrote it last. It runs on Microsoft Azure and is enough for now. I could 
+            enable database sync to add more servers, but that would be after load balancing is working. The idea is to 
+            have one database server per web server. I would have to change how primary keys are managed, as there could
+            be problems with auto incremental keys. For example, two posts could be made on two differents web servers, 
+            at the same exact time, and recorded to its corresponding database, but when those databases try to syncronize, 
+            those record could have the same id, and it would crash.
+        </p>
+        <iframe width="300" height="150" src="https://www.youtube.com/embed/videoseries?list=PLqQj5TiAwR7deQxXiqvJM-YZBoImHtK_A" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
     </section>
 </div>
