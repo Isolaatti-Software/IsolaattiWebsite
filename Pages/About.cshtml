@@ -1,0 +1,78 @@
+@page
+@model isolaatti_API.Pages.GetStarted
+
+@{
+    Layout = "Shared/_LayoutWebAppOutside";
+    ViewData["Title"] = "About";
+}
+@section css
+{
+    <link rel="stylesheet" href="~/stylesheets/isolaatti.css">
+}
+<div class="d-flex col-12 flex-column">
+    <h1><a href="/" id="isolaatti-icon"></a> Isolaatti</h1>
+    <h3>Say it louder, deeper!</h3>
+    <section class="d-flex justify-content-around flex-wrap">
+        <article>
+            <h4>Talk to the world with no fear!</h4>
+            <p>Your voice has more power than you think.</p>
+            <div id="image-microphone"></div>
+            <small>Foto de freestocks.org en Pexels</small>
+        </article>
+        <article>
+            <h4>Tell your stories and memories</h4>
+            <p>Write it and make it stronger with the power of your voice.</p>
+            <div id="image-audio-book"></div>
+            <small>Foto de Karolina Grabowska en Pexels</small>
+        </article>
+        <article>
+            <h4>Keyboard and drumpad directly in the browser</h4>
+            <p>Record, mix and share (This feature is not available yet)</p>
+            <div id="image-keys"></div>
+            <small>Foto de Stas Knop en Pexels</small>
+        </article>
+        <article>
+            <h4>Demix music</h4>
+            <p>Get separated track from songs. Use our built-in audio player.</p>
+            <div id="image-demix"></div>
+            <small>Foto de Ann H en Pexels</small>
+        </article>
+    </section>
+    <section id="history" class="mt-5 ml-auto mr-auto">
+        <h4>
+            History
+        </h4>
+        <small>
+            Written by Erik Cavazos, the developer
+        </small>
+        <p>
+            Isolaatti begun as school project in February 2020. It was only a "demucs UI" (music demixing) and only for Android devices. 
+            It actually was a bad designed app and crashed all the time. Some months later, the project was abandoned, as it had been
+            successfully graded.
+        </p>
+        <p>
+            In november 2020, I decided to work on the project again and made the web version. It still was a demucs UI app, but now it had
+            a better audio player. But still, no many people would try it, as it was for a "very specific target". 
+        </p>
+        <p>
+            I countinued to work a couple of months, until March 2021. It was time to add more features to the application (web version).
+            Many errors were spotted and fixed, and also design was improved. However, everything was about music demixing. I added more social 
+            things, but still a weird (an maybe boring) app.
+        </p>
+        <p>
+            Some time later, I added text posts and threads. It was actually boring, but I was making things that actually could be fun.
+            But still, even for me, it was boring. "What could I add?" I said to me. And then I said "This app is all about audio stuff, 
+            I could add audio posting" and that's basically where I'm now.
+        </p>
+        <p>
+            It was not that straightforward, many errors were still present and I had to fixed them first. And also, many changes to backend
+            aplication had to be made. At this time, I almost completely abandonded mobile version (I was just adding new features to the web app).
+        </p>
+        <h4>About the future of the mobile application</h4>
+        <p>
+            As I said, Isolaatti was specifically for Android devices, developed using the Android SDK and Kotlin programming language. 
+            I like that way of working, but I would be too much work if a wanted to develop a version for iOS. So, a stopped working on this version, 
+            and started a new project, from scratch, using Flutter, which allows me to deploy for Android and iOS.
+        </p>
+    </section>
+</div>
