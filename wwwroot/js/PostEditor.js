@@ -186,6 +186,9 @@ const vue = new Vue({
                     });
                 });
             } else {
+                if(this.existingAudioUrl !== null) {
+                    form.append("audioUrl", this.existingAudioUrl);
+                }
                 sendPostRequest();
             }
             function sendPostRequest() {
@@ -269,6 +272,9 @@ const vue = new Vue({
             this.audio.recorder.audioPlayer.pause();
             this.audio.consolidated = false;
             this.audio.timeInSeconds = 0;
+            if(this.editing) {
+                this.existingAudioUrl = null;
+            }
         },
         consolidate: function() {
             this.audio.consolidated = true;

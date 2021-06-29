@@ -44,7 +44,8 @@ namespace isolaatti_API.Controllers
                 if (existingPost.UserId != user.Id) return Unauthorized("Post is not yours, cannot edit");
                 
                 // this means user removed or changed audio, so let's delete from firebase
-                if ((existingPost.AudioAttachedUrl != null && audioUrl == null) || existingPost.AudioAttachedUrl != audioUrl)
+                if ((existingPost.AudioAttachedUrl != null && audioUrl == null) 
+                    || (existingPost.AudioAttachedUrl != audioUrl && existingPost.AudioAttachedUrl != null))
                 {
                     GoogleCloudBucket.GetInstance()
                         .DeleteFile(Utils.GoogleCloudStorageUrlUtils.GetFileRefFromUrl(existingPost.AudioAttachedUrl));
