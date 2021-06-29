@@ -57,6 +57,12 @@ namespace isolaatti_API.Controllers
                 existingPost.ThemeJson = themeJson;
                 
                 Db.SimpleTextPosts.Update(existingPost);
+                
+                // let's reset the history, to make it appear on the users' feed
+                var historyOfThisPost =
+                    Db.UserSeenPostHistories.Where(history => history.PostId.Equals(existingPost.Id));
+                Db.UserSeenPostHistories.RemoveRange(historyOfThisPost);
+                
                 Db.SaveChanges();
                 
                 return Ok(new ReturningPostsComposedResponse(existingPost)
