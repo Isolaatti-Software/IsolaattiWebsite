@@ -44,7 +44,7 @@ namespace isolaatti_API.Controllers
                 userPostSeenHistory.RemoveAll(element => element.PostId.Equals(renderedPostId));
             }
 
-            userPostSeenHistory.RemoveAll(element => element.TimesSeen <= 5);
+            userPostSeenHistory.RemoveAll(element => element.TimesSeen <= 10);
 
             foreach (var historySeen in userPostSeenHistory)
             {
