@@ -322,6 +322,7 @@ const vue = new Vue({
                     globalThis.theme.border.size = theme.border.size;
                     globalThis.theme.border.type = theme.border.type;
                     globalThis.theme.border.color = theme.border.color;
+                    globalThis.theme.border.radius = theme.border.radius;
                 }
                 request.send(form);
             }
