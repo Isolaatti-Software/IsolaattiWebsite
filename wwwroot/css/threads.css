@@ -11,14 +11,15 @@
     border-radius: 10px;
 }
 
-@media screen and (max-height: 768px) {
+@media screen and (max-height: 400px) {
     #comment-box {
-        height: 50vh;
+        height: calc(100vh - 60px);
+        bottom: calc(calc(calc(100vh - 60px) - 40px) * -1);
     }
 
     @keyframes expandCommentBox {
         0%{
-            bottom: calc(calc(384px - 40px) * -1);
+            bottom: calc(calc(calc(100vh - 60px) - 40px) * -1);
         }
         100%{
             bottom: 0px;
@@ -30,7 +31,7 @@
             bottom: 0px;
         }
         100%{
-            bottom: calc(calc(384px - 40px) * -1);
+            bottom: calc(calc(calc(100vh - 60px) - 40px) * -1);
         }
     }
 }
