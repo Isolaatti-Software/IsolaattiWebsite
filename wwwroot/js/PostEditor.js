@@ -29,7 +29,8 @@ const vue = new Vue({
             border: {
                 color: "#d9d9d9",
                 type: "solid",
-                size: "0px"
+                size: 0,
+                radius: 0
             }
         },
         editing: editExistingPost,
@@ -49,7 +50,8 @@ const vue = new Vue({
         postThemeCSSStyle: function() {
             return `color: ${this.theme.fontColor};
                 background-color: ${this.theme.backgroundColor};
-                border: ${this.theme.border.size} ${this.theme.border.type} ${this.theme.border.color} 
+                border: ${this.theme.border.size}px ${this.theme.border.type} ${this.theme.border.color};
+                border-radius: ${this.theme.border.radius}px;
                 max-height: calc(100vh - 150px); 
                 overflow: auto; cursor: not-allowed`;
         }

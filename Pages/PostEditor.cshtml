@@ -172,8 +172,25 @@
                         </div>
                         <div class="form-group">
                             <label>Size</label>
-                            <input type="text" class="form-control form-control-sm"
+                            <div class="input-group input-group-sm">
+                                <input type="number" class="form-control form-control-sm"
                                    v-model="theme.border.size"/>
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">px</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Radius (recommended max value 30px)</label>
+                            <div class="input-group input-group-sm">
+                                <input type="number" class="form-control form-control-sm" 
+                                    max="30" min="0"
+                                    v-model="theme.border.radius">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">px</span>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
