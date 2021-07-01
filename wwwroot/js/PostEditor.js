@@ -29,8 +29,8 @@ const vue = new Vue({
             border: {
                 color: "#d9d9d9",
                 type: "solid",
-                size: 0,
-                radius: 0
+                size: "0",
+                radius: "0"
             }
         },
         editing: editExistingPost,

@@ -29,7 +29,8 @@ Vue.component('post-template',{
             const theme = JSON.parse(themeDefinitionJson);
             return `color: ${theme.fontColor};
                 background-color: ${theme.backgroundColor};
-                border: ${theme.border.size} ${theme.border.type} ${theme.border.color}`;
+                border: ${theme.border.size}px ${theme.border.type} ${theme.border.color};
+                border-radius: ${theme.border.radius}px;`;
         }
     },
     template: `
