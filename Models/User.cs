@@ -28,5 +28,7 @@ namespace isolaatti_API.Models
         // here store people (followers and following)
         public string FollowersIdsJson { get; set; }
         public string FollowingIdsJson { get; set; }
+        
+        public byte[] ProfileImageData { get; set; }
     }
 }
