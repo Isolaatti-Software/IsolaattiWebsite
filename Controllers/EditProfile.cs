@@ -1,6 +1,8 @@
+using System.IO;
 using System.Linq;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace isolaatti_API.Controllers
@@ -83,6 +85,28 @@ namespace isolaatti_API.Controllers
             Db.Users.Update(user);
             Db.SaveChanges();
             return RedirectToPage("/MyProfile", new {emailNotAvailable = true, statusData = newEmail});
+        }
+        
+        [HttpPost]
+        [Route("UpdatePhoto")]
+
+        public IActionResult UpdatePhoto([FromForm] string sessionToken, [FromForm] IFormFile file)
+        {
+            var accountsManager = new Accounts(Db);
+            var user = accountsManager.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
+
+            var stream = new MemoryStream();
+            file.CopyTo(stream);
+
+            var array = stream.ToArray();
+
+            user.ProfileImageData = array;
+
+            Db.Users.Update(user);
+            Db.SaveChanges();
+
+            return Ok("Imagen cargada");
         }
     }
 }
