@@ -13,6 +13,7 @@ using System.Text.Json;
 using isolaatti_API.Classes;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
+using isolaatti_API.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -26,7 +27,7 @@ namespace isolaatti_API.Pages
         public List<ShareLink> Shares = new List<ShareLink>();
         public List<User> Followers = new List<User>();
         public List<User> Following = new List<User>();
-
+        public string ProfilePhotoUrl = null;
 
         public MyProfile(DbContextApp dbContextApp)
         {
@@ -57,6 +58,9 @@ namespace isolaatti_API.Pages
             ViewData["emailNotAvailable"] = emailNotAvailable;
             ViewData["nameNotAvailable"] = nameNotAvailable;
             ViewData["statusData"] = statusData;
+            ProfilePhotoUrl = user.ProfileImageData == null
+                ? null
+                : UrlGenerators.GenerateProfilePictureUrl(user.Id, Request.Cookies["isolaatti_user_session_token"]);
 
 
             PasswordIsWrong = currentPasswordIsWrong;

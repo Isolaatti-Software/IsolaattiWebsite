@@ -157,6 +157,72 @@ function getPosts(onComplete, onError) {
     request.send(formData);
 }
 
+const profilePictureLoadFormElement = document.getElementById("profilePictureLoadFormElement");
+const canvas = document.getElementById("previewProfilePicture");
+const canvasContext = canvas.getContext('2d');
+const previewProfilePictureImage = new Image();
+
+const uploadProfilePhoto = document.getElementById("uploadProfilePhoto");
+
+uploadProfilePhoto.addEventListener("click", function() {
+    if(previewProfilePictureImage.src == null) {
+        return;
+    }
+    let form = new FormData();
+    canvas.toBlob(function(blob) {
+        form.append("file",blob);
+        form.append("sessionToken", sessionToken);
+
+        let request = new XMLHttpRequest();
+        request.open("POST","/api/EditProfile/UpdatePhoto");
+        request.onload = function() {
+            if(request.status === 200) {
+                console.log(request.responseText);
+                window.location = "/MyProfile";
+            }
+        }
+        request.send(form); 
+    });
+
+});
+
+previewProfilePictureImage.addEventListener("load", function() {
+    uploadProfilePhoto.disabled = false;
+    // horizontal
+    if(previewProfilePictureImage.width > previewProfilePictureImage.height) {
+        let constant = previewProfilePictureImage.height / 120;
+        canvasContext.drawImage(
+            previewProfilePictureImage,
+            (previewProfilePictureImage.width/constant)/-4,
+            0,
+            previewProfilePictureImage.width/constant,previewProfilePictureImage.height/constant);
+    }
+
+    // vertical
+    else {
+        let constant = previewProfilePictureImage.width / 120;
+        canvasContext.drawImage(
+            previewProfilePictureImage,
+            0,
+            (previewProfilePictureImage.height/constant)/-4,
+            previewProfilePictureImage.width/constant,
+            previewProfilePictureImage.height/constant);
+    }
+});
+
+
+profilePictureLoadFormElement.addEventListener("input", function() {
+    let file = profilePictureLoadFormElement.files[0];
+    document.getElementById("fileNameProfilePic").innerHTML = file.name;
+    let fileReader = new FileReader();
+    fileReader.readAsDataURL(file);
+    fileReader.onload = function() {
+        previewProfilePictureImage.src = fileReader.result;
+    };
+});
+
+
+
 // Use this self called function to define events
 (function(){
     // "change password form" validation

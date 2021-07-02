@@ -223,11 +223,12 @@ progress[orient=vertical] {
 }
 
 .profile-pic {
-    width: 70px;
-    height: 70px;
+    width: 120px;
+    height: 120px;
     border: 1px solid white;
     border-radius: 20px;
     display: flex;
+    position: relative;
     font-size: 50px;
     justify-content: center;
     align-items: center;
