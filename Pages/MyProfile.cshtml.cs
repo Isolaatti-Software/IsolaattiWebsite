@@ -98,6 +98,8 @@ namespace isolaatti_API.Pages
             ViewData["numberOfLikes"] = _db.Likes.Count(like => like.TargetUserId.Equals(user.Id));
             ViewData["numberOfPosts"] = _db.SimpleTextPosts.Count(post => post.UserId.Equals(user.Id));
 
+            ViewData["sessionToken"] = Request.Cookies["isolaatti_user_session_token"];
+
             return Page();
         }
         public IActionResult OnPost(int userId, string current_password, string new_password)
