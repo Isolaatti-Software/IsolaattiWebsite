@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text.Json;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
+using isolaatti_API.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -11,6 +12,8 @@ namespace isolaatti_API.Pages
     public class Profile : PageModel
     {
         private readonly DbContextApp _db;
+        public string ProfilePhotoUrl = null;
+        public string SessionToken;
         
         public Profile(DbContextApp dbContextApp)
         {
@@ -18,8 +21,9 @@ namespace isolaatti_API.Pages
         }
         public IActionResult OnGet([FromQuery] int id)
         {
+            var token = Request.Cookies["isolaatti_user_session_token"];
             var accountsManager = new Accounts(_db);
-            var user = accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
+            var user = accountsManager.ValidateToken(token);
             if (user == null) return RedirectToPage("LogIn");
             
             // here it's know that account is correct. Data binding!
@@ -46,6 +50,13 @@ namespace isolaatti_API.Pages
             ViewData["numberOfFollowing"] = followingUsersIds.Count();
                     
             ViewData["numberOfPosts"] = _db.SimpleTextPosts.Count(post => post.UserId.Equals(profile.Id));
+
+            
+            if (profile.ProfileImageData != null)
+            {
+                ProfilePhotoUrl = UrlGenerators.GenerateProfilePictureUrl(profile.Id, token);
+            }
+            
             return Page();
         }
     }
