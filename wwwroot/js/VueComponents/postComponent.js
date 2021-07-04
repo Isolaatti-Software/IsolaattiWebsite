@@ -2,7 +2,8 @@ Vue.component('post-template',{
     props: ['post','audio-url','paused'],
     data: function() {
         return {
-            userData: userData
+            userData: userData,
+            sessionToken: sessionToken
         }
     },
     computed: {
@@ -31,12 +32,31 @@ Vue.component('post-template',{
                 background-color: ${theme.backgroundColor};
                 border: ${theme.border.size}px ${theme.border.type} ${theme.border.color};
                 border-radius: ${theme.border.radius}px;`;
+        },
+        getUserImageUrl: function(userId) {
+            return `/api/Fetch/GetUserProfileImage?userId=${userId}&sessionToken=${this.sessionToken}`
         }
     },
     template: `
       <div class="d-flex mb-2 flex-column p-2 post" :style="getPostStyle(post.themeJson)">
       <div class="d-flex justify-content-between align-items-center">
-        <span class="user-name"><a :href="profileLink">{{ post.userName }}</a> </span>
+        <div class="d-flex">
+          <img class="user-avatar" :src="getUserImageUrl(post.userId)">
+          <div class="d-flex flex-column ml-2">
+            <span class="user-name"><a :href="profileLink">{{ post.userName }}</a> </span>
+            <div class="d-flex privacy-icon-container">
+              <div v-if="post.privacy === 1">
+                <i class="fas fa-user" title="Private" aria-hidden="true"></i><span class="sr-only">Only you</span>
+              </div>
+              <div v-if="post.privacy === 2">
+                <i class="fas fa-user-friends" title="People on Isolaatti" aria-hidden="true"></i><span class="sr-only">People on Isolaatti</span>
+              </div>
+              <div v-if="post.privacy === 3">
+                <i class="fas fa-globe" title="All the world" aria-hidden="true"></i><span class="sr-only">Everyone</span>
+              </div>
+            </div>
+          </div>
+        </div>
         <div class="dropdown dropleft">
           <button class="btn btn-primary btn-sm" data-toggle="dropdown" aria-haspopup="true">
             <i class="fas fa-ellipsis-h"></i>
@@ -49,17 +69,7 @@ Vue.component('post-template',{
           </div>
         </div>
       </div>
-      <div class="d-flex privacy-icon-container">
-        <div v-if="post.privacy === 1">
-          <i class="fas fa-user" title="Private" aria-hidden="true"></i><span class="sr-only">Only you</span>
-        </div>
-        <div v-if="post.privacy === 2">
-          <i class="fas fa-user-friends" title="People on Isolaatti" aria-hidden="true"></i><span class="sr-only">People on Isolaatti</span>
-        </div>
-        <div v-if="post.privacy === 3">
-          <i class="fas fa-globe" title="All the world" aria-hidden="true"></i><span class="sr-only">Everyone</span>
-        </div>
-      </div>
+      
       <div class="d-flex mt-1" v-if="post.audioAttachedUrl!=null">
         <button type="button" class="btn btn-primary btn-sm" v-on:click="$emit('play-audio')">
           <i class="fas fa-play" v-if="post.audioAttachedUrl !== audioUrl || paused"></i>
