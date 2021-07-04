@@ -1,6 +1,7 @@
 using System.Linq;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
+using isolaatti_API.Utils;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -28,6 +29,9 @@ namespace isolaatti_API.Pages
             ViewData["userId"] = user.Id;
             ViewData["password"] = user.Password;
             LimitOfSongsReached = _db.Songs.Count(song => song.OwnerId.Equals(user.Id)) >= 10;
+            ViewData["profilePicUrl"] = user.ProfileImageData == null
+                ? null
+                : UrlGenerators.GenerateProfilePictureUrl(user.Id, Request.Cookies["isolaatti_user_session_token"]);
                     
             return Page();
             

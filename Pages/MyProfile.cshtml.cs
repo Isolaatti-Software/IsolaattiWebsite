@@ -97,6 +97,9 @@ namespace isolaatti_API.Pages
             ViewData["numberOfFollowing"] = followingIds.Count;
             ViewData["numberOfLikes"] = _db.Likes.Count(like => like.TargetUserId.Equals(user.Id));
             ViewData["numberOfPosts"] = _db.SimpleTextPosts.Count(post => post.UserId.Equals(user.Id));
+            ViewData["profilePicUrl"] = user.ProfileImageData == null
+                ? null
+                : UrlGenerators.GenerateProfilePictureUrl(user.Id, Request.Cookies["isolaatti_user_session_token"]);
 
             ViewData["sessionToken"] = Request.Cookies["isolaatti_user_session_token"];
 

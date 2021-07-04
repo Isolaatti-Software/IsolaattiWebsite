@@ -40,6 +40,9 @@ namespace isolaatti_API.Pages
             ViewData["profile_email"] = profile.Email;
             ViewData["profile_id"] = profile.Id;
             if (user.Id == profile.Id) return RedirectToPage("MyProfile");
+            ViewData["profilePicUrl"] = user.ProfileImageData == null
+                ? null
+                : UrlGenerators.GenerateProfilePictureUrl(user.Id, Request.Cookies["isolaatti_user_session_token"]);
 
             var followingUsersIds = JsonSerializer.Deserialize<List<int>>(profile.FollowingIdsJson);
             var followersIds = JsonSerializer.Deserialize<List<int>>(profile.FollowersIdsJson);
