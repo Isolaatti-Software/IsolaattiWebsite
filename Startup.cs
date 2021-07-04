@@ -39,7 +39,7 @@ namespace isolaatti_API
                 Credential = GoogleCredential.FromStream(file)
             });
             services.AddControllers();
-            services.AddRazorPages();
+            services.AddRazorPages().AddRazorRuntimeCompilation();
             services.AddSignalR();
 
             services.AddDbContext<DbContextApp>(options =>
@@ -55,7 +55,10 @@ namespace isolaatti_API
             });
             services.Configure<ForwardedHeadersOptions>(options =>
             {
-                // options.KnownProxies.Add(IPAddress.Parse("159.203.108.20"));
+                options.ForwardedHeaders = ForwardedHeaders.All;
+                options.RequireHeaderSymmetry = false;
+                options.ForwardLimit = null;
+                options.KnownProxies.Add(IPAddress.Parse("159.203.108.20"));
                 options.KnownProxies.Add(IPAddress.Parse("127.0.0.1"));
             });
         }
