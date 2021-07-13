@@ -160,7 +160,16 @@ let vueContainer = new Vue({
         audioUrl: "",
         playing: false,
         paused: false,
-        postLinkToShare: ""
+        postLinkToShare: "",
+        commentsViewer: {
+            postId: 0,
+            comments: []
+        }
+    },
+    computed: {
+        openThreadLink: function() {
+            return `/Threads/${this.commentsViewer.postId}`;
+        }
     },
     methods: {
         likePost: function (post) {
@@ -257,6 +266,24 @@ let vueContainer = new Vue({
             request.onload = function() {
                 if(request.status === 200) {
                     globalThis.refresh();
+                }
+            }
+            request.send(form);
+        },
+        viewComments: function(post) {
+            this.commentsViewer.postId = post.id;
+            this.getComments();
+        },
+        getComments: function() {
+            let form = new FormData();
+            form.append("sessionToken", sessionToken);
+            form.append("postId", this.commentsViewer.postId);
+
+            let request = new XMLHttpRequest();
+            request.open("POST", "/api/GetPost/Comments");
+            request.onload = () => {
+                if(request.status === 200) {
+                    this.commentsViewer.comments = JSON.parse(request.responseText);
                 }
             }
             request.send(form);

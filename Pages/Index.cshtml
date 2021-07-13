@@ -7,59 +7,39 @@
     ViewData["Title"] = "Home";
 }
 <script>document.querySelector("#index-link").classList.add("custom-active-nav-link")</script>
-<div class="col-lg-3 col-md-2">
-
-        <ul class="nav flex-md-column overflow-auto flex-grow-0 mt-md-4 left-bar-g">
-            <li class="nav-item">
-                <a asp-page="Songs" class="nav-link">
-                    <i class="fas fa-music"></i> Music de-mixer
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="#" class="nav-link">
-                    <i class="fas fa-drum"></i> Just play
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="#" class="nav-link">
-                    <i class="fas fa-broadcast-tower"></i> Streaming
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="#" class="nav-link">
-                    <i class="fas fa-record-vinyl"></i> Record a masterpiece
-                </a>
-            </li>
-        </ul>
-</div>
-<div class="col-lg-6 col-md-8">
+<div class="col-lg-12">
     <main class="mt-4" id="vue-container">
-        <h5 class="ml-2 mt-2"><i class="far fa-newspaper"></i> New activity</h5>
-        <section id="posts-deposit" class="d-flex flex-column pt-1 mt-2 mb-3 align-items-center">
-            
-            <post-template v-for="post in posts" :post="post"
-                           v-on:like="likePost(post)"
-                           v-on:un-like="unLikePost(post)"
-                           v-model="postLinkToShare"
-                           v-on:delete="deletePost(post.id)"
-                           v-on:play-audio="playAudio(post.audioAttachedUrl)"
-                           :audio-url="audioUrl"
-                           :paused="paused">
-            </post-template>
-
-            <div v-if="loading" class="d-flex justify-content-center mt-2">
-                <div class="spinner-border" role="status">
-                    <span class="sr-only">Loading more content...</span>
-                </div>
-            </div>
-            <div v-if="noMoreContent" class="d-flex flex-column align-items-center mt-2">
-                <p>You've seen all new activity for now. Refresh in a while...</p>
-                <button class="btn btn-primary" v-on:click="refresh">
-                    <i class="fas fa-redo"></i>
-                </button>
-            </div>
-        </section>
         
+        <div class="d-flex align-items-center flex-column"
+             id="feed-and-thread-reader-container"
+             ref="feedAndThreadReaderContainer">
+            <h5 class="ml-2 mt-2"><i class="far fa-newspaper"></i> New activity</h5>
+            <section id="posts-deposit" class="d-flex flex-column pt-1 mt-2 mb-3 align-items-center posts-deposit">
+                <post-template v-for="post in posts" :post="post"
+                               v-on:like="likePost(post)"
+                               v-on:un-like="unLikePost(post)"
+                               v-model="postLinkToShare"
+                               v-on:delete="deletePost(post.id)"
+                               v-on:play-audio="playAudio(post.audioAttachedUrl)"
+                               :audio-url="audioUrl"
+                               :paused="paused"
+                               :is-modal="false"
+                               v-on:view-thread="viewComments(post)">
+                </post-template>
+                <div v-if="loading" class="d-flex justify-content-center mt-2">
+                    <div class="spinner-border" role="status">
+                        <span class="sr-only">Loading more content...</span>
+                    </div>
+                </div>
+                <div v-if="noMoreContent" class="d-flex flex-column align-items-center mt-2">
+                    <p>You've seen all new activity for now. Refresh in a while...</p>
+                    <button class="btn btn-primary" v-on:click="refresh">
+                        <i class="fas fa-redo"></i>
+                    </button>
+                </div>
+            </section>
+        </div>
+
         <div class="modal fade" id="modal-share-post">
             <div class="modal-dialog-centered modal-dialog">
                 <div class="modal-content">
@@ -80,9 +60,34 @@
                 </div>
             </div>
         </div>
+        
+        <div class="modal fade" id="thread-viewer">
+            <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <comment v-for="comment in commentsViewer.comments"
+                                 :comment="comment"
+                                 :audio-url="audioUrl"
+                                 :paused="paused"
+                                 v-on:play-audio="playAudio(comment.audioUrl)">
+                        </comment>
+                    </div>
+                    <div class="modal-footer">
+                        <span><a :href="openThreadLink" target="_blank">Open thread</a></span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
 </div>
-<div class="col-lg-3 col-md-2"></div>
+<div class="col-lg-3 col-md-2">
+    
+</div>
 <div class="modal fade" id="help-modal">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
@@ -192,5 +197,6 @@
 {
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="~/js/VueComponents/postComponent.js"></script>
+    <script src="~/js/VueComponents/commentComponent.js"></script>
     <script src="~/js/main_page.js"></script>
 }

@@ -91,28 +91,53 @@
                            v-on:delete="deletePost(post.id)"
                            v-on:play-audio="playAudio(post.audioAttachedUrl)"
                            :audio-url="audioUrl"
-                           :paused="paused">
+                           :paused="paused"
+                           :is-modal="false"
+                           v-on:view-thread="viewComments(post)">
             </post-template>
             <div class="modal fade" id="modal-share-post">
-                        <div class="modal-dialog-centered modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">
-                                        Share post
-                                    </h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    <p>
-                                        Use this link to share post
-                                    </p>
-                                    <button class="btn btn-primary" v-on:click="copyToClipboard(postLinkToShare)">Copy to clipboard</button>
-                                </div>
-                            </div>
+                <div class="modal-dialog-centered modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">
+                                Share post
+                            </h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p>
+                                Use this link to share post
+                            </p>
+                            <button class="btn btn-primary" v-on:click="copyToClipboard(postLinkToShare)">Copy to clipboard</button>
                         </div>
                     </div>
+                </div>
+            </div>
+            
+            <div class="modal fade" id="thread-viewer">
+                <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <comment v-for="comment in commentsViewer.comments"
+                                     :comment="comment"
+                                     :audio-url="audioUrl"
+                                     :paused="paused"
+                                     v-on:play-audio="playAudio(comment.audioUrl)">
+                            </comment>
+                        </div>
+                        <div class="modal-footer">
+                            <span><a :href="openThreadLink" target="_blank">Open thread</a></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
     </section>
 
@@ -133,5 +158,6 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="~/js/VueComponents/postComponent.js"></script>
+    <script src="~/js/VueComponents/commentComponent.js"></script>
     <script src="~/js/profile.js"></script>
 }

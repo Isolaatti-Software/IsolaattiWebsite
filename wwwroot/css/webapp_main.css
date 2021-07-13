@@ -300,11 +300,19 @@ span.user-name a{
     border-radius: 5px;
     padding: 10px;
     box-shadow: 1px 1px 2px rgb(175, 175, 175);
+    height: min-content;
 }
 
-#posts-deposit {
+.posts-deposit {
     padding-bottom: 40px;
+    width: 100%;
     max-width: 640px;
+}
+
+#post-viewer {
+    position: sticky;
+    top: 60px;
+    height: calc(100vh - 60px);
 }
 
 #left-bar {

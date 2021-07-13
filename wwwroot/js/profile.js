@@ -103,7 +103,16 @@ function getPosts(accountId, onComplete, onError) {
             playing: false,
             paused: false,
             loading: true,
-            postLinkToShare: ""
+            postLinkToShare: "",
+            commentsViewer: {
+                postId: 0,
+                comments: []
+            }
+        },
+        computed: {
+            openThreadLink: function() {
+                return `/Threads/${this.commentsViewer.postId}`;
+            }
         },
         methods: {
             likePost: function(post) {
@@ -178,6 +187,24 @@ function getPosts(accountId, onComplete, onError) {
                 navigator.clipboard.writeText(absoluteUrl).then(function() {
                     alert("Se copió el texto al portapapeles");
                 });
+            },
+            viewComments: function(post) {
+                this.commentsViewer.postId = post.id;
+                this.getComments();
+            },
+            getComments: function() {
+                let form = new FormData();
+                form.append("sessionToken", sessionToken);
+                form.append("postId", this.commentsViewer.postId);
+
+                let request = new XMLHttpRequest();
+                request.open("POST", "/api/GetPost/Comments");
+                request.onload = () => {
+                    if(request.status === 200) {
+                        this.commentsViewer.comments = JSON.parse(request.responseText);
+                    }
+                }
+                request.send(form);
             }
         },
         mounted: function() {

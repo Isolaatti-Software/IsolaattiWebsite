@@ -1,9 +1,9 @@
 Vue.component('post-template',{
-    props: ['post','audio-url','paused'],
+    props: ['post','audio-url','paused','is-modal'],
     data: function() {
         return {
             userData: userData,
-            sessionToken: sessionToken
+            sessionToken: sessionToken,
         }
     },
     computed: {
@@ -79,7 +79,7 @@ Vue.component('post-template',{
       <div class="mt-2 post-content" v-html="compileMarkdown(post.textContent)"></div>
       <div class="d-flex justify-content-end">
         <div class="btn-group btn-group-sm">
-          <a class="btn btn-dark btn-sm" :href="openThreadLink">
+          <a class="btn btn-dark btn-sm" href="#thread-viewer" data-toggle="modal" v-if="!isModal" v-on:click="$emit('view-thread')">
             <i class="fas fa-comments" aria-hidden="true"></i> {{ post.numberOfComments }}
           </a>
           <button v-if="!post.liked"  v-on:click="$emit('like',0.1)" class="btn btn-dark btn-sm" type="button">
