@@ -34,88 +34,31 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>const threadToReadId = @Model.ThisPost.Id;</script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="~/js/VueComponents/postComponent.js"></script>
+    <script src="~/js/VueComponents/commentComponent.js"></script>
     <script src="~/js/threads.js"></script>
 }
 
 <div class="col-lg-3 col-md-3"></div>
 <div class="col-lg-6 col-md-8">
     <div id="vue-container">
-        <div class="d-flex mb-2 flex-column p-2 post" :style="getPostStyle(post.themeJson)">
-            <div class="d-flex justify-content-between align-items-center">
-                <span class="user-name">
-                    <a :href="`/Profile?id=${post.userId}`">{{post.userName}}</a>
-                </span>
-                <div class="dropdown dropleft">
-                    <button class="btn btn-primary btn-sm" data-toggle="dropdown" aria-haspopup="true">
-                        <i class="fas fa-ellipsis-h"></i>
-                    </button>
-                    <div class="dropdown-menu">
-                        <a href="#" class="dropdown-item" v-if="post.userId===userId">Edit</a>
-                        <a href="#" class="dropdown-item">Share</a>
-                        <a href="#" class="dropdown-item" v-if="post.userId===userId">Delete</a>
-                        <a :href=`/Reports/ReportPostOrComment?postId=${post.id}` class="dropdown-item" target="_blank">Report</a>
-                    </div>
-                </div>
-            </div>
-            <div class="d-flex privacy-icon-container">
-                <div v-if="post.privacy === 2">
-                    <i class="fas fa-user-friends" title="People on Isolaatti" aria-hidden="true"></i><span class="sr-only">People on Isolaatti</span>
-                </div>
-                <div v-if="post.privacy === 3">
-                    <i class="fas fa-globe" title="All the world" aria-hidden="true"></i><span class="sr-only">Everyone</span>
-                </div>
-            </div>
-            <div class="d-flex mt-1" v-if="post.audioAttachedUrl !== null">
-                <button type="button" class="btn btn-primary btn-sm" v-on:click="playAudio(post.audioAttachedUrl)">
-                    <i class="fas fa-play" v-if="post.audioAttachedUrl !== audioUrl || paused"></i>
-                    <i class="fas fa-pause" v-else></i>
-                </button>
-            </div>
-            <div class="mt-2 post-content" v-html="compileMarkdown(post.textContent)"></div>
-            <div class="d-flex justify-content-end">
-                <button v-if="!post.liked" v-on:click="likePost(post)" class="btn btn-dark btn-sm" type="button">
-                    <i class="fas fa-thumbs-up" aria-hidden="true"></i> {{post.numberOfLikes}}
-                </button>
-                <button v-if="post.liked" v-on:click="unLikePost(post)" class="btn btn-primary btn-sm" type="button">
-                    <i class="fas fa-thumbs-up" aria-hidden="true"></i> {{post.numberOfLikes}}
-                </button>
-            </div>
-        </div>
+        <post-template :post="post"
+                       v-on:like="likePost(post)"
+                       v-on:un-like="unLikePost(post)"
+                       v-model="postLinkToShare"
+                       v-on:delete="deletePost(post.id)"
+                       v-on:play-audio="playAudio(post.audioAttachedUrl)"
+                       :audio-url="audioUrl"
+                       :paused="paused">
+        </post-template>
         <div class="d-flex flex-column ml-4 comments-container">
-            <div class="post d-flex mb-2 flex-column p-2" v-for="comment in comments">
-                <div class="d-flex justify-content-between align-items-center">
-                    <span class="user-name">
-                        <a :href="`/Profile?id=${comment.whoWrote}`">{{comment.whoWroteName}}</a>
-                    </span>
-                    <div class="dropdown dropleft">
-                        <button class="btn btn-primary btn-sm" data-toggle="dropdown" aria-haspopup="true">
-                            <i class="fas fa-ellipsis-h"></i>
-                        </button>
-                        <div class="dropdown-menu">
-                            <a href="#" class="dropdown-item" v-if="comment.whoWrote===userId">Edit</a>
-                            <a href="#" class="dropdown-item" v-if="comment.whoWrote===userId">Delete</a>
-                            <a :href=`/Reports/ReportPostOrComment?commentId=${comment.id}` class="dropdown-item" target="_blank">Report</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="d-flex mt-1" v-if="comment.audioUrl !== null">
-                    <button type="button" class="btn btn-primary btn-sm" v-on:click="playAudio(comment.audioUrl)">
-                        <i class="fas fa-play" v-if="comment.audioUrl !== audioUrl || paused"></i>
-                        <i class="fas fa-pause" v-else></i>
-                    </button>
-                </div>
-                <div class="d-flex privacy-icon-container">
-                    <div v-if="comment.privacy === 2">
-                        <i class="fas fa-user-friends" title="People on Isolaatti" aria-hidden="true"></i><span class="sr-only">People on Isolaatti</span>
-                    </div>
-                    <div v-if="comment.privacy === 3">
-                        <i class="fas fa-globe" title="All the world" aria-hidden="true"></i><span class="sr-only">Everyone</span>
-                    </div>
-                </div>
-                <div class="mt-2 post-content" v-html="compileMarkdown(comment.textContent)"></div>
-            </div>
+            <comment v-for="comment in comments"
+                     :comment="comment"
+                     :audio-url="audioUrl"
+                     :paused="paused"
+                     v-on:play-audio="playAudio(comment.audioUrl)">
+            </comment>
         </div>
-
         <section id="comment-box" class="d-flex flex-column justify-content-between p-2 ml-auto mr-auto" ref="commentBox">
             <div class="d-flex mb-1">
                 <div class="btn-group btn-group-sm overflow-auto">
@@ -169,53 +112,72 @@
                 </button>
             </div>
         </section>
+        <div class="modal fade" id="modal-share-post">
+            <div class="modal-dialog-centered modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            Share post
+                        </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            Use this link to share post
+                        </p>
+                        <button class="btn btn-primary" v-on:click="copyToClipboard(postLinkToShare)">Copy to clipboard</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="modal fade" id="add-audio-modal">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title"><i class="fas fa-microphone"></i> Add audio</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times</span>
-                            </button>
-                        </div>
-                        <div class="modal-body d-flex flex-column">
-                            <progress max="120" v-bind:value="audio.timeInSeconds"></progress>
-                            <span>{{audio.timeInSeconds}} seconds</span>
-                        </div>
-                        <div class="modal-footer d-flex flex-column">
-                            <div class="d-flex">
-                                @* This group shows to allow user to start recording *@
-                                <div class="btn-group" v-if="!audio.recording && !audio.recorded">
-                                    <button class="btn btn-danger" v-on:click="startRecording()" v-bind:disabled="audio.recorder.mediaStream == null">
-                                        Start recording
-                                    </button>
-                                </div>
-        
-                                @* This group is shown when an audio is being recorded*@
-                                <div class="btn btn-group" v-if="audio.recording">
-                                    <button class="btn btn-primary" v-on:click="stopRecording()">
-                                        Stop
-                                    </button>
-                                </div>
-        
-                                @* This group shows when an audio has been recorded *@
-                                <div class="btn-group" v-if="audio.recorded">
-                                    <button class="btn btn-info" v-on:click="playRecord()">
-                                        <i class="fas fa-play"></i>
-                                    </button>
-                                    <button class="btn btn-dark" v-on:click="resetRecording()">
-                                        Discard
-                                    </button>
-                                    <button class="btn btn-primary" v-on:click="consolidate()">
-                                        Continue
-                                    </button>
-                                </div>
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title"><i class="fas fa-microphone"></i> Add audio</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times</span>
+                        </button>
+                    </div>
+                    <div class="modal-body d-flex flex-column">
+                        <progress max="120" v-bind:value="audio.timeInSeconds"></progress>
+                        <span>{{audio.timeInSeconds}} seconds</span>
+                    </div>
+                    <div class="modal-footer d-flex flex-column">
+                        <div class="d-flex">
+                            @* This group shows to allow user to start recording *@
+                            <div class="btn-group" v-if="!audio.recording && !audio.recorded">
+                                <button class="btn btn-danger" v-on:click="startRecording()" v-bind:disabled="audio.recorder.mediaStream == null">
+                                    Start recording
+                                </button>
                             </div>
-                            
+        
+                            @* This group is shown when an audio is being recorded*@
+                            <div class="btn btn-group" v-if="audio.recording">
+                                <button class="btn btn-primary" v-on:click="stopRecording()">
+                                    Stop
+                                </button>
+                            </div>
+        
+                            @* This group shows when an audio has been recorded *@
+                            <div class="btn-group" v-if="audio.recorded">
+                                <button class="btn btn-info" v-on:click="playRecord()">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                                <button class="btn btn-dark" v-on:click="resetRecording()">
+                                    Discard
+                                </button>
+                                <button class="btn btn-primary" v-on:click="consolidate()">
+                                    Continue
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
     </div>
 </div>
 <div class="col-lg-3 col-md-3"></div>

@@ -36,7 +36,8 @@
                             audioPlayer: new Audio(),
                             resultantBlob: null
                         }
-                    }
+                    },
+                    postLinkToShare: ""
                 },
                 computed: {
                     makeCommentButtonDisabled: function() {
@@ -128,6 +129,50 @@
                     },
                     compileMarkdown: function(raw) {
                         return marked(raw);
+                    },
+                    copyToClipboard: function(relativeUrl) {
+                        let absoluteUrl = `${window.location.protocol}//${window.location.host}${relativeUrl}`;
+                        navigator.clipboard.writeText(absoluteUrl).then(function() {
+                            alert("Se copió el texto al portapapeles");
+                        });
+                    },
+                    deletePost: function(postId) {
+                        if(!confirm("Are your sure you want to delete this post?")) {
+                            return;
+                        }
+                        let globalThis = this;
+                        let form = new FormData();
+                        form.append("sessionToken", sessionToken);
+                        form.append("postId", postId);
+
+                        let request = new XMLHttpRequest();
+                        request.open("POST", "/api/EditPost/Delete");
+                        request.onload = function() {
+                            if(request.status === 200) {
+                                window.location = "/";
+                            }
+                        }
+                        request.send(form);
+                    },
+                    playAudio: function(url) {
+                        if(this.audioUrl !== url) {
+                            this.audioPlayer.pause();
+                            this.audioUrl = url
+                            this.audioPlayer.src = url;
+                            this.audioPlayer.play();
+                            this.paused = false;
+                        } else {
+                            if(!this.audioPlayer.paused) {
+                                this.audioPlayer.pause()
+                                this.paused = true;
+                                this.playing = false;
+                            } else {
+                                this.audioPlayer.play();
+                                this.playing = true;
+                                this.paused = false;
+                            }
+                        }
+                        this.playing = true;
                     },
                     toggleCommentBoxFullSize: function() {
                         let button = this.$refs.buttonToggleComSize;
@@ -271,26 +316,26 @@
                         }
                         request.send(form);
                     },
-                    playAudio: function(url) {
-                        if(this.audioUrl !== url) {
-                            this.audioPlayer.pause();
-                            this.audioUrl = url
-                            this.audioPlayer.src = url;
-                            this.audioPlayer.play();
-                            this.paused = false;
-                        } else {
-                            if(!this.audioPlayer.paused) {
-                                this.audioPlayer.pause()
-                                this.paused = true;
-                                this.playing = false;
-                            } else {
-                                this.audioPlayer.play();
-                                this.playing = true;
-                                this.paused = false;
-                            }
-                        }
-                        this.playing = true;
-                    },
+                    // playAudio: function(url) {
+                    //     if(this.audioUrl !== url) {
+                    //         this.audioPlayer.pause();
+                    //         this.audioUrl = url
+                    //         this.audioPlayer.src = url;
+                    //         this.audioPlayer.play();
+                    //         this.paused = false;
+                    //     } else {
+                    //         if(!this.audioPlayer.paused) {
+                    //             this.audioPlayer.pause()
+                    //             this.paused = true;
+                    //             this.playing = false;
+                    //         } else {
+                    //             this.audioPlayer.play();
+                    //             this.playing = true;
+                    //             this.paused = false;
+                    //         }
+                    //     }
+                    //     this.playing = true;
+                    // },
                     requestMicrophone: function() {
                         let audioStreamPromise = navigator.mediaDevices.getUserMedia({audio:true, video:false})
 
