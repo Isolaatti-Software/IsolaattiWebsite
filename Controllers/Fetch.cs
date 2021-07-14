@@ -39,9 +39,16 @@ namespace isolaatti_API.Controllers
             var accountsManager = new Accounts(_db);
             var user = accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
-            if (user.ProfileImageData == null) return NotFound();
-            if(user.Id == userId) return new FileContentResult(user.ProfileImageData,"image/png");
-
+            
+            if (user.Id == userId)
+            {
+                if (user.ProfileImageData != null)
+                {
+                    return new FileContentResult(user.ProfileImageData,"image/png");
+                }
+                return NotFound("Image not found");
+            }
+            
             var otherUser = _db.Users.Find(userId);
             if (otherUser == null) return NotFound("User not found");
             if(otherUser.ProfileImageData == null) return NotFound("Image not found");
