@@ -11,6 +11,7 @@
 using System;
 using System.Linq;
 using System.Net.Mail;
+using FirebaseAdmin.Auth;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Http;
 using MimeKit;
@@ -226,6 +227,68 @@ namespace isolaatti_API.isolaatti_lib
             var tokenObjs = db.SessionTokens.Where(sessionToken => sessionToken.UserId == userId);
             db.SessionTokens.RemoveRange(tokenObjs);
             db.SaveChanges();
+        }
+
+        public void MakeAccountFromGoogleAccount(string accessToken)
+        {
+            var decodedTokenTask = FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(accessToken);
+            decodedTokenTask.Wait();
+            
+            var uid = decodedTokenTask.Result.Uid;
+            var userTask = FirebaseAuth.DefaultInstance.GetUserAsync(uid);
+            userTask.Wait();
+            
+            var user = userTask.Result;
+            
+            // makes the isolaatti account taking the google user information
+            // Generates a random password. It is not needed for the user to know it, as the user will use google account
+            // to sign in. User can still change the password and sign in in the normal way
+            var state = MakeAccount(user.DisplayName, user.Email, GenerateRandomAlphaNumericPassword(10));
+
+            // no errors when making account
+            if (state.Equals("0"))
+            {
+                var isolaattiUser = db.Users.Single(u => u.Email.Equals(user.Email));
+                // Add relation between Isolaatti account and Google Account
+                var googleUser = new GoogleUser()
+                {
+                    UserId = isolaattiUser.Id,
+                    GoogleUid = user.Uid
+                };
+                db.GoogleUsers.Add(googleUser);
+                db.SaveChanges();
+            }
+        }
+        public SessionToken CreateTokenForGoogleUser(string accessToken)
+        {
+            var decodedTokenTask = FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(accessToken);
+            decodedTokenTask.Wait();
+            var uid = decodedTokenTask.Result.Uid;
+            var relation = db.GoogleUsers.Single(u => u.GoogleUid.Equals(uid));
+            var user = db.Users.Find(relation.UserId);
+            var sessionToken = new SessionToken()
+            {
+                UserId = user.Id,
+                IpAddress = _request.HttpContext.Connection.RemoteIpAddress.ToString(),
+                UserAgent = _request.Headers
+                    .ContainsKey(HeaderNames.UserAgent)
+                    ? _request.Headers[HeaderNames.UserAgent].ToString()
+                    : "Not provided"
+            };
+
+            return sessionToken;
+        }
+        
+        private static string GenerateRandomAlphaNumericPassword(int lenght)
+        {
+            var password = "";
+            do
+            {
+                password += Guid.NewGuid()
+                    .ToString().Replace("-", string.Empty);
+            } while (password.Length < lenght);
+            
+            return password.Remove(0,lenght - 1);
         }
     }
 }

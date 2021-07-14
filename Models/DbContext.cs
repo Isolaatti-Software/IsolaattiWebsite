@@ -33,5 +33,6 @@ namespace isolaatti_API.Models
         public DbSet<AdminAccountSessionToken> AdminAccountSessionTokens { get; set; }
         public DbSet<PostReport> PostReports { get; set; }
         public DbSet<CommentReport> CommentReports { get; set; }
+        public DbSet<GoogleUser> GoogleUsers { get; set; }
     }
 }
