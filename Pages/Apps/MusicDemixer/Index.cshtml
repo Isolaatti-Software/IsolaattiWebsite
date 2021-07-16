@@ -17,25 +17,25 @@
 </div>
 <div class="col-lg-3">
 
-    <section id="new-project-area" class="d-flex flex-column mt-2 mb-3 flat-card-dark">
+    <section id="new-project-area" class="d-flex p-3 flex-column mt-2 mb-3 post">
         <h5>New project</h5>
         <p>Upload an audio file and get "Drums", "Bass", "Vocals" and "Others". You can record your tracks and add them later</p>
         <a class="btn btn-primary" asp-page="NewProject">Create new project</a>
     </section>
-    <section class="d-flex flex-column mt-2 mb-3 flat-card-dark">
+    <section class="d-flex flex-column mt-4 mb-3 p-3 post">
         <h5>Files on queue</h5>
         <p>Manage your files on queue. You might want to remove some to prioritize cartain file.</p>
         <a asp-page="OnQueue" class="btn-primary btn">On queue</a>
     </section>
 </div>
 <div class="col-lg-9">
-    <section class="d-flex flex-column mt-2 mb-3 flat-card-dark">
+    <section class="d-flex flex-column mt-2 mb-3 p-3 post">
         <h5>Your projects</h5>
         @if (Model.SongsBeingProcessedList.Any())
         {
             <hr>
             <h2>Processing now</h2>
-            <table class="table table-responsive-sm table-borderless bg-dark text-white">
+            <table class="table table-responsive-sm table-borderless">
                 <thead>
                 <tr>
                     <th scope="col">Name</th>
@@ -72,12 +72,12 @@
             {
                 <h2>Available songs</h2>
             }
-            <div class="d-flex flex-wrap justify-content-around">
+            <div class="d-flex flex-wrap">
                @foreach (var song in Model.SongsList)
                {
                    <div class="song-item">
                        <div class="d-flex justify-content-end pr-1 pt-1">
-                           <button class="btn btn-link text-white-50" data-toggle="dropdown"><i class="fas fa-ellipsis-h"></i></button>
+                           <button class="btn btn-link" data-toggle="dropdown"><i class="fas fa-ellipsis-h"></i></button>
                            <div class="dropdown-menu">
                                <a class="dropdown-item" href="#modifySongInfoModal" data-toggle="modal" data-id="@song.Id" data-name="@song.OriginalFileName" data-artist="@song.Artist">Edit details</a>
                                <a class="dropdown-item" href="#shareSongModal" data-toggle="modal" data-songid="@song.Id" data-songname="@song.OriginalFileName" data-artist="@song.Artist">Share</a>
@@ -90,7 +90,7 @@
                            <div class="song-item-icon">
                                <i class="fas fa-music"></i>
                            </div>
-                           <div class="d-flex flex-column small mr-1 ml-1 text-white">
+                           <div class="d-flex flex-column small mr-1 ml-1">
                                <span>@song.OriginalFileName</span>
                                <span>@song.Artist</span>
                            </div>

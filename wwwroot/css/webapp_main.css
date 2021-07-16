@@ -371,10 +371,12 @@ footer#footer>a, footer#footer>span {
 .song-item {
     width: 200px;
     border-radius: 5px;
-    border: 1px solid #6200EE;
     display: flex;
     flex-direction: column;
     margin-bottom: 20px;
+    box-shadow: 1px 1px 2px rgb(175, 175, 175);
+    border-radius: 5px;
+    padding: 10px;
 }
 
 .song-item a:hover {
@@ -384,7 +386,7 @@ footer#footer>a, footer#footer>span {
 .song-item .song-item-icon {
     width: 100%;
     height: 110px;
-    color:white;
+    color:black;
     font-size: larger;
     display: flex;
     align-items: center;
