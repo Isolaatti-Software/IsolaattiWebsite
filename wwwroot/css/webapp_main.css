@@ -76,6 +76,12 @@ body {
     }
 }
 
+@media screen and (max-width: 370px) {
+    #index-link {
+        display: none;
+    }
+}
+
 /* Rule for vertical slider */
 input[type=range][orient=vertical] {
     writing-mode: bt-lr; /* IE */
