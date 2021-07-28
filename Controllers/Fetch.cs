@@ -1,3 +1,4 @@
+using System.IO;
 using isolaatti_API.Classes;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
@@ -39,19 +40,20 @@ namespace isolaatti_API.Controllers
             var accountsManager = new Accounts(_db);
             var user = accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
-            
+
             if (user.Id == userId)
             {
                 if (user.ProfileImageData != null)
                 {
                     return new FileContentResult(user.ProfileImageData,"image/png");
                 }
-                return NotFound("Image not found");
+
+                return Redirect("/res/imgs/user.png");
             }
             
             var otherUser = _db.Users.Find(userId);
             if (otherUser == null) return NotFound("User not found");
-            if(otherUser.ProfileImageData == null) return NotFound("Image not found");
+            if(otherUser.ProfileImageData == null) return Redirect("/res/imgs/user.png");
             return new FileContentResult(otherUser.ProfileImageData,"image/png");
         }
     }
