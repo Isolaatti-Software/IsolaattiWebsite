@@ -1,3 +1,5 @@
+using System;
+
 namespace isolaatti_API.Models
 {
     public class SimpleTextPost
@@ -10,5 +12,6 @@ namespace isolaatti_API.Models
         public int Privacy { get; set; }
         public string AudioAttachedUrl { get; set; }
         public string ThemeJson { get; set; }
+        public DateTime Date { get; set; }
     }
 }

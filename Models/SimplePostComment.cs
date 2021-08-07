@@ -1,3 +1,5 @@
+using System;
+
 namespace isolaatti_API.Models
 {
     public class Comment
@@ -9,5 +11,6 @@ namespace isolaatti_API.Models
         public int TargetUser { get; set; }
         public int Privacy { get; set; }
         public string AudioUrl { get; set; }
+        public DateTime Date { get; set; }
     }
 }
