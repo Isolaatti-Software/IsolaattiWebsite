@@ -418,3 +418,8 @@ footer#footer>a, footer#footer>span {
 #your-posts-deposit {
     max-width: 640px;
 }
+
+.username-profile {
+    font-size: 1.7em;
+    font-weight: bold;
+}
