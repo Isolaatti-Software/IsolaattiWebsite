@@ -25,12 +25,12 @@ const vue = new Vue({
         },
         theme: {
             fontColor: "#000",
-            backgroundColor: "#d9d9d9",
+            backgroundColor: "#FFFFFF",
             border: {
-                color: "#d9d9d9",
+                color: "#FFFFFF",
                 type: "solid",
                 size: "0",
-                radius: "0"
+                radius: "5px"
             }
         },
         editing: editExistingPost,
