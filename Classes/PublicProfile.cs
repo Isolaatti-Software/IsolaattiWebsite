@@ -4,5 +4,8 @@ namespace isolaatti_API.Classes
     {
         public int Id;
         public string Name;
+        public int NumberOfFollowers;
+        public int NumberOfFollowing;
+        public string Description;
     }
 }

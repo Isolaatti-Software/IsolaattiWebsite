@@ -1,4 +1,6 @@
 @page
+@using isolaatti_API.Utils
+@using Org.BouncyCastle.Asn1.Pkcs
 @model isolaatti_API.Pages.Search
 
 @{
@@ -37,8 +39,17 @@
                 {
                     @foreach (var publicProfile in Model.PublicProfiles)
                     {
-                        <a class="list-group-item list-group-item-action bg-dark text-white" asp-page="Profile" asp-route-id="@publicProfile.Id">
-                            @publicProfile.Name
+                        <a class="list-group-item list-group-item-action" asp-page="Profile" asp-route-id="@publicProfile.Id">
+                            <div class="media">
+                                <img src="@UrlGenerators.GenerateProfilePictureUrl(publicProfile.Id,Model.sessionToken)" 
+                                     width="64" height="64"
+                                     class="mr-3"/>
+                                <div class="media-body">
+                                    <h5 class="mt-0">@publicProfile.Name</h5>
+                                    <p>@publicProfile.Description</p>
+                                    <small>Followers: @publicProfile.NumberOfFollowers, Following: @publicProfile.NumberOfFollowing</small>
+                                </div>
+                            </div>
                         </a>
                     }
                 }

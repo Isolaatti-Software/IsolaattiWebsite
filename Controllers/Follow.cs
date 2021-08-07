@@ -34,6 +34,8 @@ namespace isolaatti_API.Controllers
                 usersUserIsFollowing.Add(userToFollow.Id);
                 user.FollowingIdsJson = JsonSerializer.Serialize(usersUserIsFollowing);
             }
+
+            user.NumberOfFollowing = usersUserIsFollowing.Count;
             
             // update the followers list of the "user to follow" to add a new follower (the user)
             var followersOfFollowed = JsonSerializer.Deserialize<List<int>>(userToFollow.FollowersIdsJson);
@@ -42,6 +44,8 @@ namespace isolaatti_API.Controllers
                 followersOfFollowed.Add(user.Id);
                 userToFollow.FollowersIdsJson = JsonSerializer.Serialize(followersOfFollowed);
             }
+
+            userToFollow.NumberOfFollowers = followersOfFollowed.Count;
             
             Db.Users.Update(user);
             Db.Users.Update(userToFollow);
@@ -65,10 +69,14 @@ namespace isolaatti_API.Controllers
             usersUserIsFollowing.Remove(userToUnfollow.Id);
             user.FollowingIdsJson = JsonSerializer.Serialize(usersUserIsFollowing);
             
+            user.NumberOfFollowing = usersUserIsFollowing.Count;
+            
             // update the followers list of the "user to follow" to remove the follower (the user)
             var followersOfFollowed = JsonSerializer.Deserialize<List<int>>(userToUnfollow.FollowersIdsJson);
             followersOfFollowed.Remove(user.Id);
             userToUnfollow.FollowersIdsJson = JsonSerializer.Serialize(followersOfFollowed);
+            
+            userToUnfollow.NumberOfFollowers = followersOfFollowed.Count;
             
             Db.Users.Update(user);
             Db.Users.Update(userToUnfollow);

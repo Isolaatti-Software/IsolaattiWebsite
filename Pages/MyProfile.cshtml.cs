@@ -93,8 +93,8 @@ namespace isolaatti_API.Pages
                 Following.Add(_db.Users.Find(followingId));
             }
 
-            ViewData["numberOfFollowers"] = followersIds.Count;
-            ViewData["numberOfFollowing"] = followingIds.Count;
+            ViewData["numberOfFollowers"] = user.NumberOfFollowers;
+            ViewData["numberOfFollowing"] = user.NumberOfFollowing;
             ViewData["numberOfLikes"] = _db.Likes.Count(like => like.TargetUserId.Equals(user.Id));
             ViewData["numberOfPosts"] = _db.SimpleTextPosts.Count(post => post.UserId.Equals(user.Id));
             ViewData["profilePicUrl"] = user.ProfileImageData == null

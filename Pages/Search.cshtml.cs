@@ -13,6 +13,7 @@ namespace isolaatti_API.Pages
     {
         private readonly DbContextApp _db;
         public List<PublicProfile> PublicProfiles = new List<PublicProfile>();
+        public string sessionToken;
 
         public Search(DbContextApp dbContextApp)
         {
@@ -25,6 +26,7 @@ namespace isolaatti_API.Pages
             var user = accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
             if (user == null) return RedirectToPage("LogIn");
             // here it's know that account is correct. Data binding!
+            sessionToken = Request.Cookies["isolaatti_user_session_token"];
             ViewData["name"] = user.Name;
             ViewData["email"] = user.Email;
             ViewData["userId"] = user.Id;
@@ -32,8 +34,8 @@ namespace isolaatti_API.Pages
             ViewData["query"] = q;
             ViewData["profilePicUrl"] = user.ProfileImageData == null
                 ? null
-                : UrlGenerators.GenerateProfilePictureUrl(user.Id, Request.Cookies["isolaatti_user_session_token"]);
-
+                : UrlGenerators.GenerateProfilePictureUrl(user.Id, sessionToken);
+            
             var allAccounts = _db.Users;
             if (q == null || string.IsNullOrWhiteSpace(q))
             {
@@ -49,7 +51,10 @@ namespace isolaatti_API.Pages
                 PublicProfiles.Add(new PublicProfile()
                 {
                     Name = account.Name,
-                    Id = account.Id
+                    Id = account.Id,
+                    NumberOfFollowers = account.NumberOfFollowers,
+                    NumberOfFollowing = account.NumberOfFollowing,
+                    Description = account.DescriptionText
                 });
             }
 
@@ -76,7 +81,10 @@ namespace isolaatti_API.Pages
                     PublicProfiles.Add(new PublicProfile()
                     {
                         Name = account.Name,
-                        Id = account.Id
+                        Id = account.Id,
+                        NumberOfFollowers = account.NumberOfFollowers,
+                        NumberOfFollowing = account.NumberOfFollowing,
+                        Description = account.DescriptionText
                     });
                 }
             }

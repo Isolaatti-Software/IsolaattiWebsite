@@ -49,8 +49,8 @@ namespace isolaatti_API.Pages
             ViewData["numberOfLikes"] = _db.Likes.Count(like => like.TargetUserId.Equals(profile.Id));
             ViewData["followingThisUser"] = followersIds.Contains(user.Id);
             ViewData["thisUserIsFollowingMe"] = followingUsersIds.Contains(user.Id);
-            ViewData["numberOfFollowers"] = followersIds.Count();
-            ViewData["numberOfFollowing"] = followingUsersIds.Count();
+            ViewData["numberOfFollowers"] = profile.NumberOfFollowers;
+            ViewData["numberOfFollowing"] = profile.NumberOfFollowing;
                     
             ViewData["numberOfPosts"] = _db.SimpleTextPosts.Count(post => post.UserId.Equals(profile.Id));
 
