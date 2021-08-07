@@ -46,12 +46,14 @@ namespace isolaatti_API.Controllers
         [HttpPost]
         [Route("FromWeb")]
         public IActionResult FromWeb([FromForm] string newUsername, 
-            [FromForm] string newEmail)
+            [FromForm] string newEmail, [FromForm] string newDescription)
         {
             var accountsManager = new Accounts(Db);
             var sessionToken = Request.Cookies["isolaatti_user_session_token"];
             var user = accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
+            
+            user.DescriptionText = newDescription;
             
             // verify if name or email is used by someone else
             var nameRepeated = Db.Users.Any(_ => _.Name.Equals(newUsername) && !_.Id.Equals(user.Id));

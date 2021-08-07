@@ -26,6 +26,7 @@
         </div>
         <div class="translucent-white-card">
             <p class="text-center m-0 overflow-auto text-break username-profile">@ViewData["name"]</p>
+            <p class="text-break text-center">@ViewData["description"]</p>
             <nav class="d-flex justify-content-center">
                 <button class="btn btn-primary btn-sm" id="edit-profile-button"
                         data-target="#modal-edit-profile" data-toggle="modal">
@@ -173,6 +174,10 @@
                     <div class="form-group">
                         <label for="edit-email-field">Email</label>
                         <input type="email" id="edit-email-field" class="form-control" name="newEmail">
+                    </div>
+                    <div class="from-group">
+                        <label for="">Description</label>
+                        <textarea id="description-text-field" class="form-control" name="newDescription">@ViewData["description"]</textarea>
                     </div>
                     <input type="hidden" name="id" value="@ViewData["id"]">
                     <input type="hidden" name="password" value="@ViewData["password"]">
@@ -324,12 +329,11 @@
                             }
                             else
                             {
-                                <img src='@UrlGenerators.GenerateProfilePictureUrl(user.Id,(string)ViewData["sessionToken"])' 
+                                <img src='@UrlGenerators.GenerateProfilePictureUrl(user.Id, (string)ViewData["sessionToken"])' 
                                      width="100" height="100" class="profile-pic mt-3"/>
                             }
                             <h6>@user.Name</h6>
-                        </a>
-                    }
+                        </a>                    }
                 </div>
             </div>
         </div>
@@ -365,12 +369,11 @@
                             }
                             else
                             {
-                                <img src='@UrlGenerators.GenerateProfilePictureUrl(user.Id,(string)ViewData["sessionToken"])' 
+                                <img src='@UrlGenerators.GenerateProfilePictureUrl(user.Id, (string)ViewData["sessionToken"])' 
                                      width="100" height="100" class="profile-pic mt-3"/>
                             }
                             <h6>@user.Name</h6>
-                        </a>
-                    }
+                        </a>                    }
                 </div>
             </div>
         </div>
