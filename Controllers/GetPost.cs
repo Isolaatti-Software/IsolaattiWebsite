@@ -58,7 +58,8 @@ namespace isolaatti_API.Controllers
                     TextContent = com.TextContent,
                     WhoWrote = com.WhoWrote,
                     WhoWroteName = _db.Users.Find(com.WhoWrote).Name,
-                    AudioUrl = com.AudioUrl
+                    AudioUrl = com.AudioUrl,
+                    Date = com.Date
                 });
             return Ok(comments);
         }
@@ -82,12 +83,14 @@ namespace isolaatti_API.Controllers
                         TextContent = com.TextContent,
                         WhoWrote = com.WhoWrote,
                         WhoWroteName = _db.Users.Find(com.WhoWrote).Name,
-                        AudioUrl = com.AudioUrl
+                        AudioUrl = com.AudioUrl,
+                        Date = com.Date
                     }),
                 post = new ReturningPostsComposedResponse(post)
                 {
-                UserName = _db.Users.Find(post.UserId).Name,
-                NumberOfComments = _db.Comments.Count(comment => comment.SimpleTextPostId.Equals(post.Id)),
+                    UserName = _db.Users.Find(post.UserId).Name,
+                    NumberOfComments = _db.Comments.Count(comment => comment.SimpleTextPostId.Equals(post.Id)),
+                    Date = post.Date
                 }
             });
         }
