@@ -13,7 +13,8 @@ namespace isolaatti_API.Classes
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public string ProfilePhotoUrl { get; set; }
+        public string Description { get; set; }
+        public string DescriptionAudioUrl { get; set; }
         public string Email { get; set; }
     }
 }

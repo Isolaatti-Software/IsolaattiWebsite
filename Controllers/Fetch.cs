@@ -29,7 +29,8 @@ namespace isolaatti_API.Controllers
                 Id = user.Id,
                 Email = user.Email,
                 Name = user.Name,
-                ProfilePhotoUrl = ""
+                Description = user.DescriptionText,
+                DescriptionAudioUrl = user.DescriptionAudioUrl
             });
         }
 
