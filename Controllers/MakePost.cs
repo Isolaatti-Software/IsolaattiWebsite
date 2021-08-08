@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using isolaatti_API.Classes;
 using isolaatti_API.isolaatti_lib;
@@ -79,7 +80,8 @@ namespace isolaatti_API.Controllers
                 TextContent = content,
                 Privacy = privacy,
                 AudioAttachedUrl = audioUrl,
-                ThemeJson = themeJson
+                ThemeJson = themeJson,
+                Date = DateTime.Now
             };
 
             Db.SimpleTextPosts.Add(newPost);

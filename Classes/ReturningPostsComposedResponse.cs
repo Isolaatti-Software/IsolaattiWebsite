@@ -14,6 +14,7 @@ namespace isolaatti_API.Classes
             AudioAttachedUrl = post.AudioAttachedUrl;
             NumberOfComments = post.NumberOfComments;
             ThemeJson = post.ThemeJson;
+            Date = post.Date;
         }
         public string UserName { get; set; }
         public bool Liked { get; set; }

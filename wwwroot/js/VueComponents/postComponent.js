@@ -54,6 +54,7 @@ Vue.component('post-template',{
               <div v-if="post.privacy === 3">
                 <i class="fas fa-globe" title="All the world" aria-hidden="true"></i><span class="sr-only">Everyone</span>
               </div>
+              <span>{{new Date(post.date).toUTCString()}}</span>
             </div>
           </div>
         </div>
