@@ -74,6 +74,13 @@ body {
     #mobile-search-button-appear, #search-bar-mobile-button-close {
         display: block;
     }
+    #left-bar {
+        position:sticky;
+        top: 55px;
+        background: linear-gradient(rgba(48, 9, 142,0.9) 5% ,white);
+        padding-bottom: 50px;
+        height: max-content!important;
+    }
 }
 
 @media screen and (max-width: 370px) {
@@ -320,14 +327,14 @@ span.user-name a{
     top: 60px;
     height: calc(100vh - 60px);
 }
-
 #left-bar {
     position:sticky;
     top: 55px;
     background: linear-gradient(rgba(48, 9, 142,0.9) 5% ,white);
     padding-bottom: 50px;
+    height: calc(100vh - 55px);
+    overflow: auto;
 }
-
 .left-bar-g {
     position:sticky;
     top: 55px;
