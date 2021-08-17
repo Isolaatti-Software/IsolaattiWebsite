@@ -29,6 +29,8 @@ namespace isolaatti_API.Controllers
             if (post == null) return Unauthorized("Post does not exist");
             if (Db.Likes.Any(element => element.UserId == user.Id && element.PostId == postId))
                 return Unauthorized("Post already liked");
+
+            var notificationsAdministration = new NotificationsAdministration(Db);
             
             Db.Likes.Add(new Like()
             {
@@ -39,6 +41,8 @@ namespace isolaatti_API.Controllers
             post.NumberOfLikes += 1;
             Db.SimpleTextPosts.Update(post);
             Db.SaveChanges();
+            
+            notificationsAdministration.NewLikesActivityNotification(post.UserId, user.Id, post.Id, post.NumberOfLikes);
             
             return Ok(new ReturningPostsComposedResponse(post)
             {

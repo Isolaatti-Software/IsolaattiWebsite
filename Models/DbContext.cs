@@ -34,5 +34,6 @@ namespace isolaatti_API.Models
         public DbSet<PostReport> PostReports { get; set; }
         public DbSet<CommentReport> CommentReports { get; set; }
         public DbSet<GoogleUser> GoogleUsers { get; set; }
+        public DbSet<SocialNotification> SocialNotifications { get; set; }
     }
 }

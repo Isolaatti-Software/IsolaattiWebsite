@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using isolaatti_API.Classes;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
@@ -29,7 +30,7 @@ namespace isolaatti_API.Controllers
             if (post == null || (post.Privacy == 1 && post.UserId != user.Id)) 
                 return NotFound("Post does not exist or is private");
 
-
+            var notificationsAdministration = new NotificationsAdministration(_db);
             var newComment = new Comment()
             {
                 Privacy = 2,
@@ -41,8 +42,17 @@ namespace isolaatti_API.Controllers
                 Date = DateTime.Now
             };
             _db.Comments.Add(newComment);
+
+            var numberOfComments = _db.Comments.Count(comment => comment.SimpleTextPostId == postId);
+            
+            notificationsAdministration
+                .NewCommentsActivityNotification(post.UserId, user.Id, postId, 
+                    numberOfComments);
+            
             _db.SaveChanges();
+            
             AsyncDatabaseUpdates.UpdateNumberOfComments(_db, post.Id);
+            
             return Ok(new ReturningCommentComposedResponse()
             {
                 Id = newComment.Id,
@@ -50,7 +60,8 @@ namespace isolaatti_API.Controllers
                 SimpleTextPostId = newComment.SimpleTextPostId,
                 TextContent = newComment.TextContent,
                 WhoWrote = newComment.WhoWrote,
-                WhoWroteName = user.Name
+                WhoWroteName = user.Name,
+                Date = newComment.Date
             });
         }
     }
