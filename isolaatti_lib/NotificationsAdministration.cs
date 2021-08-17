@@ -80,7 +80,7 @@ namespace isolaatti_API.isolaatti_lib
             _db.SaveChanges();
         }
 
-        public void NewCommentsActivityNotification(int userToNotifyId, int lastUserWhoCommentedId, long postId, int numberOfComments)
+        public void NewCommentsActivityNotification(int userToNotifyId, int lastUserWhoCommentedId, long postId, long numberOfComments)
         {
             if (userToNotifyId == lastUserWhoCommentedId) return;
             
@@ -168,10 +168,13 @@ namespace isolaatti_API.isolaatti_lib
                 Read = false,
                 Type = TypeNewFollower,
                 UserId = userWhoIsFollowed,
-                DataJson = JsonSerializer.Serialize(data)
+                DataJson = JsonSerializer.Serialize(data),
+                TimeSpan = DateTime.Now
             };
 
             _db.SocialNotifications.Add(newNotification);
+
+            _db.SaveChanges();
         }
     }
 }
