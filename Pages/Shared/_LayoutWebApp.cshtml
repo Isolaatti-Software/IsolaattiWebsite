@@ -22,6 +22,7 @@
     <link rel="icon" type="image/png" sizes="32x32" href="~/favicon-32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="~/favicon-16.png">
     <link rel="stylesheet" href="~/css/custom_bootstrap.css"/>
+    <link rel="stylesheet" href="~/css/notifications-container-style.css">
     @RenderSection("CSS", required:false)
     <script src="https://kit.fontawesome.com/fde197fc03.js" crossorigin="anonymous"></script>
     <script>
@@ -32,127 +33,121 @@
 <body>
 @if (ViewData["isAndroid"] == null || !(bool) ViewData["isAndroid"])
 {
-    <nav class="d-flex custom-nav sticky-top" id="isolaatti-top-bar">
-        <a href="/" class="nav-link custom-nav-link" id="isolaatti_brand"></a>
-        <a class="nav-link custom-nav-link"
-           asp-page="/Index"
-           id="index-link">
-            <i class="fas fa-home"></i>
-        </a>
-        <a class="nav-link custom-nav-link"
-           asp-page="/PostEditor"
-           title="Post Editor"
-           id="post-editor-link">
-            <i class="fas fa-edit"></i>
-        </a>
-        <a class="nav-link custom-nav-link"
-           asp-page="/Apps/Index"
-           title="Musical tools"
-           id="musical-tools-link">
-            <i class="fas fa-toolbox"></i>
-        </a>
-        <div class="d-flex flex-grow-1 ml-auto" id="search-bar-fixed-top">
-            <button type="button" 
-                    class="btn btn-dark btn-sm mr-1" 
-                    id="search-bar-mobile-button-close">
-                <i class="far fa-window-close"></i>
-            </button>
-            <input type="text" 
-                   class="form-control search-bar-on-top flex-grow-1" 
-                   form="form-search" 
-                   name="q" 
-                   placeholder="Search for people, projects, and threads"/>
-            <button class="btn btn-primary btn-sm ml-1"
-                    type="submit"
-                    form="form-search">
-                <i class="fas fa-search"></i>
-            </button>
-        </div>
-        <a href="#" 
-           class="nav-link custom-nav-link" 
-           id="mobile-search-button-appear">
-            <i class="fas fa-search"></i>
-        </a>
-        <div class="dropdown ml-auto">
-            <a class="nav-link custom-nav-link nav-link mr-1" 
-               href="#" 
-               role="button" 
-               id="dropdownNotificationsMenuLink" 
-               data-toggle="dropdown" 
-               aria-haspopup="true" aria-expanded="false">
-                <i class="fas fa-bell"></i>
-            </a>
-            <div class="dropdown-menu dropdown-menu-right" 
-                 id="vue-container-notifications">
-                <div class="dropdown-header">
-                    Notifications
+
+    
+    <div id="vue-container-for-notifications" class="sticky-top">
+            <nav class="d-flex custom-nav" id="isolaatti-top-bar">
+                <a href="/" class="nav-link custom-nav-link" id="isolaatti_brand"></a>
+                <a class="nav-link custom-nav-link"
+                   asp-page="/Index"
+                   id="index-link">
+                    <i class="fas fa-home"></i>
+                </a>
+                <a class="nav-link custom-nav-link"
+                   asp-page="/PostEditor"
+                   title="Post Editor"
+                   id="post-editor-link">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <a class="nav-link custom-nav-link"
+                   asp-page="/Apps/Index"
+                   title="Musical tools"
+                   id="musical-tools-link">
+                    <i class="fas fa-toolbox"></i>
+                </a>
+                <div class="d-flex flex-grow-1 ml-auto" id="search-bar-fixed-top">
+                    <button type="button" 
+                            class="btn btn-dark btn-sm mr-1" 
+                            id="search-bar-mobile-button-close">
+                        <i class="far fa-window-close"></i>
+                    </button>
+                    <input type="text" 
+                           class="form-control search-bar-on-top flex-grow-1" 
+                           form="form-search" 
+                           name="q" 
+                           placeholder="Search for people, projects, and threads"/>
+                    <button class="btn btn-primary btn-sm ml-1"
+                            type="submit"
+                            form="form-search">
+                        <i class="fas fa-search"></i>
+                    </button>
                 </div>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item"
-                   href="#"
-                   v-for="notification in notifications">
-                    {{notification}}
+                <a href="#" 
+                   class="nav-link custom-nav-link" 
+                   id="mobile-search-button-appear">
+                    <i class="fas fa-search"></i>
                 </a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item"
-                   asp-page="/Notifications">
-                    All notifications
+                <a class="nav-link custom-nav-link nav-link mr-1 ml-auto" 
+                   href="#" 
+                   role="button" 
+                   id="dropdownNotificationsMenuLink"
+                   aria-haspopup="true" aria-expanded="false"
+                   v-on:click="toggleNotificationsSlider">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge badge-light">{{unreadCount}}</span>
                 </a>
-            </div>
-        </div>
-        
-        <div class="dropdown ">
-            <a class="nav-link custom-nav-link nav-link ml-auto mr-1 dropdown-toggle" 
-               href="#" 
-               role="button" 
-               id="dropdownMenuLink" 
-               data-toggle="dropdown" 
-               aria-haspopup="true" 
-               aria-expanded="false">
-                @if (ViewData["profilePicUrl"] == null)
-                {
-                    <i class="fas fa-user-circle"></i>
-                }
-                else
-                {
-                    <img width="40" height="40" src="@ViewData["profilePicUrl"]" class="user-avatar"/>
-                }
-            </a>
-            <div class="dropdown-menu dropdown-menu-right" 
-                 aria-labelledby="dropdownMenuLink">
-                <div class="dropdown-header">
-                    @ViewData["name"]
+
+                <div class="dropdown ">
+                    <a class="nav-link custom-nav-link nav-link ml-auto mr-1 dropdown-toggle" 
+                       href="#" 
+                       role="button" 
+                       id="dropdownMenuLink" 
+                       data-toggle="dropdown" 
+                       aria-haspopup="true" 
+                       aria-expanded="false">
+                        @if (ViewData["profilePicUrl"] == null)
+                        {
+                            <i class="fas fa-user-circle"></i>
+                        }
+                        else
+                        {
+                            <img width="40" height="40" src="@ViewData["profilePicUrl"]" class="user-avatar"/>
+                        }
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" 
+                         aria-labelledby="dropdownMenuLink">
+                        <div class="dropdown-header">
+                            @ViewData["name"]
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <a asp-page="/MyProfile" 
+                           class="dropdown-item">
+                            @if (ViewData["profilePicUrl"] == null)
+                            {
+                                <i class="fas fa-user-circle"></i>
+                            }
+                            else
+                            {
+                                <img width="40" height="40" src="@ViewData["profilePicUrl"]" class="user-avatar"/>
+                            }
+                            My Profile
+                        </a>
+                        
+                        <a class="dropdown-item" 
+                           asp-page="/Settings">
+                            <i class="fas fa-cog"></i>Settings
+                        </a>
+                        <a class="dropdown-item" 
+                           asp-page="/About" 
+                           target="_blank">
+                            <i class="fas fa-info"></i>About
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" 
+                           href="/WebLogOut"><i class="fas fa-sign-out-alt"></i>Sign out</a>
+                    </div>
                 </div>
-                <div class="dropdown-divider"></div>
-                <a asp-page="/MyProfile" 
-                   class="dropdown-item">
-                    @if (ViewData["profilePicUrl"] == null)
-                    {
-                        <i class="fas fa-user-circle"></i>
-                    }
-                    else
-                    {
-                        <img width="40" height="40" src="@ViewData["profilePicUrl"]" class="user-avatar"/>
-                    }
-                    My Profile
-                </a>
-                
-                <a class="dropdown-item" 
-                   asp-page="/Settings">
-                    <i class="fas fa-cog"></i>Settings
-                </a>
-                <a class="dropdown-item" 
-                   asp-page="/About" 
-                   target="_blank">
-                    <i class="fas fa-info"></i>About
-                </a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" 
-                   href="/WebLogOut"><i class="fas fa-sign-out-alt"></i>Sign out</a>
+            </nav>
+            <form id="form-search" asp-page="Search" method="get"></form>
+            
+            <div id="notifications-container" ref="notificationsSlider">
+                <h3 class="p-4 m-0">Notifications</h3>
+                <notification v-for="notification in notifications" 
+                              :notification-obj="notification">
+                    
+                </notification>
             </div>
-        </div>
-    </nav>
-    <form id="form-search" asp-page="Search" method="get"></form>
+    </div>
 }
 
 <div class="container-fluid p-0">
@@ -168,6 +163,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/3.1.7/signalr.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
 @RenderSection("Scripts", required: false)
+<script src="~/js/VueComponents/notificationComponent.js"></script>
 <script src="~/js/realtime-notifications.js"></script>
 <script>
 let searchBar = document.querySelector("#search-bar-fixed-top");

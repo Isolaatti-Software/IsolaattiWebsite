@@ -12,6 +12,7 @@ body {
     scroll-behavior: smooth;
     min-height: 100vh;
     position: relative;
+    overflow-x: hidden;
 }
 .custom-nav {
     background-color: rgba(48, 9, 142,0.9);
