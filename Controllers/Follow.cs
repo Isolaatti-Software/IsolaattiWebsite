@@ -1,8 +1,11 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
+using isolaatti_API.Hubs;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace isolaatti_API.Controllers
 {
@@ -11,10 +14,12 @@ namespace isolaatti_API.Controllers
     public class Follow : Controller
     {
         private readonly DbContextApp Db;
+        private readonly IHubContext<NotificationsHub> _hubContext;
 
-        public Follow(DbContextApp dbContextApp)
+        public Follow(DbContextApp dbContextApp, IHubContext<NotificationsHub> hubContext)
         {
             Db = dbContextApp;
+            _hubContext = hubContext;
         }
         
         [HttpPost]
@@ -46,6 +51,18 @@ namespace isolaatti_API.Controllers
             }
 
             userToFollow.NumberOfFollowers = followersOfFollowed.Count;
+            
+            var notificationsAdministration = new NotificationsAdministration(Db);
+            
+            notificationsAdministration.CreateNewFollowerNotification(user.Id, userToFollow.Id);
+            
+            var sessionsId = Hubs.NotificationsHub.Sessions.Where(element => element.Value.Equals(userToFollow.Id));
+            
+            foreach (var id in sessionsId)
+            {
+                _hubContext.Clients.Client(id.Key)
+                    .SendAsync("fetchNotification");
+            }
             
             Db.Users.Update(user);
             Db.Users.Update(userToFollow);
