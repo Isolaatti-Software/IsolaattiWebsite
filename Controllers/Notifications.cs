@@ -65,5 +65,26 @@ namespace isolaatti_API.Controllers
             _db.SaveChanges();
             return Ok();
         }
+
+        [Route("MarkAsRead")]
+        [HttpPost]
+        public IActionResult MarkAsRead([FromForm] string sessionToken)
+        {
+            var accountsManager = new Accounts(_db);
+            var user = accountsManager.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
+
+            var notifications = _db.SocialNotifications.Where(notification =>
+                notification.UserId.Equals(user.Id) && !notification.Read);
+
+            foreach (var notification in notifications)
+            {
+                notification.Read = true;
+            }
+            
+            _db.SocialNotifications.UpdateRange(notifications);
+            _db.SaveChanges();
+            return Ok();
+        }
     }
 }
