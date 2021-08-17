@@ -1,0 +1,42 @@
+#notifications-container {
+    position: absolute;
+    height: calc(100vh - 55px);
+    top: 55px;
+    width: 300px;
+    background-color: white;
+    box-shadow: -5px 5px 5px 0px #DBDBDD;
+    right: -300px;
+    z-index: 20;
+    overflow: auto;
+}
+
+#notifications-container > h3 {
+    position: sticky;
+    top: 30px;
+    z-index: 21;
+    background-color: white;
+}
+
+@keyframes hideNotificationsContainer {
+    0%{
+        right: 0;
+    }
+    100%{
+        right: -300px;
+    }
+}
+
+@keyframes showNotificationsContainer {
+    0%{
+        right: -300px;
+    }
+    100%{
+        right: 0;
+    }
+}
+
+.notification-item {
+    padding: 20px;
+    background-color: white;
+    box-shadow: -2px 2px 2px 0px #DBDBDD;
+}
