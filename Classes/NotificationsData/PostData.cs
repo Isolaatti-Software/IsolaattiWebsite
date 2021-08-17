@@ -6,6 +6,6 @@ namespace isolaatti_API.Classes.NotificationsData
     {
         public long PostId { get; set; }
         public List<int> AuthorsIds { get; set; }
-        public int NumberOfComments { get; set; }
+        public long NumberOfComments { get; set; }
     }
 }
