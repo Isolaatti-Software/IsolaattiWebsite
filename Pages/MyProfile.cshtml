@@ -8,7 +8,7 @@
     ViewData["Title"] = ViewData["name"];
 }
 
-<div class="col-lg-2 p-0">
+<div class="col-xl-2 col-lg-3 col-md-4 p-0">
     <aside id="left-bar" class="p-2">
         <div class="d-flex justify-content-center align-items-center flex-column">
             @if (Model.ProfilePhotoUrl == null)
@@ -71,7 +71,7 @@
 
     </aside>
 </div>
-<div class="col-lg-10">
+<div class="col-xl-10 col-lg-9 col-md-8">
 
     @if ((bool) ViewData["profile_updated"])
     {
@@ -177,7 +177,8 @@
                     </div>
                     <div class="from-group">
                         <label for="">Description</label>
-                        <textarea id="description-text-field" class="form-control" name="newDescription">@ViewData["description"]</textarea>
+                        <small>120 characters at most</small>
+                        <textarea id="description-text-field" class="form-control" name="newDescription" maxlength="120">@ViewData["description"]</textarea>
                     </div>
                     <input type="hidden" name="id" value="@ViewData["id"]">
                     <input type="hidden" name="password" value="@ViewData["password"]">

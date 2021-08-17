@@ -83,19 +83,38 @@ namespace isolaatti_API.Pages
             }
 
             var followersIds = JsonSerializer.Deserialize<List<int>>(user.FollowersIdsJson);
+            List<int> invalidFollowers = null;
             foreach (var followerId in followersIds)
             {
-                Followers.Add(_db.Users.Find(followerId));
+                var follower = _db.Users.Find(followerId);
+                if (follower == null)
+                {
+                    invalidFollowers ??= new List<int>();
+                    invalidFollowers.Add(followerId);
+                }
+                else
+                {
+                    Followers.Add(follower);
+                }
             }
 
             var followingIds = JsonSerializer.Deserialize<List<int>>(user.FollowingIdsJson);
+            List<int> invalidFollowing = null;
             foreach (var followingId in followingIds)
             {
-                Following.Add(_db.Users.Find(followingId));
+                var following = _db.Users.Find(followingId);
+                if (following == null)
+                {
+                    invalidFollowing ??= new List<int>();
+                    invalidFollowing.Add(followingId);
+                }
+                else
+                {
+                    Following.Add(following);
+                }
             }
 
-            ViewData["numberOfFollowers"] = user.NumberOfFollowers;
-            ViewData["numberOfFollowing"] = user.NumberOfFollowing;
+            
             ViewData["numberOfLikes"] = _db.Likes.Count(like => like.TargetUserId.Equals(user.Id));
             ViewData["numberOfPosts"] = _db.SimpleTextPosts.Count(post => post.UserId.Equals(user.Id));
             ViewData["profilePicUrl"] = user.ProfileImageData == null
@@ -103,7 +122,13 @@ namespace isolaatti_API.Pages
                 : UrlGenerators.GenerateProfilePictureUrl(user.Id, Request.Cookies["isolaatti_user_session_token"]);
 
             ViewData["sessionToken"] = Request.Cookies["isolaatti_user_session_token"];
+            
+            PurgeInvalidFollowersAndFollowings(invalidFollowers,invalidFollowing,user);
 
+            _db.SaveChanges();
+
+            ViewData["numberOfFollowers"] = user.NumberOfFollowers;
+            ViewData["numberOfFollowing"] = user.NumberOfFollowing;
             return Page();
         }
         public IActionResult OnPost(int userId, string current_password, string new_password)
@@ -145,6 +170,33 @@ namespace isolaatti_API.Pages
                 Uid = (String) (propertyInfoUid.GetValue(queryObject, null)),
                 Url = (String) (propertyInfoUrl.GetValue(queryObject, null))
             };
+        }
+
+        /*
+         * This method recount user followers and following. Removes invalid followers and followings
+         */
+        private void PurgeInvalidFollowersAndFollowings(List<int> invalidFollowers, List<int> invalidFollowings, User user)
+        {
+            var modifiableUser = user;
+            
+            var followers = JsonSerializer.Deserialize <List<int>>(modifiableUser.FollowersIdsJson);
+            if (invalidFollowers != null)
+            {
+                followers.RemoveAll(invalidFollowers.Contains);
+                modifiableUser.FollowersIdsJson = JsonSerializer.Serialize(followers);
+            }
+            modifiableUser.NumberOfFollowers = followers.Count();
+            _db.Users.Update(modifiableUser);
+
+            var following = JsonSerializer.Deserialize<List<int>>(modifiableUser.FollowingIdsJson);
+            if (invalidFollowings != null)
+            {
+                following.RemoveAll(invalidFollowings.Contains);
+                modifiableUser.FollowingIdsJson = JsonSerializer.Serialize(following);
+            }
+            modifiableUser.NumberOfFollowing = following.Count();
+            _db.Users.Update(modifiableUser);
+            
         }
     }
 }
