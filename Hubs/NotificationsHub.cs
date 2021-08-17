@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
@@ -8,7 +10,7 @@ namespace isolaatti_API.Hubs
 {
     public class NotificationsHub : Hub
     {
-        public static Dictionary<int, List<string>> Sessions = new Dictionary<int, List<string>>();
+        public static Dictionary<string, int> Sessions = new Dictionary<string, int>();
         private readonly DbContextApp _db;
         
         public NotificationsHub(DbContextApp dbContextApp)
@@ -16,24 +18,23 @@ namespace isolaatti_API.Hubs
             _db = dbContextApp;
         }
         
-        public Task EstablishConnection()
+        public override Task OnConnectedAsync()
         {
             var httpContext = Context.GetHttpContext();
             var sessionId = httpContext.Request.Cookies["isolaatti_user_session_token"];
             var accounts = new Accounts(_db);
             var user = accounts.ValidateToken(sessionId);
-            if (Sessions.ContainsKey(user.Id))
-            {
-                Sessions[user.Id].Add(Context.ConnectionId);
-            }
-            else
-            {
-                Sessions[user.Id] = new List<string> {Context.ConnectionId};
-            }
 
+            Sessions.Add(Context.ConnectionId, user.Id);
+            
             return Clients.Caller.SendAsync("SessionSaved",
                 $"Welcome to notifications hub {user.Name}, your temp id is {Context.ConnectionId}");
         }
-        
+
+        public override Task OnDisconnectedAsync(Exception exception)
+        {
+            Sessions.Remove(Sessions.Single(element => element.Key.Equals(Context.ConnectionId)).Key);
+            return base.OnDisconnectedAsync(exception);
+        }
     }
 }
