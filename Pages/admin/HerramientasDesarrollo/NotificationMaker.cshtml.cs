@@ -1,3 +1,4 @@
+using System.Linq;
 using isolaatti_API.Hubs;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
@@ -34,11 +35,12 @@ namespace isolaatti_API.Pages.admin.HerramientasDesarrollo
 
         public IActionResult OnPost(int userId, string msg)
         {
-            var sessionsId = NotificationsHub.Sessions[userId];
+            var sessionsId = NotificationsHub.Sessions.Where(element => element.Value.Equals(userId));
+            
             foreach (var id in sessionsId)
             {
-                _hubContext.Clients.Client(id)
-                    .SendAsync("hola", msg);
+                _hubContext.Clients.Client(id.Key)
+                    .SendAsync("fetchNotification", msg);
             }
             return Page();
         }
