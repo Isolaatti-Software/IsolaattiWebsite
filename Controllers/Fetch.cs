@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 using isolaatti_API.Classes;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
@@ -56,6 +57,13 @@ namespace isolaatti_API.Controllers
             if (otherUser == null) return NotFound("User not found");
             if(otherUser.ProfileImageData == null) return Redirect("/res/imgs/user.png");
             return new FileContentResult(otherUser.ProfileImageData,"image/png");
+        }
+
+        [HttpGet]
+        [Route("rt_con")]
+        public IActionResult GetAllRealTimeConnections()
+        {
+            return Ok(Hubs.NotificationsHub.Sessions);
         }
     }
 }
