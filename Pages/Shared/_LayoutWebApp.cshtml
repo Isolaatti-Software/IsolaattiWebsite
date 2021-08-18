@@ -31,130 +31,139 @@
     </script>
 </head>
 <body>
-@if (ViewData["isAndroid"] == null || !(bool) ViewData["isAndroid"])
-{
 
+<main style="height: 100vh; overflow: auto">
+    <nav class="d-flex custom-nav sticky-top" id="isolaatti-top-bar">
+        <a href="/" class="nav-link custom-nav-link" id="isolaatti_brand"></a>
+        <a class="nav-link custom-nav-link"
+           asp-page="/Index"
+           id="index-link">
+            <i class="fas fa-home"></i>
+        </a>
+        <a class="nav-link custom-nav-link"
+           asp-page="/PostEditor"
+           title="Post Editor"
+           id="post-editor-link">
+            <i class="fas fa-edit"></i>
+        </a>
+        <a class="nav-link custom-nav-link"
+           asp-page="/Apps/Index"
+           title="Musical tools"
+           id="musical-tools-link">
+            <i class="fas fa-toolbox"></i>
+        </a>
+        <div class="d-flex flex-grow-1 ml-auto" id="search-bar-fixed-top">
+            <button type="button" 
+                    class="btn btn-dark btn-sm mr-1" 
+                    id="search-bar-mobile-button-close">
+                <i class="far fa-window-close"></i>
+            </button>
+            <input type="text" 
+                   class="form-control search-bar-on-top flex-grow-1" 
+                   form="form-search" 
+                   name="q" 
+                   placeholder="Search for people, projects, and threads"/>
+            <button class="btn btn-primary btn-sm ml-1"
+                    type="submit"
+                    form="form-search">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+        <a href="#" 
+           class="nav-link custom-nav-link" 
+           id="mobile-search-button-appear">
+            <i class="fas fa-search"></i>
+        </a>
+        <a class="nav-link custom-nav-link nav-link mr-1 ml-auto" 
+           href="#" 
+           role="button" 
+           id="dropdownNotificationsMenuLink"
+           aria-haspopup="true" aria-expanded="false"
+           onclick="vueInstanceForNotifications.toggleNotificationsSlider()">
+            <i class="fas fa-bell"></i>
+            <span class="badge badge-light"></span>
+        </a>
     
-    <div id="vue-container-for-notifications" class="sticky-top">
-            <nav class="d-flex custom-nav" id="isolaatti-top-bar">
-                <a href="/" class="nav-link custom-nav-link" id="isolaatti_brand"></a>
-                <a class="nav-link custom-nav-link"
-                   asp-page="/Index"
-                   id="index-link">
-                    <i class="fas fa-home"></i>
-                </a>
-                <a class="nav-link custom-nav-link"
-                   asp-page="/PostEditor"
-                   title="Post Editor"
-                   id="post-editor-link">
-                    <i class="fas fa-edit"></i>
-                </a>
-                <a class="nav-link custom-nav-link"
-                   asp-page="/Apps/Index"
-                   title="Musical tools"
-                   id="musical-tools-link">
-                    <i class="fas fa-toolbox"></i>
-                </a>
-                <div class="d-flex flex-grow-1 ml-auto" id="search-bar-fixed-top">
-                    <button type="button" 
-                            class="btn btn-dark btn-sm mr-1" 
-                            id="search-bar-mobile-button-close">
-                        <i class="far fa-window-close"></i>
-                    </button>
-                    <input type="text" 
-                           class="form-control search-bar-on-top flex-grow-1" 
-                           form="form-search" 
-                           name="q" 
-                           placeholder="Search for people, projects, and threads"/>
-                    <button class="btn btn-primary btn-sm ml-1"
-                            type="submit"
-                            form="form-search">
-                        <i class="fas fa-search"></i>
-                    </button>
+        <div class="dropdown ">
+            <a class="nav-link custom-nav-link nav-link ml-auto mr-1 dropdown-toggle" 
+               href="#" 
+               role="button" 
+               id="dropdownMenuLink" 
+               data-toggle="dropdown" 
+               aria-haspopup="true" 
+               aria-expanded="false">
+                @if (ViewData["profilePicUrl"] == null)
+                {
+                    <i class="fas fa-user-circle"></i>
+                }
+                else
+                {
+                    <img width="40" height="40" src="@ViewData["profilePicUrl"]" class="user-avatar"/>
+                }
+            </a>
+            <div class="dropdown-menu dropdown-menu-right" 
+                 aria-labelledby="dropdownMenuLink">
+                <div class="dropdown-header">
+                    @ViewData["name"]
                 </div>
-                <a href="#" 
-                   class="nav-link custom-nav-link" 
-                   id="mobile-search-button-appear">
-                    <i class="fas fa-search"></i>
+                <div class="dropdown-divider"></div>
+                <a asp-page="/MyProfile" 
+                   class="dropdown-item">
+                    @if (ViewData["profilePicUrl"] == null)
+                    {
+                        <i class="fas fa-user-circle"></i>
+                    }
+                    else
+                    {
+                        <img width="40" height="40" src="@ViewData["profilePicUrl"]" class="user-avatar"/>
+                    }
+                    My Profile
                 </a>
-                <a class="nav-link custom-nav-link nav-link mr-1 ml-auto" 
-                   href="#" 
-                   role="button" 
-                   id="dropdownNotificationsMenuLink"
-                   aria-haspopup="true" aria-expanded="false"
-                   v-on:click="toggleNotificationsSlider">
-                    <i class="fas fa-bell"></i>
-                    <span class="badge badge-light">{{unreadCount}}</span>
+                            
+                <a class="dropdown-item" 
+                   asp-page="/Settings">
+                    <i class="fas fa-cog"></i>Settings
                 </a>
-
-                <div class="dropdown ">
-                    <a class="nav-link custom-nav-link nav-link ml-auto mr-1 dropdown-toggle" 
-                       href="#" 
-                       role="button" 
-                       id="dropdownMenuLink" 
-                       data-toggle="dropdown" 
-                       aria-haspopup="true" 
-                       aria-expanded="false">
-                        @if (ViewData["profilePicUrl"] == null)
-                        {
-                            <i class="fas fa-user-circle"></i>
-                        }
-                        else
-                        {
-                            <img width="40" height="40" src="@ViewData["profilePicUrl"]" class="user-avatar"/>
-                        }
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right" 
-                         aria-labelledby="dropdownMenuLink">
-                        <div class="dropdown-header">
-                            @ViewData["name"]
-                        </div>
-                        <div class="dropdown-divider"></div>
-                        <a asp-page="/MyProfile" 
-                           class="dropdown-item">
-                            @if (ViewData["profilePicUrl"] == null)
-                            {
-                                <i class="fas fa-user-circle"></i>
-                            }
-                            else
-                            {
-                                <img width="40" height="40" src="@ViewData["profilePicUrl"]" class="user-avatar"/>
-                            }
-                            My Profile
-                        </a>
-                        
-                        <a class="dropdown-item" 
-                           asp-page="/Settings">
-                            <i class="fas fa-cog"></i>Settings
-                        </a>
-                        <a class="dropdown-item" 
-                           asp-page="/About" 
-                           target="_blank">
-                            <i class="fas fa-info"></i>About
-                        </a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" 
-                           href="/WebLogOut"><i class="fas fa-sign-out-alt"></i>Sign out</a>
-                    </div>
-                </div>
-            </nav>
-            <form id="form-search" asp-page="Search" method="get"></form>
-            
-            <div id="notifications-container" ref="notificationsSlider">
-                <h3 class="p-4 m-0">Notifications</h3>
-                <notification v-for="notification in notifications" 
-                              :notification-obj="notification">
-                    
-                </notification>
+                <a class="dropdown-item" 
+                   asp-page="/About" 
+                   target="_blank">
+                    <i class="fas fa-info"></i>About
+                </a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" 
+                   href="/WebLogOut"><i class="fas fa-sign-out-alt"></i>Sign out</a>
             </div>
-    </div>
-}
+        </div>
+    </nav>
+    <form id="form-search" asp-page="Search" method="get"></form>
 
-<div class="container-fluid p-0">
-    <div class="row m-0">
-        @RenderBody()
+
+    <div class="container-fluid p-0">
+        <div class="row m-0">
+            @RenderBody()
+        </div>
+        
     </div>
-</div>
+
+</main>
+    <div id="vue-container-for-notifications" class="sticky-top" ref="notificationsSlider">
+        <div id="notifications-container" >
+            <div class="d-flex m-2 align-items-center">
+                <button class="btn btn-primary" v-on:click="toggleNotificationsSlider">
+                    &times
+                </button>
+                <h3 class="ml-2 m-0">Notifications</h3>
+                
+            </div>
+            <notification v-for="notification in notifications" 
+                          :notification-obj="notification">
+                                            
+            </notification>
+        </div>
+    </div>
+
+
+
 
 <!-- JS, Popper.js, and jQuery -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

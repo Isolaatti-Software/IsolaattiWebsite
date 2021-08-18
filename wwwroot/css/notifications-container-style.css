@@ -1,14 +1,19 @@
-#notifications-container {
+#vue-container-for-notifications {
     position: fixed;
-    height: calc(100vh - 55px);
-    /*top: 55px;*/
-    bottom: 0;
-    width: 300px;
+    height: calc(100% - 55px);
+    right: 0;
+    top: 55px;
+    box-sizing: border-box;
+    width: 0;
+    z-index: 400;
+}
+#notifications-container {
     background-color: white;
     box-shadow: -5px 5px 5px 0px #DBDBDD;
-    right: -300px;
-    z-index: 20;
+    
     overflow: auto;
+    height: 100%;
+   
 }
 
 #notifications-container > h3 {
@@ -20,19 +25,19 @@
 
 @keyframes hideNotificationsContainer {
     0%{
-        right: 0;
+        width: 300px;
     }
     100%{
-        right: -300px;
+        width: 0;
     }
 }
 
 @keyframes showNotificationsContainer {
     0%{
-        right: -300px;
+        width: 0;
     }
     100%{
-        right: 0;
+        width: 300px;
     }
 }
 
