@@ -68,6 +68,9 @@ namespace isolaatti_API.Migrations
                     b.Property<string>("AudioUrl")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("Privacy")
                         .HasColumnType("int");
 
@@ -134,6 +137,23 @@ namespace isolaatti_API.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("CustomTracks");
+                });
+
+            modelBuilder.Entity("isolaatti_API.Models.GoogleUser", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("GoogleUid")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("GoogleUsers");
                 });
 
             modelBuilder.Entity("isolaatti_API.Models.Like", b =>
@@ -287,6 +307,9 @@ namespace isolaatti_API.Migrations
                     b.Property<string>("AudioAttachedUrl")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
                     b.Property<long>("NumberOfComments")
                         .HasColumnType("bigint");
 
@@ -299,12 +322,44 @@ namespace isolaatti_API.Migrations
                     b.Property<string>("TextContent")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ThemeJson")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.ToTable("SimpleTextPosts");
+                });
+
+            modelBuilder.Entity("isolaatti_API.Models.SocialNotification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("DataJson")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("PostRelated")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("Read")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("TimeSpan")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SocialNotifications");
                 });
 
             modelBuilder.Entity("isolaatti_API.Models.Song", b =>
@@ -416,6 +471,12 @@ namespace isolaatti_API.Migrations
                     b.Property<string>("AppLanguage")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("DescriptionAudioUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DescriptionText")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
@@ -443,8 +504,17 @@ namespace isolaatti_API.Migrations
                     b.Property<bool>("NotifyWhenProcessStarted")
                         .HasColumnType("bit");
 
+                    b.Property<int>("NumberOfFollowers")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NumberOfFollowing")
+                        .HasColumnType("int");
+
                     b.Property<string>("Password")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte[]>("ProfileImageData")
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<string>("Uid")
                         .HasColumnType("nvarchar(max)");
