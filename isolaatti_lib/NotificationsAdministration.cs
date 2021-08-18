@@ -22,13 +22,13 @@ namespace isolaatti_API.isolaatti_lib
             _db = dbContextApp;
         }
         
-        private const int TypeLikes = 1;
-        private const int TypePosts = 2;
-        private const int TypeNewFollower = 3;
+        public const int TypeLikes = 1;
+        public const int TypePosts = 2;
+        public const int TypeNewFollower = 3;
 
-        public void NewLikesActivityNotification(int userToNotifyId, int userWhoLikedId, long postId, long numberOfLikes)
+        public LikeData NewLikesActivityNotification(int userToNotifyId, int userWhoLikedId, long postId, long numberOfLikes)
         {
-            if (userToNotifyId == userWhoLikedId) return;
+            if (userToNotifyId == userWhoLikedId) return null;
             
             var shouldCreateNewNotification =
                 !_db.SocialNotifications.Any(
@@ -36,9 +36,11 @@ namespace isolaatti_API.isolaatti_lib
                                     notification.Type == TypeLikes && 
                                     notification.UserId == userToNotifyId);
 
+            LikeData data;
+            
             if (shouldCreateNewNotification)
             {
-                var data = new LikeData()
+                data = new LikeData()
                 {
                     AuthorsIds = new List<int>() { userWhoLikedId },
                     NumberOfLikes = numberOfLikes,
@@ -63,7 +65,7 @@ namespace isolaatti_API.isolaatti_lib
                                     notification.PostRelated.Equals(postId) &&
                                     notification.UserId == userToNotifyId);
 
-                var data = JsonSerializer.Deserialize<LikeData>(existingNotification.DataJson);
+                data = JsonSerializer.Deserialize<LikeData>(existingNotification.DataJson);
                 
                 data.AuthorsIds.Add(userWhoLikedId);
                 data.NumberOfLikes = numberOfLikes;
@@ -78,11 +80,13 @@ namespace isolaatti_API.isolaatti_lib
             }
 
             _db.SaveChanges();
+
+            return data;
         }
 
-        public void NewCommentsActivityNotification(int userToNotifyId, int lastUserWhoCommentedId, long postId, long numberOfComments)
+        public PostData NewCommentsActivityNotification(int userToNotifyId, int lastUserWhoCommentedId, long postId, long numberOfComments)
         {
-            if (userToNotifyId == lastUserWhoCommentedId) return;
+            if (userToNotifyId == lastUserWhoCommentedId) return null;
             
             var shouldCreateNewNotification =
                 !_db.SocialNotifications.Any(
@@ -91,9 +95,10 @@ namespace isolaatti_API.isolaatti_lib
                                     notification.UserId == userToNotifyId
                                     );
 
+            PostData data;
             if (shouldCreateNewNotification)
             {
-                var notificationData = new PostData()
+                data = new PostData()
                 {
                     PostId = postId,
                     AuthorsIds = new List<int>()
@@ -106,7 +111,7 @@ namespace isolaatti_API.isolaatti_lib
                 var newNotification = new SocialNotification()
                 {
                     PostRelated = postId,
-                    DataJson = JsonSerializer.Serialize(notificationData),
+                    DataJson = JsonSerializer.Serialize(data),
                     Read = false,
                     TimeSpan = DateTime.Now,
                     Type = TypePosts,
@@ -114,7 +119,7 @@ namespace isolaatti_API.isolaatti_lib
                 };
 
                 _db.SocialNotifications.Add(newNotification);
-
+                
             }
             else
             {
@@ -123,7 +128,7 @@ namespace isolaatti_API.isolaatti_lib
                                     notification.PostRelated == postId &&
                                     notification.Type == TypePosts);
 
-                var data = JsonSerializer.Deserialize<PostData>(existingNotification.DataJson);
+                data = JsonSerializer.Deserialize<PostData>(existingNotification.DataJson);
                 data.AuthorsIds.Add(lastUserWhoCommentedId);
                 data.NumberOfComments = numberOfComments;
                 
@@ -135,11 +140,13 @@ namespace isolaatti_API.isolaatti_lib
                 _db.SocialNotifications.Update(existingNotification);
 
             }
-
+            
             _db.SaveChanges();
+            
+            return data;
         }
 
-        public void CreateNewFollowerNotification(int userWhoFollows, int userWhoIsFollowed)
+        public NewFollowerData CreateNewFollowerNotification(int userWhoFollows, int userWhoIsFollowed)
         {
             // TODO: is it needed to limit how many times notifications about following are sent?
             // This is to avoid spam, that can be done by following and unfollowing multiple times, which would
@@ -175,6 +182,8 @@ namespace isolaatti_API.isolaatti_lib
             _db.SocialNotifications.Add(newNotification);
 
             _db.SaveChanges();
+
+            return data;
         }
     }
 }

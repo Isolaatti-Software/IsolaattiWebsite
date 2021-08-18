@@ -67,6 +67,13 @@ const vueInstanceForNotifications = new Vue({
         const globalThis = this;
         const connection = new signalR.HubConnectionBuilder()
             .withUrl("/notifications_hub").build();
+        
+        // types of notification
+        const types = {
+            like: 1,
+            post: 2,
+            followers: 3
+        }
 
         async function start() {
             try {
@@ -81,8 +88,18 @@ const vueInstanceForNotifications = new Vue({
                     alert(data);
                 });
                 
-                connection.on("fetchNotification", function(data) {
+                connection.on("fetchNotification", function(data, type, comment /* nullable */) {
                     globalThis.fetchNotifications();
+                    switch (type) {
+                        case types.like: /* hacer algo */ break;
+                        case types.post:
+                            // vue.js instance from thread page
+                            if(thisVueInstance.post.id === comment.simpleTextPostId) {
+                                thisVueInstance.addAComment(comment);
+                            }
+                            break;
+                        case types.followers: /* hacer algo */ break;
+                    }
                 });
             } catch(err) {
                 console.log(err);

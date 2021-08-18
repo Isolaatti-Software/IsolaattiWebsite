@@ -49,14 +49,14 @@ namespace isolaatti_API.Controllers
             Db.SimpleTextPosts.Update(post);
             await Db.SaveChangesAsync();
             
-            notificationsAdministration.NewLikesActivityNotification(post.UserId, user.Id, post.Id, post.NumberOfLikes);
+            var notificationData = notificationsAdministration.NewLikesActivityNotification(post.UserId, user.Id, post.Id, post.NumberOfLikes);
 
             var sessionsId = Hubs.NotificationsHub.Sessions.Where(element => element.Value.Equals(post.UserId));
             
             foreach (var id in sessionsId)
             {
                 await _hubContext.Clients.Client(id.Key)
-                    .SendAsync("fetchNotification");
+                    .SendAsync("fetchNotification", notificationData, NotificationsAdministration.TypeLikes);
             }
             
             return Ok(new ReturningPostsComposedResponse(post)

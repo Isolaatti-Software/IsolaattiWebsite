@@ -50,24 +50,19 @@ namespace isolaatti_API.Controllers
 
             var numberOfComments = _db.Comments.Count(comment => comment.SimpleTextPostId == postId);
             
-            notificationsAdministration
+            var notificationData = notificationsAdministration
                 .NewCommentsActivityNotification(post.UserId, user.Id, postId, 
                     numberOfComments);
             
             _db.SaveChanges();
             
-            var sessionsId = Hubs.NotificationsHub.Sessions.Where(element => element.Value.Equals(post.UserId));
-            
-            foreach (var id in sessionsId)
-            {
-                await _hubContext.Clients.Client(id.Key)
-                    .SendAsync("fetchNotification");
-            }
-            
+            var sessionsId = Hubs.NotificationsHub.Sessions
+                .Where(element => 
+                    element.Value.Equals(post.UserId) || 
+                    element.Value.Equals(user.Id));
             
             await AsyncDatabaseUpdates.UpdateNumberOfComments(_db, post.Id);
-            
-            return Ok(new ReturningCommentComposedResponse()
+            var response = new ReturningCommentComposedResponse()
             {
                 Id = newComment.Id,
                 Privacy = newComment.Privacy,
@@ -76,7 +71,13 @@ namespace isolaatti_API.Controllers
                 WhoWrote = newComment.WhoWrote,
                 WhoWroteName = user.Name,
                 Date = newComment.Date
-            });
+            };
+            foreach (var id in sessionsId)
+            {
+                await _hubContext.Clients.Client(id.Key)
+                    .SendAsync("fetchNotification",notificationData, NotificationsAdministration.TypePosts, response);
+            }
+            return Ok(response);
         }
     }
 }

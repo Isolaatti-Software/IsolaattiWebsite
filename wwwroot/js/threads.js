@@ -1,4 +1,7 @@
 // Threads page
+
+let thisVueInstance;
+
 (function () {
     let form = new FormData();
     form.append("sessionToken", sessionToken);
@@ -411,6 +414,9 @@
                         return `color: ${theme.fontColor};
                         background-color: ${theme.backgroundColor};
                         border: ${theme.border.size} ${theme.border.type} ${theme.border.color}`;
+                    },
+                    addAComment: function(comment) {
+                        this.comments.push(comment)
                     }
                 },
                 mounted: function() {
@@ -421,6 +427,8 @@
                     this.audioPlayer.onended = function() {
                         globalThis.audioUrl = "";
                     }
+                    
+                    thisVueInstance = this;
                 }
             })
         }

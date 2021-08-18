@@ -54,14 +54,14 @@ namespace isolaatti_API.Controllers
             
             var notificationsAdministration = new NotificationsAdministration(Db);
             
-            notificationsAdministration.CreateNewFollowerNotification(user.Id, userToFollow.Id);
+            var notificationData = notificationsAdministration.CreateNewFollowerNotification(user.Id, userToFollow.Id);
             
             var sessionsId = Hubs.NotificationsHub.Sessions.Where(element => element.Value.Equals(userToFollow.Id));
             
             foreach (var id in sessionsId)
             {
                 _hubContext.Clients.Client(id.Key)
-                    .SendAsync("fetchNotification");
+                    .SendAsync("fetchNotification",notificationData, NotificationsAdministration.TypeNewFollower);
             }
             
             Db.Users.Update(user);
