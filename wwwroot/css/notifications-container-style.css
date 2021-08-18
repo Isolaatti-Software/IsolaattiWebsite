@@ -1,7 +1,8 @@
 #notifications-container {
-    position: absolute;
+    position: fixed;
     height: calc(100vh - 55px);
-    top: 55px;
+    /*top: 55px;*/
+    bottom: 0;
     width: 300px;
     background-color: white;
     box-shadow: -5px 5px 5px 0px #DBDBDD;
@@ -12,7 +13,7 @@
 
 #notifications-container > h3 {
     position: sticky;
-    top: 30px;
+    top:0;
     z-index: 21;
     background-color: white;
 }
