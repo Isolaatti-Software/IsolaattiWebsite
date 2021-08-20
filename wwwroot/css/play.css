@@ -13,7 +13,7 @@ body {
     bottom: 0px;
     width: 100%;
     background-color: black;
-    height: 40px;
+    padding: 1em;
 }
 
 #workspace-container {
@@ -24,4 +24,38 @@ body {
     margin-left: 5px;
     color:white;
     font-size: small;
+}
+
+
+
+.rounded-button {
+    background-color: #331f54;
+    color: white;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    border: none;
+}
+
+.rounded-big-button {
+    width: 35px!important;
+    height: 35px!important;
+}
+
+#time-container {
+    font-family: "Press Start 2P";
+    font-size: medium;
+    color: white;
+}
+
+.track-average-gain-bar {
+    max-width: 100%;
+}
+
+.track-top-actionbar {
+    display: flex;
+}
+.edit-track-button {
+    color: white;
+    text-decoration: none;
 }

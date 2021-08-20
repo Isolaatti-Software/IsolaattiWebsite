@@ -20,7 +20,7 @@
 @if ((bool) ViewData["isAndroid"] == false)
 {
     <div class="d-flex pl-1 pr-1" id="title-bar">
-        <h6 class="m-2 ml-auto">Isolaatti audio mixer (@Model.song.OriginalFileName - @Model.song.Artist)</h6>
+        <h6 class="m-2 ml-auto">Isolaatti audio mixer</h6>
         <button type="button" class="btn btn-primary btn-sm m-1 ml-auto" id="button-settings"><i class="fas fa-cog"></i></button>
         <button type="button" class="btn btn-primary btn-sm mt-1 mb-1" id="hide-top-bar-button">
             <i class="fas fa-chevron-up"></i>
@@ -28,38 +28,12 @@
     </div>
 }
 
-<div id="player-top-actionbar" class="d-flex flex-column m-1">
-    <div class="d-flex">
-        <h4></h4>
-    </div>
-    <div class="d-flex justify-content-between">
-        <div class="d-flex">
-            <div class="btn-group ml-2">
-                <button class="btn btn-success btn-sm" id="play_pause_button" disabled>
-                    <i class="fas fa-play"></i>
-                </button>
-                <button class="btn btn-danger btn-sm" id="stop_button">
-                    <i class="fas fa-stop"></i>
-                </button>
-            </div>
-        </div>
-        <div class="d-flex" id="time-container">
-            --/--
-        </div>
-            
-        <div class="d-flex">
-            <button class="btn btn-primary btn-sm mr-1" title="Save changes">
-                <i class="fas fa-save"></i>
-            </button>
-            <button class="btn btn-primary btn-sm mr-1" title="Download mix">
-                <i class="fas fa-download"></i>
-            </button>
-        </div>
-    </div>
-    <div class="d-flex mt-2 justify-content-center">
-        <input type="range" class="custom-range" id="seek-position-slider" min="0" value="0">
-    </div>
-</div>
+@* <div id="player-top-actionbar" class="d-flex flex-column m-1"> *@
+@*     <div class="d-flex"> *@
+@*         <h4></h4> *@
+@*     </div> *@
+@* *@
+@* </div> *@
 <div class="container-fluid mt-2 pl-0 pr-0" id="workspace-container">
     <div class="row m-1">
         <div class="col-lg-2 col-md-3 col-sm-3 p-0">
@@ -88,10 +62,6 @@
             <div id="tracks-container" class="d-flex flex-column flex-fill h-100">
                 <div class="d-flex justify-content-between">
                     <h4>Tracks</h4>
-                    <button class="btn btn-primary btn-sm ml-auto mt-auto mb-auto mr-1" title="All gains to 1" id="reset_gains">RS</button>
-                    <button class="btn btn-primary btn-sm mt-auto mb-auto" title="Add track" data-target="#new-track-modal" data-toggle="modal">
-                        <i class="fas fa-plus"></i>
-                    </button>
                 </div>
                 <div class="d-flex flex-nowrap" id="tracks-deposit">
                     <div id="base-tracks">
@@ -357,8 +327,37 @@
         </div>
     </div>
 </div>
-<div class="d-flex align-items-center" id="audio-player-bottom-bar">
-    <span id="audio-player-bottom-bar-text-state"></span>
+<div class="d-flex align-items-center w-100" id="audio-player-bottom-bar">
+    <span id="audio-player-bottom-bar-text-state" style="display: none"></span>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="d-flex justify-content-between">
+                    <div class="d-flex">
+                        <div class="ml-2">
+                            <button class="rounded-button rounded-big-button" id="play_pause_button" disabled>
+                                <i class="fas fa-play"></i>
+                            </button>
+                            <button class="rounded-button" id="stop_button">
+                                <i class="fas fa-stop"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <span>@Model.song.OriginalFileName - @Model.song.Artist</span>
+                    <div class="d-flex" id="time-container">
+                        --/--
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="d-flex justify-content-center align-items-center h-100">
+                    <input type="range" class="custom-range" id="seek-position-slider" min="0" value="0">
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 @section Scripts
 {

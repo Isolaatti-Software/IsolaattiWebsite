@@ -152,14 +152,6 @@ progress[orient=vertical] {
     font-family: "Press Start 2P";
     src: url("../fonts/PressStart2P-Regular.ttf");
 }
-#time-container {
-    font-family: "Press Start 2P";
-    font-size: large;
-}
-
-.track-average-gain-bar {
-    max-width: 100%;
-}
 
 #contact-me-bottom-section {
     z-index: 4000;
@@ -172,13 +164,7 @@ progress[orient=vertical] {
     font-size: larger;
 }
 
-.track-top-actionbar {
-    display: flex;
-}
-.edit-track-button {
-    color: white;
-    text-decoration: none;
-}
+
 
 #search-bar {
     background-color: black;
