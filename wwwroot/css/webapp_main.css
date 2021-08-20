@@ -90,69 +90,6 @@ body {
     }
 }
 
-/* Rule for vertical slider */
-input[type=range][orient=vertical] {
-    writing-mode: bt-lr; /* IE */
-    -webkit-appearance: slider-vertical; /* WebKit */
-    -moz-appearance: scale-vertical;
-    width: 8px;
-    height: 175px;
-    padding: 0 5px;
-    background-color: gray;
-}
-
-/* Rule for vertical progress bar*/
-progress[orient=vertical] {
-    transform: rotate(-90deg);
-    width: 180px;
-    margin-top: 90px;
-}
-.track {
-    min-width: 90px;
-    max-width: 120px;
-    border-radius: 15px;
-    /*background-color: black;*/
-    padding: 10px;
-}
-#player-top-actionbar {
-    border-radius: 15px 15px 0 0;
-    background-color: rgb(45,45,58);
-    padding: 10px;
-    color:white;
-}
-#master-output-controls, #tracks-container {
-    background-color: rgb(45,45,45);
-    color:white;
-    padding: 10px;
-    margin-top: 10px;
-}
-#tracks-deposit {
-    overflow: auto;
-}
-#base-tracks {
-    background-color: rgba(0,0,0,0.2);
-    display: flex;
-    flex-direction: column;
-    border-radius: 0 0 0 15px;
-}
-#title-bar {
-    background-color: black;
-    z-index: 900;
-    position: sticky;
-    top:0;
-    font-size: medium;
-    color: white;
-}
-
-#seek-position-slider{
-    max-width: 600px;
-}
-
-@font-face {
-    font-family: "Press Start 2P";
-    src: url("../fonts/PressStart2P-Regular.ttf");
-}
-
 #contact-me-bottom-section {
     z-index: 4000;
     position: fixed;
@@ -163,8 +100,6 @@ progress[orient=vertical] {
     color: #385898;
     font-size: larger;
 }
-
-
 
 #search-bar {
     background-color: black;
