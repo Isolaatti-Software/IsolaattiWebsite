@@ -163,7 +163,9 @@ const vue = new Vue({
                 }
             }
         },
-        post: function() {
+        post: function(event) {
+            event.target.disabled = true;
+            event.target.innerHTML = '<div class="spinner-border text-light spinner-border-sm" role="status"><span class="sr-only">Loading...</span></div>' + event.target.innerHTML;
             let form = new FormData();
             form.append("sessionToken", sessionToken);
             form.append("privacy", this.privacy);
