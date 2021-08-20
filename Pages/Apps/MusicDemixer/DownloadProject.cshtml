@@ -13,10 +13,10 @@
             <h5>Download tracks</h5>
             <h6>@ViewData["projectName"] - @ViewData["projectArtist"]</h6>
         </div>
-        <div class="d-flex flex-wrap">
+        <div class="list-group">
             @foreach (var track in Model.Tracks)
             {
-                <div class="song-item m-2">
+                <div class="list-group-item list-group-item-action">
                     <a href="@track.Value" target="_blank">
                         <div class="song-item-icon">
                             <i class="fas fa-music"></i>
