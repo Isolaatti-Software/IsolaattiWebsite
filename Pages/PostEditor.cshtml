@@ -129,33 +129,40 @@
                 </button>
             </div>
             <div class="modal-body">
-                <p>
-                    Customize your post's theme
-                </p>
-                <div class="card mb-1">
-                    <div class="card-header">
-                        <h6 class="card-title">Font color</h6>
-                    </div>
-                    <div class="card-body">
-                        <div class="form-group">
-                            <input type="color" class="form-control form-control-sm" 
-                                   v-model="theme.fontColor">
+                <div class="d-flex mb-2 flex-column p-2 post sticky-top" :style="postThemeCSSStyle">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="mt-2 post-content">
+                            I'm proud of showing how your theme will look!
                         </div>
                     </div>
                 </div>
-                <div class="card mb-1">
-                    <div class="card-header">
-                        <h6 class="card-title">Background</h6>
-                    </div>
+                <div class="card">
+                    <h5 class="card-header">Select a predefined theme</h5>
                     <div class="card-body">
+                        <select class="custom-select" v-on:input="applyDefaultTheme">
+                            <option v-for="(theme, index) in defaultThemes" :value="index">{{theme.name}}</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="card mt-2">
+                    <h5 class="card-header">
+                        Customize theme
+                    </h5>
+                    <div class="card-body">
+                        <h5 class="card-title">Font color</h5>
+                        <div class="form-group">
+                            <input type="color" class="form-control form-control-sm"
+                                   v-model="theme.fontColor">
+                        </div>
                         
-                        <div class="form-check">
+                        <h5 class="card-title">Background</h5>
+                        <div class="form-check mb-1">
                             <input class="form-check-input" type="checkbox" value="" id="isGradient" v-model="theme.gradient" true-value="true" false-value="false">
                             <label class="form-check-label" for="isGradient">
                                 Gradient
                             </label>
                         </div>
-                        
                         <div v-if="theme.gradient === 'true'">
                             <select class="custom-select" v-model="theme.background.type">
                                 <option value="linear">Linear gradient</option>
@@ -164,12 +171,12 @@
                             <div v-if="theme.background.type==='linear'" class="mt-2">
                                 <div class="form-group">
                                     <div class="input-group input-group-sm">
-                                        <input type="number" 
-                                               v-model="theme.background.direction" 
+                                        <input type="number"
+                                               v-model="theme.background.direction"
                                                class="form-control form-control-sm"/>
                                         <div class="input-group-prepend">
-                                        <span class="input-group-text">deg</span>
-                                    </div>
+                                            <span class="input-group-text">deg</span>
+                                        </div>
                                     </div>
                                     <div class="d-flex mt-2" v-for="(color,index) in theme.background.colors">
                                         <input type="color"
@@ -179,7 +186,7 @@
                                             <i class="fas fa-minus"></i>
                                         </button>
                                     </div>
-                                    
+                        
                                     <div class="d-flex w-100 justify-content-end">
                                         <button class="btn btn-primary btn-sm mt-1 ml-auto" v-on:click="addColor">
                                             <i class="fas fa-plus"></i>
@@ -197,7 +204,7 @@
                                             <i class="fas fa-minus"></i>
                                         </button>
                                     </div>
-                                                                    
+                        
                                     <div class="d-flex w-100 justify-content-end">
                                         <button class="btn btn-primary btn-sm mt-1 ml-auto" v-on:click="addColor">
                                             <i class="fas fa-plus"></i>
@@ -213,17 +220,10 @@
                             </div>
                         </div>
                         
-                        
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <h6 class="card-title">Border</h6>
-                    </div>
-                    <div class="card-body">
+                        <h5 class="card-title">Border</h5>
                         <div class="form-group">
                             <label>Color</label>
-                            <input type="color" class="form-control form-control-sm" 
+                            <input type="color" class="form-control form-control-sm"
                                    v-model="theme.border.color">
                         </div>
                         <div class="form-group">
@@ -244,7 +244,7 @@
                             <label>Size</label>
                             <div class="input-group input-group-sm">
                                 <input type="number" class="form-control form-control-sm"
-                                   v-model="theme.border.size"/>
+                                       v-model="theme.border.size"/>
                                 <div class="input-group-prepend">
                                     <span class="input-group-text">px</span>
                                 </div>
@@ -253,14 +253,14 @@
                         <div class="form-group">
                             <label>Radius (recommended max value 30px)</label>
                             <div class="input-group input-group-sm">
-                                <input type="number" class="form-control form-control-sm" 
-                                    max="30" min="0"
-                                    v-model="theme.border.radius">
+                                <input type="number" class="form-control form-control-sm"
+                                       max="30" min="0"
+                                       v-model="theme.border.radius">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text">px</span>
                                 </div>
                             </div>
-
+                        
                         </div>
                     </div>
                 </div>

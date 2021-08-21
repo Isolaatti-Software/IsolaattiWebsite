@@ -1,0 +1,80 @@
+{
+  "themes": [
+    {
+      "name": "Isolaatti",
+      "data": {
+        "fontColor": "#000",
+        "backgroundColor": "#FFFFFF",
+        "gradient": "false",
+        "border": {
+          "color": "#FFFFFF",
+          "type": "solid",
+          "size": "0",
+          "radius": "5px"
+        },
+        "background": {
+          "type": "linear",
+          "colors": ["#FFFFFF","#30098EE5"],
+          "direction": "0"
+        }
+      }
+    },
+    {
+      "name": "Isolaatti with gradient",
+      "data": {
+        "fontColor": "#000",
+        "backgroundColor": "#FFFFFF",
+        "gradient": "true",
+        "border": {
+          "color": "#FFFFFF",
+          "type": "solid",
+          "size": "0",
+          "radius": "5px"
+        },
+        "background": {
+          "type": "linear",
+          "colors": ["#FFFFFF","#30098EE5"],
+          "direction": "180"
+        }
+      }
+    },
+    {
+      "name": "Nature Dark",
+      "data": {
+        "fontColor": "#FFFFFF",
+        "backgroundColor": "#006328",
+        "gradient": "true",
+        "border": {
+          "color": "#FFFFFF",
+          "type": "solid",
+          "size": "0",
+          "radius": "5px"
+        },
+        "background": {
+          "type": "linear",
+          "colors": ["#006328","#285007"],
+          "direction": "0"
+        }
+      }
+    },
+    {
+      "name": "Nature Light",
+      "data": {
+        "fontColor": "#000000",
+        "backgroundColor": "#4CAA40",
+        "gradient": "true",
+        "border": {
+          "color": "#FFFFFF",
+          "type": "solid",
+          "size": "0",
+          "radius": "5px"
+        },
+        "background": {
+          "type": "linear",
+          "colors": ["#4CAA40","#98F64A"],
+          "direction": "180"
+        }
+      }
+    }
+  ]
+}

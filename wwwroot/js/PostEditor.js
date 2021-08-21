@@ -39,6 +39,7 @@ const vue = new Vue({
                 direction: "0"
             }
         },
+        defaultThemes: [], // this is populated from a hosted json
         editing: editExistingPost,
         existingAudioUrl: null,
         editingPostId: editPostId
@@ -327,6 +328,9 @@ const vue = new Vue({
         },
         removeColor: function(index) {
             this.theme.background.colors.splice(index, 1);
+        },
+        applyDefaultTheme: function(event) {
+            this.theme = this.defaultThemes[event.target.value].data;
         }
     },
     mounted: function() {
@@ -357,7 +361,10 @@ const vue = new Vue({
                     }
                     let theme = JSON.parse(post.themeJson);
 
-                    if(theme.background === undefined) {
+                    // background and gradient properties can be undefined if a post was saved before the new gradient
+                    // feature was added, so in case let's create them
+                    
+                    if(!("background" in theme)) {
                         theme.background = {
                             type: "linear",
                             colors: ["#FFFFFF","#30098EE5"],
@@ -365,23 +372,21 @@ const vue = new Vue({
                         }
                     }
                     
-                    if(theme.gradient === undefined) {
+                    if(!("gradient" in theme)) {
                         theme.gradient = "false";
                     }
                     
+                    // now that I am sure that the whole object is as expected, I can assign it
                     globalThis.theme = theme; // this is fine
-                    // globalThis.theme.fontColor = theme.fontColor;
-                    // globalThis.theme.backgroundColor = theme.backgroundColor;
-                    // globalThis.theme.border.size = theme.border.size;
-                    // globalThis.theme.border.type = theme.border.type;
-                    // globalThis.theme.border.color = theme.border.color;
-                    // globalThis.theme.border.radius = theme.border.radius;
-                    
-                    
                     
                 }
                 request.send(form);
             }
+            
+            // populate default themes
+            fetch('/json/defaultThemes.json')
+                .then(response => response.json())
+                .then(data => this.defaultThemes = data.themes); // themes from json is an array
         });
     }
 });
