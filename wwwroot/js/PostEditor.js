@@ -26,11 +26,17 @@ const vue = new Vue({
         theme: {
             fontColor: "#000",
             backgroundColor: "#FFFFFF",
+            gradient: "false",
             border: {
                 color: "#FFFFFF",
                 type: "solid",
                 size: "0",
                 radius: "5px"
+            },
+            background: {
+                type: "linear",
+                colors: ["#FFFFFF","#30098EE5"],
+                direction: "0"
             }
         },
         editing: editExistingPost,
@@ -48,12 +54,37 @@ const vue = new Vue({
             return (this.audio.consolidated) ? "Audio recorded" : "Record audio";
         },
         postThemeCSSStyle: function() {
-            return `color: ${this.theme.fontColor};
-                background-color: ${this.theme.backgroundColor};
+            function returnColorsAsString(array) {
+                let res = "";
+                
+                for(let i=0; i < array.length - 1; i++) {
+                    res += array[i] + ", "
+                }
+                
+                res += array[array.length - 1];
+                
+                return res;
+            }
+            
+            let backgroundProperty;
+            
+            // if a gradient of any kind is selected it will generate the corresponding background,
+            // otherwise it will return the solid color
+            if(this.theme.gradient === "true"){
+                backgroundProperty = this.theme.background.type === 
+                "linear" ? 
+                    `linear-gradient(${this.theme.background.direction}deg, ${returnColorsAsString(this.theme.background.colors)})` : 
+                    `radial-gradient(${returnColorsAsString(this.theme.background.colors)})`;
+            } else {
+                backgroundProperty = this.theme.backgroundColor;
+            }
+            
+           return `color: ${this.theme.fontColor};
+                background: ${backgroundProperty};
                 border: ${this.theme.border.size}px ${this.theme.border.type} ${this.theme.border.color};
                 border-radius: ${this.theme.border.radius}px;
                 max-height: calc(100vh - 150px); 
-                overflow: auto; cursor: not-allowed`;
+                overflow: auto; cursor: not-allowed;`;
         }
     },
     methods: {
@@ -290,6 +321,12 @@ const vue = new Vue({
         },
         save: function() {
             
+        },
+        addColor: function() {
+            this.theme.background.colors.push("#FFFFFF");
+        },
+        removeColor: function(index) {
+            this.theme.background.colors.splice(index, 1);
         }
     },
     mounted: function() {
