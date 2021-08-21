@@ -356,12 +356,29 @@ const vue = new Vue({
                             .then(blob => globalThis.audio.recorder.resultantBlob = blob)
                     }
                     let theme = JSON.parse(post.themeJson);
-                    globalThis.theme.fontColor = theme.fontColor;
-                    globalThis.theme.backgroundColor = theme.backgroundColor;
-                    globalThis.theme.border.size = theme.border.size;
-                    globalThis.theme.border.type = theme.border.type;
-                    globalThis.theme.border.color = theme.border.color;
-                    globalThis.theme.border.radius = theme.border.radius;
+
+                    if(theme.background === undefined) {
+                        theme.background = {
+                            type: "linear",
+                            colors: ["#FFFFFF","#30098EE5"],
+                            direction: "0"
+                        }
+                    }
+                    
+                    if(theme.gradient === undefined) {
+                        theme.gradient = "false";
+                    }
+                    
+                    globalThis.theme = theme; // this is fine
+                    // globalThis.theme.fontColor = theme.fontColor;
+                    // globalThis.theme.backgroundColor = theme.backgroundColor;
+                    // globalThis.theme.border.size = theme.border.size;
+                    // globalThis.theme.border.type = theme.border.type;
+                    // globalThis.theme.border.color = theme.border.color;
+                    // globalThis.theme.border.radius = theme.border.radius;
+                    
+                    
+                    
                 }
                 request.send(form);
             }
