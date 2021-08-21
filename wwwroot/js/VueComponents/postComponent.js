@@ -56,9 +56,7 @@ Vue.component('post-template',{
             return `color: ${theme.fontColor};
                 background: ${backgroundProperty};
                 border: ${theme.border.size}px ${theme.border.type} ${theme.border.color};
-                border-radius: ${theme.border.radius}px;
-                max-height: calc(100vh - 150px); 
-                overflow: auto; cursor: not-allowed;`;
+                border-radius: ${theme.border.radius}px;`;
         },
         getUserImageUrl: function(userId) {
             return `/api/Fetch/GetUserProfileImage?userId=${userId}&sessionToken=${this.sessionToken}`
