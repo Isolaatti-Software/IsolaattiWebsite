@@ -28,10 +28,37 @@ Vue.component('post-template',{
             if(themeDefinitionJson === null)
                 return "";
             const theme = JSON.parse(themeDefinitionJson);
+            function returnColorsAsString(array) {
+                let res = "";
+
+                for(let i=0; i < array.length - 1; i++) {
+                    res += array[i] + ", "
+                }
+
+                res += array[array.length - 1];
+
+                return res;
+            }
+
+            let backgroundProperty;
+
+            // if a gradient of any kind is selected it will generate the corresponding background,
+            // otherwise it will return the solid color
+            if(theme.gradient === "true"){
+                backgroundProperty = theme.background.type ===
+                "linear" ?
+                    `linear-gradient(${theme.background.direction}deg, ${returnColorsAsString(theme.background.colors)})` :
+                    `radial-gradient(${returnColorsAsString(theme.background.colors)})`;
+            } else {
+                backgroundProperty = theme.backgroundColor;
+            }
+
             return `color: ${theme.fontColor};
-                background-color: ${theme.backgroundColor};
+                background: ${backgroundProperty};
                 border: ${theme.border.size}px ${theme.border.type} ${theme.border.color};
-                border-radius: ${theme.border.radius}px;`;
+                border-radius: ${theme.border.radius}px;
+                max-height: calc(100vh - 150px); 
+                overflow: auto; cursor: not-allowed;`;
         },
         getUserImageUrl: function(userId) {
             return `/api/Fetch/GetUserProfileImage?userId=${userId}&sessionToken=${this.sessionToken}`
