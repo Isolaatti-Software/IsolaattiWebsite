@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using isolaatti_API.Classes;
 using isolaatti_API.Hubs;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
@@ -108,7 +109,14 @@ namespace isolaatti_API.Controllers
             var accountsManager = new Accounts(Db);
             var user = accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
-            return Ok(JsonSerializer.Serialize(user.FollowingIdsJson));
+            var ids = JsonSerializer.Deserialize<List<int>>(user.FollowingIdsJson);
+            var users = Db.Users.Where(u => ids.Contains(u.Id)).Select(u => new 
+            {
+                Id = u.Id,
+                Name = u.Name,
+                ImageUrl = Utils.UrlGenerators.GenerateProfilePictureUrl(u.Id,sessionToken, Request)
+            });
+            return Ok(users);
         }
 
         [Route("Followers")]
@@ -118,7 +126,15 @@ namespace isolaatti_API.Controllers
             var accountsManager = new Accounts(Db);
             var user = accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
-            return Ok(JsonSerializer.Serialize(user.FollowingIdsJson));
+            var ids = JsonSerializer.Deserialize<List<int>>(user.FollowersIdsJson);
+            
+            var users = Db.Users.Where(u => ids.Contains(u.Id)).Select(u => new 
+            {
+                Id = u.Id,
+                Name = u.Name,
+                ImageUrl = Utils.UrlGenerators.GenerateProfilePictureUrl(u.Id,sessionToken, Request)
+            });
+            return Ok(users);
         }
     }
 }
