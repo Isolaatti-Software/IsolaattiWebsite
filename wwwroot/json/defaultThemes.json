@@ -75,6 +75,69 @@
           "direction": "180"
         }
       }
+    },
+    {
+      "name": "Rakkaus \uD83D\uDC98",
+      "data": {
+        "fontColor": "#FFFFFF",
+        "backgroundColor": "#FF0000",
+        "gradient": "true",
+        "border": {
+          "color": "#FFFFFF",
+          "type": "solid",
+          "size": "0",
+          "radius": "5px"
+        },
+        "background": {
+          "type": "linear",
+          "colors": ["#FF0000","#9D1515"],
+          "direction": "180"
+        }
+      }
+    },
+    {
+      "name": "Getting deeper in the night deep light \uD83C\uDF11",
+      "data": {
+        "fontColor": "#FFFFFF",
+        "backgroundColor": "#3D3F61",
+        "gradient": "true",
+        "border": {
+          "color": "#FFFFFF",
+          "type": "solid",
+          "size": "0",
+          "radius": "5px"
+        },
+        "background": {
+          "type": "radial",
+          "colors": [
+            "#000000",
+            "#3D3F61"
+          ],
+          "direction": "180"
+        }
+      }
+    },
+    {
+      "name": "I have closed my eyes",
+      "data": {
+        "fontColor": "#FFFFFF",
+        "backgroundColor": "#3D3F61",
+        "gradient": "true",
+        "border": {
+          "color": "#FFFFFF",
+          "type": "solid",
+          "size": "0",
+          "radius": "5px"
+        },
+        "background": {
+          "type": "radial",
+          "colors": [
+            "#B72A2A",
+            "#000000"
+          ],
+          "direction": "180"
+        }
+      }
     }
   ]
 }
