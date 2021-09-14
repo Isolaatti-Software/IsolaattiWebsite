@@ -60,20 +60,22 @@
     @RenderSection("css",false)
 </head>
 <body>
-<div class="container">
-    <div class="row">
-@RenderBody()
+<div class="d-flex flex-column" style="min-height: 100vh">
+    <div class="container">
+        <div class="row">
+    @RenderBody()
+        </div>
+        
     </div>
-    
+    <footer class="mt-auto">
+        <p class="text-center text-black-50">
+            <a asp-page="MakeAccount">Sign up</a> | <a asp-page="LogIn">Sign in</a> | <a asp-page="About">About</a> | <a href="https://erik-swdev.isolaatti.com" target="_blank">erikswdev</a>
+        </p>
+        <p class="text-center text-black-50">
+            made with <i class="fas fa-heart" style="color: red"></i> by erikswdevlab, 2021
+        </p>
+    </footer>
 </div>
-<footer class="mt-3">
-    <p class="text-center text-black-50">
-        <a asp-page="MakeAccount">Sign up</a> | <a asp-page="LogIn">Sign in</a> | <a asp-page="About">About</a> | <a href="https://erik-swdev.isolaatti.com" target="_blank">erikswdev</a>
-    </p>
-    <p class="text-center text-black-50">
-        made with <i class="fas fa-heart" style="color: red"></i> by erikswdevlab, 2021
-    </p>
-</footer>
 @RenderSection("Scripts", false)
 </body>
 </html>
