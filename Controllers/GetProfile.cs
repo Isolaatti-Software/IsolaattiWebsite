@@ -65,6 +65,29 @@ namespace isolaatti_API.Controllers
             
             return Ok(response);
         }
+
+        [HttpPost]
+        [Route("Public/{id}")]
+        public IActionResult GetPublicProfile([FromForm] string sessionToken, int id)
+        {
+            var accountsManager = new Accounts(_db);
+            var user = accountsManager.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
+
+            var askedAccount = _db.Users.Find(id);
+            if (askedAccount == null) return NotFound("User not found");
+            
+            
+            return Ok(new
+            {
+                Id = askedAccount.Id,
+                Name = askedAccount.Name,
+                Description = askedAccount.DescriptionText,
+                AudioDescriptionUrl = askedAccount.DescriptionAudioUrl,
+                ProfileImageUrl = Utils.UrlGenerators.GenerateProfilePictureUrl(askedAccount.Id,sessionToken,Request)
+            });
+        }
+        
     }
     
 }
