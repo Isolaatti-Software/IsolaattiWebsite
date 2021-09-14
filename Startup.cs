@@ -55,11 +55,7 @@ namespace isolaatti_API
             });
             services.Configure<ForwardedHeadersOptions>(options =>
             {
-                options.ForwardedHeaders = ForwardedHeaders.All;
-                options.RequireHeaderSymmetry = false;
-                options.ForwardLimit = null;
-                options.KnownProxies.Add(IPAddress.Parse("159.203.108.20"));
-                options.KnownProxies.Add(IPAddress.Parse("127.0.0.1"));
+                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
             });
         }
 
@@ -70,6 +66,7 @@ namespace isolaatti_API
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseForwardedHeaders();
             app.UseRouting();
             app.UseAuthorization();
             app.UseStaticFiles();
@@ -80,10 +77,7 @@ namespace isolaatti_API
                 endpoints.MapRazorPages();
                 endpoints.MapHub<NotificationsHub>("/notifications_hub");
             });
-            app.UseForwardedHeaders(new ForwardedHeadersOptions()
-            {
-                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-            });
+            
         }
     }
 }
