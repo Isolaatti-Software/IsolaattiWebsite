@@ -37,7 +37,6 @@ body {
     border-radius: 10px;
     text-decoration: none;
     filter: drop-shadow(16px 16px 30px #3e0063);
-    background: conic-gradient(from 45deg at 50% 50%, #2f0148, #000000, #2f0148, #000000 );
 }
 #isolaatti_brand:before {
     content: "Is";
