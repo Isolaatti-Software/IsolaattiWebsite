@@ -103,7 +103,8 @@
                            :audio-url="audioUrl"
                            :paused="paused"
                            :is-modal="false"
-                           v-on:view-thread="viewComments(post)">
+                           v-on:view-thread="viewComments(post)"
+                           v-bind:key="post.id">
             </post-template>
             
             <div class="modal fade" id="modal-share-post">
