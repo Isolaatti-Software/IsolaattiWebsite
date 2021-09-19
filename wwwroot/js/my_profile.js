@@ -258,11 +258,49 @@ profilePictureLoadFormElement.addEventListener("input", function() {
                 commentsViewer: {
                     postId: 0,
                     comments: []
+                },
+                filterData: {
+                    privacy: {
+                        private: true,
+                        isolaatti: true,
+                        public: true
+                    },
+                    content: "all"
+                },
+                sortingData: {
+                    ascending: "0"
                 }
             },
             computed: {
                 openThreadLink: function() {
                     return `/Threads/${this.commentsViewer.postId}`;
+                },
+                filterAndSortedPosts: function() {
+                    let filteredArray = this.posts.filter(value => {
+                        let privacy = value.privacy;
+                        let audioUrl = value.audioAttachedUrl;
+                        
+                        //let's filter first by audio availability
+                        if(audioUrl === null && this.filterData.content === "withAudio") {
+                            return false;
+                        }
+                        
+                        if(audioUrl !== null && this.filterData.content === "withoutAudio") {
+                            return false;
+                        }
+                        
+                        // and then by privacy
+                        switch(privacy) {
+                            case 1: return this.filterData.privacy.private;
+                            case 2: return this.filterData.privacy.isolaatti;
+                            case 3: return this.filterData.privacy.public;
+                        }
+                    });
+                    
+                    if(this.sortingData.ascending === "1") {
+                        return filteredArray.reverse();
+                    }
+                    return filteredArray;
                 }
             },
             methods: {
