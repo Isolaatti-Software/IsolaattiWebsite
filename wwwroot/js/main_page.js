@@ -265,7 +265,9 @@ let vueContainer = new Vue({
             request.open("POST", "/api/EditPost/Delete");
             request.onload = function() {
                 if(request.status === 200) {
-                    globalThis.refresh();
+                    //globalThis.refresh();
+                    let postIndex = globalThis.posts.findIndex(value => value.id === postId);
+                    globalThis.posts.splice(postIndex, 1)
                 }
             }
             request.send(form);
