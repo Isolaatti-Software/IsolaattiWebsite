@@ -13,7 +13,7 @@
         <div class="d-flex align-items-center flex-column"
              id="feed-and-thread-reader-container"
              ref="feedAndThreadReaderContainer">
-            <h5 class="ml-2 mt-2"><i class="far fa-newspaper"></i> New activity</h5>
+            <h5 class="ml-2 mt-2"><i class="far fa-newspaper"></i> Activity of people you follow</h5>
             <section id="posts-deposit" class="d-flex flex-column pt-1 mt-2 mb-3 align-items-center posts-deposit">
                 <post-template v-for="post in posts" :post="post"
                                v-on:like="likePost(post)"
