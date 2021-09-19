@@ -22,28 +22,29 @@ let postsInDOM = [];
 //         console.error(error);
 //     });
 // });
-
+const mainContainer = document.querySelector("#main-container");
 function onScroll() {
-    console.log(document.body.scrollHeight * 0.50,window.scrollY);
-    if (Math.trunc(document.body.scrollHeight * 0.5) >= Math.trunc(window.scrollY)) {
+    
+    console.log(mainContainer.scrollHeight * 0.50,window.scrollY);
+    if (Math.trunc(mainContainer.scrollHeight * 0.5) >= Math.trunc(window.scrollY)) {
         putPosts();
     }
 }
 
 function putPosts() {
     vueContainer.loading = true;
-    window.onscroll = null
+    mainContainer.onscroll = null
     getFeed(JSON.stringify(postsInDOM), (response) => {
         vueContainer.loading = false;
         console.log(response);
         if(response.serverResponse.length === 0) {
             vueContainer.noMoreContent = true;
-            window.onscroll = null;
+            mainContainer.onscroll = null;
         } else {
             response.serverResponse.forEach((post) => {
                 vueContainer.posts.push(post);
                 postsInDOM.push(post.id);
-                window.onscroll = onScroll;
+                mainContainer.onscroll = onScroll;
             });
         }
 
