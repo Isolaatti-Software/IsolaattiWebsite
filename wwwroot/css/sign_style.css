@@ -61,12 +61,13 @@ article.isolaatti-feature {
     margin-bottom: 1em;
     color: white;
     border-top-left-radius: 10px;
-    transition-property: background-color;
+    transition-property: background-color, width;
     transition-duration: 250ms;
 }
 
 article.isolaatti-feature:hover {
     background-color: cadetblue;
+    width: 100%;
 }
 .isolaatti-feature-content{
     margin: 1em;
