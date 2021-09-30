@@ -12,160 +12,31 @@
     <meta property="og:description"
           content="Say it louder, deeper! Your voice has more power than you think" />
     <link rel="stylesheet" href="~/stylesheets/isolaatti.css">
+    <link rel="stylesheet" href="~/css/sign_style.css"/>
 }
-<div class="d-flex col-12 flex-column">
-    <div class="d-flex justify-content-between align-items-center">
-        <div class="d-flex flex-column">
-            <h1><a href="/" id="isolaatti-icon"></a> Isolaatti</h1>
-            <h3>Say it louder, deeper!</h3>
-        </div>
-        <div class="d-flex">
-            <a asp-page="MakeAccount" class="btn btn-primary mr-1">Sign up</a>
-            <a asp-page="LogIn" class="btn btn-primary">Sign in</a>
-        </div>
-    </div>
-    <section class="d-flex justify-content-around flex-wrap">
-        <article>
-            <h4>Talk to the world with no fear!</h4>
-            <p>Your voice has more power than you think.</p>
-            <div id="image-microphone"></div>
-            <small>Foto de freestocks.org en Pexels</small>
-        </article>
-        <article>
-            <h4>Tell your stories and memories</h4>
-            <p>Write it and make it stronger with the power of your voice.</p>
-            <div id="image-audio-book"></div>
-            <small>Foto de Karolina Grabowska en Pexels</small>
-        </article>
-        <article>
-            <h4>Keyboard and drum pad directly in the browser</h4>
-            <p>Record, mix and share (This feature is not available yet)</p>
-            <div id="image-keys"></div>
-            <small>Foto de Stas Knop en Pexels</small>
-        </article>
-        <article>
-            <h4>Demix music</h4>
-            <p>Get separated track from songs. Use our built-in audio player.</p>
-            <div id="image-demix"></div>
-            <small>Foto de Ann H en Pexels</small>
-        </article>
-    </section>
-    <section id="history" class="mt-5 ml-auto mr-auto w-100">
-        <div class="accordion" id="isolaatti-info-accordion">
-            <div class="card">
-                <div class="card-header" id="headingOne">
-                    <h2 class="mb-0">
-                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                            History
-                        </button>
-                    </h2>
-                </div>
-        
-                <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#isolaatti-info-accordion">
-                    <div class="card-body">
-                        <small>
-                            Written by Erik Cavazos, the developer
-                        </small>
-                        <p>
-                            Isolaatti begun as school project in February 2020. It was only a "demucs UI" (music demixing) and only for Android devices.
-                            It actually was a bad designed app and crashed all the time. Some months later, the project was abandoned, as it had been
-                            successfully graded.
-                        </p>
-                        <p>
-                            In November 2020, I decided to work on the project again and made the web version. It still was a demucs UI app, but now it had
-                            a better audio player. But still, no many people would use it, as it was only for a "very specific target".
-                        </p>
-                        <p>
-                            I continued to work a couple of months, until March 2021. It was time to add more features to the application (web version).
-                            Many errors were spotted and fixed, and also design was improved. However, everything was about music demixing. I added more social
-                            things, but still a weird (an maybe boring) app.
-                        </p>
-                        <p>
-                            Some time later, I added text posts and threads. It was actually boring, but I was making things that actually could be fun.
-                            But still, even for me, it was boring. "What could I add?" I said to me. And then I said "This app is all about audio stuff,
-                            I could add audio posting" and that's basically where I'm now.
-                        </p>
-                        <p>
-                            It was not that straightforward, many errors were still present and I had to fix them first. And also, many changes to the back-end
-                            application had to be made. At this time, I almost completely abandoned the mobile version (I was just adding new features to the web app).
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-header" id="headingTwo">
-                    <h2 class="mb-0">
-                        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                            Technical details
-                        </button>
-                    </h2>
-                </div>
-                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#isolaatti-info-accordion">
-                    <div class="card-body">
-                        <p>
-                            This might not be the right place to show code (I won't), but it's important to let people know that
-                            the platform is running on a stable development stack.
-                        </p>
-                        <h5>
-                            Server application
-                        </h5>
-                        <p>
-                            This is all made in <strong>.NET Core 3.1</strong> and <strong>ASP.NET Core 3.1</strong>. The web version is served from here and some
-                            components are delivered directly in HTML. This also has the REST API, which allows the mobile versions and web app
-                            to interact with the server app.
-                        </p>
-                        <h5>
-                            Web version
-                        </h5>
-                        <p>
-                            The web version is served from the server app, using Razor Pages. However, not all actions are performed in
-                            the old school way (sending forms and reloading the page). Here is where Vue.js comes in. Vue.js is used to
-                            render those UI components that have to be dynamic. JavaScript is the most important part of this.
-                        </p>
-                        <p>
-                            For UI design, some <strong>Bootstrap</strong> stuff is used, but I also have custom CSS (almost everything).
-                            Icons are from <strong>Fontawesome</strong>.
-                        </p>
-                        <h5>
-                            Mobile version
-                        </h5>
-                        <p>
-                            I have started developing this version using <strong>Flutter</strong>, the new Google SDK for multi-platform
-                            development. I can't give much detail, as this is not what I'm focused now.
-                        </p>
-                        <h5>
-                            Hosting and servers
-                        </h5>
-                        <p>
-                            The server application runs on a single core virtual machine with 1GB of memory provided by
-                            <strong>Digital Ocean</strong>. Digital Ocean doesn't offer automatically deployment for ASP.NET apps,
-                            so I had to manually set the server up. NGINX is the inverse proxy, so thanks to them.
-                        </p>
-                        <a href="https://www.digitalocean.com/?refcode=962feafbc8f2&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge"><img src="https://web-platforms.sfo2.digitaloceanspaces.com/WWW/Badge%203.svg" alt="DigitalOcean Referral Badge"/></a>
-                        <h5>
-                            Load balancing
-                        </h5>
-                        <p>
-                            There is not load balancing, I'm looking for options. This basically would allow more people to use the app
-                            at the same time without any performance issue. An entry point server could receive all the traffic and then
-                            distribute it to the other machines, that's one way of doing it, I'll see.
-                        </p>
-                        <h5>
-                            Database server
-                        </h5>
-                        <p>
-                            This is very important, even if I wrote it last. It runs on Microsoft Azure and is enough for now. I could
-                            enable database synchronization to add more servers, but that would be after load balancing is working. The idea is to
-                            have one database server per web server. I would have to change how primary keys are managed, as there could
-                            be problems with auto incremental keys. For example, two posts could be made on two different web servers,
-                            at the same exact time, and recorded to its corresponding database, but when those databases try to synchronize,
-                            those record could have the same id, and it would crash.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+<nav class="welcome-page-navbar">
+    <a asp-page="/s/Welcome">The front</a>
+    <a asp-page="/s/Features">Features</a>
+    <a asp-page="/About">About</a>
+</nav>
+<h3 class="m-3 w-100 text-center">About</h3>
+<div class="d-flex flex-column">
+    <h5 class="ml-0">Foundation</h5>
+    <p>
+        Isolaatti started as a school project, which only purpose was to provide an Andruid GUI for demucs (music demixing). After it was succesfully graded, its goals changed.
+    </p>
+    <h5 class="ml-0">Mission</h5>
+    <p>
+        To provide the world a simple tool to share your short stories via your voice and text. I believe that people's voice should be heard, no matter the appearance.
+    </p>
+    <h5>People behind</h5>
+    <p>
+        Software development is driven by the founder, Erik Cavazos. I expect to evolve to a team soon.
+    </p>
+    <h5>The name</h5>
+    <p>
+        <em>Isolaatti</em> comes from the Finnish language (one of the languages of Finland), that means somehow "isolate".
+    </p>
 </div>
 @section Scripts
 {

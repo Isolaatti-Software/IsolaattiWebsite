@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" 
               integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 
-    <link rel="stylesheet" href="~/css/sign_style.css"/>
+    
     <link rel="stylesheet" href="~/css/custom_bootstrap.css">
     <link rel="shortcut icon" href="~/favicon.ico">
     <link rel="icon" type="image/png" sizes="196x196" href="~/favicon-192.png">
@@ -22,57 +22,36 @@
     <script src="https://kit.fontawesome.com/fde197fc03.js" crossorigin="anonymous"></script>
     <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/4.8.0/firebase-ui-auth.css" />
 
-    <script>
-    var firebaseConfig = {
-        apiKey: "AIzaSyDZHVXLR_1imwVb2mCArnYpdbNx6XUPZBQ",
-        authDomain: "isolaatti-b6641.firebaseapp.com",
-        databaseURL: "https://isolaatti-b6641.firebaseio.com",
-        projectId: "isolaatti-b6641",
-        storageBucket: "isolaatti-b6641.appspot.com",
-        messagingSenderId: "556033448926",
-        appId: "1:556033448926:web:35759afc37d6a1585b1b4f",
-        measurementId: "G-JQV4WX75RK"
-    };
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-                  
-    var uiConfig = {
-            signInSuccessUrl: 'GoogleAuth',
-            signInOptions: [
-              // Leave the lines as is for the providers you want to offer your users.
-              firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-            ],
-            // tosUrl and privacyPolicyUrl accept either url string or a callback
-            // function.
-            // Terms of service url/callback.
-            tosUrl: '<your-tos-url>',
-            // Privacy policy url/callback.
-            privacyPolicyUrl: function() {
-              window.location.assign('<your-privacy-policy-url>');
-            }
-          };
-    
-          // Initialize the FirebaseUI Widget using Firebase.
-          var ui = new firebaseui.auth.AuthUI(firebase.auth());
-          // The start method will wait until the DOM is loaded.
-          ui.start('#firebaseui-auth-container', uiConfig);
-    </script>
+    @RenderSection("scripts_google", false)
     @RenderSection("css",false)
 </head>
 <body>
 <div class="d-flex flex-column" style="min-height: 100vh">
     <div class="container">
         <div class="row">
-    @RenderBody()
+            <div class="d-flex col-12 flex-column">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex flex-column">
+                        <h1><a href="/" id="isolaatti-icon"></a> Isolaatti</h1>
+                        <h3>Say it louder, deeper!</h3>
+                    </div>
+                    <div class="d-flex">
+                        <a asp-page="/MakeAccount" class="btn btn-primary mr-1">Sign up</a>
+                        <a asp-page="/LogIn" class="btn btn-primary">Sign in</a>
+                    </div>
+                </div>
+                
+            </div>
+            @RenderBody()
         </div>
         
     </div>
     <footer class="mt-auto">
-        <p class="text-center text-black-50">
+        <p class="text-center footer-font-color">
             <a asp-page="MakeAccount">Sign up</a> | <a asp-page="LogIn">Sign in</a> | <a asp-page="About">About</a> | <a href="https://erik-swdev.isolaatti.com" target="_blank">erikswdev</a>
         </p>
-        <p class="text-center text-black-50">
-            made with <i class="fas fa-heart" style="color: red"></i> by erikswdevlab, 2021
+        <p class="text-center footer-font-color">
+            made with <i class="fas fa-heart" style="color: red"></i> by erikswdevlab, 2020 - 2021
         </p>
     </footer>
 </div>

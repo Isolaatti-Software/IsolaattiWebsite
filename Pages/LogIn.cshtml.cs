@@ -16,6 +16,7 @@ namespace isolaatti_API.Pages
 {
     [IgnoreAntiforgeryToken]
     public class LogIn : PageModel
+    
     {
         private DbContextApp _db;
         public bool WrongCredential = false;

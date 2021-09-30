@@ -27,7 +27,7 @@ namespace isolaatti_API.Pages
         {
             var accountsManager = new Accounts(_db);
             var user = accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
-            if (user == null) return RedirectToPage("LogIn");
+            if (user == null) return RedirectToPage("/s/Welcome");
             
             // here it's know that account is correct. Data binding!
             ViewData["name"] = user.Name;
