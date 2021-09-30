@@ -41,7 +41,8 @@
             <i class="fas fa-home"></i>
         </a>
         <a class="nav-link custom-nav-link"
-           asp-page="/PostEditor"
+           href="#modal-new-post"
+           data-toggle="modal"
            title="Post Editor"
            id="post-editor-link">
             <i class="fas fa-edit"></i>
@@ -144,7 +145,26 @@
         </div>
         
     </div>
-
+    <div class="modal fade" id="modal-new-post">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">New post (not implemented)</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        Use Pro editor, as it's the only available
+                    </div>
+                    <textarea class="form-control" placeholder="Write the content of your post here. Markdown is compatible."></textarea>
+                </div>
+                <div class="modal-footer">
+                    <a asp-page="PostEditor" class="btn btn-secondary mr-auto">Pro editor</a>
+                    <button class="btn btn-primary">Post</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </main>
     <div id="vue-container-for-notifications" class="sticky-top" ref="notificationsSlider">
         <div id="notifications-container" >
