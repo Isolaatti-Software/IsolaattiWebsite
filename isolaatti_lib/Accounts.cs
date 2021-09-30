@@ -55,13 +55,14 @@ namespace isolaatti_API.isolaatti_lib
                 NotifyWhenProcessFinishes = true,
                 NotifyWhenProcessStarted = true,
                 FollowersIdsJson = "[]",
-                FollowingIdsJson = "[]"
+                FollowingIdsJson = "[]",
+                EmailValidated = true
             };
             try
             {
                 db.Users.Add(newUser);
                 db.SaveChanges();
-                SendValidationEmail(newUser.Id, newUser.Uid);
+                //SendValidationEmail(newUser.Id, newUser.Uid);
                 return "0";
             }
             catch(Exception e)
