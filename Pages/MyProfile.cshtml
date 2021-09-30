@@ -91,12 +91,16 @@
         <div id="vue-container" class="w-100 d-flex align-items-center flex-column">
             <h5 class="m-3"><i class="far fa-newspaper"></i> Your posts</h5>
             <div class="d-flex justify-content-end w-100">
+                <button type="button" class="btn btn-primary mb-2 mr-auto" 
+                        data-toggle="modal" data-target="#modal-new-post" title="New post">
+                    <i class="fas fa-edit"></i>
+                </button>
                 <div class="btn-group mb-2">
-                    <button type="button" class="btn btn-secondary" title="Filter" 
+                    <button type="button" class="btn btn-secondary" title="Filter"
                             data-target="#modal-filter-posts" data-toggle="modal">
                         <i class="fas fa-filter"></i>
                     </button>
-                    <button type="button" class="btn btn-secondary" title="Sort" 
+                    <button type="button" class="btn btn-secondary" title="Sort"
                             data-target="#modal-sort-posts" data-toggle="modal">
                         <i class="fas fa-sort"></i>
                     </button>
