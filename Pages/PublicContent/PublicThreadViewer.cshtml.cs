@@ -21,6 +21,7 @@ namespace isolaatti_API.Pages.PublicContent
             if (post.Privacy != 3) return NotFound();
 
             ViewData["threadId"] = post.Id;
+            ViewData["username"] = _db.Users.Find(post.UserId).Name;
 
             var accountsManager = new Accounts(_db);
             var user = accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
