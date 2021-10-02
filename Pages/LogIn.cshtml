@@ -52,20 +52,20 @@
     <a asp-page="/s/Features">Features</a>
     <a asp-page="/About">About</a>
 </nav>
-@if (Model.NewUser)
-{
-    <div class="alert alert-info">
-        <h5>Welcome, before logging in the first time, verify your email</h5>
-        <p>We've sent you a message with a link!</p>
-    </div>
-}
-@if (Model.JustVerifiedEmail)
-{
-    <div class="alert alert-info">
-        <h5>Your email was verified succesfully</h5>
-        <p>Now you can log in here or the Android application!</p>
-    </div>
-}
+@* @if (Model.NewUser) *@
+@* { *@
+@*     <div class="alert alert-info"> *@
+@*         <h5>Welcome, before logging in the first time, verify your email</h5> *@
+@*         <p>We've sent you a message with a link!</p> *@
+@*     </div> *@
+@* } *@
+@* @if (Model.JustVerifiedEmail) *@
+@* { *@
+@*     <div class="alert alert-info"> *@
+@*         <h5>Your email was verified succesfully</h5> *@
+@*         <p>Now you can log in here or the Android application!</p> *@
+@*     </div> *@
+@* } *@
 @if (Model.ChangedPassword)
 {
     <div class="alert alert-info">

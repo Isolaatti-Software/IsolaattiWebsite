@@ -9,6 +9,9 @@
 {
     <link rel="stylesheet" href="~/css/welcome-purple-image.css"/>
 }
+<div class="alert alert-info w-100 mt-2">
+    This application is under development. Please, <a asp-page="DevSupport">support the development</a>.
+</div>
 <nav class="welcome-page-navbar">
     <a asp-page="/s/Welcome">The front</a>
     <a asp-page="/s/Features">Features</a>
@@ -17,4 +20,7 @@
 
 <div class="d-flex text-center" style="font-size: 3em; filter: drop-shadow(-16px 16px 50px #3e0063); margin-top: 25vh ">
     Your voice has more strength than you ever thought
+</div>
+<div class="d-flex justify-content-center mt-4 w-100">
+    <a asp-page="/PublicContent/Feed" class="btn btn-primary">Go to public posts</a>
 </div>
