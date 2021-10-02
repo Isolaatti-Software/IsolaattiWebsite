@@ -13,7 +13,8 @@
                         audioPlayer: new Audio(),
                         audioUrl: "",
                         playing: false,
-                        paused: false
+                        paused: false,
+                        postLinkToShare: ""
                     },
                     methods: {
                         compileMarkdown: function(raw) {
@@ -46,15 +47,19 @@
                             return `color: ${theme.fontColor};
                         background-color: ${theme.backgroundColor};
                         border: ${theme.border.size} ${theme.border.type} ${theme.border.color}`;
+                        },
+                        copyToClipboard: function(relativeUrl) {
+                            let absoluteUrl = `${window.location.protocol}//${window.location.host}${relativeUrl}`;
+                            navigator.clipboard.writeText(absoluteUrl).then(function() {
+                                alert("Se copió el texto al portapapeles");
+                            });
                         }
                     },
                     mounted: function() {
-                        this.$nextTick(function() {
-                            let globalThis = this;
-                            this.audioPlayer.onended = function() {
-                                globalThis.audioUrl = "";
-                            }
-                        });
+                        let globalThis = this;
+                        this.audioPlayer.onended = function() {
+                            globalThis.audioUrl = "";
+                        }
                     }
                 })
             }));

@@ -14,7 +14,7 @@ namespace isolaatti_API.Utils
                 res += $"{protocol}{request.HttpContext.Request.Host.Value}";
             }
 
-            res += $"/api/Fetch/GetUserProfileImage?userId={userId}&sessionToken={sessionToken}";
+            res += $"/api/Fetch/GetUserProfileImage?userId={userId}";
             return res;
         }
     }

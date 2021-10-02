@@ -24,7 +24,7 @@ namespace isolaatti_API.Pages
             var token = Request.Cookies["isolaatti_user_session_token"];
             var accountsManager = new Accounts(_db);
             var user = accountsManager.ValidateToken(token);
-            if (user == null) return RedirectToPage("LogIn");
+            if (user == null) return RedirectToPage("/PublicContent/Profile", new {id=id});
             
             // here it's know that account is correct. Data binding!
             ViewData["name"] = user.Name;
@@ -40,9 +40,7 @@ namespace isolaatti_API.Pages
             ViewData["profile_email"] = profile.Email;
             ViewData["profile_id"] = profile.Id;
             if (user.Id == profile.Id) return RedirectToPage("MyProfile");
-            ViewData["profilePicUrl"] = user.ProfileImageData == null
-                ? null
-                : UrlGenerators.GenerateProfilePictureUrl(user.Id, Request.Cookies["isolaatti_user_session_token"]);
+            ProfilePhotoUrl = UrlGenerators.GenerateProfilePictureUrl(user.Id, Request.Cookies["isolaatti_user_session_token"]);
 
             var followingUsersIds = JsonSerializer.Deserialize<List<int>>(profile.FollowingIdsJson);
             var followersIds = JsonSerializer.Deserialize<List<int>>(profile.FollowersIdsJson);
@@ -54,12 +52,8 @@ namespace isolaatti_API.Pages
             ViewData["description"] = profile.DescriptionText;
                     
             ViewData["numberOfPosts"] = _db.SimpleTextPosts.Count(post => post.UserId.Equals(profile.Id));
-
             
-            if (profile.ProfileImageData != null)
-            {
-                ProfilePhotoUrl = UrlGenerators.GenerateProfilePictureUrl(profile.Id, token);
-            }
+            ProfilePhotoUrl = UrlGenerators.GenerateProfilePictureUrl(profile.Id, token,Request);
             
             return Page();
         }

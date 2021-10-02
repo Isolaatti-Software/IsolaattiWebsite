@@ -115,5 +115,31 @@ namespace isolaatti_API.Controllers
                 
             return Ok(response);
         }
+
+        [HttpGet]
+        [Route("Public")]
+        public IActionResult GetPublicFeed(bool mostLiked=false)
+        {
+            IEnumerable<ReturningPostsComposedResponse> feed;
+            if (mostLiked)
+            {
+                feed = Db.SimpleTextPosts.Where(post => post.Privacy.Equals(3))
+                    .OrderByDescending(post => post.NumberOfLikes)
+                    .Take(100).ToList().Select(post => new ReturningPostsComposedResponse(post)
+                    {
+                        UserName = Db.Users.Find(post.UserId).Name
+                    });
+            }
+            else
+            {
+                feed = Db.SimpleTextPosts.Where(post => post.Privacy.Equals(3))
+                    .OrderByDescending(post => post.Date)
+                    .Take(100).ToList().Select(post => new ReturningPostsComposedResponse(post)
+                    {
+                        UserName = Db.Users.Find(post.UserId).Name
+                    });
+            }
+            return Ok(feed);
+        }
     }
 }

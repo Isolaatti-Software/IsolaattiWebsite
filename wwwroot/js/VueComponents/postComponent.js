@@ -3,7 +3,6 @@ Vue.component('post-template',{
     data: function() {
         return {
             userData: userData,
-            sessionToken: sessionToken,
         }
     },
     computed: {
@@ -59,7 +58,7 @@ Vue.component('post-template',{
                 border-radius: ${theme.border.radius}px;`;
         },
         getUserImageUrl: function(userId) {
-            return `/api/Fetch/GetUserProfileImage?userId=${userId}&sessionToken=${this.sessionToken}`
+            return `/api/Fetch/GetUserProfileImage?userId=${userId}`
         }
     },
     template: `
@@ -91,7 +90,7 @@ Vue.component('post-template',{
             <a :href="editPostLink" class="dropdown-item" v-if="post.userId===this.userData.id">Edit</a>
             <a href="#modal-share-post" v-on:click="$emit('input',openThreadLink)" class="dropdown-item" data-toggle="modal">Share</a>
             <a href="#" class="dropdown-item" v-if="post.userId===this.userData.id" v-on:click="$emit('delete',1)">Delete</a>
-            <a :href="reportLink" class="dropdown-item" target="_blank">Report</a>
+            <a :href="reportLink" class="dropdown-item" target="_blank" v-if="userData.id!==-1">Report</a>
           </div>
         </div>
       </div>
@@ -104,7 +103,7 @@ Vue.component('post-template',{
       </div>
       <div class="mt-2 post-content" v-html="compileMarkdown(post.textContent)"></div>
       <div class="d-flex justify-content-end">
-        <div class="btn-group btn-group-sm">
+        <div class="btn-group btn-group-sm" v-if="userData.id!=-1">
           <a class="btn btn-dark btn-sm" href="#thread-viewer" data-toggle="modal" v-if="!isModal" v-on:click="$emit('view-thread')">
             <i class="fas fa-comments" aria-hidden="true"></i> {{ post.numberOfComments }}
           </a>
@@ -114,6 +113,9 @@ Vue.component('post-template',{
           <button v-if="post.liked" v-on:click="$emit('un-like',0.1)" class="btn btn-primary btn-sm" type="button">
             <i class="fas fa-thumbs-up" aria-hidden="true"></i> {{ post.numberOfLikes }}
           </button>
+        </div>
+        <div class="btn-group btn-group-sm" v-else>
+          <a class="btn btn-dark" :href="openThreadLink"><i class="fas fa-comments"></i> {{post.numberOfComments}}</a>
         </div>
       </div>
       </div>

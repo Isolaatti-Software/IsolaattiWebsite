@@ -1,0 +1,45 @@
+@page
+@model isolaatti_API.Pages.PublicContent.Profile
+
+@{
+    Layout = "Shared/_LayoutWebAppOutside";
+}
+@section css
+{
+    <link rel="stylesheet" href="~/css/sign_style.css"/>
+    <link rel="stylesheet" href="~/css/webapp_main.css"/>
+}
+<nav class="welcome-page-navbar">
+    <a asp-page="/s/Welcome">The front</a>
+    <a asp-page="/s/Features">Features</a>
+    <a asp-page="/About">About</a>
+</nav>
+
+@if (Model.ShouldShow)
+{
+    <aside id="left-bar" class="p-2 w-100">
+        <div class="d-flex justify-content-center">
+            <img src="@Model.ProfilePhotoUrl" width="100" height="100" class="profile-pic mt-3"/>
+        </div>
+        <div class="translucent-white-card" style="margin-top: 30px;">
+            <p class="text-center m-0 overflow-auto text-break username-profile">@Model.TheProfile.Name</p>
+            <p class="text-center text-break">@Model.TheProfile.Description</p>
+            <div class="d-flex mt-2 flex-column">
+                <div class="btn-group btn-group-sm">
+                    <a class="btn btn-link"
+                       data-toggle="modal" href="#modal-followers">
+                        Followers: <b>@Model.TheProfile.NumberOfFollowers</b>
+                    </a>
+                    <a class="btn btn-link"
+                       data-toggle="modal" href="#modal-following">
+                        Following: <b>@Model.TheProfile.NumberOfFollowing</b>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </aside>
+}
+else
+{
+    <h2 class="w-100 mt-2">This user does not have profile content</h2>
+}

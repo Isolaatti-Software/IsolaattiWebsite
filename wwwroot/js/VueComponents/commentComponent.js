@@ -2,8 +2,7 @@ Vue.component('comment', {
     props: ['comment', 'audio-url', 'paused'],
     data: function () {
         return {
-            userData: userData,
-            sessionToken: sessionToken
+            userData: userData
         }
     },
     computed: {
@@ -19,7 +18,7 @@ Vue.component('comment', {
             return marked(raw);
         },
         getUserImageUrl: function (userId) {
-            return `/api/Fetch/GetUserProfileImage?userId=${userId}&sessionToken=${this.sessionToken}`
+            return `/api/Fetch/GetUserProfileImage?userId=${userId}`
         }
     },
     template: `
@@ -32,7 +31,7 @@ Vue.component('comment', {
             <span>{{new Date(comment.date).toUTCString()}}</span>
           </div>
         </div>
-        <div class="dropdown dropleft">
+        <div class="dropdown dropleft" v-if="userData.id!==-1">
           <button class="btn btn-primary btn-sm" data-toggle="dropdown" aria-haspopup="true">
             <i class="fas fa-ellipsis-h"></i>
           </button>
