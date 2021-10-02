@@ -14,7 +14,7 @@ body {
     /* background-color: rgb(29, 3, 64); */
     color: black;
 }
-h1{
+#isolaatti-logo h1{
     text-decoration-style: unset;
     font-family: 'Zen Dots', cursive;
     margin-bottom: 5px;
