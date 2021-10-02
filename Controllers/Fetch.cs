@@ -37,22 +37,8 @@ namespace isolaatti_API.Controllers
 
         [HttpGet]
         [Route("GetUserProfileImage")]
-        public IActionResult GetUserProfileImage(int userId, string sessionToken)
+        public IActionResult GetUserProfileImage(int userId)
         {
-            var accountsManager = new Accounts(_db);
-            var user = accountsManager.ValidateToken(sessionToken);
-            if (user == null) return Unauthorized("Token is not valid");
-
-            if (user.Id == userId)
-            {
-                if (user.ProfileImageData != null)
-                {
-                    return new FileContentResult(user.ProfileImageData,"image/png");
-                }
-
-                return Redirect("/res/imgs/user.png");
-            }
-            
             var otherUser = _db.Users.Find(userId);
             if (otherUser == null) return NotFound("User not found");
             if(otherUser.ProfileImageData == null) return Redirect("/res/imgs/user.png");
