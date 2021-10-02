@@ -196,10 +196,12 @@ previewProfilePictureImage.addEventListener("load", function() {
     }
 
     // vertical
-    else {
+    else if(previewProfilePictureImage.height > previewProfilePictureImage.width) {
         let constant = previewProfilePictureImage.width / 120;
         let margin = (120 - (previewProfilePictureImage.width/constant)/2);
         canvasContext.drawImage(previewProfilePictureImage, 0, margin, previewProfilePictureImage.width/constant, previewProfilePictureImage.height/constant);
+    } else {
+        canvasContext.drawImage(previewProfilePictureImage, 0, 0, 120, 120);
     }
 });
 
