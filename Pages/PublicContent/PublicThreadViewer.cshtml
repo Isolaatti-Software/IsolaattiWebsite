@@ -37,11 +37,8 @@
 
 <div class="d-flex flex-column w-100" id="vue-container">
     <post-template :post="thread.post"
-                   v-on:like="likePost(post)"
-                   v-on:un-like="unLikePost(post)"
                    v-model="postLinkToShare"
-                   v-on:delete="deletePost(post.id)"
-                   v-on:play-audio="playAudio(post.audioAttachedUrl)"
+                   v-on:play-audio="playAudio(thread.post.audioAttachedUrl)"
                    :audio-url="audioUrl"
                    :paused="paused">
     </post-template>
