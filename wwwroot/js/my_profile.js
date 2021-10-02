@@ -191,22 +191,15 @@ previewProfilePictureImage.addEventListener("load", function() {
     // horizontal
     if(previewProfilePictureImage.width > previewProfilePictureImage.height) {
         let constant = previewProfilePictureImage.height / 120;
-        canvasContext.drawImage(
-            previewProfilePictureImage,
-            (previewProfilePictureImage.width/constant)/-4,
-            0,
-            previewProfilePictureImage.width/constant,previewProfilePictureImage.height/constant);
+        let margin = (120 - (previewProfilePictureImage.height/constant)/2);
+        canvasContext.drawImage(previewProfilePictureImage, margin, 0, previewProfilePictureImage.width/constant,previewProfilePictureImage.height/constant);
     }
 
     // vertical
     else {
         let constant = previewProfilePictureImage.width / 120;
-        canvasContext.drawImage(
-            previewProfilePictureImage,
-            0,
-            (previewProfilePictureImage.height/constant)/-4,
-            previewProfilePictureImage.width/constant,
-            previewProfilePictureImage.height/constant);
+        let margin = (120 - (previewProfilePictureImage.width/constant)/2);
+        canvasContext.drawImage(previewProfilePictureImage, 0, margin, previewProfilePictureImage.width/constant, previewProfilePictureImage.height/constant);
     }
 });
 
