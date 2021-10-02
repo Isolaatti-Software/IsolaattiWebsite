@@ -191,14 +191,14 @@ previewProfilePictureImage.addEventListener("load", function() {
     // horizontal
     if(previewProfilePictureImage.width > previewProfilePictureImage.height) {
         let constant = previewProfilePictureImage.height / 120;
-        let margin = (120 - (previewProfilePictureImage.height/constant)/2);
+        let margin = (120 - (previewProfilePictureImage.width/constant))/2;
         canvasContext.drawImage(previewProfilePictureImage, margin, 0, previewProfilePictureImage.width/constant,previewProfilePictureImage.height/constant);
     }
 
     // vertical
-    else if(previewProfilePictureImage.height > previewProfilePictureImage.width) {
+    else if(previewProfilePictureImage.width < previewProfilePictureImage.height) {
         let constant = previewProfilePictureImage.width / 120;
-        let margin = (120 - (previewProfilePictureImage.width/constant)/2);
+        let margin = (120 - (previewProfilePictureImage.height/constant))/2;
         canvasContext.drawImage(previewProfilePictureImage, 0, margin, previewProfilePictureImage.width/constant, previewProfilePictureImage.height/constant);
     } else {
         canvasContext.drawImage(previewProfilePictureImage, 0, 0, 120, 120);
