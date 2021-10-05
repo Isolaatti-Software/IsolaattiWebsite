@@ -5,6 +5,7 @@
 * erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
 */
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using isolaatti_API.Classes;
@@ -34,9 +35,7 @@ namespace isolaatti_API.Controllers
             var profile = new Profile()
             {
                 Username = user.Name,
-                Email = user.Email,
-                NumberOfSongs = _db.Songs.Count(song => song.OwnerId.Equals(user.Id)),
-                NumberOfLinks = _db.SharedSongs.Count(sharedLink => sharedLink.userId.Equals(user.Id))
+                Email = user.Email
             };
             return Ok(profile);
         }
@@ -68,7 +67,7 @@ namespace isolaatti_API.Controllers
 
         [HttpPost]
         [Route("Public/{id}")]
-        public IActionResult GetPublicProfile([FromForm] string sessionToken, int id)
+        public IActionResult GetPublicProfile([FromForm] string sessionToken, Guid id)
         {
             var accountsManager = new Accounts(_db);
             var user = accountsManager.ValidateToken(sessionToken);

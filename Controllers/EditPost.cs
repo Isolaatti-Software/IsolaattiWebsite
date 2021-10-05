@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using isolaatti_API.Classes;
 using isolaatti_API.isolaatti_lib;
@@ -20,7 +21,7 @@ namespace isolaatti_API.Controllers
 
         [HttpPost]
         [Route("Delete")]
-        public IActionResult DeletePost([FromForm] string sessionToken, [FromForm] long postId)
+        public IActionResult DeletePost([FromForm] string sessionToken, [FromForm] Guid postId)
         {
             var accountsManager = new Accounts(Db);
             var user = accountsManager.ValidateToken(sessionToken);

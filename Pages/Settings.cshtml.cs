@@ -43,8 +43,7 @@ namespace isolaatti_API.Pages
             ViewData["notify_by_email"] = user.NotifyByEmail;
             ViewData["notify_when_starts"] = user.NotifyWhenProcessStarted;
             ViewData["notify_when_finish"] = user.NotifyWhenProcessFinishes;
-
-            ViewData["number_of_songs"] = _db.Songs.Count(song => song.OwnerId.Equals(user.Id));
+            
             SessionTokens = _db.SessionTokens.Where(sessionToken => sessionToken.UserId == user.Id).ToList();
             ViewData["curentSessionToken"] = Request.Cookies["isolaatti_user_session_token"];
 

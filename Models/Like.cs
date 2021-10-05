@@ -1,10 +1,13 @@
+using System;
+
 namespace isolaatti_API.Models
 {
     public class Like
     {
-        public int Id { get; set; }
-        public long PostId { get; set; }
-        public int UserId { get; set; }
-        public int TargetUserId { get; set; }
+        public Guid Id { get; set; }
+        public Guid PostId { get; set; }
+        public Guid UserId { get; set; }
+        public Guid TargetUserId { get; set; }
+        public DateTime Date { get; set; }
     }
 }

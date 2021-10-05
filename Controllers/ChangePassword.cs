@@ -21,7 +21,7 @@ namespace isolaatti_API.Controllers
         {
             Db = _dbContext;
         }
-        public IActionResult Index([FromForm] string sessionToken, [FromForm] int userId, [FromForm] string password, [FromForm] string newPassword)
+        public IActionResult Index([FromForm] string sessionToken, [FromForm] string newPassword)
         {
             var accountsManager = new Accounts(Db);
             var user = accountsManager.ValidateToken(sessionToken);

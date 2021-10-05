@@ -71,79 +71,14 @@ namespace isolaatti_API.isolaatti_lib
             }
         }
 
-        public bool IsUserEmailVerified(int userId)
+        public bool IsUserEmailVerified(Guid userId)
         {
             var user = db.Users.Find(userId);
             return user.EmailValidated;
         }
-        public string LogIn(string email, string password)
-        {
-            var passwordHasher = new PasswordHasher<string>();
-            
-            if(!db.Users.Any(user => user.Email.Equals(email)))
-            {
-                return null;
-            }
-            User userToEnter = db.Users.Single(user => user.Email.Equals(email));
-            var passwordVerificationResult =
-                passwordHasher.VerifyHashedPassword(email, userToEnter.Password, password);
-            if(passwordVerificationResult == PasswordVerificationResult.Success)
-            {
-                return CreateNewToken(userToEnter.Id, password).Token;
-            }
-
-            return null; //bad password
-        }
         
-        /*This method is called internally when a new account was created successfully*/
-        private bool SendValidationEmail(int id, string validationCode)
-        {
-            string link = $"https://{_request.HttpContext.Request.Host.Value}/validateAccount?id={id}&code={validationCode}";
-            string userEmailAddress = db.Users.Find(id).Email;
-            string htmlBody = String.Format( @"
-                <html>
-                    <body>
-                        <h1>Welcome to Isolaatti</h1>
-                        <h1>Bienvenido a Isolaatti</h1>
-                        <p>Recently, you used this email address to create a new account on Isolaatti. Click in the link below to activate your account</p>
-                        <p>Recientemente, usaste esta dirección de correo electrónico para crear una nueva cuenta en Isolaatti. Haz clic en el link de abajo para activarla</p>
-                        <a href='{0}'>{0}</a>
-                        <p>If you didn't, please ommit this</p>
-                        <p>Si no lo hiciste, omite esto por favor</p>
-                    </body>
-                </html>
-                ",link);
-            MimeMessage message = new MimeMessage();
-            message.From.Add(new MailboxAddress("Isolaatti","validation.isolaatti@gmail.com"));
-            message.To.Add(new MailboxAddress(userEmailAddress));
-            message.Subject = "Welcome to Isolaatti | Bienvenido a Isolaatti";
-            message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
-            {
-                Text = htmlBody
-            };
-            using (var client = new SmtpClient())
-            {
-                try
-                {
-                    client.ServerCertificateValidationCallback = (s, c, h, e) => true;
-                    client.Connect("smtp.gmail.com", 465, true);
-                    client.Authenticate("validation.isolaatti@gmail.com","0203_0302_" );
-                    client.Send(message);
-                    client.Disconnect(true);
-                }
-                catch (SmtpException exception)
-                {
-                    // this probably means the email address does not exist, so let's delete the account
-                    var accountToDelete = db.Users.Find(id);
-                    db.Users.Remove(accountToDelete);
-                    db.SaveChanges();
-                }
-            }
-            return true;
-        }
-
         /* Only to be used at admins portal (me)*/
-        public bool DeleteAccount(int userId)
+        public bool DeleteAccount(Guid userId)
         {
             try
             {
@@ -157,7 +92,7 @@ namespace isolaatti_API.isolaatti_lib
             return true;
         }
 
-        public bool ChangeAPassword(int userId, string currentPassword, string newPassword)
+        public bool ChangeAPassword(Guid userId, string currentPassword, string newPassword)
         {
             var user = db.Users.Find(userId);
             if (user == null) return false;
@@ -178,7 +113,7 @@ namespace isolaatti_API.isolaatti_lib
         {
             _request = request;
         }
-        public SessionToken CreateNewToken(int userId, string plainTextPassword)
+        public SessionToken CreateNewToken(Guid userId, string plainTextPassword)
         {
             var user = db.Users.Find(userId);
             if (user == null) return null;
@@ -223,7 +158,7 @@ namespace isolaatti_API.isolaatti_lib
             {
             }
         }
-        public void RemoveAllUsersTokens(int userId)
+        public void RemoveAllUsersTokens(Guid userId)
         {
             var tokenObjs = db.SessionTokens.Where(sessionToken => sessionToken.UserId == userId);
             db.SessionTokens.RemoveRange(tokenObjs);

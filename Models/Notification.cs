@@ -4,11 +4,14 @@
 * This program is not allowed to be copied or reused without explicit permission.
 * erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
 */
+
+using System;
+
 namespace isolaatti_API.Models
 {
-    public class Notification
+    public class otification
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         public int UserId { get; set; }
         public int SongId { get; set; }
         public string SongName { get; set; }

@@ -35,11 +35,11 @@ namespace isolaatti_API.Pages.admin
             // data binding here
             ViewData["username"] = user.name;
             var users = db.Users.ToList();
-            var projects = db.Songs.ToList();
+            
             var posts = db.SimpleTextPosts.ToList();
             Last5Users = users.TakeLast(5).ToList();
             ViewData["numeroDeUsuarios"] = users.Count;
-            ViewData["numeroDeProyectos"] = projects.Count;
+            
             ViewData["numeroDePublicaciones"] = posts.Count;
             return Page();
         }

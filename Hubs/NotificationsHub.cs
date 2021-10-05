@@ -10,7 +10,7 @@ namespace isolaatti_API.Hubs
 {
     public class NotificationsHub : Hub
     {
-        public static Dictionary<string, int> Sessions = new Dictionary<string, int>();
+        public static Dictionary<string, Guid> Sessions = new Dictionary<string, Guid>();
         private readonly DbContextApp _db;
         
         public NotificationsHub(DbContextApp dbContextApp)

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
@@ -20,7 +21,7 @@ namespace isolaatti_API.Pages
             _db = dbContextApp;
         }
         
-        public IActionResult OnGet([FromRoute] long id)
+        public IActionResult OnGet([FromRoute] Guid id)
         {
             var accountsManager = new Accounts(_db);
             var user = accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
@@ -45,16 +46,9 @@ namespace isolaatti_API.Pages
             ViewData["name"] = user.Name;
             ViewData["email"] = user.Email;
             ViewData["userId"] = user.Id;
-            ViewData["password"] = user.Password;
             ViewData["profilePicUrl"] = user.ProfileImageData == null
                 ? null
                 : UrlGenerators.GenerateProfilePictureUrl(user.Id, Request.Cookies["isolaatti_user_session_token"]);
-
-            var followingIds = JsonSerializer.Deserialize<List<int>>(user.FollowingIdsJson);
-                    
-            var followingNames = followingIds.Select(followingId => new IdToUser() {Id = followingId, Name = _db.Users.Find(followingId).Name}).ToList();
-            ViewData["followingJSON"] = JsonSerializer.Serialize(followingNames);
-            ViewData["thisPostAuthor"] = _db.Users.Find(ThisPost.UserId).Name;
             return Page();
         }
     }

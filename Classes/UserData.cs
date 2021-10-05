@@ -11,7 +11,7 @@ namespace isolaatti_API.Classes
 {
     public class UserData
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public string DescriptionAudioUrl { get; set; }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
@@ -19,7 +20,7 @@ namespace isolaatti_API.Pages
         {
             _db = dbContextApp;
         }
-        public IActionResult OnGet([FromQuery] int id)
+        public IActionResult OnGet([FromQuery] Guid id)
         {
             var token = Request.Cookies["isolaatti_user_session_token"];
             var accountsManager = new Accounts(_db);
@@ -30,8 +31,7 @@ namespace isolaatti_API.Pages
             ViewData["name"] = user.Name;
             ViewData["email"] = user.Email;
             ViewData["userId"] = user.Id;
-            ViewData["password"] = user.Password;
-                    
+            
             // get profile with id
             var profile = _db.Users.Find(id);
             if (profile == null) return NotFound();
@@ -42,8 +42,8 @@ namespace isolaatti_API.Pages
             if (user.Id == profile.Id) return RedirectToPage("MyProfile");
             ProfilePhotoUrl = UrlGenerators.GenerateProfilePictureUrl(user.Id, Request.Cookies["isolaatti_user_session_token"]);
 
-            var followingUsersIds = JsonSerializer.Deserialize<List<int>>(profile.FollowingIdsJson);
-            var followersIds = JsonSerializer.Deserialize<List<int>>(profile.FollowersIdsJson);
+            var followingUsersIds = JsonSerializer.Deserialize<List<Guid>>(profile.FollowingIdsJson);
+            var followersIds = JsonSerializer.Deserialize<List<Guid>>(profile.FollowersIdsJson);
             ViewData["numberOfLikes"] = _db.Likes.Count(like => like.TargetUserId.Equals(profile.Id));
             ViewData["followingThisUser"] = followersIds.Contains(user.Id);
             ViewData["thisUserIsFollowingMe"] = followingUsersIds.Contains(user.Id);

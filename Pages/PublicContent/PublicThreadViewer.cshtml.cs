@@ -1,3 +1,4 @@
+using System;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +15,7 @@ namespace isolaatti_API.Pages.PublicContent
             _db = dbContext;
         }
         
-        public IActionResult OnGet(long id)
+        public IActionResult OnGet(Guid id)
         {
             var post = _db.SimpleTextPosts.Find(id);
             if (post == null) return NotFound();

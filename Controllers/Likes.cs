@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using isolaatti_API.Classes;
@@ -23,7 +24,7 @@ namespace isolaatti_API.Controllers
         
         [HttpPost]
         [Route("LikePost")]
-        public async Task<IActionResult> LikePost([FromForm]string sessionToken, [FromForm] long postId)
+        public async Task<IActionResult> LikePost([FromForm]string sessionToken, [FromForm] Guid postId)
         {
             
             var accountsManager = new Accounts(Db);
@@ -69,7 +70,7 @@ namespace isolaatti_API.Controllers
 
         [HttpPost]
         [Route("UnLikePost")]
-        public IActionResult UnLikePost([FromForm]string sessionToken, [FromForm] long postId)
+        public IActionResult UnLikePost([FromForm]string sessionToken, [FromForm] Guid postId)
         {
             var accountsManager = new Accounts(Db);
             var user = accountsManager.ValidateToken(sessionToken);

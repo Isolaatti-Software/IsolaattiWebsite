@@ -26,7 +26,7 @@ namespace isolaatti_API.isolaatti_lib
         public const int TypePosts = 2;
         public const int TypeNewFollower = 3;
 
-        public LikeData NewLikesActivityNotification(int userToNotifyId, int userWhoLikedId, long postId, long numberOfLikes)
+        public LikeData NewLikesActivityNotification(Guid userToNotifyId, Guid userWhoLikedId, Guid postId, long numberOfLikes)
         {
             if (userToNotifyId == userWhoLikedId) return null;
             
@@ -42,7 +42,7 @@ namespace isolaatti_API.isolaatti_lib
             {
                 data = new LikeData()
                 {
-                    AuthorsIds = new List<int>() { userWhoLikedId },
+                    AuthorsIds = new List<Guid>() { userWhoLikedId },
                     NumberOfLikes = numberOfLikes,
                     PostId = postId
                 };
@@ -84,7 +84,7 @@ namespace isolaatti_API.isolaatti_lib
             return data;
         }
 
-        public PostData NewCommentsActivityNotification(int userToNotifyId, int lastUserWhoCommentedId, long postId, long numberOfComments)
+        public PostData NewCommentsActivityNotification(Guid userToNotifyId, Guid lastUserWhoCommentedId, Guid postId, long numberOfComments)
         {
             if (userToNotifyId == lastUserWhoCommentedId) return null;
             
@@ -101,7 +101,7 @@ namespace isolaatti_API.isolaatti_lib
                 data = new PostData()
                 {
                     PostId = postId,
-                    AuthorsIds = new List<int>()
+                    AuthorsIds = new List<Guid>()
                     {
                         lastUserWhoCommentedId
                     },
@@ -146,7 +146,7 @@ namespace isolaatti_API.isolaatti_lib
             return data;
         }
 
-        public NewFollowerData CreateNewFollowerNotification(int userWhoFollows, int userWhoIsFollowed)
+        public NewFollowerData CreateNewFollowerNotification(Guid userWhoFollows, Guid userWhoIsFollowed)
         {
             // TODO: is it needed to limit how many times notifications about following are sent?
             // This is to avoid spam, that can be done by following and unfollowing multiple times, which would
@@ -171,7 +171,7 @@ namespace isolaatti_API.isolaatti_lib
             
             var newNotification = new SocialNotification()
             {
-                PostRelated = Convert.ToInt64(userWhoFollows), // in this case it is not a post but a user
+                PostRelated = userWhoFollows, // in this case it is not a post but a user
                 Read = false,
                 Type = TypeNewFollower,
                 UserId = userWhoIsFollowed,

@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Security.Policy;
 using isolaatti_API.Classes;
@@ -19,7 +20,7 @@ namespace isolaatti_API.Pages.PublicContent
         public PublicProfile TheProfile;
         public bool ShouldShow = true;
         public string ProfilePhotoUrl = "";
-        public IActionResult OnGet(int id)
+        public IActionResult OnGet(Guid id)
         {
             var user = _db.Users.Find(id);
             if (user == null) return NotFound();

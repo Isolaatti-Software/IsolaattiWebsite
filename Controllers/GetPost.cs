@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using isolaatti_API.Classes;
 using isolaatti_API.isolaatti_lib;
@@ -18,7 +19,7 @@ namespace isolaatti_API.Controllers
         } 
         
         [HttpPost]
-        public IActionResult Index([FromForm] string sessionToken, [FromForm] long postId)
+        public IActionResult Index([FromForm] string sessionToken, [FromForm] Guid postId)
         {
             var accountsManager = new Accounts(_db);
             var user = accountsManager.ValidateToken(sessionToken);
@@ -37,7 +38,7 @@ namespace isolaatti_API.Controllers
 
         [HttpPost]
         [Route("Comments")]
-        public IActionResult GetComments([FromForm] string sessionToken, [FromForm] long postId)
+        public IActionResult GetComments([FromForm] string sessionToken, [FromForm] Guid postId)
         {
             var accountsManager = new Accounts(_db);
             var user = accountsManager.ValidateToken(sessionToken);
@@ -66,7 +67,7 @@ namespace isolaatti_API.Controllers
 
         [HttpPost]
         [Route("PublicThread")]
-        public IActionResult PublicThread([FromForm] long id)
+        public IActionResult PublicThread([FromForm] Guid id)
         {
             var post = _db.SimpleTextPosts.Find(id);
             if (!(post is {Privacy: 3})) return NotFound();

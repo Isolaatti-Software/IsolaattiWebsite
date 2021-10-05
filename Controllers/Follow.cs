@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
@@ -24,7 +25,7 @@ namespace isolaatti_API.Controllers
         }
         
         [HttpPost]
-        public IActionResult Index([FromForm] string sessionToken, [FromForm] int userToFollowId)
+        public IActionResult Index([FromForm] string sessionToken, [FromForm] Guid userToFollowId)
         {
             var accountsManager = new Accounts(Db);
             var user = accountsManager.ValidateToken(sessionToken);
@@ -34,7 +35,7 @@ namespace isolaatti_API.Controllers
             if (userToFollow == null) return NotFound("User to follow was not found");
 
             // update the following list of user to add the "user to follow"
-            var usersUserIsFollowing = JsonSerializer.Deserialize<List<int>>(user.FollowingIdsJson);
+            var usersUserIsFollowing = JsonSerializer.Deserialize<List<Guid>>(user.FollowingIdsJson);
             if (!usersUserIsFollowing.Contains(userToFollow.Id))
             {
                 usersUserIsFollowing.Add(userToFollow.Id);
@@ -44,7 +45,7 @@ namespace isolaatti_API.Controllers
             user.NumberOfFollowing = usersUserIsFollowing.Count;
             
             // update the followers list of the "user to follow" to add a new follower (the user)
-            var followersOfFollowed = JsonSerializer.Deserialize<List<int>>(userToFollow.FollowersIdsJson);
+            var followersOfFollowed = JsonSerializer.Deserialize<List<Guid>>(userToFollow.FollowersIdsJson);
             if (!followersOfFollowed.Contains(user.Id))
             {
                 followersOfFollowed.Add(user.Id);
@@ -73,7 +74,7 @@ namespace isolaatti_API.Controllers
         
         [Route("Unfollow")]
         [HttpPost]
-        public IActionResult Unfollow([FromForm] string sessionToken, [FromForm] int userToUnfollowId)
+        public IActionResult Unfollow([FromForm] string sessionToken, [FromForm] Guid userToUnfollowId)
         {
             var accountsManager = new Accounts(Db);
             var user = accountsManager.ValidateToken(sessionToken);
@@ -83,14 +84,14 @@ namespace isolaatti_API.Controllers
             if (userToUnfollow == null) return NotFound("User to unfollow was not found");
             
             // update the following list of user to remove the "user to unfollow"
-            var usersUserIsFollowing = JsonSerializer.Deserialize<List<int>>(user.FollowingIdsJson);
+            var usersUserIsFollowing = JsonSerializer.Deserialize<List<Guid>>(user.FollowingIdsJson);
             usersUserIsFollowing.Remove(userToUnfollow.Id);
             user.FollowingIdsJson = JsonSerializer.Serialize(usersUserIsFollowing);
             
             user.NumberOfFollowing = usersUserIsFollowing.Count;
             
             // update the followers list of the "user to follow" to remove the follower (the user)
-            var followersOfFollowed = JsonSerializer.Deserialize<List<int>>(userToUnfollow.FollowersIdsJson);
+            var followersOfFollowed = JsonSerializer.Deserialize<List<Guid>>(userToUnfollow.FollowersIdsJson);
             followersOfFollowed.Remove(user.Id);
             userToUnfollow.FollowersIdsJson = JsonSerializer.Serialize(followersOfFollowed);
             
@@ -109,7 +110,7 @@ namespace isolaatti_API.Controllers
             var accountsManager = new Accounts(Db);
             var user = accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
-            var ids = JsonSerializer.Deserialize<List<int>>(user.FollowingIdsJson);
+            var ids = JsonSerializer.Deserialize<List<Guid>>(user.FollowingIdsJson);
             var users = Db.Users.Where(u => ids.Contains(u.Id)).Select(u => new 
             {
                 Id = u.Id,
@@ -126,7 +127,7 @@ namespace isolaatti_API.Controllers
             var accountsManager = new Accounts(Db);
             var user = accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
-            var ids = JsonSerializer.Deserialize<List<int>>(user.FollowersIdsJson);
+            var ids = JsonSerializer.Deserialize<List<Guid>>(user.FollowersIdsJson);
             
             var users = Db.Users.Where(u => ids.Contains(u.Id)).Select(u => new 
             {

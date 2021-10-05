@@ -48,13 +48,6 @@
                             @ViewData["numberOfPosts"]
                         </div>
                     </li>
-                    <button class="list-group-item d-flex justify-content-between align-items-center" 
-                            data-target="#modal-shared-links" data-toggle="modal">
-                        Shared links
-                        <div class="badge badge-primary badge-pill">
-                            @Model.Shares.Count
-                        </div>
-                    </button>
                 </ul>
             </div>
             <div style="height: 10px"></div>
@@ -256,63 +249,6 @@
                 </a>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 <button type="submit" class="btn btn-primary" id="save-edited-profile" form="edit-profile-form">Save</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal shared links -->
-<div class="modal fade" id="modal-shared-links">
-    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Shared links</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    &times;
-                </button>
-            </div>
-            <div class="modal-body">
-                @* Write here shared links table *@
-                <ul class="list-group">
-                    @if (!Model.Shares.Any())
-                    {
-                        <div class="d-flex justify-content-center align-items-center" style="height: 350px">
-                            <h6>You have not shared any project</h6>
-                        </div>
-                    }
-                    @foreach (var share in Model.Shares)
-                    {
-                        <li class="list-group-item list-group-item-dark">
-                            <div class="d-flex flex-column">
-                                <h5 class="mb-1">@share.Name - @share.Artist</h5>
-                                <p class="share-link-text">Link: <a href="@share.Url">@share.Url</a></p>
-                                <div class="d-flex justify-content-between">
-                                    <div class="d-flex">
-                                        <div class="btn-group">
-                                            <button type="button"
-                                                    onclick="copyLinkToClipboard(this,'@share.Url')"
-                                                    class="btn btn-light btn-sm" title="Copy to clipboard">
-                                                <i class="fas fa-link"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-light btn-sm" title="Share on Facebook">
-                                                <i class="fab fa-facebook"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-light btn-sm" title="Share on Twitter">
-                                                <i class="fab fa-twitter-square"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex">
-                                        <button type="button" class="btn btn-sm btn-danger" title="Delete link" onclick="deleteShare('@share.Uid')">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                    }
-
-                </ul>
             </div>
         </div>
     </div>

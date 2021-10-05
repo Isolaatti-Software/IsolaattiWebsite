@@ -24,7 +24,7 @@ namespace isolaatti_API.Controllers
         }
         
         [HttpPost]
-        public async Task<IActionResult> Index([FromForm] string sessionToken, [FromForm] long postId, 
+        public async Task<IActionResult> Index([FromForm] string sessionToken, [FromForm] Guid postId, 
             [FromForm] string content, [FromForm] string audioUrl = null)
         {
             var accountsManager = new Accounts(_db);

@@ -58,38 +58,22 @@ namespace isolaatti_API.Pages
             ViewData["emailNotAvailable"] = emailNotAvailable;
             ViewData["nameNotAvailable"] = nameNotAvailable;
             ViewData["statusData"] = statusData;
-            ProfilePhotoUrl = user.ProfileImageData == null
+            ViewData["profilePicUrl"] = user.ProfileImageData == null
                 ? null
                 : UrlGenerators.GenerateProfilePictureUrl(user.Id, Request.Cookies["isolaatti_user_session_token"]);
             ViewData["description"] = user.DescriptionText;
-
-
             PasswordIsWrong = currentPasswordIsWrong;
-            var shares =
-                from share in _db.SharedSongs
-                join song in _db.Songs on share.userId equals song.OwnerId
-                where share.SharedSongId == song.Id && share.userId == user.Id
-                select new
-                {
-                    Name = song.OriginalFileName,
-                    Artist = song.Artist,
-                    Uid = share.uid,
-                    Url = $"https://{Request.HttpContext.Request.Host.Value}/PublicContent/Shared?uid={share.uid}"
-                };
+            
 
-            foreach (var share in shares)
-            {
-                this.Shares.Add(CastAnonymousObjectIntoShareLink(share));
-            }
-
-            var followersIds = JsonSerializer.Deserialize<List<int>>(user.FollowersIdsJson);
-            List<int> invalidFollowers = null;
+            var followersIds = JsonSerializer.Deserialize<List<Guid>>(user.FollowersIdsJson);
+            List<Guid> invalidFollowers = null;
+            
             foreach (var followerId in followersIds)
             {
                 var follower = _db.Users.Find(followerId);
                 if (follower == null)
                 {
-                    invalidFollowers ??= new List<int>();
+                    invalidFollowers ??= new List<Guid>();
                     invalidFollowers.Add(followerId);
                 }
                 else
@@ -98,14 +82,14 @@ namespace isolaatti_API.Pages
                 }
             }
 
-            var followingIds = JsonSerializer.Deserialize<List<int>>(user.FollowingIdsJson);
-            List<int> invalidFollowing = null;
+            var followingIds = JsonSerializer.Deserialize<List<Guid>>(user.FollowingIdsJson);
+            List<Guid> invalidFollowing = null;
             foreach (var followingId in followingIds)
             {
                 var following = _db.Users.Find(followingId);
                 if (following == null)
                 {
-                    invalidFollowing ??= new List<int>();
+                    invalidFollowing ??= new List<Guid>();
                     invalidFollowing.Add(followingId);
                 }
                 else
@@ -129,7 +113,7 @@ namespace isolaatti_API.Pages
             ViewData["numberOfFollowing"] = user.NumberOfFollowing;
             return Page();
         }
-        public IActionResult OnPost(int userId, string current_password, string new_password)
+        public IActionResult OnPost(Guid userId, string current_password, string new_password)
         {
             if (current_password == null || new_password == null)
             {
@@ -152,32 +136,16 @@ namespace isolaatti_API.Pages
             accountsManager.RemoveAllUsersTokens(userId);
             return Redirect("WebLogOut");
         }
-        private ShareLink CastAnonymousObjectIntoShareLink(Object queryObject)
-        {
-            // properties information
-            PropertyInfo propertyInfoName = queryObject.GetType().GetProperty("Name");
-            PropertyInfo propertyInfoArtist = queryObject.GetType().GetProperty("Artist");
-            PropertyInfo propertyInfoUid = queryObject.GetType().GetProperty("Uid");
-            PropertyInfo propertyInfoUrl = queryObject.GetType().GetProperty("Url");
-
-            // get values from properties casting from property information
-            return new ShareLink()
-            {
-                Name = (String) (propertyInfoName.GetValue(queryObject, null)),
-                Artist = (String) (propertyInfoArtist.GetValue(queryObject, null)),
-                Uid = (String) (propertyInfoUid.GetValue(queryObject, null)),
-                Url = (String) (propertyInfoUrl.GetValue(queryObject, null))
-            };
-        }
+        
 
         /*
          * This method recount user followers and following. Removes invalid followers and followings
          */
-        private void PurgeInvalidFollowersAndFollowings(List<int> invalidFollowers, List<int> invalidFollowings, User user)
+        private void PurgeInvalidFollowersAndFollowings(List<Guid> invalidFollowers, List<Guid> invalidFollowings, User user)
         {
             var modifiableUser = user;
             
-            var followers = JsonSerializer.Deserialize <List<int>>(modifiableUser.FollowersIdsJson);
+            var followers = JsonSerializer.Deserialize <List<Guid>>(modifiableUser.FollowersIdsJson);
             if (invalidFollowers != null)
             {
                 followers.RemoveAll(invalidFollowers.Contains);
@@ -186,7 +154,7 @@ namespace isolaatti_API.Pages
             modifiableUser.NumberOfFollowers = followers.Count();
             _db.Users.Update(modifiableUser);
 
-            var following = JsonSerializer.Deserialize<List<int>>(modifiableUser.FollowingIdsJson);
+            var following = JsonSerializer.Deserialize<List<Guid>>(modifiableUser.FollowingIdsJson);
             if (invalidFollowings != null)
             {
                 following.RemoveAll(invalidFollowings.Contains);

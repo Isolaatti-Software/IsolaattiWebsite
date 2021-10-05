@@ -27,21 +27,7 @@
     <p>
         <a asp-page="MyProfile" asp-route-open="password">Go to profile to change password</a>
     </p>
-    <h3 class="mt-1">Your songs</h3>
-    <p>You have @ViewData["number_of_songs"] songs out of 10</p>
-    <p>
-        <a asp-page="Songs">Go to collection</a>
-    </p>
-    <p>
-        <a href="javascript: deleteAllSongs();">Delete all your songs</a>
-    </p>
-    <h3 class="mt-1">Your shares</h3>
-    <p>
-        <a asp-page="MyProfile" asp-route-open="links">Go to your shares</a>
-    </p>
-    <p>
-        <a href="javascript: deleteAllShares();">Delete all your shares</a>
-    </p>
+    
     <h3 class="mt-1">Your sessions</h3>
     <p>Currently, you have these authorized sessions.</p>
     <table class="table table-hover table-responsive-md bg-dark text-white">

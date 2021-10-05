@@ -1,3 +1,4 @@
+using System;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Http;
 
@@ -5,7 +6,7 @@ namespace isolaatti_API.Utils
 {
     public class UrlGenerators
     {
-        public static string GenerateProfilePictureUrl(int userId, string sessionToken, HttpRequest request = null)
+        public static string GenerateProfilePictureUrl(Guid userId, string sessionToken, HttpRequest request = null)
         {
             string res = "";
             if (request != null)

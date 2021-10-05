@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Linq;
 using isolaatti_API.Classes;
@@ -37,7 +38,7 @@ namespace isolaatti_API.Controllers
 
         [HttpGet]
         [Route("GetUserProfileImage")]
-        public IActionResult GetUserProfileImage(int userId)
+        public IActionResult GetUserProfileImage(Guid userId)
         {
             var otherUser = _db.Users.Find(userId);
             if (otherUser == null) return NotFound("User not found");

@@ -138,13 +138,13 @@
 @section Scripts
 {
     <script>
-    let thisProfileId = @ViewData["profile_id"];
+    let thisProfileId = "@ViewData["profile_id"]";
     let thisUserIsFollowingMe = "@ViewData["thisUserIsFollowingMe"]" === "True";
     let followingThisUser = "@ViewData["followingThisUser"]" === "True";
     </script>
     <script>
     let accountData = {
-        userId: @ViewData["profile_id"]
+        userId: "@ViewData["profile_id"]"
     }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>

@@ -26,8 +26,8 @@
     @RenderSection("CSS", required:false)
     <script src="https://kit.fontawesome.com/fde197fc03.js" crossorigin="anonymous"></script>
     <script>
-    const userData = {id:@ViewData["userId"],name:"@ViewData["name"]",email:"@ViewData["email"]"};
-    const sessionToken = '@Context.Request.Cookies["isolaatti_user_session_token"]';
+    const userData = {id:"@ViewData["userId"]",name:"@ViewData["name"]",email:"@ViewData["email"]"};
+    const sessionToken = '@Html.Raw(Context.Request.Cookies["isolaatti_user_session_token"])';
     </script>
 </head>
 <body>
@@ -35,7 +35,7 @@
 <main style="height: 100vh; overflow: auto" id="main-container">
     <nav class="d-flex custom-nav sticky-top" id="isolaatti-top-bar">
         <a href="/" class="nav-link custom-nav-link" id="isolaatti_brand"></a>
-        <a class="nav-link custom-nav-link"
+        <a class="nav-link custom-nav-link ml-auto"
            asp-page="/Index"
            id="index-link">
             <i class="fas fa-home"></i>
@@ -47,13 +47,8 @@
            id="post-editor-link">
             <i class="fas fa-edit"></i>
         </a>
-        <a class="nav-link custom-nav-link"
-           asp-page="/Apps/Index"
-           title="Musical tools"
-           id="musical-tools-link">
-            <i class="fas fa-toolbox"></i>
-        </a>
-        <div class="d-flex flex-grow-1 ml-auto" id="search-bar-fixed-top">
+        
+        <div class="d-flex flex-grow-1" id="search-bar-fixed-top">
             <button type="button" 
                     class="btn btn-dark btn-sm mr-1" 
                     id="search-bar-mobile-button-close">
@@ -153,13 +148,10 @@
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
                 <div class="modal-body">
-                    <div class="alert alert-info">
-                        Use Pro editor, as it's the only available
-                    </div>
-                    <textarea class="form-control" placeholder="Write the content of your post here. Markdown is compatible."></textarea>
+                    <textarea class="form-control" placeholder="Write the content of your post here. Markdown is compatible." rows="8"></textarea>
                 </div>
                 <div class="modal-footer">
-                    <a asp-page="PostEditor" class="btn btn-secondary mr-auto">Pro editor</a>
+                    <a asp-page="/PostEditor" class="btn btn-secondary mr-auto">Pro editor</a>
                     <button class="btn btn-primary">Post</button>
                 </div>
             </div>

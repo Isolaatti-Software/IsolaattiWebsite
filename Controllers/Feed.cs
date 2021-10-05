@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
@@ -26,9 +27,9 @@ namespace isolaatti_API.Controllers
             var user = accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
-            var followingIds = JsonSerializer.Deserialize<List<int>>(user.FollowingIdsJson);
+            var followingIds = JsonSerializer.Deserialize<List<Guid>>(user.FollowingIdsJson);
             var posts = new List<SimpleTextPost>();
-            var renderedPosts = JsonSerializer.Deserialize<List<long>>(postsInDom);
+            var renderedPosts = JsonSerializer.Deserialize<List<Guid>>(postsInDom);
             
             List<UserSeenPostHistory> userPostSeenHistory = Db.UserSeenPostHistories
                 .Where(history => history.UserId.Equals(user.Id)).ToList();
@@ -88,7 +89,7 @@ namespace isolaatti_API.Controllers
 
         [HttpPost]
         [Route("GetUserPosts")]
-        public IActionResult GetUserPosts([FromForm] string sessionToken, [FromForm] int accountId)
+        public IActionResult GetUserPosts([FromForm] string sessionToken, [FromForm] Guid accountId)
         {
             var accountsManager = new Accounts(Db);
             var user = accountsManager.ValidateToken(sessionToken);
