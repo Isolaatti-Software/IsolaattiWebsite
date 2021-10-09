@@ -38,11 +38,7 @@ namespace isolaatti_API.Pages
             ViewData["profilePicUrl"] = user.ProfileImageData == null
                 ? null
                 : UrlGenerators.GenerateProfilePictureUrl(user.Id, Request.Cookies["isolaatti_user_session_token"]);
-
-            // values for settings
-            ViewData["notify_by_email"] = user.NotifyByEmail;
-            ViewData["notify_when_starts"] = user.NotifyWhenProcessStarted;
-            ViewData["notify_when_finish"] = user.NotifyWhenProcessFinishes;
+            
             
             SessionTokens = _db.SessionTokens.Where(sessionToken => sessionToken.UserId == user.Id).ToList();
             ViewData["curentSessionToken"] = Request.Cookies["isolaatti_user_session_token"];
