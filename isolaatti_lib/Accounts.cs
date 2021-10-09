@@ -51,9 +51,7 @@ namespace isolaatti_API.isolaatti_lib
                 Email = email,
                 Password = passwordHasher.HashPassword(email,password),
                 Uid = Guid.NewGuid().ToString(),
-                NotifyByEmail = true,
-                NotifyWhenProcessFinishes = true,
-                NotifyWhenProcessStarted = true,
+                UserPreferencesJson = "{}",
                 FollowersIdsJson = "[]",
                 FollowingIdsJson = "[]",
                 EmailValidated = true
