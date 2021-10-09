@@ -1,3 +1,4 @@
+using System;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using isolaatti_API.Utils;
@@ -11,13 +12,15 @@ namespace isolaatti_API.Pages
     {
         private readonly DbContextApp _db;
         public bool Edit = false;
-        public long EditPostId = 0;
+        public string EditPostId = "";
+        private Guid zeroes;
 
         public PostEditor(DbContextApp dbContextApp, IWebHostEnvironment env)
         {
             _db = dbContextApp;
+            zeroes = new Guid(new Byte[16]);
         }
-        public IActionResult OnGet(bool edit = false, long postId = 0)
+        public IActionResult OnGet(bool edit = false, string postId = null)
         {
             var accountsManager = new Accounts(_db);
             var user = accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);

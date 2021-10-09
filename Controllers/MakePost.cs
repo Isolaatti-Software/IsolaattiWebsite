@@ -31,16 +31,16 @@ namespace isolaatti_API.Controllers
             [FromForm] string content = "Well, this post was made without content. Why? Idk",
             [FromForm] string audioUrl = null,
             [FromForm] string themeJson = null,
-            [FromForm] long postId = 0)
+            [FromForm] string postId = "")
         {
             var accountsManager = new Accounts(Db);
             var user = accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
             
             // this means user wants to edit existing post
-            if (postId != 0)
+            if (postId != "")
             {
-                var existingPost = Db.SimpleTextPosts.Find(postId);
+                var existingPost = Db.SimpleTextPosts.Find(Guid.Parse(postId));
                 if (existingPost == null) return NotFound("Post not found");
                 if (existingPost.UserId != user.Id) return Unauthorized("Post is not yours, cannot edit");
                 

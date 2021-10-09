@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
@@ -15,11 +16,11 @@ namespace isolaatti_API.Pages.Reports
             _db = dbContextApp;
         }
         
-        public IActionResult OnGet(long postId = 0,long commentId = 0)
+        public IActionResult OnGet(string postId = "",string commentId = "")
         {
             // as 0 is default value, it can know that user didn't specified anything
             // both parameters cannot be more than 0, only one can be
-            if ((postId == 0 && commentId == 0) || (postId > 0 && commentId > 0))
+            if (postId == "" && commentId == "")
             {
                 return NotFound();
             }
@@ -38,12 +39,12 @@ namespace isolaatti_API.Pages.Reports
             // on this page, but only when clicking on a "report link" on a post or comment
             
             // As long as a post id is not 0 or null it means that user wants to report a post, same for comment
-            if (postId > 0)
+            if (postId != "")
             {
                 ViewData["type"] = 1;
                 ViewData["contentId"] = postId;
             }
-            if (commentId > 0)
+            if (commentId != "")
             {
                 ViewData["type"] = 2;
                 ViewData["contentId"] = commentId;
@@ -52,7 +53,7 @@ namespace isolaatti_API.Pages.Reports
             return Page();
         }
 
-        public IActionResult OnPost(int typeOfReport,long id, int category, string userReason)
+        public IActionResult OnPost(int typeOfReport,Guid id, int category, string userReason)
         {
             switch (typeOfReport)
             {
