@@ -21,9 +21,7 @@ namespace isolaatti_API.Models
         
         
         // fields for user preferences
-        public bool NotifyByEmail { get; set; }
-        public bool NotifyWhenProcessStarted { get; set; }
-        public bool NotifyWhenProcessFinishes { get; set; }
+        public string UserPreferencesJson { get; set; }
         
         // language field is used to decide what language to use in notifications by E-mail
         public string AppLanguage { get; set; }
