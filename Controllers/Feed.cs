@@ -52,7 +52,7 @@ namespace isolaatti_API.Controllers
                 posts.RemoveAll(post => post.Id.Equals(historySeen.PostId));
             }
 
-            posts = posts.OrderByDescending(post => post.Id).Take(15).ToList();
+            posts = posts.OrderByDescending(post => post.Date).Take(15).ToList();
 
             var response = new List<ReturningPostsComposedResponse>();
             foreach (var post in posts)
