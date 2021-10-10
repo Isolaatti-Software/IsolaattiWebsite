@@ -1,0 +1,37 @@
+@page
+@model isolaatti_API.Pages.s.Legal.PrivacyPolicy
+
+@{
+    Layout = "Shared/_LayoutWebAppOutside";
+    ViewData["Title"] = "Privacy Policy for early adopters";
+}
+@section css
+{
+    <link rel="stylesheet" href="~/css/sign_style.css"/>
+}
+
+<div class="d-flex flex-column mt-4 p-3">
+    <h1>Isolaatti privacy policy for early adopters</h1>
+    <h2>Your personal data</h2>
+    <p>
+        When you make an account, you are providing us your basic information. You can create your account directly with us or signing in with google. Depending on the method you use, we get different data.
+    </p>
+    <h3>Traditional Isolaatti account</h3>
+    <p>
+        We get basic information: username you choose, email address, your description (text and audio), your photo (if one is uploaded). Password is encrypted and no body can see it.
+    </p>
+    <h3>Isolaatti account from Google account</h3>
+    <p>
+        If you choose this method, we will connect with Google and they will provide your name, email address and photo. A description (text and audio) and a photo (that can be uploaded by you) are also collected by us from you. 
+        A random password is created, encrypted and stored. You will not need it, as long as you have access to your Google account. We keep the relation between your Google account and Isolaatti account so 
+        that it points to the same account and you do not get a new account each time!
+    </p>
+    <h2>Content you upload</h2>
+    <p>
+        All content you upload (text or audio) becomes Isolaatti property, giving us permission to share them with autorities or goverments that ask for them. Every public post can be indexed by search engines, 
+        included in the public feed, included in social media posts, and it's possible that we include it in ads. You are also autorizing us to store your posts no matter the privacy selection you made.
+    </p>
+    <p>
+        When a post is reported, we can read it, even if its privacy is changed to private. <del>We will delete if we think we should, according to content policy</del> .
+    </p>
+</div>

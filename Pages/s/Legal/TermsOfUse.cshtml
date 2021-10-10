@@ -1,0 +1,51 @@
+@page
+@model isolaatti_API.Pages.s.Legal.TermsOfUse
+
+@{
+    Layout = "Shared/_LayoutWebAppOutside";
+    ViewData["Title"] = "Terms of Use for early adopters";
+}
+@section css
+{
+    <link rel="stylesheet" href="~/css/sign_style.css"/>
+}
+<div class="d-flex flex-column p-3 mt-4">
+    <h1>Isolaatti service conditions for early adopters</h1>
+    <p>
+        Isolaatti appreciate your participation as early adopter. As early adopter, you will become an important source of 
+        feedback for Isolaatti's software development. That said, let us continue towards what we (you and Isolaatti) are comitting to (not legally but morally).
+    </p>
+    <h2>Reliability of the software</h2>
+    <p>
+        Isolaatti is offered to you without any kind of warranty from us. That means that the web application and all related software products (mobiles apps) 
+        can go down for a undefined time. In addtion, data loss can occur very often, as databases are being constantly changed according to new features being added.
+        Bugs, security holes and many other software disgraces can be present as well. 
+    </p>
+    <p>
+        We encourage users to not trust their confidential information to any Isolaatti software application, because of the reasons stated above. We will not help you
+        to recover any post, comment, account or whatever that gets lost. Still we would be grateful if you report any bug and data loss you experience on the platform.
+    </p>
+    <h2>Feedback reception</h2>
+    <p>
+        Of course, you do not have to give us any advice or new feature recomendation. It is in you giving us any idea or reporting any error on the platform. However, we
+        might or not implement it.
+    </p>
+    <p>
+        Regarding the autorithy of your ideas, if it is implemented, it will become part of the already implemented features and you will be added to the list of lovely 
+        people that have helped as early adopters.
+    </p>
+    <h2>Source code</h2>
+    <p>
+        Source code is not publicly available yet, and we do not know whether it will be. However, javascript code included in pages can still be viewed easily. By making 
+        your account, you are stating that you will not analyze or copy the code.
+    </p>
+    <h2>Fair use of server resources</h2>
+    <p>
+        You are commiting to not commit abuse against backend services. Among others, it includes:
+    </p>
+    <ul>
+        <li>Intentional bad API requests</li>
+        <li>Excesive number of requests being sent</li>
+        <li>Fraudulent account making (fake accounts that are not for testing. Users can have up to two accounts)</li>
+    </ul>
+</div>
