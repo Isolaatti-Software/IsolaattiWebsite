@@ -46,6 +46,11 @@ body {
     text-shadow: -3px 4px #11022b;
     text-decoration: none;
 }
+#post-editor-link {
+    background-color: #8400ff;
+    color: white;
+    border-radius: 8px;
+}
 
 #mobile-search-button-appear, #search-bar-mobile-button-close {
     display: none;
@@ -338,9 +343,20 @@ footer#footer>a, footer#footer>span {
 #change-profile-photo-btn{
     transform: translate(25px, -25px);
 }
+#play-audio-description-btn {
+    position: absolute;
+    top: auto;
+    bottom: auto;
+    left: auto;
+    right: auto;
+    background-color: rgba(0,0,0,0);
+    border: none;
+    color: white;
+    font-size: 30px;
+}
 .translucent-white-card {
     background-color: rgba(255,255,255,0.5);
-    border-radius: 20px;
+    border-radius: 5px;
     padding: 10px;
 }
 #your-posts-deposit {

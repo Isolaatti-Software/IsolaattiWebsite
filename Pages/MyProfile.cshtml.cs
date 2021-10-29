@@ -62,6 +62,7 @@ namespace isolaatti_API.Pages
                 ? null
                 : UrlGenerators.GenerateProfilePictureUrl(user.Id, Request.Cookies["isolaatti_user_session_token"]);
             ViewData["description"] = user.DescriptionText;
+            ViewData["audioDescriptionUrl"] = user.DescriptionAudioUrl;
             PasswordIsWrong = currentPasswordIsWrong;
             
 

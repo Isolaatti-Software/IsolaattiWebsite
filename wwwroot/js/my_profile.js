@@ -6,6 +6,11 @@
 * 
 * This file should be placed in the Pages/Profile.cshtml
 */
+
+
+
+
+
 function deletePost(postId, onComplete, onError) {
     let form = new FormData();
     form.append("sessionToken", sessionToken);
@@ -264,7 +269,7 @@ profilePictureLoadFormElement.addEventListener("input", function() {
                 },
                 sortingData: {
                     ascending: "0"
-                }
+                },
             },
             computed: {
                 openThreadLink: function() {
@@ -419,14 +424,209 @@ profilePictureLoadFormElement.addEventListener("input", function() {
                         }
                     }
                     request.send(form);
-                }
+                }                
             },
             mounted: function() {
                 this.$nextTick(function() {
                     let globalThis = this;
                     this.audioPlayer.onended = function() {
+                        // if it was playing the description it has to stop the photo rotating
+                        if(globalThis.audioUrl === vueContainerForLeftBar.audioDescriptionUrl) {
+                            vueContainerForLeftBar.stopRotatingProfilePicture();
+                            vueContainerForLeftBar.playing = false;
+                        }
                         globalThis.audioUrl = "";
                     }
+                });
+            }
+        })
+
+        // vue instance to manage profile audio description
+        let vueContainerForLeftBar = new Vue({
+            el: '#vue-container-for-left-bar',
+            data: {
+                sessionToken: sessionToken,
+                userData: userData,
+                audioDescriptionUrl: audioDescriptionUrl, // this value is defined on the page (rendered by te server)
+                playing: false,
+                paused: false,
+                recorder: {
+                    mediaStream: null,
+                    audioBlob: null,
+                    timeInSeconds: 0,
+                    recording: false,
+                    recorded: false,
+                    mediaRecorder: null,
+                    audioData: [],
+                    consolidated: false,
+                    timerReference: null,
+                    stopTimeoutReference: null
+                }
+            },
+            computed: {
+                clockFormatTime: function() {
+                    let truncatedSecs = Math.round(this.recorder.timeInSeconds);
+                    let minutes = truncatedSecs / 60;
+                    let seconds = truncatedSecs % 60;
+                    if (seconds < 10) {
+                        seconds = `0${seconds}`
+                    }
+                    return `${Math.trunc(minutes)}:${seconds}`;
+                },
+                audioDescriptionButtonInnerText: function() {
+                    if(this.playing){
+                        return '<i class="far fa-pause-circle"></i>'
+                    } else if(this.paused){
+                        return '<i class="far fa-play-circle"></i>'
+                    } else {
+                        return '<i class="far fa-play-circle"></i>'
+                    }
+                }
+            },
+            methods: {
+                uploadAudioDescriptionAudio: function() {
+                    const globalThis = this;
+                    // first I need to upload the audio blob to google cloud storage
+                    if(this.recorder.consolidated) {
+                        let storageRef = storage.ref();
+                        
+                        let uploadTask = storageRef.child(`audio_descriptions/${this.userData.id}/audio.webm`);
+                        uploadTask.put(this.recorder.audioBlob).then(function(s) {
+                            
+                            // then get the url and send it to the backend to store it on the database
+                            uploadTask.getDownloadURL().then(function(url) {
+                                
+                                let form = new FormData();
+                                form.append("sessionToken", globalThis.sessionToken);
+                                form.append("url", url);
+                                
+                                let request = new XMLHttpRequest();
+                                request.open("POST", "/api/EditProfile/UpdateAudioDescription");
+                                request.onload = function() {
+                                    if(request.status === 200) {
+                                        window.location.reload();
+                                    }
+                                }
+                                request.send(form);
+                            })
+                        })
+                    }
+                },
+                startRotatingProfilePicture: function() {
+                    if(this.paused) {
+                        this.$refs.profilePhoto.getAnimations().forEach(function(element){
+                            element.play();
+                        });
+                    } else {
+                        this.$refs.profilePhoto.animate([
+                            {transform: 'rotate(0deg)'},
+                            {transform: 'rotate(360deg)'}
+                        ], {
+                            duration: 2800,
+                            iterations: Infinity
+                        });
+                    }
+                    
+                },
+                pauseRotatingProfilePicture: function() {
+                  this.$refs.profilePhoto.getAnimations().forEach(function(element){
+                      element.pause();
+                  });  
+                },
+                stopRotatingProfilePicture: function() {
+                    this.$refs.profilePhoto.getAnimations().forEach(function(element){element.cancel()})
+                },
+                requestMicrophone: function() {
+                    let audioStreamPromise = navigator.mediaDevices.getUserMedia({audio:true, video:false})
+
+                    audioStreamPromise.then((stream) => {
+                        this.recorder.mediaStream = stream;
+                    });
+                },
+                onEditProfileAudioDescriptionModal: function() {
+                    if(this.recorder.mediaStream === null) {
+                        this.requestMicrophone();
+                    }
+                },
+                playAudioDescription: function() {
+                    // I need to call this method that is on the other instance, so that I don't have to 
+                    // create more than one audio player, and for instance the audio description plays 
+                    // instead anything that is playing at the moment
+                    
+                    vueContainer.playAudio(this.audioDescriptionUrl);
+                    
+                    // this means user wants to pause
+                    if(this.playing) {
+                        this.pauseRotatingProfilePicture();
+                        this.paused = true;
+                        this.playing = false;
+                    } else {
+                        this.playing = true;
+                        this.startRotatingProfilePicture();
+                    }
+                },
+                startRecording: function() {
+                    this.recorder.consolidated = false;
+                    this.recorder.timeInSeconds = 0;
+                    this.recorder.mediaRecorder = new MediaRecorder(this.recorder.mediaStream,{
+                        mimeType: 'audio/webm; codecs:opus',
+                        bitsPerSecond: 128000
+                    });
+                    this.recorder.mediaRecorder.start();
+                    const globalThis = this;
+                    
+                    // this timer counts every second and updated UI to show time
+                    this.recorder.timerReference = setInterval(function() {
+                        globalThis.recorder.timeInSeconds++;
+                    },1000);
+                    
+                    // recording will stop at 2 minutes
+                    this.recorder.stopTimeoutReference = setTimeout(function() {
+                        clearInterval(globalThis.recorder.timerReference);
+                    },120000);
+                    
+                    
+                    this.recorder.mediaRecorder.ondataavailable = function(e) {
+                        globalThis.recorder.audioData.push(e.data);
+                    }
+                    
+                    this.recorder.mediaRecorder.onstop = function() {
+                        globalThis.recorder.audioBlob = new Blob(globalThis.recorder.audioData,
+                            {'type':'audio/webm; codecs=opus'});
+                        
+                        clearInterval(globalThis.recorder.timerReference); // stops timer
+                        clearTimeout(globalThis.recorder.stopTimeoutReference); // stops timeout that was set to execute to minutes after
+                        
+                        globalThis.recorder.consolidated =  true;
+                    }
+                    this.recorder.recording = true;
+                },
+                stopRecording: function() {
+                    this.recorder.mediaRecorder.stop();
+                    this.recorder.recording = false;
+                    this.recorder.recorded = true;
+                },
+                playAudioDescriptionPreview: function() {
+                    vueContainer.playAudio(window.URL.createObjectURL(this.recorder.audioBlob));
+                },
+                resetRecording: function() {
+                    this.recorder.recording = false;
+                    this.recorder.audioBlob = null;
+                    this.recorder.audioData = [];
+                    this.recorder.timeInSeconds = 0;
+                    this.recorder.recorded = false;
+                },
+                
+            },
+            mounted: function() {
+                const globalThis = this;
+                this.$nextTick(function() {
+                    
+                    // I am sorry I have to do it this way, but it's easier than adding 
+                    // events to the button that is outside vue.js
+                    $('#modal-audio-description').on('show.bs.modal', function() {
+                        globalThis.requestMicrophone();
+                    });
                 });
             }
         })

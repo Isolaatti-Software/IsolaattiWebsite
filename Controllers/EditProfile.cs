@@ -110,5 +110,19 @@ namespace isolaatti_API.Controllers
 
             return Ok("Imagen cargada");
         }
+
+        [HttpPost]
+        [Route("UpdateAudioDescription")]
+        public IActionResult UpdateAudioDescription([FromForm] string sessionToken, [FromForm] string url)
+        {
+            var accountsManager = new Accounts(Db);
+            var user = accountsManager.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
+
+            user.DescriptionAudioUrl = url;
+            Db.Users.Update(user);
+            Db.SaveChanges();
+            return Ok();
+        }
     }
 }

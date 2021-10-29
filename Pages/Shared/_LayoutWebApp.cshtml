@@ -33,112 +33,115 @@
 <body>
 
 <main style="height: 100vh; overflow: auto" id="main-container">
-    <nav class="d-flex custom-nav sticky-top" id="isolaatti-top-bar">
-        <a href="/" class="nav-link custom-nav-link" id="isolaatti_brand"></a>
-        <a class="nav-link custom-nav-link ml-auto"
-           asp-page="/Index"
-           id="index-link">
-            <i class="fas fa-home"></i>
-        </a>
-        <a class="nav-link custom-nav-link"
-           href="#modal-new-post"
-           data-toggle="modal"
-           title="Post Editor"
-           id="post-editor-link">
-            <i class="fas fa-feather"></i>
-        </a>
-        
-        <div class="d-flex flex-grow-1" id="search-bar-fixed-top">
-            <button type="button" 
-                    class="btn btn-dark btn-sm mr-1" 
-                    id="search-bar-mobile-button-close">
-                <i class="far fa-window-close"></i>
-            </button>
-            <input type="text" 
-                   class="form-control search-bar-on-top flex-grow-1" 
-                   form="form-search" 
-                   name="q" 
-                   placeholder="Search for people, projects, and threads"/>
-            <button class="btn btn-primary btn-sm ml-1"
-                    type="submit"
-                    form="form-search">
-                <i class="fas fa-search"></i>
-            </button>
-        </div>
-        <a href="#" 
-           class="nav-link custom-nav-link" 
-           id="mobile-search-button-appear">
-            <i class="fas fa-search"></i>
-        </a>
-        <a class="nav-link custom-nav-link nav-link mr-1 ml-auto" 
-           href="#" 
-           role="button" 
-           id="dropdownNotificationsMenuLink"
-           aria-haspopup="true" aria-expanded="false"
-           onclick="vueInstanceForNotifications.toggleNotificationsSlider()">
-            <i class="fas fa-bell"></i>
-            <span class="badge badge-light"></span>
-        </a>
     
-        <div class="dropdown ">
-            <a class="nav-link custom-nav-link nav-link ml-auto mr-1 dropdown-toggle" 
-               href="#" 
-               role="button" 
-               id="dropdownMenuLink" 
-               data-toggle="dropdown" 
-               aria-haspopup="true" 
-               aria-expanded="false">
-                @if (ViewData["profilePicUrl"] == null)
-                {
-                    <i class="fas fa-user-circle"></i>
-                }
-                else
-                {
-                    <img width="40" height="40" src="@ViewData["profilePicUrl"]" class="user-avatar"/>
-                }
-            </a>
-            <div class="dropdown-menu dropdown-menu-right" 
-                 aria-labelledby="dropdownMenuLink">
-                <div class="dropdown-header">
-                    @ViewData["name"]
+    <nav class="d-flex custom-nav sticky-top pr-2 pl-2" id="isolaatti-top-bar">
+        <div class="container">
+            <div class="d-flex w-100 align-items-center">
+                <a href="/" class="nav-link custom-nav-link mr-auto" id="isolaatti_brand"></a>
+                <div class="d-flex flex-grow-1" id="search-bar-fixed-top">
+                    <button type="button"
+                            class="btn btn-dark btn-sm mr-1"
+                            id="search-bar-mobile-button-close">
+                        <i class="far fa-window-close"></i>
+                    </button>
+                    <input type="text"
+                           class="form-control search-bar-on-top flex-grow-1"
+                           form="form-search"
+                           name="q"
+                           placeholder="Search for people, projects, and threads"/>
+                    <button class="btn btn-primary btn-sm ml-1"
+                            type="submit"
+                            form="form-search">
+                        <i class="fas fa-search"></i>
+                    </button>
                 </div>
-                <div class="dropdown-divider"></div>
-                <a asp-page="/MyProfile" 
-                   class="dropdown-item">
-                    @if (ViewData["profilePicUrl"] == null)
-                    {
-                        <i class="fas fa-user-circle"></i>
-                    }
-                    else
-                    {
-                        <img width="40" height="40" src="@ViewData["profilePicUrl"]" class="user-avatar"/>
-                    }
-                    My Profile
+                <a href="#"
+                   class="nav-link custom-nav-link"
+                   id="mobile-search-button-appear">
+                    <i class="fas fa-search"></i>
                 </a>
-                            
-                <a class="dropdown-item" 
-                   asp-page="/Settings">
-                    <i class="fas fa-cog"></i>Settings
+                <div class="d-flex ml-auto mr-5 flex-column">
+                    <a class="nav-link custom-nav-link"
+                       href="#modal-new-post"
+                       data-toggle="modal"
+                       title="Post Editor"
+                       id="post-editor-link">
+                        <i class="fas fa-feather"></i>
+                        <small>New</small>
+                    </a>
+                    
+                </div>
+                <a class="nav-link custom-nav-link nav-link mr-1"
+                   href="#"
+                   role="button"
+                   id="dropdownNotificationsMenuLink"
+                   aria-haspopup="true" aria-expanded="false"
+                   onclick="vueInstanceForNotifications.toggleNotificationsSlider()">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge badge-light"></span>
                 </a>
-                <a class="dropdown-item" 
-                   asp-page="/About" 
-                   target="_blank">
-                    <i class="fas fa-info"></i>About
-                </a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" 
-                   href="/WebLogOut"><i class="fas fa-sign-out-alt"></i>Sign out</a>
+
+                <div class="dropdown ">
+                    <a class="nav-link custom-nav-link nav-link mr-1 dropdown-toggle"
+                       href="#"
+                       role="button"
+                       id="dropdownMenuLink"
+                       data-toggle="dropdown"
+                       aria-haspopup="true"
+                       aria-expanded="false">
+                        @if (ViewData["profilePicUrl"] == null)
+                        {
+                            <i class="fas fa-user-circle"></i>
+                        }
+                        else
+                        {
+                            <img width="40" height="40" src="@ViewData["profilePicUrl"]" class="user-avatar"/>
+                        }
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right"
+                         aria-labelledby="dropdownMenuLink">
+                        <div class="dropdown-header">
+                            @ViewData["name"]
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <a asp-page="/MyProfile"
+                           class="dropdown-item">
+                            @if (ViewData["profilePicUrl"] == null)
+                            {
+                                <i class="fas fa-user-circle"></i>
+                            }
+                            else
+                            {
+                                <img width="40" height="40" src="@ViewData["profilePicUrl"]" class="user-avatar"/>
+                            }
+                            My Profile
+                        </a>
+                        <a class="dropdown-item"
+                           asp-page="/Settings">
+                            <i class="fas fa-cog"></i>Settings
+                        </a>
+                        <a class="dropdown-item"
+                           asp-page="/About"
+                           target="_blank">
+                            <i class="fas fa-info"></i>About
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item"
+                           href="/WebLogOut"><i class="fas fa-sign-out-alt"></i>Sign out</a>
+                    </div>
+                </div>
             </div>
         </div>
+
     </nav>
     <form id="form-search" asp-page="/Search" method="get"></form>
 
 
-    <div class="container-fluid p-0">
+    <div class="fluid-container p-0">
         <div class="row m-0">
             @RenderBody()
         </div>
-        
+
     </div>
     <div class="modal fade" id="modal-new-post">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
@@ -197,5 +200,7 @@ buttonCloseSearchBar.addEventListener("click", function (){
     searchBar.style.top = "-60px";
 });
 </script>
+<script async type="application/javascript" src="https://a.exdynsrv.com/ad-provider.js"></script>
+<script>(AdProvider = window.AdProvider || []).push({"serve": {}});</script>
 </body>
 </html>

@@ -40,7 +40,7 @@ namespace isolaatti_API.Pages
             ViewData["profile_email"] = profile.Email;
             ViewData["profile_id"] = profile.Id;
             if (user.Id == profile.Id) return RedirectToPage("MyProfile");
-            ProfilePhotoUrl = UrlGenerators.GenerateProfilePictureUrl(user.Id, Request.Cookies["isolaatti_user_session_token"]);
+            ViewData["profilePicUrl"] = UrlGenerators.GenerateProfilePictureUrl(user.Id, Request.Cookies["isolaatti_user_session_token"]);
 
             var followingUsersIds = JsonSerializer.Deserialize<List<Guid>>(profile.FollowingIdsJson);
             var followersIds = JsonSerializer.Deserialize<List<Guid>>(profile.FollowersIdsJson);
@@ -53,7 +53,9 @@ namespace isolaatti_API.Pages
                     
             ViewData["numberOfPosts"] = _db.SimpleTextPosts.Count(post => post.UserId.Equals(profile.Id));
             
-            ProfilePhotoUrl = UrlGenerators.GenerateProfilePictureUrl(profile.Id, token,Request);
+            ProfilePhotoUrl= UrlGenerators.GenerateProfilePictureUrl(profile.Id, token,Request);
+
+            ViewData["audioDescription"] = profile.DescriptionAudioUrl;
             
             return Page();
         }

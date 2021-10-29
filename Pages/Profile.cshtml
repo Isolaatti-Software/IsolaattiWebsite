@@ -9,8 +9,9 @@
 
 <div class="col-lg-2 col-md-4 p-0">
     <header id="left-bar" class="p-2">
-        <div class="d-flex justify-content-center">
-            <img src="@Model.ProfilePhotoUrl" width="100" height="100" class="profile-pic mt-3"/>
+        <div class="d-flex justify-content-center align-items-center flex-column mt-3" id="profile_photo_container">
+            <img src="@Model.ProfilePhotoUrl" width="100" height="100" class="profile-pic" id="profile_photo_el" ref="profilePictureElement"/>
+            <button id="play-audio-description-btn" v-on:click="playAudioDescription" v-if="audioDescriptionUrl !== null" v-html="audioDescriptionButtonInnerText"></button>
         </div>
         <div class="translucent-white-card" style="margin-top: 30px;">
             <p class="text-center m-0 overflow-auto text-break username-profile">@ViewData["profile_name"]</p>
@@ -61,9 +62,9 @@
         </div>
     </header>
 </div>
-<div class="col-lg-7 col-md-9">
-    <section class="mt-3 d-flex flex-column">
-        <h5 class="m-3"><i class="far fa-newspaper"></i> Posts</h5>
+<div class="col-lg-10 col-md-6">
+    <section class="mt-3 d-flex flex-column" id="your-posts-deposit">
+        <h5 class="m-3 text-center"><i class="far fa-newspaper"></i> Posts</h5>
         <section id="vue-container" class="d-flex flex-column pt-1 mt-2 mb-3 align-items-center">
             @if ((int)ViewData["numberOfPosts"] == 0)
             {
@@ -133,7 +134,6 @@
     </section>
 
 </div>
-<div class="col-lg-3"></div>
 
 @section Scripts
 {
@@ -142,7 +142,15 @@
     let thisUserIsFollowingMe = "@ViewData["thisUserIsFollowingMe"]" === "True";
     let followingThisUser = "@ViewData["followingThisUser"]" === "True";
     </script>
-    <script>
+    @if (ViewData["audioDescription"] == null)
+    {
+        <script>const audioDescriptionUrl = null;</script>
+    }
+    else
+    {
+        <script>const audioDescriptionUrl = "@ViewData["audioDescription"]";</script>
+    }
+        <script>
     let accountData = {
         userId: "@ViewData["profile_id"]"
     }
