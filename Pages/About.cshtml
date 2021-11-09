@@ -12,7 +12,7 @@
     <meta property="og:description"
           content="Say it louder, deeper! Your voice has more power than you think" />
     <link rel="stylesheet" href="~/stylesheets/isolaatti.css">
-    <link rel="stylesheet" href="~/css/sign_style.css"/>
+    <link rel="stylesheet" href="~/css/welcome-purple-image.css"/>
 }
 @section metadata
 {
@@ -21,12 +21,9 @@
     <meta property="og:description"        content="Audio based social networks and public posting tool" />
     <meta property="og:image"              content="https://isolaatti.com/res/imgs/metadata-image-isolaatti.png" />
 }
-<div class="alert alert-info w-100 mt-2">
-    This application is under development. Please, <a asp-page="DevSupport">support the development</a>.
-</div>
 <nav class="welcome-page-navbar">
     <a asp-page="/s/Welcome">The front</a>
-    <a asp-page="/s/Features">Features</a>
+    <a asp-page="/s/Welcome" asp-fragment="features">Features</a>
     <a asp-page="/About">About</a>
 </nav>
 <h3 class="m-3 w-100 text-center">About</h3>
