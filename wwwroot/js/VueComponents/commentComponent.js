@@ -15,7 +15,7 @@ Vue.component('comment', {
     },
     methods: {
         compileMarkdown: function (raw) {
-            return marked(raw);
+            return marked.parse(raw);
         },
         getUserImageUrl: function (userId) {
             return `/api/Fetch/GetUserProfileImage?userId=${userId}`
