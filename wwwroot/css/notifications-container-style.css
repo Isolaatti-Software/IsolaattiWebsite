@@ -9,7 +9,7 @@
 }
 #notifications-container {
     background-color: white;
-    box-shadow: -5px 5px 5px 0px #DBDBDD;
+    /*box-shadow: -5px 5px 5px 0px #DBDBDD;*/
     
     overflow: auto;
     height: 100%;
@@ -45,4 +45,12 @@
     padding: 20px;
     background-color: white;
     box-shadow: -2px 2px 2px 0px #DBDBDD;
+}
+
+.number-container {
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    background-color: #330669;
+    color: white;
 }
