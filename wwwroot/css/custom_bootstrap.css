@@ -21,3 +21,9 @@
 .badge-primary {
     background-color: #300D87!important;
 }
+a {
+    color: #8400ff;
+}
+a:hover {
+    color: #340072;
+}
