@@ -7,9 +7,12 @@ const vueInstanceForNotifications = new Vue({
     },
     computed: {
       unreadCount: function() {
-          return this.notifications.filter((value, index, array) => {
+          
+          let count = this.notifications.filter((value, index, array) => {
               return !value.read
-          }).length;
+          }).length.toString();
+          document.getElementById("unread-count").innerText = count;
+          return count;
       }  
     },
     methods: {
