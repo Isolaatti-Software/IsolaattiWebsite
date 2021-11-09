@@ -81,7 +81,7 @@ body {
     }
     #left-bar {
         position:sticky;
-        top: 55px;
+        top: 0;
         background: linear-gradient(rgba(48, 9, 142,0.9) 5% ,white);
         padding-bottom: 50px;
         height: max-content!important;
@@ -255,7 +255,7 @@ span.user-name a{
 }
 #left-bar {
     position:sticky;
-    top: 55px;
+    top: 0;
     background: linear-gradient(rgba(48, 9, 142,0.9) 5% ,white);
     padding-bottom: 50px;
     height: calc(100vh - 55px);
