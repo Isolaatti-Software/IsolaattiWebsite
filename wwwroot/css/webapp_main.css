@@ -15,7 +15,7 @@ body {
     overflow-x: hidden;
 }
 .custom-nav {
-    background-color: rgba(48, 9, 142,0.9);
+    background-color: var(--isolaatti-primary-color);
     align-items: center;
 }
 .custom-nav-link {

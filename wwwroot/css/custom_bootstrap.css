@@ -1,3 +1,7 @@
+:root {
+    --isolaatti-primary-color: rgba(48, 9, 142,0.9);
+}
+
 .btn-primary {
     background-color: #6200EE!important;
     border-color: #6200EE!important;
