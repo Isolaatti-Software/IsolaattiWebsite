@@ -49,33 +49,86 @@
     <meta property="og:image"              content="https://isolaatti.com/res/imgs/metadata-image-isolaatti.png" />
 }
 <nav class="welcome-page-navbar">
-    <a asp-page="/s/Welcome">The front</a>
-    <a asp-page="/s/Features">Features</a>
+    <a asp-page="/s/Welcome">Welcome</a>
+    <a asp-page="/s/Welcome" asp-fragment="features">Features</a>
     <a asp-page="/About">About</a>
 </nav>
     
     <div class="d-flex col-lg-7 col-md-6 flex-column">
-        <div class="mt-auto p-3">
-            <p>You must read and accept the 
-                <a
-                    asp-page="/s/Legal/TermsOfUse"
-                    target="_blank">
-                    terms and conditions
-                </a> 
-                and the 
-                <a
-                    asp-page="/s/Legal/PrivacyPolicy"
-                    target="_blank">
-                    privacy policy
-                </a>. 
-                By signing up, you confirm that you accepted them.
-        </p>
+    <form method="POST" id="make_account_form" class="sign-in-up-form">
+                <h2>Sign up</h2>
+                <p><a asp-page="LogIn">Sign in</a></p>
+                @if (Model.emailUsed)
+                {
+                    <div class="alert alert-danger">
+                        The email address you entered is already in use.
+                    </div>
+                }
+                @if (Model.nameUsed)
+                {
+                    <div class="alert alert-danger">
+                        The name you entered is already in use.
+                    </div>
+                }
+                @if (Model.AccountNotMade)
+                {
+                    <div class="alert alert-danger">
+                        <h4 class="alert-heading">Sorry, your account could not be made</h4>
+                        <p>As told you at the message at the top of this page, Isolaatti is only accepting up to 50 accounts, this because the development server might crash</p>
+                    </div>
+                }
+                @if (ViewData.ContainsKey("error_msg"))
+                {
+                    <div class="alert alert-danger">
+                        @ViewData["error_msg"]
+                    </div>
+                }
+                <div class="form-group">
+                    <label for="username_form_control">Username</label>
+                    <input type="text" name="username" id="username_form_control" class="form-control"
+                           value='@ViewData["user_field"]'>
+                </div>
+                <div class="form-group">
+                    <label for="email_form_control">Email</label>
+                    <input type="email" name="email" id="email_form_control" class="form-control"
+                           value='@ViewData["email_field"]'>
+                </div>
+                <div class="form-group">
+                    <label for="password_form_control">Password</label>
+                    <input type="password" name="password" id="password_form_control" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="confirm_password_form_control">Confirm password</label>
+                    <input type="password" name="password" id="confirm_password_form_control" class="form-control">
+                </div>
+                <p>
+                   
+                <div class="d-flex justify-content-center">
+                    <button class="btn btn-primary" type="submit">Sign up</button>
+                </div>
+                <div class="mt-auto p-3">
+                    <p>You must read and accept the 
+                        <a
+                            asp-page="/s/Legal/TermsOfUse"
+                            target="_blank">
+                            terms and conditions
+                        </a> 
+                        and the 
+                        <a
+                            asp-page="/s/Legal/PrivacyPolicy"
+                            target="_blank">
+                            privacy policy
+                        </a>. 
+                        By signing up, you confirm that you accepted them.
+                    </p>
+                        
+                    <p>
+                        You will receive an e-mail with a link to confirm your e-mail
+                        address.
+                    </p>
+                </div>
+    </form>
         
-            <p>
-                You will receive an e-mail with a link to confirm your e-mail
-                address.
-            </p>
-        </div>
         
     </div>
     
@@ -87,59 +140,14 @@
         </div>
     }
     <div class="col-lg-5 col-md-6 justify-content-end align-items-center">
-        <form method="POST" id="make_account_form" class="sign-in-up-form">
-            <h2>Sign up</h2>
-            <p><a asp-page="LogIn">Sign in</a></p>
-            @if (Model.emailUsed)
-            {
-                <div class="alert alert-danger">
-                    The email address you entered is already in use.
-                </div>
-            }
-            @if (Model.nameUsed)
-            {
-                <div class="alert alert-danger">
-                    The name you entered is already in use.
-                </div>
-            }
-            @if (Model.AccountNotMade)
-            {
-                <div class="alert alert-danger">
-                    <h4 class="alert-heading">Sorry, your account could not be made</h4>
-                    <p>As told you at the message at the top of this page, Isolaatti is only accepting up to 50 accounts, this because the development server might crash</p>
-                </div>
-            }
-            @if (ViewData.ContainsKey("error_msg"))
-            {
-                <div class="alert alert-danger">
-                    @ViewData["error_msg"]
-                </div>
-            }
-            <div class="form-group">
-                <label for="username_form_control">Username</label>
-                <input type="text" name="username" id="username_form_control" class="form-control"
-                       value='@ViewData["user_field"]'>
-            </div>
-            <div class="form-group">
-                <label for="email_form_control">Email</label>
-                <input type="email" name="email" id="email_form_control" class="form-control"
-                       value='@ViewData["email_field"]'>
-            </div>
-            <div class="form-group">
-                <label for="password_form_control">Password</label>
-                <input type="password" name="password" id="password_form_control" class="form-control">
-            </div>
-            <div class="form-group">
-                <label for="confirm_password_form_control">Confirm password</label>
-                <input type="password" name="password" id="confirm_password_form_control" class="form-control">
-            </div>
-            <p>
-               
-            <div class="d-flex justify-content-center">
-                <button class="btn btn-primary" type="submit">Sign up</button>
-            </div>
-        </form>
-        <div id="firebaseui-auth-container"></div>
+        <div class="sign-in-up-form">
+            <h2>Sign in with Google</h2>
+            <p>We will connect with Google and we will retrieve your name and email. If this is the first time you 
+                sign in, you'll get a new Isolaatti account and will be linked to your Google account.</p>
+            <p>After you click on the button below, you will be redirected to Google authentication page and back to Isolaatti, just wait.</p>
+            <div id="firebaseui-auth-container"></div>
+        </div>
+        
     </div>
 
 @section Scripts
