@@ -29,4 +29,8 @@
     <Folder Include="wwwroot\appsJS\demixer" />
   </ItemGroup>
 
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="wwwroot\svg\stacked-waves-haikei.svg" />
+  </ItemGroup>
+
 </Project>

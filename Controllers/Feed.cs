@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
-using BenchmarkDotNet.Attributes;
 using isolaatti_API.Classes;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
@@ -21,7 +20,6 @@ namespace isolaatti_API.Controllers
             Db = dbContextApp;
         }
         
-        [Benchmark]
         [HttpPost]
         public IActionResult Index([FromForm] string sessionToken,[FromForm] string postsInDom)
         {
