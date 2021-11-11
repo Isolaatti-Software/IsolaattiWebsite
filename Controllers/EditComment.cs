@@ -1,3 +1,4 @@
+using System;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using isolaatti_API.Utils;
@@ -5,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace isolaatti_API.Controllers
 {
+    [Route("/api/[controller]")]
     public class EditComment : ControllerBase
     {
         private readonly DbContextApp Db;
@@ -17,7 +19,7 @@ namespace isolaatti_API.Controllers
         [Route("TextContent")]
         [HttpPost]
         public IActionResult TextContent(
-            [FromForm] string sessionToken, [FromForm] long commentId, [FromForm] string newContent)
+            [FromForm] string sessionToken, [FromForm] Guid commentId, [FromForm] string newContent)
         {
             var accountsManager = new Accounts(Db);
             var user = accountsManager.ValidateToken(sessionToken);
@@ -48,7 +50,7 @@ namespace isolaatti_API.Controllers
 
         [Route("Delete")]
         [HttpPost]
-        public IActionResult Delete([FromForm] string sessionToken, [FromForm] long commentId)
+        public IActionResult Delete([FromForm] string sessionToken, [FromForm] Guid commentId)
         {
             var accountsManager = new Accounts(Db);
             var user = accountsManager.ValidateToken(sessionToken);
