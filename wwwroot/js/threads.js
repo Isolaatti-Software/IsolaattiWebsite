@@ -15,6 +15,7 @@ let thisVueInstance;
             let vueInstance = new Vue({
                 el: "#vue-container",
                 data: {
+                    sessionToken: sessionToken,
                     userId: userData.id,
                     post: JSON.parse(request.responseText),
                     commentBoxFullSize: false,
@@ -417,6 +418,30 @@ let thisVueInstance;
                     },
                     addAComment: function(comment) {
                         this.comments.push(comment)
+                    },
+                    deleteComment: function(commentId) {
+                        if(!confirm("Delete comment?")) return;
+                        
+                        let request = new XMLHttpRequest();
+                        request.open("POST","/api/EditComment/Delete");
+                        
+                        let form = new FormData();
+                        form.append("sessionToken", this.sessionToken);
+                        form.append("commentId", commentId);
+                        const globalThis = this;
+                        request.onload = function() {
+                            switch(request.status) {
+                                case 200: 
+                                    let commentPosition = globalThis.comments.findIndex(comment => comment.id===commentId);
+                                    globalThis.comments.splice(commentPosition, 1);
+                                    console.log(commentPosition)
+                                    break;
+                                case 401: console.error(request.responseText); 
+                                break;
+                            }
+                        }
+                        
+                        request.send(form);
                     }
                 },
                 mounted: function() {

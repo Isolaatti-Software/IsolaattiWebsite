@@ -37,7 +37,7 @@ Vue.component('comment', {
           </button>
           <div class="dropdown-menu">
             <a href="#" class="dropdown-item" v-if="comment.whoWrote===this.userData.id">Edit</a>
-            <a href="#" class="dropdown-item" v-if="comment.whoWrote===this.userData.id">Delete</a>
+            <a href="#" class="dropdown-item" v-if="comment.whoWrote===this.userData.id" v-on:click="$emit('delete-comment')">Delete</a>
             <a :href="reportLink" class="dropdown-item" target="_blank">Report</a>
           </div>
         </div>
