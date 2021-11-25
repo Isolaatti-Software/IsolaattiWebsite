@@ -1,4 +1,3 @@
-using System;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using isolaatti_API.Utils;
@@ -15,11 +14,11 @@ namespace isolaatti_API.Controllers
         {
             Db = dbContextApp;
         }
-        
+
         [Route("TextContent")]
         [HttpPost]
         public IActionResult TextContent(
-            [FromForm] string sessionToken, [FromForm] Guid commentId, [FromForm] string newContent)
+            [FromForm] string sessionToken, [FromForm] long commentId, [FromForm] string newContent)
         {
             var accountsManager = new Accounts(Db);
             var user = accountsManager.ValidateToken(sessionToken);
@@ -43,14 +42,14 @@ namespace isolaatti_API.Controllers
 
             comment.TextContent = newContent;
             Db.Comments.Update(comment);
-            
+
             Db.SaveChanges();
             return Ok("Comment updated successfully");
         }
 
         [Route("Delete")]
         [HttpPost]
-        public IActionResult Delete([FromForm] string sessionToken, [FromForm] Guid commentId)
+        public IActionResult Delete([FromForm] string sessionToken, [FromForm] long commentId)
         {
             var accountsManager = new Accounts(Db);
             var user = accountsManager.ValidateToken(sessionToken);
@@ -58,7 +57,7 @@ namespace isolaatti_API.Controllers
             {
                 return Unauthorized("Token is not valid");
             }
-            
+
             var comment = Db.Comments.Find(commentId);
             if (comment == null) return NotFound("Comment not found");
 
@@ -66,7 +65,7 @@ namespace isolaatti_API.Controllers
             {
                 return Unauthorized("Access denied, cannot delete this comment, it is not yours");
             }
-            
+
             // remove audio if there is any
             if (comment.AudioUrl != null)
             {
@@ -90,7 +89,7 @@ namespace isolaatti_API.Controllers
             {
                 return Unauthorized("Token is not valid");
             }
-            
+
             var comment = Db.Comments.Find(commentId);
             if (comment == null) return NotFound("Comment not found");
 
@@ -98,7 +97,7 @@ namespace isolaatti_API.Controllers
             {
                 return Unauthorized("Access denied, cannot replace audio of this comment, it is not yours");
             }
-            
+
             // remove audio if there is any
             if (comment.AudioUrl != null)
             {
@@ -113,7 +112,7 @@ namespace isolaatti_API.Controllers
 
             comment.AudioUrl = newUrl;
             Db.Comments.Update(comment);
-            
+
             Db.SaveChanges();
             return Ok("Audio replaced");
         }
@@ -128,7 +127,7 @@ namespace isolaatti_API.Controllers
             {
                 return Unauthorized("Token is not valid");
             }
-            
+
             var comment = Db.Comments.Find(commentId);
             if (comment == null) return NotFound("Comment not found");
 
@@ -136,16 +135,16 @@ namespace isolaatti_API.Controllers
             {
                 return Unauthorized("Access denied, cannot replace audio of this comment, it is not yours");
             }
-            
+
             // remove audio if there is any
             if (comment.AudioUrl != null)
             {
                 var storage = GoogleCloudBucket.GetInstance();
                 storage.DeleteFile(GoogleCloudStorageUrlUtils.GetFileRefFromUrl(comment.AudioUrl));
             }
-            
+
             Db.Comments.Remove(comment);
-            
+
             Db.SaveChanges();
             return Ok("Audio replaced");
         }

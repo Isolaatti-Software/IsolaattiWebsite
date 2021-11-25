@@ -4,15 +4,17 @@
 * This program is not allowed to be copied or reused without explicit permission.
 * erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
 */
+
 using Microsoft.EntityFrameworkCore;
+
 namespace isolaatti_API.Models
 {
     public class DbContextApp : DbContext
     {
-        public DbContextApp (DbContextOptions<DbContextApp> options) : base(options)
+        public DbContextApp(DbContextOptions<DbContextApp> options) : base(options)
         {
-            
         }
+
         public DbSet<User> Users { get; set; }
         public DbSet<AdminAccount> AdminAccounts { get; set; }
         public DbSet<Comment> Comments { get; set; }
@@ -26,5 +28,6 @@ namespace isolaatti_API.Models
         public DbSet<CommentReport> CommentReports { get; set; }
         public DbSet<GoogleUser> GoogleUsers { get; set; }
         public DbSet<SocialNotification> SocialNotifications { get; set; }
+        public DbSet<FollowerRelation> FollowerRelations { get; set; }
     }
 }

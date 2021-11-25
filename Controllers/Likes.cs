@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using isolaatti_API.Classes;
@@ -16,30 +15,29 @@ namespace isolaatti_API.Controllers
     {
         private readonly DbContextApp Db;
         private readonly IHubContext<NotificationsHub> _hubContext;
+
         public Likes(DbContextApp dbContextApp, IHubContext<NotificationsHub> hubContext)
         {
             Db = dbContextApp;
             _hubContext = hubContext;
         }
-        
+
         [HttpPost]
         [Route("LikePost")]
-        public async Task<IActionResult> LikePost([FromForm]string sessionToken, [FromForm] Guid postId)
+        public async Task<IActionResult> LikePost([FromForm] string sessionToken, [FromForm] long postId)
         {
-            
             var accountsManager = new Accounts(Db);
             var user = accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
-            
+
             var post = Db.SimpleTextPosts.Find(postId);
             if (post == null) return Unauthorized("Post does not exist");
             if (Db.Likes.Any(element => element.UserId == user.Id && element.PostId == postId))
                 return Unauthorized("Post already liked");
 
-            
-            
+
             var notificationsAdministration = new NotificationsAdministration(Db);
-            
+
             Db.Likes.Add(new Like()
             {
                 PostId = postId,
@@ -49,17 +47,19 @@ namespace isolaatti_API.Controllers
             post.NumberOfLikes += 1;
             Db.SimpleTextPosts.Update(post);
             await Db.SaveChangesAsync();
-            
-            var notificationData = notificationsAdministration.NewLikesActivityNotification(post.UserId, user.Id, post.Id, post.NumberOfLikes);
+
+            var notificationData =
+                notificationsAdministration.NewLikesActivityNotification(post.UserId, user.Id, post.Id,
+                    post.NumberOfLikes);
 
             var sessionsId = Hubs.NotificationsHub.Sessions.Where(element => element.Value.Equals(post.UserId));
-            
+
             foreach (var id in sessionsId)
             {
                 await _hubContext.Clients.Client(id.Key)
                     .SendAsync("fetchNotification", notificationData, NotificationsAdministration.TypeLikes);
             }
-            
+
             return Ok(new ReturningPostsComposedResponse(post)
             {
                 UserName = Db.Users.Find(post.UserId).Name,
@@ -70,12 +70,12 @@ namespace isolaatti_API.Controllers
 
         [HttpPost]
         [Route("UnLikePost")]
-        public IActionResult UnLikePost([FromForm]string sessionToken, [FromForm] Guid postId)
+        public IActionResult UnLikePost([FromForm] string sessionToken, [FromForm] long postId)
         {
             var accountsManager = new Accounts(Db);
             var user = accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
-            
+
             var post = Db.SimpleTextPosts.Find(postId);
             if (post == null) return Unauthorized("Post does not exist");
             if (!Db.Likes.Any(element => element.UserId == user.Id && element.PostId == postId))

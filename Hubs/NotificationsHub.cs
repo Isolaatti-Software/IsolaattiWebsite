@@ -10,14 +10,14 @@ namespace isolaatti_API.Hubs
 {
     public class NotificationsHub : Hub
     {
-        public static Dictionary<string, Guid> Sessions = new Dictionary<string, Guid>();
+        public static Dictionary<string, int> Sessions = new Dictionary<string, int>();
         private readonly DbContextApp _db;
-        
+
         public NotificationsHub(DbContextApp dbContextApp)
         {
             _db = dbContextApp;
         }
-        
+
         public override Task OnConnectedAsync()
         {
             var httpContext = Context.GetHttpContext();
@@ -26,7 +26,7 @@ namespace isolaatti_API.Hubs
             var user = accounts.ValidateToken(sessionId);
 
             Sessions.Add(Context.ConnectionId, user.Id);
-            
+
             return Clients.Caller.SendAsync("SessionSaved",
                 $"Welcome to notifications hub {user.Name}, your temp id is {Context.ConnectionId}");
         }

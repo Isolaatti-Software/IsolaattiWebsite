@@ -1,7 +1,5 @@
-using System;
-using System.IO;
-using System.Linq;
 using isolaatti_API.Classes;
+using isolaatti_API.InMemoryDatabase;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +16,7 @@ namespace isolaatti_API.Controllers
         {
             _db = dbContextApp;
         }
-        
+
         [HttpPost]
         [Route("UserData")]
         public IActionResult Index([FromForm] string sessionToken)
@@ -38,12 +36,12 @@ namespace isolaatti_API.Controllers
 
         [HttpGet]
         [Route("GetUserProfileImage")]
-        public IActionResult GetUserProfileImage(Guid userId)
+        public IActionResult GetUserProfileImage(int userId)
         {
             var otherUser = _db.Users.Find(userId);
             if (otherUser == null) return NotFound("User not found");
-            if(otherUser.ProfileImageData == null) return Redirect("/res/imgs/user.png");
-            return new FileContentResult(otherUser.ProfileImageData,"image/png");
+            if (otherUser.ProfileImageData == null) return Redirect("/res/imgs/user.png");
+            return new FileContentResult(otherUser.ProfileImageData, "image/png");
         }
 
         [HttpGet]
@@ -51,6 +49,13 @@ namespace isolaatti_API.Controllers
         public IActionResult GetAllRealTimeConnections()
         {
             return Ok(Hubs.NotificationsHub.Sessions);
+        }
+
+        [HttpGet]
+        [Route("stored_sessions")]
+        public IActionResult GetStoredSessions()
+        {
+            return Ok(Database.TemporaryFeedForSession);
         }
     }
 }

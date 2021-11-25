@@ -1,8 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
-using isolaatti_API.Classes;
 using isolaatti_API.Hubs;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
@@ -23,9 +20,9 @@ namespace isolaatti_API.Controllers
             Db = dbContextApp;
             _hubContext = hubContext;
         }
-        
+
         [HttpPost]
-        public IActionResult Index([FromForm] string sessionToken, [FromForm] Guid userToFollowId)
+        public IActionResult Index([FromForm] string sessionToken, [FromForm] int userToFollowId)
         {
             var accountsManager = new Accounts(Db);
             var user = accountsManager.ValidateToken(sessionToken);
@@ -34,44 +31,37 @@ namespace isolaatti_API.Controllers
             var userToFollow = Db.Users.Find(userToFollowId);
             if (userToFollow == null) return NotFound("User to follow was not found");
 
-            // update the following list of user to add the "user to follow"
-            var usersUserIsFollowing = JsonSerializer.Deserialize<List<Guid>>(user.FollowingIdsJson);
-            if (!usersUserIsFollowing.Contains(userToFollow.Id))
+            var followerRelation = new FollowerRelation()
             {
-                usersUserIsFollowing.Add(userToFollow.Id);
-                user.FollowingIdsJson = JsonSerializer.Serialize(usersUserIsFollowing);
-            }
+                UserId = user.Id,
+                TargetUserId = userToFollow.Id
+            };
 
-            user.NumberOfFollowing = usersUserIsFollowing.Count;
-            
-            // update the followers list of the "user to follow" to add a new follower (the user)
-            var followersOfFollowed = JsonSerializer.Deserialize<List<Guid>>(userToFollow.FollowersIdsJson);
-            if (!followersOfFollowed.Contains(user.Id))
-            {
-                followersOfFollowed.Add(user.Id);
-                userToFollow.FollowersIdsJson = JsonSerializer.Serialize(followersOfFollowed);
-            }
+            Db.FollowerRelations.Add(followerRelation);
 
-            userToFollow.NumberOfFollowers = followersOfFollowed.Count;
-            
+            user.NumberOfFollowing = Db.FollowerRelations.Count(relation => relation.UserId.Equals(user.Id));
+            userToFollow.NumberOfFollowers =
+                Db.FollowerRelations.Count(relation => relation.TargetUserId.Equals(userToFollow.Id));
+
+            Db.Users.Update(user);
+            Db.Users.Update(userToFollow);
+
             var notificationsAdministration = new NotificationsAdministration(Db);
-            
+
             var notificationData = notificationsAdministration.CreateNewFollowerNotification(user.Id, userToFollow.Id);
-            
+
             var sessionsId = Hubs.NotificationsHub.Sessions.Where(element => element.Value.Equals(userToFollow.Id));
-            
+
             foreach (var id in sessionsId)
             {
                 _hubContext.Clients.Client(id.Key)
-                    .SendAsync("fetchNotification",notificationData, NotificationsAdministration.TypeNewFollower);
+                    .SendAsync("fetchNotification", notificationData, NotificationsAdministration.TypeNewFollower);
             }
-            
-            Db.Users.Update(user);
-            Db.Users.Update(userToFollow);
+
             Db.SaveChanges();
             return Ok("Followers updated!");
         }
-        
+
         [Route("Unfollow")]
         [HttpPost]
         public IActionResult Unfollow([FromForm] string sessionToken, [FromForm] Guid userToUnfollowId)
@@ -79,24 +69,19 @@ namespace isolaatti_API.Controllers
             var accountsManager = new Accounts(Db);
             var user = accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
-            
+
             var userToUnfollow = Db.Users.Find(userToUnfollowId);
             if (userToUnfollow == null) return NotFound("User to unfollow was not found");
-            
-            // update the following list of user to remove the "user to unfollow"
-            var usersUserIsFollowing = JsonSerializer.Deserialize<List<Guid>>(user.FollowingIdsJson);
-            usersUserIsFollowing.Remove(userToUnfollow.Id);
-            user.FollowingIdsJson = JsonSerializer.Serialize(usersUserIsFollowing);
-            
-            user.NumberOfFollowing = usersUserIsFollowing.Count;
-            
-            // update the followers list of the "user to follow" to remove the follower (the user)
-            var followersOfFollowed = JsonSerializer.Deserialize<List<Guid>>(userToUnfollow.FollowersIdsJson);
-            followersOfFollowed.Remove(user.Id);
-            userToUnfollow.FollowersIdsJson = JsonSerializer.Serialize(followersOfFollowed);
-            
-            userToUnfollow.NumberOfFollowers = followersOfFollowed.Count;
-            
+
+            var followerRelation = Db.FollowerRelations.Single(relation =>
+                relation.UserId.Equals(user.Id) && relation.TargetUserId.Equals(userToUnfollow.Id));
+
+            Db.FollowerRelations.Remove(followerRelation);
+
+            user.NumberOfFollowing = Db.FollowerRelations.Count(relation => relation.UserId.Equals(user.Id));
+            userToUnfollow.NumberOfFollowers =
+                Db.FollowerRelations.Count(relation => relation.TargetUserId.Equals(userToUnfollow.Id));
+
             Db.Users.Update(user);
             Db.Users.Update(userToUnfollow);
             Db.SaveChanges();
@@ -110,14 +95,15 @@ namespace isolaatti_API.Controllers
             var accountsManager = new Accounts(Db);
             var user = accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
-            var ids = JsonSerializer.Deserialize<List<Guid>>(user.FollowingIdsJson);
-            var users = Db.Users.Where(u => ids.Contains(u.Id)).Select(u => new 
-            {
-                Id = u.Id,
-                Name = u.Name,
-                ImageUrl = Utils.UrlGenerators.GenerateProfilePictureUrl(u.Id,sessionToken, Request)
-            });
-            return Ok(users);
+
+            var listOfFollowing = Db.FollowerRelations
+                .Where(relation => relation.UserId.Equals(user.Id)).Select(result => new
+                {
+                    Id = result.TargetUserId,
+                    Name = "",
+                    ImageUrl = Utils.UrlGenerators.GenerateProfilePictureUrl(result.TargetUserId, sessionToken, Request)
+                });
+            return Ok(listOfFollowing);
         }
 
         [Route("Followers")]
@@ -127,15 +113,15 @@ namespace isolaatti_API.Controllers
             var accountsManager = new Accounts(Db);
             var user = accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
-            var ids = JsonSerializer.Deserialize<List<Guid>>(user.FollowersIdsJson);
-            
-            var users = Db.Users.Where(u => ids.Contains(u.Id)).Select(u => new 
-            {
-                Id = u.Id,
-                Name = u.Name,
-                ImageUrl = Utils.UrlGenerators.GenerateProfilePictureUrl(u.Id,sessionToken, Request)
-            });
-            return Ok(users);
+
+            var listOfFollowers = Db.FollowerRelations.Where(relation => relation.TargetUserId.Equals(user.Id)).Select(
+                result => new
+                {
+                    Id = result.UserId,
+                    Name = "",
+                    ImageUrl = Utils.UrlGenerators.GenerateProfilePictureUrl(result.UserId, sessionToken, Request)
+                });
+            return Ok(listOfFollowers);
         }
     }
 }

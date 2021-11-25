@@ -4,11 +4,11 @@ namespace isolaatti_API.Models
 {
     public class SimpleTextPost
     {
-        public Guid Id { get; set; }
+        public long Id { get; set; }
         public string TextContent { get; set; }
-        public Guid UserId { get; set; }
-        public long NumberOfLikes { get; set; }
-        public long NumberOfComments { get; set; }
+        public int UserId { get; set; }
+        public int NumberOfLikes { get; set; }
+        public int NumberOfComments { get; set; }
         public int Privacy { get; set; }
         public string AudioAttachedUrl { get; set; }
         public string ThemeJson { get; set; }

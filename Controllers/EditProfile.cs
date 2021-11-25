@@ -17,14 +17,15 @@ namespace isolaatti_API.Controllers
         {
             Db = dbContextApp;
         }
+
         [HttpPost]
-        public IActionResult Index([FromForm] string sessionToken, 
-            [FromForm]string newEmail, [FromForm]string newUsername)
+        public IActionResult Index([FromForm] string sessionToken, [FromForm] string newEmail,
+            [FromForm] string newUsername)
         {
             var accountsManager = new Accounts(Db);
             var user = accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
-            
+
             // find if there is someone else with the same username or email
             var foundRepeatedName = Db.Users
                 .Any(account => account.Name.Equals(newUsername) && !account.Id.Equals(user.Id));
@@ -45,16 +46,16 @@ namespace isolaatti_API.Controllers
 
         [HttpPost]
         [Route("FromWeb")]
-        public IActionResult FromWeb([FromForm] string newUsername, 
-            [FromForm] string newEmail, [FromForm] string newDescription)
+        public IActionResult FromWeb([FromForm] string newUsername, [FromForm] string newEmail,
+            [FromForm] string newDescription)
         {
             var accountsManager = new Accounts(Db);
             var sessionToken = Request.Cookies["isolaatti_user_session_token"];
             var user = accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
-            
+
             user.DescriptionText = newDescription;
-            
+
             // verify if name or email is used by someone else
             var nameRepeated = Db.Users.Any(_ => _.Name.Equals(newUsername) && !_.Id.Equals(user.Id));
             var emailRepeated = Db.Users.Any(_ => _.Email.Equals(newEmail) && !_.Id.Equals(user.Id));
@@ -65,13 +66,13 @@ namespace isolaatti_API.Controllers
                 user.Email = newEmail;
                 Db.Users.Update(user);
                 Db.SaveChanges();
-                Response.Cookies.Append("isolaatti_user_name",newEmail);
-                return RedirectToPage("/MyProfile", new {profileUpdate = true});
+                Response.Cookies.Append("isolaatti_user_name", newEmail);
+                return RedirectToPage("/MyProfile", new { profileUpdate = true });
             }
 
             if (nameRepeated && emailRepeated)
             {
-                return RedirectToPage("/MyProfile", new {nameAndEmailUsed = true});
+                return RedirectToPage("/MyProfile", new { nameAndEmailUsed = true });
             }
 
             // as the name is used by someone else, just change the email
@@ -80,18 +81,17 @@ namespace isolaatti_API.Controllers
                 user.Email = newEmail;
                 Db.Users.Update(user);
                 Db.SaveChanges();
-                return RedirectToPage("/MyProfile", new {nameNotAvailable = true, statusData = newUsername});
+                return RedirectToPage("/MyProfile", new { nameNotAvailable = true, statusData = newUsername });
             }
 
             user.Name = newUsername;
             Db.Users.Update(user);
             Db.SaveChanges();
-            return RedirectToPage("/MyProfile", new {emailNotAvailable = true, statusData = newEmail});
+            return RedirectToPage("/MyProfile", new { emailNotAvailable = true, statusData = newEmail });
         }
-        
+
         [HttpPost]
         [Route("UpdatePhoto")]
-
         public IActionResult UpdatePhoto([FromForm] string sessionToken, [FromForm] IFormFile file)
         {
             var accountsManager = new Accounts(Db);

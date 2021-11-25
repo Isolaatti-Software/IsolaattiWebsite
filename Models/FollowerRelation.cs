@@ -1,11 +1,11 @@
-using System;
+﻿using System;
 
 namespace isolaatti_API.Models
 {
-    public class GoogleUser
+    public class FollowerRelation
     {
         public Guid Id { get; set; }
         public int UserId { get; set; }
-        public string GoogleUid { get; set; }
+        public int TargetUserId { get; set; }
     }
 }

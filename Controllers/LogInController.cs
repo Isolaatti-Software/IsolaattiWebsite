@@ -5,10 +5,13 @@
 * erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
 */
 
+using System;
+using System.Collections.Generic;
 using System.Linq;
-using Microsoft.AspNetCore.Mvc;
-using isolaatti_API.Models;
+using isolaatti_API.InMemoryDatabase;
 using isolaatti_API.isolaatti_lib;
+using isolaatti_API.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace isolaatti_API.Controllers
 {
@@ -17,17 +20,18 @@ namespace isolaatti_API.Controllers
     public class LogIn : ControllerBase
     {
         private readonly DbContextApp dbContext;
+
         public LogIn(DbContextApp appDbContext)
         {
             dbContext = appDbContext;
         }
-        
+
         [HttpPost]
         public IActionResult Index([FromForm] string email, [FromForm] string password)
         {
             var user = dbContext.Users.Single(_user => _user.Email.Equals(email));
             if (user == null) return NotFound("User not found");
-            
+
             var accounts = new Accounts(dbContext);
             accounts.DefineHttpRequestObject(Request);
             var tokenObj = accounts.CreateNewToken(user.Id, password);
@@ -43,6 +47,15 @@ namespace isolaatti_API.Controllers
             var user = accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("token is not valid");
             return Ok("ok");
+        }
+
+        [Route("GetSessionId")]
+        [HttpPost]
+        public IActionResult GetSessionId([FromForm] string sessionToken)
+        {
+            var sessionId = Guid.NewGuid();
+            Database.TemporaryFeedForSession.Add(sessionId.ToString(), new List<string>());
+            return Ok(sessionId.ToString());
         }
     }
 }

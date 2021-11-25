@@ -10,12 +10,9 @@
 
 using System;
 using System.Linq;
-using System.Net.Mail;
 using FirebaseAdmin.Auth;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Http;
-using MimeKit;
-using SmtpClient = MailKit.Net.Smtp.SmtpClient;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Net.Http.Headers;
 
@@ -25,21 +22,25 @@ namespace isolaatti_API.isolaatti_lib
     {
         private readonly DbContextApp db;
         private HttpRequest _request;
+
         public Accounts(DbContextApp db)
         {
             this.db = db;
         }
+
         public string MakeAccount(string username, string email, string password)
         {
-            if(db.Users.Any(user => user.Email.Equals(email)))
+            if (db.Users.Any(user => user.Email.Equals(email)))
             {
                 return "1";
             }
-            if(db.Users.Any(user => user.Name.Equals(username)))
+
+            if (db.Users.Any(user => user.Name.Equals(username)))
             {
                 return "2";
             }
-            if(username == "" || password == "" || email == "")
+
+            if (username == "" || password == "" || email == "")
             {
                 return "3";
             }
@@ -49,7 +50,7 @@ namespace isolaatti_API.isolaatti_lib
             {
                 Name = username,
                 Email = email,
-                Password = passwordHasher.HashPassword(email,password),
+                Password = passwordHasher.HashPassword(email, password),
                 Uid = Guid.NewGuid().ToString(),
                 UserPreferencesJson = "{}",
                 FollowersIdsJson = "[]",
@@ -63,20 +64,20 @@ namespace isolaatti_API.isolaatti_lib
                 //SendValidationEmail(newUser.Id, newUser.Uid);
                 return "0";
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return e.ToString();
             }
         }
 
-        public bool IsUserEmailVerified(Guid userId)
+        public bool IsUserEmailVerified(int userId)
         {
             var user = db.Users.Find(userId);
             return user.EmailValidated;
         }
-        
+
         /* Only to be used at admins portal (me)*/
-        public bool DeleteAccount(Guid userId)
+        public bool DeleteAccount(int userId)
         {
             try
             {
@@ -87,36 +88,37 @@ namespace isolaatti_API.isolaatti_lib
             {
                 return false;
             }
+
             return true;
         }
 
-        public bool ChangeAPassword(Guid userId, string currentPassword, string newPassword)
+        public bool ChangeAPassword(int userId, string currentPassword, string newPassword)
         {
             var user = db.Users.Find(userId);
             if (user == null) return false;
             var passwordHasher = new PasswordHasher<string>();
-            var verificationResult = 
+            var verificationResult =
                 passwordHasher.VerifyHashedPassword(user.Email, user.Password, currentPassword);
             if (verificationResult == PasswordVerificationResult.Failed) return false;
-            
+
             var newPasswordHashed = passwordHasher.HashPassword(user.Email, newPassword);
             user.Password = newPasswordHashed;
             db.Users.Update(user);
             db.SaveChanges();
             return true;
-
         }
 
         public void DefineHttpRequestObject(HttpRequest request)
         {
             _request = request;
         }
-        public SessionToken CreateNewToken(Guid userId, string plainTextPassword)
+
+        public SessionToken CreateNewToken(int userId, string plainTextPassword)
         {
             var user = db.Users.Find(userId);
             if (user == null) return null;
             var passwordHasher = new PasswordHasher<string>();
-            var passwordVerificationResult = 
+            var passwordVerificationResult =
                 passwordHasher.VerifyHashedPassword(user.Email, user.Password, plainTextPassword);
             if (passwordVerificationResult == PasswordVerificationResult.Failed) return null;
 
@@ -125,12 +127,15 @@ namespace isolaatti_API.isolaatti_lib
                 UserId = user.Id,
                 IpAddress = _request.HttpContext.Connection.RemoteIpAddress.ToString(),
                 UserAgent = _request.Headers
-                    .ContainsKey(HeaderNames.UserAgent) ? _request.Headers[HeaderNames.UserAgent].ToString() : "Not provided"
+                    .ContainsKey(HeaderNames.UserAgent)
+                    ? _request.Headers[HeaderNames.UserAgent].ToString()
+                    : "Not provided"
             };
             db.SessionTokens.Add(tokenObj);
             db.SaveChanges();
             return tokenObj;
         }
+
         public User ValidateToken(string token)
         {
             try
@@ -144,6 +149,7 @@ namespace isolaatti_API.isolaatti_lib
                 return null;
             }
         }
+
         public void RemoveAToken(string token)
         {
             try
@@ -156,7 +162,8 @@ namespace isolaatti_API.isolaatti_lib
             {
             }
         }
-        public void RemoveAllUsersTokens(Guid userId)
+
+        public void RemoveAllUsersTokens(int userId)
         {
             var tokenObjs = db.SessionTokens.Where(sessionToken => sessionToken.UserId == userId);
             db.SessionTokens.RemoveRange(tokenObjs);
@@ -167,13 +174,13 @@ namespace isolaatti_API.isolaatti_lib
         {
             var decodedTokenTask = FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(accessToken);
             decodedTokenTask.Wait();
-            
+
             var uid = decodedTokenTask.Result.Uid;
             var userTask = FirebaseAuth.DefaultInstance.GetUserAsync(uid);
             userTask.Wait();
-            
+
             var user = userTask.Result;
-            
+
             // makes the isolaatti account taking the google user information
             // Generates a random password. It is not needed for the user to know it, as the user will use google account
             // to sign in. User can still change the password and sign in in the normal way
@@ -193,6 +200,7 @@ namespace isolaatti_API.isolaatti_lib
                 db.SaveChanges();
             }
         }
+
         public SessionToken CreateTokenForGoogleUser(string accessToken)
         {
             var decodedTokenTask = FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(accessToken);
@@ -212,7 +220,7 @@ namespace isolaatti_API.isolaatti_lib
 
             return sessionToken;
         }
-        
+
         private static string GenerateRandomAlphaNumericPassword(int lenght)
         {
             var password = "";
@@ -221,8 +229,8 @@ namespace isolaatti_API.isolaatti_lib
                 password += Guid.NewGuid()
                     .ToString().Replace("-", string.Empty);
             } while (password.Length < lenght);
-            
-            return password.Remove(0,lenght - 1);
+
+            return password.Remove(0, lenght - 1);
         }
     }
 }

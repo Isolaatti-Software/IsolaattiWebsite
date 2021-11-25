@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
-using isolaatti_API.Classes;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using isolaatti_API.Utils;
@@ -20,15 +15,15 @@ namespace isolaatti_API.Pages
         {
             _db = dbContextApp;
         }
-        
-        public IActionResult OnGet([FromRoute] Guid id)
+
+        public IActionResult OnGet([FromRoute] long id)
         {
             var accountsManager = new Accounts(_db);
             var user = accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
             ThisPost = _db.SimpleTextPosts.Find(id);
-            
+
             if (ThisPost == null) return NotFound();
-            
+
             if (user == null && ThisPost.Privacy != 3)
             {
                 return RedirectToPage("LogIn");
@@ -41,7 +36,7 @@ namespace isolaatti_API.Pages
                     id = ThisPost.Id
                 });
             }
-            
+
             // here it's know that account is correct. Data binding!
             ViewData["name"] = user.Name;
             ViewData["email"] = user.Email;

@@ -5,7 +5,6 @@
 * erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
 */
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using isolaatti_API.Classes;
@@ -25,13 +24,14 @@ namespace isolaatti_API.Controllers
         {
             _db = _dbContext;
         }
+
         [HttpPost]
         public IActionResult Index([FromForm] string sessionToken)
         {
             var accountsManager = new Accounts(_db);
             var user = accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
-            
+
             var profile = new Profile()
             {
                 Username = user.Name,
@@ -51,7 +51,7 @@ namespace isolaatti_API.Controllers
             var posts = _db.SimpleTextPosts
                 .Where(post => post.UserId == user.Id)
                 .OrderByDescending(post => post.Id).ToList();
-            
+
             List<ReturningPostsComposedResponse> response = new List<ReturningPostsComposedResponse>();
             foreach (var post in posts.ToList())
             {
@@ -61,13 +61,13 @@ namespace isolaatti_API.Controllers
                     Liked = _db.Likes.Any(element => element.PostId == post.Id && element.UserId == user.Id)
                 });
             }
-            
+
             return Ok(response);
         }
 
         [HttpPost]
         [Route("Public/{id}")]
-        public IActionResult GetPublicProfile([FromForm] string sessionToken, Guid id)
+        public IActionResult GetPublicProfile([FromForm] string sessionToken, int id)
         {
             var accountsManager = new Accounts(_db);
             var user = accountsManager.ValidateToken(sessionToken);
@@ -75,18 +75,16 @@ namespace isolaatti_API.Controllers
 
             var askedAccount = _db.Users.Find(id);
             if (askedAccount == null) return NotFound("User not found");
-            
-            
+
+
             return Ok(new
             {
                 Id = askedAccount.Id,
                 Name = askedAccount.Name,
                 Description = askedAccount.DescriptionText,
                 AudioDescriptionUrl = askedAccount.DescriptionAudioUrl,
-                ProfileImageUrl = Utils.UrlGenerators.GenerateProfilePictureUrl(askedAccount.Id,sessionToken,Request)
+                ProfileImageUrl = Utils.UrlGenerators.GenerateProfilePictureUrl(askedAccount.Id, sessionToken, Request)
             });
         }
-        
     }
-    
 }

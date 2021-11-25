@@ -22,17 +22,20 @@ namespace isolaatti_API.Controllers
             _db = dbContextApp;
             _hubContext = hubContext;
         }
-        
+
         [HttpPost]
-        public async Task<IActionResult> Index([FromForm] string sessionToken, [FromForm] Guid postId, 
-            [FromForm] string content, [FromForm] string audioUrl = null)
+        public async Task<IActionResult> Index(
+            [FromForm] string sessionToken,
+            [FromForm] long postId,
+            [FromForm] string content,
+            [FromForm] string audioUrl = null)
         {
             var accountsManager = new Accounts(_db);
             var user = accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
             var post = _db.SimpleTextPosts.Find(postId);
-            if (post == null || (post.Privacy == 1 && post.UserId != user.Id)) 
+            if (post == null || (post.Privacy == 1 && post.UserId != user.Id))
                 return NotFound("Post does not exist or is private");
 
             var notificationsAdministration = new NotificationsAdministration(_db);
@@ -49,18 +52,18 @@ namespace isolaatti_API.Controllers
             _db.Comments.Add(newComment);
 
             var numberOfComments = _db.Comments.Count(comment => comment.SimpleTextPostId == postId);
-            
+
             var notificationData = notificationsAdministration
-                .NewCommentsActivityNotification(post.UserId, user.Id, postId, 
+                .NewCommentsActivityNotification(post.UserId, user.Id, postId,
                     numberOfComments);
-            
+
             _db.SaveChanges();
-            
+
             var sessionsId = Hubs.NotificationsHub.Sessions
-                .Where(element => 
-                    element.Value.Equals(post.UserId) || 
+                .Where(element =>
+                    element.Value.Equals(post.UserId) ||
                     element.Value.Equals(user.Id));
-            
+
             await AsyncDatabaseUpdates.UpdateNumberOfComments(_db, post.Id);
             var response = new ReturningCommentComposedResponse()
             {
@@ -75,8 +78,9 @@ namespace isolaatti_API.Controllers
             foreach (var id in sessionsId)
             {
                 await _hubContext.Clients.Client(id.Key)
-                    .SendAsync("fetchNotification",notificationData, NotificationsAdministration.TypePosts, response);
+                    .SendAsync("fetchNotification", notificationData, NotificationsAdministration.TypePosts, response);
             }
+
             return Ok(response);
         }
     }
