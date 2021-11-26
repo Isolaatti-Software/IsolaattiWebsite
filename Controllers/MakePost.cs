@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using isolaatti_API.Classes;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
@@ -92,14 +91,6 @@ namespace isolaatti_API.Controllers
                 UserName = Db.Users.Find(newPost.UserId).Name,
                 Liked = Db.Likes.Any(element => element.PostId == newPost.Id && element.UserId == user.Id)
             });
-        }
-
-        [HttpPost]
-        [Route("WithProject")]
-        public IActionResult PostProject([FromForm] int userId, [FromForm] string password,
-            [FromForm] int privacy, [FromForm] string content, [FromForm] int projectId)
-        {
-            return Ok();
         }
     }
 }

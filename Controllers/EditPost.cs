@@ -1,4 +1,3 @@
-using System.Linq;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +14,6 @@ namespace isolaatti_API.Controllers
         {
             Db = dbContextApp;
         }
-
 
         [HttpPost]
         [Route("Delete")]
