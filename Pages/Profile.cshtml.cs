@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using isolaatti_API.Utils;
@@ -40,14 +38,15 @@ namespace isolaatti_API.Pages
             ViewData["profile_email"] = profile.Email;
             ViewData["profile_id"] = profile.Id;
             if (user.Id == profile.Id) return RedirectToPage("MyProfile");
-            ViewData["profilePicUrl"] =
-                UrlGenerators.GenerateProfilePictureUrl(user.Id, Request.Cookies["isolaatti_user_session_token"]);
+            ViewData["profilePicUrl"] = user.ProfileImageData == null
+                ? null
+                : UrlGenerators.GenerateProfilePictureUrl(user.Id, Request.Cookies["isolaatti_user_session_token"]);
 
-            var followingUsersIds = JsonSerializer.Deserialize<List<int>>(profile.FollowingIdsJson);
-            var followersIds = JsonSerializer.Deserialize<List<int>>(profile.FollowersIdsJson);
             ViewData["numberOfLikes"] = _db.Likes.Count(like => like.TargetUserId.Equals(profile.Id));
-            ViewData["followingThisUser"] = followersIds.Contains(user.Id);
-            ViewData["thisUserIsFollowingMe"] = followingUsersIds.Contains(user.Id);
+            ViewData["followingThisUser"] =
+                _db.FollowerRelations.Any(rel => rel.UserId.Equals(user.Id) && rel.TargetUserId.Equals(profile.Id));
+            ViewData["thisUserIsFollowingMe"] = _db.FollowerRelations.Any(rel =>
+                rel.UserId.Equals(profile.Id) && rel.TargetUserId.Equals(user.Id));
             ViewData["numberOfFollowers"] = profile.NumberOfFollowers;
             ViewData["numberOfFollowing"] = profile.NumberOfFollowing;
             ViewData["description"] = profile.DescriptionText;

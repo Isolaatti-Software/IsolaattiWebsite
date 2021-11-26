@@ -5,10 +5,8 @@
 * erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
 */
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using isolaatti_API.Classes;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
@@ -64,41 +62,6 @@ namespace isolaatti_API.Pages
             ViewData["audioDescriptionUrl"] = user.DescriptionAudioUrl;
             PasswordIsWrong = currentPasswordIsWrong;
 
-
-            var followersIds = JsonSerializer.Deserialize<List<Guid>>(user.FollowersIdsJson);
-            List<Guid> invalidFollowers = null;
-
-            foreach (var followerId in followersIds)
-            {
-                var follower = _db.Users.Find(followerId);
-                if (follower == null)
-                {
-                    invalidFollowers ??= new List<Guid>();
-                    invalidFollowers.Add(followerId);
-                }
-                else
-                {
-                    Followers.Add(follower);
-                }
-            }
-
-            var followingIds = JsonSerializer.Deserialize<List<Guid>>(user.FollowingIdsJson);
-            List<Guid> invalidFollowing = null;
-            foreach (var followingId in followingIds)
-            {
-                var following = _db.Users.Find(followingId);
-                if (following == null)
-                {
-                    invalidFollowing ??= new List<Guid>();
-                    invalidFollowing.Add(followingId);
-                }
-                else
-                {
-                    Following.Add(following);
-                }
-            }
-
-
             ViewData["numberOfLikes"] = _db.Likes.Count(like => like.TargetUserId.Equals(user.Id));
             ViewData["numberOfPosts"] = _db.SimpleTextPosts.Count(post => post.UserId.Equals(user.Id));
             ProfilePhotoUrl =
@@ -107,7 +70,16 @@ namespace isolaatti_API.Pages
 
             ViewData["sessionToken"] = Request.Cookies["isolaatti_user_session_token"];
 
-            _db.SaveChanges();
+            Followers = (
+                from _user in _db.Users
+                from relation in _db.FollowerRelations
+                where relation.TargetUserId == user.Id && relation.UserId == _user.Id
+                select _user).ToList();
+            Following = (
+                from _user in _db.Users
+                from relation in _db.FollowerRelations
+                where relation.UserId == user.Id && relation.TargetUserId == _user.Id
+                select _user).ToList();
 
             ViewData["numberOfFollowers"] = user.NumberOfFollowers;
             ViewData["numberOfFollowing"] = user.NumberOfFollowing;

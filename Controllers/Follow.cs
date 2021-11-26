@@ -31,6 +31,12 @@ namespace isolaatti_API.Controllers
             var userToFollow = Db.Users.Find(userToFollowId);
             if (userToFollow == null) return NotFound("User to follow was not found");
 
+            // create new relation only if there is not one already
+            if (Db.FollowerRelations.Any(rel => rel.UserId.Equals(user.Id) && rel.TargetUserId.Equals(userToFollow.Id)))
+            {
+                return Unauthorized("user already followed");
+            }
+
             var followerRelation = new FollowerRelation()
             {
                 UserId = user.Id,
@@ -38,13 +44,6 @@ namespace isolaatti_API.Controllers
             };
 
             Db.FollowerRelations.Add(followerRelation);
-
-            user.NumberOfFollowing = Db.FollowerRelations.Count(relation => relation.UserId.Equals(user.Id));
-            userToFollow.NumberOfFollowers =
-                Db.FollowerRelations.Count(relation => relation.TargetUserId.Equals(userToFollow.Id));
-
-            Db.Users.Update(user);
-            Db.Users.Update(userToFollow);
 
             var notificationsAdministration = new NotificationsAdministration(Db);
 
@@ -59,12 +58,21 @@ namespace isolaatti_API.Controllers
             }
 
             Db.SaveChanges();
+
+            // update number of followings and followers of involved users
+            user.NumberOfFollowing = Db.FollowerRelations.Count(relation => relation.UserId.Equals(user.Id));
+            userToFollow.NumberOfFollowers =
+                Db.FollowerRelations.Count(relation => relation.TargetUserId.Equals(userToFollow.Id));
+
+            Db.Users.Update(user);
+            Db.Users.Update(userToFollow);
+            Db.SaveChanges();
             return Ok("Followers updated!");
         }
 
         [Route("Unfollow")]
         [HttpPost]
-        public IActionResult Unfollow([FromForm] string sessionToken, [FromForm] Guid userToUnfollowId)
+        public IActionResult Unfollow([FromForm] string sessionToken, [FromForm] int userToUnfollowId)
         {
             var accountsManager = new Accounts(Db);
             var user = accountsManager.ValidateToken(sessionToken);
@@ -73,19 +81,28 @@ namespace isolaatti_API.Controllers
             var userToUnfollow = Db.Users.Find(userToUnfollowId);
             if (userToUnfollow == null) return NotFound("User to unfollow was not found");
 
-            var followerRelation = Db.FollowerRelations.Single(relation =>
-                relation.UserId.Equals(user.Id) && relation.TargetUserId.Equals(userToUnfollow.Id));
+            try
+            {
+                // finds and removes follower relation
+                var followerRelation = Db.FollowerRelations.Single(relation =>
+                    relation.UserId.Equals(user.Id) && relation.TargetUserId.Equals(userToUnfollow.Id));
+                Db.FollowerRelations.Remove(followerRelation);
 
-            Db.FollowerRelations.Remove(followerRelation);
+                Db.SaveChanges();
 
-            user.NumberOfFollowing = Db.FollowerRelations.Count(relation => relation.UserId.Equals(user.Id));
-            userToUnfollow.NumberOfFollowers =
-                Db.FollowerRelations.Count(relation => relation.TargetUserId.Equals(userToUnfollow.Id));
-
-            Db.Users.Update(user);
-            Db.Users.Update(userToUnfollow);
-            Db.SaveChanges();
-            return Ok("Followers updated!");
+                // update number of followings and followers of involved users
+                user.NumberOfFollowing = Db.FollowerRelations.Count(relation => relation.UserId.Equals(user.Id));
+                userToUnfollow.NumberOfFollowers =
+                    Db.FollowerRelations.Count(relation => relation.TargetUserId.Equals(userToUnfollow.Id));
+                Db.Users.Update(user);
+                Db.Users.Update(userToUnfollow);
+                Db.SaveChanges();
+                return Ok("Followers updated!");
+            }
+            catch (InvalidOperationException)
+            {
+                return Unauthorized("cannot unfollow user, not followed");
+            }
         }
 
         [Route("Following")]
@@ -96,13 +113,18 @@ namespace isolaatti_API.Controllers
             var user = accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
-            var listOfFollowing = Db.FollowerRelations
-                .Where(relation => relation.UserId.Equals(user.Id)).Select(result => new
-                {
-                    Id = result.TargetUserId,
-                    Name = "",
-                    ImageUrl = Utils.UrlGenerators.GenerateProfilePictureUrl(result.TargetUserId, sessionToken, Request)
-                });
+            var listOfFollowing =
+                (from _user in Db.Users
+                    from _relation in Db.FollowerRelations
+                    where _relation.UserId == user.Id && _user.Id == _relation.TargetUserId
+                    select new
+                    {
+                        Id = _relation.TargetUserId,
+                        Name = _user.Name,
+                        ImageUrl = Utils.UrlGenerators.GenerateProfilePictureUrl(_relation.TargetUserId, sessionToken,
+                            Request)
+                    }).ToList();
+
             return Ok(listOfFollowing);
         }
 
@@ -114,13 +136,17 @@ namespace isolaatti_API.Controllers
             var user = accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
-            var listOfFollowers = Db.FollowerRelations.Where(relation => relation.TargetUserId.Equals(user.Id)).Select(
-                result => new
-                {
-                    Id = result.UserId,
-                    Name = "",
-                    ImageUrl = Utils.UrlGenerators.GenerateProfilePictureUrl(result.UserId, sessionToken, Request)
-                });
+            var listOfFollowers =
+                (from _user in Db.Users
+                    from _relation in Db.FollowerRelations
+                    where _relation.TargetUserId == user.Id && _relation.UserId == _user.Id
+                    select new
+                    {
+                        Id = _relation.TargetUserId,
+                        Name = _user.Name,
+                        ImageUrl = Utils.UrlGenerators.GenerateProfilePictureUrl(_relation.TargetUserId, sessionToken,
+                            Request)
+                    }).ToList();
             return Ok(listOfFollowers);
         }
     }
