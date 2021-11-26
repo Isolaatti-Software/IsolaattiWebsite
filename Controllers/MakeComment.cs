@@ -38,7 +38,7 @@ namespace isolaatti_API.Controllers
             if (post == null || (post.Privacy == 1 && post.UserId != user.Id))
                 return NotFound("Post does not exist or is private");
 
-            var notificationsAdministration = new NotificationsAdministration(_db);
+
             var newComment = new Comment()
             {
                 Privacy = 2,
@@ -51,20 +51,25 @@ namespace isolaatti_API.Controllers
             };
             _db.Comments.Add(newComment);
 
-            var numberOfComments = _db.Comments.Count(comment => comment.SimpleTextPostId == postId);
-
+            // create notificacion
+            var notificationsAdministration = new NotificationsAdministration(_db);
             var notificationData = notificationsAdministration
                 .NewCommentsActivityNotification(post.UserId, user.Id, postId,
-                    numberOfComments);
+                    post.NumberOfComments);
 
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
 
+            // update number of comments of post this comment belongs
+            post.NumberOfComments = _db.Comments.Count(comment => comment.SimpleTextPostId == postId);
+            await _db.SaveChangesAsync();
+
+            // improve this. This should send notification to all related users and also update thread in realtime
             var sessionsId = Hubs.NotificationsHub.Sessions
                 .Where(element =>
                     element.Value.Equals(post.UserId) ||
                     element.Value.Equals(user.Id));
 
-            await AsyncDatabaseUpdates.UpdateNumberOfComments(_db, post.Id);
+            // this is returned as API response and sent through signalR
             var response = new ReturningCommentComposedResponse()
             {
                 Id = newComment.Id,
@@ -75,12 +80,15 @@ namespace isolaatti_API.Controllers
                 WhoWroteName = user.Name,
                 Date = newComment.Date
             };
+
+            // this send signalR event
             foreach (var id in sessionsId)
             {
                 await _hubContext.Clients.Client(id.Key)
                     .SendAsync("fetchNotification", notificationData, NotificationsAdministration.TypePosts, response);
             }
 
+            // returns just created comment to show it on the frontend
             return Ok(response);
         }
     }

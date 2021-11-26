@@ -10,10 +10,18 @@ body {
     /*background-color: rgb(55,55,75);*/
     /*color:white;*/
     scroll-behavior: smooth;
-    min-height: 100vh;
+
     position: relative;
     overflow-x: hidden;
+
 }
+
+#app {
+    display: grid;
+    grid-template-rows: min-content 1fr min-content;
+    height: 100vh;
+}
+
 .custom-nav {
     background-color: var(--isolaatti-primary-color);
     align-items: center;
@@ -55,19 +63,32 @@ body {
 #mobile-search-button-appear, #search-bar-mobile-button-close {
     display: none;
 }
+
 #search-bar-fixed-top {
     max-width: 400px;
 }
-#songs-link{
+
+#songs-link {
     margin-right: auto;
 }
+
+#bottom-mobile-navbar {
+    display: none;
+}
+
+#main-container {
+    overflow: auto;
+
+}
+
 @media screen and (max-width: 576px) {
     .navbar-item-text {
         display: none;
     }
-    #search-bar-fixed-top{
+
+    #search-bar-fixed-top {
         position: absolute;
-        top:-60px;
+        top: -60px;
         padding: 5px;
         background-color: black;
         z-index: 10;
@@ -76,15 +97,50 @@ body {
         width: 100%!important;
         max-width: 100%;
     }
+
     #mobile-search-button-appear, #search-bar-mobile-button-close {
         display: block;
     }
+
     #left-bar {
-        position:sticky;
+        position: sticky;
         top: 0;
-        background: linear-gradient(rgba(48, 9, 142,0.9) 5% ,white);
+        background: linear-gradient(rgba(48, 9, 142, 0.9) 5%, white);
         padding-bottom: 50px;
-        height: max-content!important;
+        height: max-content !important;
+    }
+
+    #bottom-mobile-navbar {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+        grid-template-rows: auto;
+        width: 100%;
+        height: 65px;
+        background: #ffffff;
+        box-shadow: 1px -4px 9px 0px rgba(212, 212, 212, 0.64);
+        padding-left: 30px;
+        padding-right: 30px;
+
+    }
+
+    #bottom-mobile-navbar a.bottom-mobile-bar-item {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr;
+        margin: 0.5em;
+        padding: 5px;
+    }
+
+    .bottom-mobile-bar-item {
+        font-size: 0.8em;
+    }
+
+    #top-bar-content {
+        display: none !important;
+    }
+
+    #isolaatti-top-bar {
+        height: 55px;
     }
 }
 

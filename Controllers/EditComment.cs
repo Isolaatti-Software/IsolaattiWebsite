@@ -1,3 +1,4 @@
+using System.Linq;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using isolaatti_API.Utils;
@@ -75,6 +76,15 @@ namespace isolaatti_API.Controllers
 
             Db.Comments.Remove(comment);
             Db.SaveChanges();
+            // updates comments count of the post this comment belongs
+            var post = Db.SimpleTextPosts.Find(comment.SimpleTextPostId);
+            if (post != null)
+            {
+                post.NumberOfComments = Db.Comments.Count(c => c.SimpleTextPostId.Equals(post.Id));
+                Db.SimpleTextPosts.Update(post);
+                Db.SaveChangesAsync();
+            }
+
             return Ok("Comment delete successfully");
         }
 

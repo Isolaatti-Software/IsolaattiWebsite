@@ -30,79 +30,58 @@
     </script>
 </head>
 <body>
+<div id="app">
+    <nav class="d-flex custom-nav sticky-top pr-2 pl-2" id="isolaatti-top-bar">
+        <div class="container-md container-fluid" id="top-bar-content">
+            <div class="d-flex w-100 align-items-center">
+                <a href="/" class="nav-link custom-nav-link mr-auto" id="isolaatti_brand"></a>
+                <div class="d-flex flex-grow-1" id="search-bar-fixed-top">
+                    <button type="button"
+                            class="btn btn-dark btn-sm mr-1"
+                            id="search-bar-mobile-button-close">
+                        <i class="far fa-window-close"></i>
+                    </button>
+                    <input type="text"
+                           class="form-control search-bar-on-top flex-grow-1"
+                           form="form-search"
+                           name="q"
+                           placeholder="Search for people, projects, and threads"/>
+                    <button class="btn btn-primary btn-sm ml-1"
+                            type="submit"
+                            form="form-search">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
 
-<nav class="d-flex custom-nav sticky-top pr-2 pl-2" id="isolaatti-top-bar">
-    <div class="container">
-        <div class="d-flex w-100 align-items-center">
-            <a href="/" class="nav-link custom-nav-link mr-auto" id="isolaatti_brand"></a>
-            <div class="d-flex flex-grow-1" id="search-bar-fixed-top">
-                <button type="button"
-                        class="btn btn-dark btn-sm mr-1"
-                        id="search-bar-mobile-button-close">
-                    <i class="far fa-window-close"></i>
-                </button>
-                <input type="text"
-                       class="form-control search-bar-on-top flex-grow-1"
-                       form="form-search"
-                       name="q"
-                       placeholder="Search for people, projects, and threads"/>
-                <button class="btn btn-primary btn-sm ml-1"
-                        type="submit"
-                        form="form-search">
-                    <i class="fas fa-search"></i>
-                </button>
-            </div>
-            <a href="#"
-               class="nav-link custom-nav-link"
-               id="mobile-search-button-appear">
-                <i class="fas fa-search"></i>
-            </a>
-            <div class="d-flex ml-auto mr-5 flex-column">
-                <a class="nav-link custom-nav-link"
-                   href="#modal-new-post"
-                   data-toggle="modal"
-                   title="Post Editor"
-                   id="post-editor-link">
-                    <i class="fas fa-feather"></i>
-                    <small>New</small>
-                </a>
+                <div class="d-flex ml-auto mr-5 flex-column">
+                    <a class="nav-link custom-nav-link ml-2"
+                       href="#modal-new-post"
+                       data-toggle="modal"
+                       title="Post Editor"
+                       id="post-editor-link">
+                        <i class="fas fa-feather"></i>
+                        <small>New</small>
+                    </a>
 
-            </div>
-            <a class="nav-link custom-nav-link nav-link mr-1"
-               href="#"
-               role="button"
-               id="dropdownNotificationsMenuLink"
-               aria-haspopup="true" aria-expanded="false"
-               onclick="vueInstanceForNotifications.toggleNotificationsSlider()">
-                <i class="fas fa-bell"></i>
-                <span class="badge badge-light" id="unread-count"></span>
-            </a>
-
-            <div class="dropdown ">
-                <a class="nav-link custom-nav-link nav-link mr-1 dropdown-toggle"
+                </div>
+                <a class="nav-link custom-nav-link nav-link mr-1"
                    href="#"
                    role="button"
-                   id="dropdownMenuLink"
-                   data-toggle="dropdown"
-                   aria-haspopup="true"
-                   aria-expanded="false">
-                    @if (ViewData["profilePicUrl"] == null)
-                    {
-                        <i class="fas fa-user-circle"></i>
-                    }
-                    else
-                    {
-                        <img width="40" height="40" src="@ViewData["profilePicUrl"]" class="user-avatar"/>
-                    }
+                   id="dropdownNotificationsMenuLink"
+                   aria-haspopup="true" aria-expanded="false"
+                   onclick="vueInstanceForNotifications.toggleNotificationsSlider()">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge badge-light" id="unread-count"></span>
                 </a>
-                <div class="dropdown-menu dropdown-menu-right"
-                     aria-labelledby="dropdownMenuLink">
-                    <div class="dropdown-header">
-                        @ViewData["name"]
-                    </div>
-                    <div class="dropdown-divider"></div>
-                    <a asp-page="/MyProfile"
-                       class="dropdown-item">
+
+                <div class="dropdown ">
+                    <a class="nav-link custom-nav-link nav-link mr-1 dropdown-toggle"
+                       href="#"
+                       role="button"
+                       id="dropdownMenuLink"
+                       data-toggle="dropdown"
+                       aria-haspopup="true"
+                       aria-expanded="false">
                         @if (ViewData["profilePicUrl"] == null)
                         {
                             <i class="fas fa-user-circle"></i>
@@ -111,55 +90,127 @@
                         {
                             <img width="40" height="40" src="@ViewData["profilePicUrl"]" class="user-avatar"/>
                         }
-                        My Profile
                     </a>
-                    <a class="dropdown-item"
-                       asp-page="/Settings">
-                        <i class="fas fa-cog"></i>Settings
-                    </a>
-                    <a class="dropdown-item"
-                       asp-page="/About"
-                       target="_blank">
-                        <i class="fas fa-info"></i>About
-                    </a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item"
-                       href="/WebLogOut">
-                        <i class="fas fa-sign-out-alt"></i>Sign out
-                    </a>
+                    <div class="dropdown-menu dropdown-menu-right"
+                         aria-labelledby="dropdownMenuLink">
+                        <div class="dropdown-header">
+                            @ViewData["name"]
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <a asp-page="/MyProfile"
+                           class="dropdown-item">
+                            @if (ViewData["profilePicUrl"] == null)
+                            {
+                                <i class="fas fa-user-circle"></i>
+                            }
+                            else
+                            {
+                                <img width="40" height="40" src="@ViewData["profilePicUrl"]" class="user-avatar"/>
+                            }
+                            My Profile
+                        </a>
+                        <a class="dropdown-item"
+                           asp-page="/Settings">
+                            <i class="fas fa-cog"></i>Settings
+                        </a>
+                        <a class="dropdown-item"
+                           asp-page="/About"
+                           target="_blank">
+                            <i class="fas fa-info"></i>About
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item"
+                           href="/WebLogOut">
+                            <i class="fas fa-sign-out-alt"></i>Sign out
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</nav>
+    </nav>
+    <main id="main-container">
+
+
+        <div class="fluid-container p-0">
+            <div class="row m-0">
+                @RenderBody()
+            </div>
+
+        </div>
+        <div class="modal fade" id="modal-new-post">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">New post (not implemented)</h5>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <textarea class="form-control" placeholder="Write the content of your post here. Markdown is compatible." rows="8"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <a asp-page="/PostEditor" class="btn btn-secondary mr-auto">Pro editor</a>
+                        <button class="btn btn-primary">Post</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <nav id="bottom-mobile-navbar">
+        <a class="bottom-mobile-bar-item" asp-page="/Index">
+            <div class="text-center">
+                <i class="fas fa-home"></i>
+            </div>
+            <div class="text-center bottom-mobile-bar-item">
+                Home
+            </div>
+        </a>
+        <a class="bottom-mobile-bar-item" asp-page="/Search">
+            <div class="text-center">
+                <i class="fas fa-search"></i>
+            </div>
+            <div class="text-center bottom-mobile-bar-item">
+                Search
+            </div>
+        </a>
+        <a class="bottom-mobile-bar-item" href="#modal-new-post" data-toggle="modal">
+            <div class="text-center">
+                <i class="fas fa-feather"></i>
+            </div>
+            <div class="text-center bottom-mobile-bar-item">
+                Post
+            </div>
+        </a>
+
+        <a class="bottom-mobile-bar-item" asp-page="MyProfile">
+            <div class="text-center">
+                @if (ViewData["profilePicUrl"] == null)
+                {
+                    <i class="fas fa-user-circle"></i>
+                }
+                else
+                {
+                    <img width="40" height="40" src="@ViewData["profilePicUrl"]" class="user-avatar"/>
+                }
+            </div>
+            <div class="text-center bottom-mobile-bar-item">
+                Profile
+            </div>
+        </a>
+        <a class="bottom-mobile-bar-item" asp-page="Settings">
+            <div class="text-center">
+                <i class="fas fa-cog"></i>
+            </div>
+            <div class="text-center bottom-mobile-bar-item">
+                Settings
+            </div>
+        </a>
+
+
+    </nav>
+</div>
+
 <form id="form-search" asp-page="/Search" method="get"></form>
-<main style="height: calc(100vh - 56px); overflow: auto" id="main-container">
 
-
-    <div class="fluid-container p-0">
-        <div class="row m-0">
-            @RenderBody()
-        </div>
-
-    </div>
-    <div class="modal fade" id="modal-new-post">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">New post (not implemented)</h5>
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <textarea class="form-control" placeholder="Write the content of your post here. Markdown is compatible." rows="8"></textarea>
-                </div>
-                <div class="modal-footer">
-                    <a asp-page="/PostEditor" class="btn btn-secondary mr-auto">Pro editor</a>
-                    <button class="btn btn-primary">Post</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</main>
 <div id="vue-container-for-notifications" class="sticky-top" ref="notificationsSlider">
     <div id="notifications-container">
         <div class="d-flex m-2 align-items-center">
