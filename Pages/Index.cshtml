@@ -1,14 +1,19 @@
 @page
-@using Microsoft.Extensions.Hosting
 @model isolaatti_API.Pages.Index
 
 @{
     Layout = "Shared/_LayoutWebApp";
     ViewData["Title"] = "Home";
 }
+
+@section CSS
+{
+    <script>const pageTitle = "Home"</script>
+}
+
 <div class="col-12">
     <main class="mt-4" id="vue-container">
-        
+
         <div class="d-flex align-items-center flex-column"
              id="feed-and-thread-reader-container"
              ref="feedAndThreadReaderContainer">
@@ -62,7 +67,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="modal fade" id="thread-viewer">
             <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-xl">
                 <div class="modal-content">
@@ -80,7 +85,9 @@
                         </comment>
                     </div>
                     <div class="modal-footer">
-                        <span><a :href="openThreadLink" target="_blank">Open thread</a></span>
+                        <span>
+                            <a :href="openThreadLink" target="_blank">Open thread</a>
+                        </span>
                     </div>
                 </div>
             </div>
@@ -91,43 +98,43 @@
 @*     $1$ <ins class="adsbyexoclick" data-zoneid="4460778"></ins>  #1# *@
 @* </div> *@
 <div class="modal fade" id="help-modal">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Help</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <h5>Privacy</h5>
-                    <ul>
-                        <li>Private: only you can see your post.</li>
-                        <li>People on Isolaatti: every user that has an account can see your post.</li>
-                        <li>Everyone: your post can be seen even without an account.</li>
-                    </ul>
-                    <hr/>
-                    <h5>Audio posts</h5>
-                    <p>
-                        You can record audio and attach it to your posts. The limit is 2 minutes. To record an audio,
-                        use the <strong>Post Editor</strong>
-                    </p>
-                    <hr/>
-                    <h5>Post editor</h5>
-                    <p>
-                        The Post Editor is the best way to write long posts (and as said above, needed to record audios).
-                        There you will find some markdown helpers and a live preview of your post.
-                    </p>
-                    <hr/>
-                    <h5><i class="fab fa-markdown"></i> What is Markdown</h5>
-                    <p>Markdown is a special syntax that allows you to give format to plain text. It can be rendered to HTML, which is what is done internally.</p>
-                    <h5 class="mt-2">Basics</h5>
-                    <h6>Paragraphs</h6>
-                    <p>Separate paragrahs by adding two break lines. Note that if you don't add a second break line, the content will be read as the same paragraph.</p>
-                    <h6>Heading</h6>
-                    <p>There are six heading levels (H1 to H6). Those are defined as follows:</p>
-                    <code>
-                        <pre>
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Help</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h5>Privacy</h5>
+                <ul>
+                    <li>Private: only you can see your post.</li>
+                    <li>People on Isolaatti: every user that has an account can see your post.</li>
+                    <li>Everyone: your post can be seen even without an account.</li>
+                </ul>
+                <hr/>
+                <h5>Audio posts</h5>
+                <p>
+                    You can record audio and attach it to your posts. The limit is 2 minutes. To record an audio,
+                    use the <strong>Post Editor</strong>
+                </p>
+                <hr/>
+                <h5>Post editor</h5>
+                <p>
+                    The Post Editor is the best way to write long posts (and as said above, needed to record audios).
+                    There you will find some markdown helpers and a live preview of your post.
+                </p>
+                <hr/>
+                <h5><i class="fab fa-markdown"></i> What is Markdown</h5>
+                <p>Markdown is a special syntax that allows you to give format to plain text. It can be rendered to HTML, which is what is done internally.</p>
+                <h5 class="mt-2">Basics</h5>
+                <h6>Paragraphs</h6>
+                <p>Separate paragrahs by adding two break lines. Note that if you don't add a second break line, the content will be read as the same paragraph.</p>
+                <h6>Heading</h6>
+                <p>There are six heading levels (H1 to H6). Those are defined as follows:</p>
+                <code>
+                    <pre>
     # This is header 1
     ## This is header 2
     ### This is header 3
@@ -135,66 +142,82 @@
     ##### This is header 5
     ###### This is header 6
     </pre>
-                    </code>
-                    <p>Which will render like this</p>
-                    <h1>This is header 1</h1>
-                    <h2>This is header 2</h2>
-                    <h3>This is header 3</h3>
-                    <h4>This is header 4</h4>
-                    <h5>This is header 5</h5>
-                    <h6>This is header 6</h6>
-                    <hr/>
-                    
-                    <h6>Bold and italics</h6>
-                    <p>You can make text bold and/or italics. To do that use the following:</p>
-                    <code><pre>
+                </code>
+                <p>Which will render like this</p>
+                <h1>This is header 1</h1>
+                <h2>This is header 2</h2>
+                <h3>This is header 3</h3>
+                <h4>This is header 4</h4>
+                <h5>This is header 5</h5>
+                <h6>This is header 6</h6>
+                <hr/>
+
+                <h6>Bold and italics</h6>
+                <p>You can make text bold and/or italics. To do that use the following:</p>
+                <code>
+                    <pre>
     **This is bold** *This is italics* ***This is bold and italics***
     </pre>
-                    </code>
-                    <p>Which will render like this:</p>
-                    <p>
-                        <b>This is bold</b> <i>This is italics</i> <b><i>This is bold and italics</i></b>
-                    </p>
-                    <hr/>
-                    
-                    <h6>Links</h6>
-                    <p>There are three ways of defining a link.</p>
-                    <p>If you will use the URL just once you can make:</p>
-                    <code><pre>
+                </code>
+                <p>Which will render like this:</p>
+                <p>
+                    <b>This is bold</b> <i>This is italics</i>
+                    <b>
+                        <i>This is bold and italics</i>
+                    </b>
+                </p>
+                <hr/>
+
+                <h6>Links</h6>
+                <p>There are three ways of defining a link.</p>
+                <p>If you will use the URL just once you can make:</p>
+                <code>
+                    <pre>
     [This is a link](https://isolaatti.com/)
-    </pre></code>
-                    <p>That will render like this:</p>
-                    <p><a href="https://isolaatti.com/">This is a link</a></p>
-                    <hr/>
-                    
-                    <p>But, if you want to use the same URL more than once, you can declare the URL and then use it many times. Make it like so:</p>
-                    <code><pre>
+    </pre>
+                </code>
+                <p>That will render like this:</p>
+                <p>
+                    <a href="https://isolaatti.com/">This is a link</a>
+                </p>
+                <hr/>
+
+                <p>But, if you want to use the same URL more than once, you can declare the URL and then use it many times. Make it like so:</p>
+                <code>
+                    <pre>
     Well, here is my [website]. And yes, to show it again, here is my [website]
     
     [website]: https://erik-swdev.isolaatti.com/
-    </pre></code>
-                    <p>Which will render like this:</p>
-                    <p>
-                        Well, here is my <a href="https://erik-swdev.isolaatti.com/">website</a> . And yes, to show it again, here is my <a href="https://erik-swdev.isolaatti.com/">website</a>
-                    </p>
-                    <hr/>
-                    
-                    <p>If you just want to show the URL as the text of the link, make this:</p>
-                    <code><pre>
+    </pre>
+                </code>
+                <p>Which will render like this:</p>
+                <p>
+                    Well, here is my <a href="https://erik-swdev.isolaatti.com/">website</a> . And yes, to show it again, here is my <a href="https://erik-swdev.isolaatti.com/">website</a>
+                </p>
+                <hr/>
+
+                <p>If you just want to show the URL as the text of the link, make this:</p>
+                <code>
+                    <pre>
     &lt;https://erik-swdev.isolaatti.com&gt;
-    </pre></code>
-                    <p>Which will be rendered simply:</p>
-                    <p><a href="https://erik-swdev.isolaatti.com">https://erik-swdev.isolaatti.com</a></p>
-                    <hr/>
-                    
-                    <h5>Get more information</h5>
-                    <p>This text is not exhaustive, you can make much more using Markdown, such as tables, quotes, lists. 
-                        In order to get more information about how to do such and more things, we recommend you to read <a href="https://www.markdownguide.org/basic-syntax/" target="_blank">this guide</a>.
-                    </p>
-                </div>
+    </pre>
+                </code>
+                <p>Which will be rendered simply:</p>
+                <p>
+                    <a href="https://erik-swdev.isolaatti.com">https://erik-swdev.isolaatti.com</a>
+                </p>
+                <hr/>
+
+                <h5>Get more information</h5>
+                <p>
+                    This text is not exhaustive, you can make much more using Markdown, such as tables, quotes, lists.
+                    In order to get more information about how to do such and more things, we recommend you to read <a href="https://www.markdownguide.org/basic-syntax/" target="_blank">this guide</a>.
+                </p>
             </div>
         </div>
     </div>
+</div>
+
 @section Scripts
 {
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>

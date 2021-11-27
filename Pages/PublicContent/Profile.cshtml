@@ -4,21 +4,24 @@
 @{
     Layout = "Shared/_LayoutWebAppOutside";
 }
+
 @section css
 {
     <link rel="stylesheet" href="~/css/sign_style.css"/>
     <link rel="stylesheet" href="~/css/webapp_main.css"/>
 }
+
 @section metadata
 {
-    <meta property="og:url"                content="https://isolaatti.com/PublicContent/Profile?id=@Model.TheProfile.Id" />
-    <meta property="og:type"               content="article" />
-    <meta property="og:description"        content="@Model.TheProfile.Name profile on Isolaatti. Isolaatti is an audio based social network and public posting tool" />
-    <meta property="og:image"              content="@Model.ProfilePhotoUrl" />
+    <meta property="og:url" content="https://isolaatti.com/PublicContent/Profile?id=@Model.TheProfile.Id"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:description" content="@Model.TheProfile.Name profile on Isolaatti. Isolaatti is an audio based social network and public posting tool"/>
+    <meta property="og:image" content="@Model.ProfilePhotoUrl"/>
 }
+
 <nav class="welcome-page-navbar">
     <a asp-page="/s/Welcome">Welcome</a>
-    <a asp-page="/s/Features">Features</a>
+    <a asp-page="/s/Welcome" asp-fragment="features">Features</a>
     <a asp-page="/About">About</a>
 </nav>
 

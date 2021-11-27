@@ -7,6 +7,12 @@
     Layout = "Shared/_LayoutWebApp";
     ViewData["Title"] = ViewData["name"];
 }
+
+@section CSS
+{
+    <script>const pageTitle = "My Profile"</script>
+}
+
 @* Add here Bootstrap modals *@
 <!-- Modal edit profile -->
 <div class="modal fade" id="modal-edit-profile">
@@ -124,11 +130,12 @@
                             }
                             else
                             {
-                                <img src='@UrlGenerators.GenerateProfilePictureUrl(user.Id, (string)ViewData["sessionToken"])' 
+                                <img src='@UrlGenerators.GenerateProfilePictureUrl(user.Id, (string)ViewData["sessionToken"])'
                                      width="100" height="100" class="profile-pic mt-3"/>
                             }
                             <h6>@user.Name</h6>
-                        </a>                    }
+                        </a>
+                    }
                 </div>
             </div>
         </div>
@@ -164,11 +171,12 @@
                             }
                             else
                             {
-                                <img src='@UrlGenerators.GenerateProfilePictureUrl(user.Id, (string)ViewData["sessionToken"])' 
+                                <img src='@UrlGenerators.GenerateProfilePictureUrl(user.Id, (string)ViewData["sessionToken"])'
                                      width="100" height="100" class="profile-pic mt-3"/>
                             }
                             <h6>@user.Name</h6>
-                        </a>                    }
+                        </a>
+                    }
                 </div>
             </div>
         </div>
@@ -286,21 +294,23 @@
         <div class="d-flex justify-content-center align-items-center flex-column" style="position: relative">
             <img src="@Model.ProfilePhotoUrl" width="100" height="100" class="profile-pic mt-3" id="profile_photo" ref="profilePhoto"/>
             <button class="btn btn-sm btn-secondary" id="change-profile-photo-btn" data-toggle="modal"
-                    data-target="#modal-edit-photo-or-audio"><i class="far fa-edit"></i></button>
+                    data-target="#modal-edit-photo-or-audio">
+                <i class="far fa-edit"></i>
+            </button>
             <button id="play-audio-description-btn" v-on:click="playAudioDescription" v-if="audioDescriptionUrl !== null" v-html="audioDescriptionButtonInnerText"></button>
         </div>
-        
+
         <div class="translucent-white-card">
             <p class="text-center m-0 overflow-auto text-break username-profile">@ViewData["name"]</p>
             <p class="text-break text-center">@ViewData["description"]</p>
-            
+
             <nav class="d-flex justify-content-center">
                 <button class="btn btn-primary btn-sm" id="edit-profile-button"
                         data-target="#modal-edit-profile" data-toggle="modal">
                     Edit profile
                 </button>
             </nav>
-            
+
             <div class="d-flex flex-wrap mt-2">
                 <div class="btn-group btn-group-sm">
                     <a class="btn btn-link"
@@ -313,7 +323,7 @@
                     </a>
                 </div>
             </div>
-            
+
             <div class="card mb-2">
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -334,25 +344,25 @@
 </div>
 <div class="col-xl-8 col-lg-7 col-md-6" id="vue-container">
 
-    @if ((bool) ViewData["profile_updated"])
+    @if ((bool)ViewData["profile_updated"])
     {
         <div class="alert alert-info">Profile updated successfully</div>
     }
-    @if ((bool) ViewData["nameNotAvailable"])
+    @if ((bool)ViewData["nameNotAvailable"])
     {
         <div class="alert alert-warning"><strong>@ViewData["statusData"]</strong> is not available</div>
     }
-    @if ((bool) ViewData["emailNotAvailable"])
+    @if ((bool)ViewData["emailNotAvailable"])
     {
         <div class="alert alert-warning"><strong>@ViewData["statusData"]</strong> is not available</div>
     }
-    
+
     <section id="your-posts-deposit" class="d-flex flex-column mt-3 align-items-center">
-        
+
         <div class="w-100 d-flex align-items-center flex-column">
             <h5 class="m-3"><i class="far fa-newspaper"></i> Your posts</h5>
             <div class="d-flex justify-content-end w-100">
-                <button type="button" class="btn btn-primary mb-2 mr-auto" 
+                <button type="button" class="btn btn-primary mb-2 mr-auto"
                         data-toggle="modal" data-target="#modal-new-post" title="New post">
                     <i class="fas fa-edit"></i>
                 </button>
@@ -423,12 +433,14 @@
                             </comment>
                         </div>
                         <div class="modal-footer">
-                            <span><a :href="openThreadLink" target="_blank">Open thread</a></span>
+                            <span>
+                                <a :href="openThreadLink" target="_blank">Open thread</a>
+                            </span>
                         </div>
                     </div>
                 </div>
             </div>
-            
+
             <!-- Modal filter posts -->
             <div class="modal fade" id="modal-filter-posts">
                 <div class="modal-dialog modal-dialog-centered">
@@ -446,7 +458,7 @@
                                 <option value="withAudio">Only with audio</option>
                                 <option value="withoutAudio">Only without audio</option>
                             </select>
-                            
+
                             <h6 class="mt-3">Privacy</h6>
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="checkbox" v-model="filterData.privacy.private">
@@ -464,7 +476,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Modal sort posts -->
             <div class="modal fade" id="modal-sort-posts">
                 <div class="modal-dialog modal-dialog-centered">
@@ -485,7 +497,7 @@
                 </div>
             </div>
         </div>
-        
+
     </section>
 </div>
 <div class="col-xl-2 col-lg-2 col-md-2">
@@ -537,7 +549,7 @@ else if (ViewData["profile_open"].Equals("links"))
     firebase.initializeApp(firebaseConfig);
     var storage = firebase.storage();
     </script>
-    
+
     @if (ViewData["audioDescriptionUrl"] == null)
     {
         <script>const audioDescriptionUrl = null</script>

@@ -5,6 +5,7 @@
     Layout = "Shared/_LayoutWebAppOutside";
     ViewData["Title"] = $"Thread {ViewData["threadId"]}";
 }
+
 @section Scripts
 {
     <script>
@@ -20,25 +21,28 @@
     <script src="~/js/VueComponents/commentComponent.js"></script>
     <script src="~/js/publicThread.js"></script>
 }
+
 @section css
 {
     <link rel="stylesheet" href="~/css/webapp_main.css"/>
     <link rel="stylesheet" href="~/stylesheets/isolaatti.css">
     <link rel="stylesheet" href="~/css/sign_style.css"/>
 }
+
 @section metadata
 {
-    <meta property="og:url"                content="https://isolaatti.com/PublicContent/PublicThreadViewer?id=@ViewData["threadId"]" />
-    <meta property="og:type"               content="article" />
-    <meta property="og:description"        content="Post @ViewData["threadId"] from @ViewData["username"] on Isolaatti. Isolaatti is an audio based social network and public posting tool" />
-    <meta property="og:image"              content="https://isolaatti.com/res/imgs/metadata-image-isolaatti.png" />
+    <meta property="og:url" content="https://isolaatti.com/PublicContent/PublicThreadViewer?id=@ViewData["threadId"]"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:description" content="Post @ViewData["threadId"] from @ViewData["username"] on Isolaatti. Isolaatti is an audio based social network and public posting tool"/>
+    <meta property="og:image" content="https://isolaatti.com/res/imgs/metadata-image-isolaatti.png"/>
 }
+
 <div class="alert alert-info w-100 mt-2">
     This application is under development. Please, <a asp-page="/DevSupport">support the development</a>.
 </div>
 <nav class="welcome-page-navbar">
     <a asp-page="/s/Welcome">Welcome</a>
-    <a asp-page="/s/Features">Features</a>
+    <a asp-page="/s/Welcome" asp-fragment="features">Features</a>
     <a asp-page="/About">About</a>
 </nav>
 
@@ -57,8 +61,8 @@
                  v-on:play-audio="playAudio(comment.audioUrl)">
         </comment>
     </div>
-    
-    
+
+
     <div class="modal fade" id="modal-share-post">
         <div class="modal-dialog-centered modal-dialog">
             <div class="modal-content">

@@ -13,6 +13,9 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
           integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
     <link rel="stylesheet" href="~/css/webapp_main.css"/>
+    <link rel="stylesheet" href="~/css/custom_bootstrap.css"/>
+    <link rel="stylesheet" href="~/css/notifications-container-style.css">
+
     <link rel="shortcut icon" href="~/favicon.ico">
     <link rel="icon" type="image/png" sizes="196x196" href="~/favicon-192.png">
     <link rel="icon" type="image/png" sizes="160x160" href="~/favicon-160.png">
@@ -20,10 +23,11 @@
     <link rel="icon" type="image/png" sizes="64x64" href="~/favicon-64.png">
     <link rel="icon" type="image/png" sizes="32x32" href="~/favicon-32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="~/favicon-16.png">
-    <link rel="stylesheet" href="~/css/custom_bootstrap.css"/>
-    <link rel="stylesheet" href="~/css/notifications-container-style.css">
+
     @RenderSection("CSS", required: false)
+
     <script src="https://kit.fontawesome.com/fde197fc03.js" crossorigin="anonymous"></script>
+    @*Server defined constants*@
     <script>
     const userData = {id:@ViewData["userId"],name:"@ViewData["name"]",email:"@ViewData["email"]"};
     const sessionToken = '@Html.Raw(Context.Request.Cookies["isolaatti_user_session_token"])';
@@ -32,6 +36,7 @@
 <body>
 <div id="app">
     <nav class="d-flex custom-nav sticky-top pr-2 pl-2" id="isolaatti-top-bar">
+        <div id="mobile-bar-title"></div>
         <div class="container-md container-fluid" id="top-bar-content">
             <div class="d-flex w-100 align-items-center">
                 <a href="/" class="nav-link custom-nav-link mr-auto" id="isolaatti_brand"></a>
@@ -164,7 +169,7 @@
                 Home
             </div>
         </a>
-        <a class="bottom-mobile-bar-item" asp-page="/Search">
+        <a class="bottom-mobile-bar-item" asp-page="/Search" asp-route-q="**">
             <div class="text-center">
                 <i class="fas fa-search"></i>
             </div>
@@ -234,21 +239,17 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/3.1.7/signalr.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
-@RenderSection("Scripts", required: false)
+
+@* This scripts are added only for specific pages *@
+@await RenderSectionAsync("Scripts", required: false)
+
+@* Add here vue.js components files *@
 <script src="~/js/VueComponents/notificationComponent.js"></script>
 <script src="~/js/realtime-notifications.js"></script>
+
+<!-- For small screens, the top bar is used to show a title. Set the pageTitle variable before this script is loaded to set title-->
 <script>
-let searchBar = document.querySelector("#search-bar-fixed-top");
-let buttonAppearSearchBar = document.querySelector("#mobile-search-button-appear");
-let buttonCloseSearchBar = document.querySelector("#search-bar-mobile-button-close");
-buttonAppearSearchBar.addEventListener("click",function (){
-    searchBar.style.top = "0";
-});
-buttonCloseSearchBar.addEventListener("click", function (){
-    searchBar.style.top = "-60px";
-});
+document.getElementById("mobile-bar-title").innerText = pageTitle;
 </script>
-<script async type="application/javascript" src="https://a.exdynsrv.com/ad-provider.js"></script>
-<script>(AdProvider = window.AdProvider || []).push({"serve": {}});</script>
 </body>
 </html>

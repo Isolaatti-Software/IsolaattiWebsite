@@ -6,6 +6,11 @@
     ViewData["Title"] = ViewData["profile_name"];
 }
 
+@section CSS
+{
+    <script>const pageTitle = "@ViewData["profile_name"]"</script>
+}
+
 
 <div class="col-lg-2 col-md-4 p-0">
     <header id="left-bar" class="p-2">
@@ -27,7 +32,7 @@
                         Following: <b>@ViewData["numberOfFollowing"]</b>
                     </a>
                 </div>
-                @if ((bool) ViewData["thisUserIsFollowingMe"])
+                @if ((bool)ViewData["thisUserIsFollowingMe"])
                 {
                     <span class="text-center mb-2 p-2 mr-1 badge badge-pill badge-success">
                         <i class="fas fa-user-friends"></i> Follows you
@@ -36,7 +41,7 @@
                 <div class="card">
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Likes 
+                            Likes
                             <span class="badge badge-primary badge-pill">@ViewData["numberOfLikes"]</span>
                         </li>
                         <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -49,7 +54,7 @@
                 </div>
             </div>
             <div class="d-flex mt-1">
-                @if ((bool) ViewData["followingThisUser"])
+                @if ((bool)ViewData["followingThisUser"])
                 {
                     <button class="btn btn-primary btn-sm mb-2 w-100" id="followButton">Unfollow <i class="fas fa-times"></i></button>
                 }
@@ -107,7 +112,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="modal fade" id="thread-viewer">
                 <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-xl">
                     <div class="modal-content">
@@ -125,7 +130,9 @@
                             </comment>
                         </div>
                         <div class="modal-footer">
-                            <span><a :href="openThreadLink" target="_blank">Open thread</a></span>
+                            <span>
+                                <a :href="openThreadLink" target="_blank">Open thread</a>
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -150,7 +157,7 @@
     {
         <script>const audioDescriptionUrl = "@ViewData["audioDescription"]";</script>
     }
-        <script>
+    <script>
     let accountData = {
         userId: "@ViewData["profile_id"]"
     }

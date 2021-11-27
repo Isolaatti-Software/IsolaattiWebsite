@@ -1,16 +1,11 @@
 @page
-@using System.Text.Json
 @model isolaatti_API.Pages.PublicContent.Feed
 
 @{
     Layout = "Shared/_LayoutWebAppOutside";
     ViewData["Title"] = "Feed";
 }
-@section css
-{
-    <link rel="stylesheet" href="~/css/sign_style.css"/>
-    <link rel="stylesheet" href="~/css/webapp_main.css"/>
-}
+
 @section Scripts
 {
     <script>
@@ -25,16 +20,18 @@
     <script src="~/js/VueComponents/commentComponent.js"></script>
     <script src="~/js/PublicContentPages/feed.js"></script>
 }
+
 @section metadata
 {
-    <meta property="og:url"                content="https://isolaatti.com/PublicContent/Feed" />
-    <meta property="og:type"               content="article" />
-    <meta property="og:description"        content="Isolaatti is an audio based social network and public posting tool" />
-    <meta property="og:image"              content="https://isolaatti.com/res/imgs/metadata-image-isolaatti.png" />
+    <meta property="og:url" content="https://isolaatti.com/PublicContent/Feed"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:description" content="Isolaatti is an audio based social network and public posting tool"/>
+    <meta property="og:image" content="https://isolaatti.com/res/imgs/metadata-image-isolaatti.png"/>
 }
+
 <nav class="welcome-page-navbar">
     <a asp-page="/s/Welcome">Welcome</a>
-    <a asp-page="/s/Features">Features</a>
+    <a asp-page="/s/Welcome" asp-fragment="features">Features</a>
     <a asp-page="/About">About</a>
 </nav>
 <div id="vue-container" class="w-100">

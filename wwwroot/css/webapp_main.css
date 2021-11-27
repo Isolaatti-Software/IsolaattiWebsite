@@ -22,6 +22,10 @@ body {
     height: 100vh;
 }
 
+#mobile-bar-title {
+    display: none;
+}
+
 .custom-nav {
     background-color: var(--isolaatti-primary-color);
     align-items: center;
@@ -141,6 +145,16 @@ body {
 
     #isolaatti-top-bar {
         height: 55px;
+    }
+
+    #mobile-bar-title {
+        display: block;
+        text-overflow-ellipsis: "...";
+        overflow: hidden;
+        color: white;
+        font-weight: 500;
+        font-size: large;
+        margin-left: 20px;
     }
 }
 

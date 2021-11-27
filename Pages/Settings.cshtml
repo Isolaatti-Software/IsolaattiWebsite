@@ -5,6 +5,12 @@
     Layout = "Shared/_LayoutWebApp";
     ViewData["Title"] = "Settings";
 }
+
+@section CSS
+{
+    <script>const pageTitle = "Settings"</script>
+}
+
 <div class="col-lg-3 col-md-2"></div>
 <div class="col-lg-6 col-md-8">
     <h1>Settings</h1>
@@ -27,7 +33,7 @@
     <p>
         <a asp-page="MyProfile" asp-route-open="password">Go to profile to change password</a>
     </p>
-    
+
     <h3 class="mt-1">Your sessions</h3>
     <p>Currently, you have these authorized sessions.</p>
     <table class="table table-hover table-responsive-md bg-dark text-white">
@@ -50,7 +56,7 @@
                     {
                         <i class="fas fa-check"></i>
                     }
-                    
+
                 </td>
                 <td>@sessionToken.IpAddress</td>
                 <td>@sessionToken.UserAgent</td>
@@ -58,7 +64,7 @@
             </tr>
         }
         </tbody>
-        
+
     </table>
 </div>
 <div class="col-lg-3 col-md-2"></div>
