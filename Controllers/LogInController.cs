@@ -5,10 +5,7 @@
 * erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
 */
 
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using isolaatti_API.InMemoryDatabase;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -47,15 +44,6 @@ namespace isolaatti_API.Controllers
             var user = accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("token is not valid");
             return Ok("ok");
-        }
-
-        [Route("GetSessionId")]
-        [HttpPost]
-        public IActionResult GetSessionId([FromForm] string sessionToken)
-        {
-            var sessionId = Guid.NewGuid();
-            Database.TemporaryFeedForSession.Add(sessionId.ToString(), new List<string>());
-            return Ok(sessionId.ToString());
         }
     }
 }

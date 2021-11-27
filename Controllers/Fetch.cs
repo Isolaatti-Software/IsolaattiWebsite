@@ -1,5 +1,4 @@
 using isolaatti_API.Classes;
-using isolaatti_API.InMemoryDatabase;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -49,13 +48,6 @@ namespace isolaatti_API.Controllers
         public IActionResult GetAllRealTimeConnections()
         {
             return Ok(Hubs.NotificationsHub.Sessions);
-        }
-
-        [HttpGet]
-        [Route("stored_sessions")]
-        public IActionResult GetStoredSessions()
-        {
-            return Ok(Database.TemporaryFeedForSession);
         }
     }
 }
