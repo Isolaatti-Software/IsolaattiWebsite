@@ -7,10 +7,6 @@
 * This file should be placed in the Pages/Profile.cshtml
 */
 
-
-
-
-
 function deletePost(postId, onComplete, onError) {
     let form = new FormData();
     form.append("sessionToken", sessionToken);
