@@ -50,7 +50,7 @@
                            class="form-control search-bar-on-top flex-grow-1"
                            form="form-search"
                            name="q"
-                           placeholder="Search for people, projects, and threads"/>
+                           placeholder="Busca personas, hilos, etc."/>
                     <button class="btn btn-primary btn-sm ml-1"
                             type="submit"
                             form="form-search">
@@ -62,10 +62,10 @@
                     <a class="nav-link custom-nav-link ml-2"
                        href="#modal-new-post"
                        data-toggle="modal"
-                       title="Post Editor"
+                       title="Nueva publicación"
                        id="post-editor-link">
                         <i class="fas fa-feather"></i>
-                        <small>New</small>
+                        <small>Nuevo</small>
                     </a>
 
                 </div>
@@ -112,21 +112,21 @@
                             {
                                 <img width="40" height="40" src="@ViewData["profilePicUrl"]" class="user-avatar"/>
                             }
-                            My Profile
+                            Mi perfil
                         </a>
                         <a class="dropdown-item"
                            asp-page="/Settings">
-                            <i class="fas fa-cog"></i>Settings
+                            <i class="fas fa-cog"></i>Ajustes
                         </a>
                         <a class="dropdown-item"
                            asp-page="/About"
                            target="_blank">
-                            <i class="fas fa-info"></i>About
+                            <i class="fas fa-info"></i>Acerca de
                         </a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item"
                            href="/WebLogOut">
-                            <i class="fas fa-sign-out-alt"></i>Sign out
+                            <i class="fas fa-sign-out-alt"></i>Cerrar sesión
                         </a>
                     </div>
                 </div>
@@ -146,15 +146,15 @@
             <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">New post (not implemented)</h5>
+                        <h5 class="modal-title">Nueva publicación</h5>
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                     </div>
                     <div class="modal-body">
-                        <textarea class="form-control" placeholder="Write the content of your post here. Markdown is compatible." rows="8"></textarea>
+                        <textarea class="form-control" placeholder="Escribe el contenido de tu publicación aquí. Markdown es compatible." rows="8"></textarea>
                     </div>
                     <div class="modal-footer">
-                        <a asp-page="/PostEditor" class="btn btn-secondary mr-auto">Pro editor</a>
-                        <button class="btn btn-primary">Post</button>
+                        <a asp-page="/PostEditor" class="btn btn-secondary mr-auto">Editor Pro</a>
+                        <button class="btn btn-primary">Publicar</button>
                     </div>
                 </div>
             </div>
@@ -166,7 +166,7 @@
                 <i class="fas fa-home"></i>
             </div>
             <div class="text-center bottom-mobile-bar-item">
-                Home
+                Inicio
             </div>
         </a>
         <a class="bottom-mobile-bar-item" asp-page="/Search" asp-route-q="**">
@@ -174,7 +174,7 @@
                 <i class="fas fa-search"></i>
             </div>
             <div class="text-center bottom-mobile-bar-item">
-                Search
+                Buscar
             </div>
         </a>
         <a class="bottom-mobile-bar-item" href="#modal-new-post" data-toggle="modal">
@@ -182,7 +182,7 @@
                 <i class="fas fa-feather"></i>
             </div>
             <div class="text-center bottom-mobile-bar-item">
-                Post
+                Publicar
             </div>
         </a>
 
@@ -198,7 +198,7 @@
                 }
             </div>
             <div class="text-center bottom-mobile-bar-item">
-                Profile
+                Perfil
             </div>
         </a>
         <a class="bottom-mobile-bar-item" asp-page="Settings">
@@ -206,7 +206,7 @@
                 <i class="fas fa-cog"></i>
             </div>
             <div class="text-center bottom-mobile-bar-item">
-                Settings
+                Ajustes
             </div>
         </a>
 
@@ -222,7 +222,7 @@
             <button class="btn btn-primary" v-on:click="toggleNotificationsSlider">
                 &times
             </button>
-            <h3 class="ml-2 m-0">Notifications</h3>
+            <h3 class="ml-2 m-0">Notificaciones</h3>
 
         </div>
         <notification v-for="notification in notifications"

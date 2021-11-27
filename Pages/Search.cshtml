@@ -1,27 +1,27 @@
-@page
+@page "/Buscar"
 @using isolaatti_API.Utils
 @model isolaatti_API.Pages.Search
 
 @{
     Layout = "Shared/_LayoutWebApp";
-    ViewData["Title"] = "Results for " + ViewData["query"];
+    ViewData["Title"] = "Resultados para " + ViewData["query"];
 }
 
 @section CSS
 {
-    <script>const pageTitle = "Search"</script>
+    <script>const pageTitle = "Buscar"</script>
 }
 
 <div class="col-lg-3 col-md-2"></div>
 <div class="col-lg-6 col-md-8">
 
 
-    <h4 class="text-center mt-2 mb-3">Results for "@ViewData["query"]"</h4>
+    <h4 class="text-center mt-2 mb-3">Resultados para "@ViewData["query"]"</h4>
 
     <form id="form-search" asp-page="Search" method="get">
         <div class="d-flex">
             <input type="text" name="q" class="form-control mb-2 mr-1" value="@ViewData["query"]"
-                   placeholder="Search people by name or email, your projects, public projects..."/>
+                   placeholder="Busca personas, hilos, etc."/>
             <button type="submit" class="btn btn-primary mb-2">
                 <i class="fas fa-search"></i>
             </button>
@@ -30,13 +30,7 @@
 
     <ul class="nav nav-pills">
         <li class="nav-item">
-            <a class="nav-link active" href="#people-pane" data-toggle="tab">People</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#your-projects-pane" data-toggle="tab">Your projects</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#public-projects-pane" data-toggle="tab">Public projects</a>
+            <a class="nav-link active" href="#people-pane" data-toggle="tab">Personas</a>
         </li>
     </ul>
     <div class="tab-content">
@@ -54,7 +48,7 @@
                                 <div class="media-body">
                                     <h5 class="mt-0">@publicProfile.Name</h5>
                                     <p>@publicProfile.Description</p>
-                                    <small>Followers: @publicProfile.NumberOfFollowers, Following: @publicProfile.NumberOfFollowing</small>
+                                    <small>Seguidores: @publicProfile.NumberOfFollowers, Siguiendo: @publicProfile.NumberOfFollowing</small>
                                 </div>
                             </div>
                         </a>
@@ -65,22 +59,9 @@
                     <h3 class="text-center">
                         <i class="fas fa-sad-tear"></i>
                     </h3>
-                    <h4>No elements match your query in this scope</h4>
+                    <h4>No se ha encontrado nada que satisfaga tu búsqueda</h4>
                 }
             </div>
-
-        </div>
-        <div class="tab-pane" id="your-projects-pane">
-            <h3 class="text-center">
-                <i class="fas fa-sad-tear"></i>
-            </h3>
-            <h4>I am sorry, this scope has not been developed.</h4>
-        </div>
-        <div class="tab-pane" id="public-projects-pane">
-            <h3 class="text-center">
-                <i class="fas fa-sad-tear"></i>
-            </h3>
-            <h4>I am sorry, this scope has not been developed.</h4>
         </div>
     </div>
 </div>

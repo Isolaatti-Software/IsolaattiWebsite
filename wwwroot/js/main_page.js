@@ -169,7 +169,7 @@ let vueContainer = new Vue({
     },
     computed: {
         openThreadLink: function() {
-            return `/Threads/${this.commentsViewer.postId}`;
+            return `/Hilo/${this.commentsViewer.postId}`;
         }
     },
     methods: {
@@ -254,7 +254,7 @@ let vueContainer = new Vue({
             });
         },
         deletePost: function(postId) {
-            if(!confirm("Are your sure you want to delete this post?")) {
+            if (!confirm("¿De verdad deseas eliminar esta publicación?")) {
                 return;
             }
             let globalThis = this;

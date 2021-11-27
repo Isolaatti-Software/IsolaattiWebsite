@@ -1,27 +1,29 @@
-@page
+@page "/Bienvenido"
 @model isolaatti_API.Pages.s.Welcome
 
 @{
     Layout = "Shared/_LayoutWebAppOutside";
-    ViewData["Title"] = "Welcome";
+    ViewData["Title"] = "Te damos la bienvenida";
 }
+
 @section metadata
 {
-    <meta property="og:url"                content="https://isolaatti.com/s/Welcome" />
-    <meta property="og:type"               content="website" />
-    <meta property="og:description"        content="Isolaatti is an audio based social network and public posting tool" />
-    <meta property="og:image"              content="https://isolaatti.com/res/imgs/metadata-image-isolaatti.png" />
+    <meta property="og:url" content="https://isolaatti.com/s/Welcome"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:description" content="Isolaatti is una red social basada en publicaciones de audio y texto."/>
+    <meta property="og:image" content="https://isolaatti.com/res/imgs/metadata-image-isolaatti.png"/>
 }
+
 <nav class="welcome-page-navbar">
-    <a asp-page="/s/Welcome">Welcome</a>
-    <a href="#features">Features</a>
-    <a asp-page="/About">About</a>
+    <a asp-page="/s/Welcome">Bienvenido</a>
+    <a href="#features">Caracteríticas</a>
+    <a asp-page="/About">Acerca de</a>
 </nav>
 
 <div class="d-flex text-center" style="font-size: 3em; filter: drop-shadow(-16px 16px 50px #3e0063); margin-top: 25vh; margin-bottom: 25vh ">
-    Your voice has more strength than you ever thought
+    Tu voz tiene más poder que nunca
 </div>
-<h3 class="m-3 w-100 text-center" id="features">Features</h3>
+<h3 class="m-3 w-100 text-center" id="features">Características</h3>
 <section class="container-fluid mb-2">
     <div class="row">
         <div class="col-md-6">
@@ -30,9 +32,9 @@
                     <i class="fas fa-headset"></i>
                 </div>
                 <div class="d-flex flex-column isolaatti-feature-content">
-                    <h5>Audio based</h5>
+                    <h5>Basada en audios</h5>
                     <p>
-                        Attach audio to your posts to make them stronger. You have up to 2 minutes for each audio.
+                        Agrega audio a tus publicaciones para hacerlas más fuertes. Tienes hasta 2 minutos por audio.
                     </p>
                 </div>
             </article>
@@ -45,8 +47,8 @@
                 <div class="d-flex flex-column isolaatti-feature-content">
                     <h5>Markdown</h5>
                     <p>
-                        Markdown syntax is compatible, allowing you to get more out of your written expression by making advanced formatted posts.
-                    </p>    
+                        La sintáxis Markdown es compatible, puedes crear publicaciones con formato de texto avanzado, sacando así el máximo de tu expresión escrita.
+                    </p>
                 </div>
             </article>
         </div>
@@ -58,9 +60,9 @@
                     <i class="fas fa-palette"></i>
                 </div>
                 <div class="d-flex flex-column isolaatti-feature-content">
-                    <h5>Themes</h5>
+                    <h5>Temas</h5>
                     <p>
-                        Customize the appearence of your post. You can modify almost everything, from font color and background to border style.
+                        Personaliza el tema de tu publicación. Puedes modificar muchos parámetros, como el fondo, el color de letra, bordes...
                     </p>
                 </div>
             </article>
@@ -71,9 +73,9 @@
                     <i class="fas fa-comments"></i>
                 </div>
                 <div class="d-flex flex-column isolaatti-feature-content">
-                    <h5>Audio and text comments</h5>
+                    <h5>Comentarios de audio y texto</h5>
                     <p>
-                        Join the conversation. You can comment text and optionally audio as response to a post.
+                        Únete a la conversación. Puedes comentar publicaciones, y opcionalmente agregar audio al comentario.
                     </p>
                 </div>
             </article>
@@ -88,7 +90,7 @@
                 <div class="isolaatti-feature-content d-flex flex-column">
                     <h5>Feed</h5>
                     <p>
-                        See what people you follow has to tell. And when no more content is available, you can discover new accounts to follow.
+                        Ve lo que las personas que sigues tienen que decir. Puedes descubrir a quienes seguir.
                     </p>
                 </div>
             </article>
@@ -99,9 +101,9 @@
                     <i class="fas fa-user"></i>
                 </div>
                 <div class="d-flex flex-column isolaatti-feature-content">
-                    <h5>Profiles</h5>
+                    <h5>Perfiles</h5>
                     <p>
-                        Make your profile yours! Customize it with a recorded description audio message, profile photo and a color.
+                        Haz que tu perfil te represente. Agrega una foto, un audio descriptivo y un color.
                     </p>
                 </div>
             </article>
@@ -109,5 +111,5 @@
     </div>
 </section>
 <div class="d-flex text-center" style="font-size: 3em; filter: drop-shadow(-16px 16px 50px #3e0063); margin-top: 25vh; margin-bottom: 25vh ">
-     Stop your head from being in restlessness. No more things unexpressed.
+    No más intranquilidad, ¡alguien te escuchará!
 </div>

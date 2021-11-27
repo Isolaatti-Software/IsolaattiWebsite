@@ -9,9 +9,15 @@ Vue.component('notification',{
         title: function() {
             let res = "";
             switch (this.notificationObj.type) {
-                case 1: res = "Someone liked your post."; break;
-                case 2: res = `Someone commented on your post`; break;
-                case 3: res = `New follower`; break;
+                case 1:
+                    res = "A alguien le gustó tu publicación";
+                    break;
+                case 2:
+                    res = `Alguien comentó tu publicación`;
+                    break;
+                case 3:
+                    res = `Tienes un nuevo seguidor`;
+                    break;
             }
             
             return res;

@@ -52,7 +52,7 @@ const vue = new Vue({
             return this.input === null || this.input === "";
         },
         addAudioButtonText: function() {
-            return (this.audio.consolidated) ? "Audio recorded" : "Record audio";
+            return (this.audio.consolidated) ? "Audio grabado" : "Grabar audio";
         },
         postThemeCSSStyle: function() {
             function returnColorsAsString(array) {

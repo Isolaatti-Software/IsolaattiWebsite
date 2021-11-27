@@ -1,4 +1,4 @@
-@page
+@page "/Pub/Feed"
 @model isolaatti_API.Pages.PublicContent.Feed
 
 @{
@@ -23,21 +23,21 @@
 
 @section metadata
 {
-    <meta property="og:url" content="https://isolaatti.com/PublicContent/Feed"/>
+    <meta property="og:url" content="https://isolaatti.com/Pub/Feed"/>
     <meta property="og:type" content="article"/>
     <meta property="og:description" content="Isolaatti is an audio based social network and public posting tool"/>
     <meta property="og:image" content="https://isolaatti.com/res/imgs/metadata-image-isolaatti.png"/>
 }
 
 <nav class="welcome-page-navbar">
-    <a asp-page="/s/Welcome">Welcome</a>
-    <a asp-page="/s/Welcome" asp-fragment="features">Features</a>
-    <a asp-page="/About">About</a>
+    <a asp-page="/s/Welcome">Bienvenido</a>
+    <a asp-page="/s/Welcome" asp-fragment="features">Características</a>
+    <a asp-page="/About">Acerca de</a>
 </nav>
 <div id="vue-container" class="w-100">
     <div class="alert alert-secondary">
-        <h5 class="alert-heading">You didn't sign in</h5>
-        Sign in to interact. If you don't have an account, <a asp-page="/MakeAccount" class="alert-link">sign up</a>
+        <h5 class="alert-heading">No iniciaste sesión</h5>
+        Inicia sesión para interactuar. Si no tienes una cuenta, <a asp-page="/MakeAccount" class="alert-link">regrístrate</a>
     </div>
     <nav class="d-flex">
         <a href="#" class="m-1" v-on:click="getFeed(false)">Newest</a>
@@ -54,7 +54,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">
-                        Share post
+                        Compartir publicación
                     </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -62,9 +62,9 @@
                 </div>
                 <div class="modal-body">
                     <p>
-                        Use this link to share post
+                        Usa este enlace para compartir la publicación
                     </p>
-                    <button class="btn btn-primary" v-on:click="copyToClipboard(postLinkToShare)">Copy to clipboard</button>
+                    <button class="btn btn-primary" v-on:click="copyToClipboard(postLinkToShare)">Copiar al portapapeles</button>
                 </div>
             </div>
         </div>

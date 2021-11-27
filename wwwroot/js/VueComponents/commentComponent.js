@@ -28,7 +28,7 @@ Vue.component('comment', {
           <img class="user-avatar" :src="getUserImageUrl(comment.whoWrote)">
           <div class="d-flex flex-column ml-2">
             <span class="user-name"><a :href="profileLink">{{ comment.whoWroteName }}</a> </span>
-            <span>{{new Date(comment.date).toUTCString()}}</span>
+            <span>{{ new Date(comment.date).toUTCString() }}</span>
           </div>
         </div>
         <div class="dropdown dropleft" v-if="userData.id!==-1">
@@ -36,9 +36,10 @@ Vue.component('comment', {
             <i class="fas fa-ellipsis-h"></i>
           </button>
           <div class="dropdown-menu">
-            <a href="#" class="dropdown-item" v-if="comment.whoWrote===this.userData.id">Edit</a>
-            <a href="#" class="dropdown-item" v-if="comment.whoWrote===this.userData.id" v-on:click="$emit('delete-comment')">Delete</a>
-            <a :href="reportLink" class="dropdown-item" target="_blank">Report</a>
+            <a href="#" class="dropdown-item" v-if="comment.whoWrote===this.userData.id">Editar</a>
+            <a href="#" class="dropdown-item" v-if="comment.whoWrote===this.userData.id"
+               v-on:click="$emit('delete-comment')">Eliminar</a>
+            <a :href="reportLink" class="dropdown-item" target="_blank">Reportar</a>
           </div>
         </div>
       </div>

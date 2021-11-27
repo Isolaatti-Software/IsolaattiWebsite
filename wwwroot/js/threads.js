@@ -48,7 +48,7 @@ let thisVueInstance;
                         return this.commentTextarea === "" || this.commentTextarea === null
                     },
                     addAudioButtonText: function() {
-                        return (this.audio.consolidated) ? "Audio recorded" : "Record audio";
+                        return (this.audio.consolidated) ? "Audio grabado" : "Grabar audio";
                     }
                 },
                 methods: {
@@ -141,7 +141,7 @@ let thisVueInstance;
                         });
                     },
                     deletePost: function(postId) {
-                        if(!confirm("Are your sure you want to delete this post?")) {
+                        if (!confirm("¿De verdad deseas eliminar esta publicación?")) {
                             return;
                         }
                         let globalThis = this;

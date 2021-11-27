@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
     <title>@ViewData["Title"] | Isolaatti</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     @RenderSection("metadata", false)
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" 
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
           integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
     <script data-ad-client="ca-pub-3749854383361805" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 
@@ -17,15 +17,15 @@
     <link rel="icon" type="image/png" sizes="64x64" href="~/favicon-64.png">
     <link rel="icon" type="image/png" sizes="32x32" href="~/favicon-32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="~/favicon-16.png">
-    
+
     <script src="https://www.gstatic.com/firebasejs/7.23.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/ui/4.8.0/firebase-ui-auth.js"></script>
     <script src="https://kit.fontawesome.com/fde197fc03.js" crossorigin="anonymous"></script>
-    <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/4.8.0/firebase-ui-auth.css" />
+    <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/4.8.0/firebase-ui-auth.css"/>
     <link rel="stylesheet" href="~/css/welcome-purple-image.css"/>
     @RenderSection("scripts_google", false)
-    @RenderSection("css",false)
+    @RenderSection("css", false)
 </head>
 <body>
 <div class="d-flex flex-column" style="min-height: 100vh">
@@ -33,26 +33,26 @@
         <div class="row">
             <div class="d-flex col-12 flex-column">
                 <div class="d-flex align-items-center flex-wrap">
-                    <div class="d-flex flex-column"  id="isolaatti-logo">
+                    <div class="d-flex flex-column" id="isolaatti-logo">
                         <h1><a href="/" id="isolaatti-icon"></a> Isolaatti</h1>
                     </div>
                     <div class="d-flex ml-auto mb-1">
-                        <a asp-page="/MakeAccount" class="btn btn-primary mr-1">Sign up</a>
-                        <a asp-page="/LogIn" class="btn btn-primary">Sign in</a>
+                        <a asp-page="/MakeAccount" class="btn btn-primary mr-1">Regístrate</a>
+                        <a asp-page="/LogIn" class="btn btn-primary">Inicia sesión</a>
                     </div>
                 </div>
-                
+
             </div>
             @RenderBody()
         </div>
-        
+
     </div>
     <footer class="mt-auto">
         <p class="text-center footer-font-color">
-            <a asp-page="/MakeAccount">Sign up</a> | <a asp-page="/LogIn">Sign in</a> | <a asp-page="/About">About</a> | <a href="https://erik-swdev.isolaatti.com" target="_blank">erikswdev</a> | <a href="https://erik-everardo.github.io/" target="_blank">Blog</a>
+            <a asp-page="/MakeAccount">Regístrate</a> | <a asp-page="/LogIn">Inicia sesión</a> | <a asp-page="/About">Acerca de</a> | <a href="https://erik-swdev.isolaatti.com" target="_blank">erikswdev</a> | <a href="https://erik-everardo.github.io/" target="_blank">Blog</a>
         </p>
         <p class="text-center footer-font-color">
-            made with <i class="fas fa-heart" style="color: red"></i> by <br>erikswdevlab, 2020 - 2021
+            hecho con <i class="fas fa-heart" style="color: red"></i> por <br>erikswdevlab, 2020 - 2021
         </p>
     </footer>
 </div>

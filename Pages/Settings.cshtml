@@ -1,4 +1,4 @@
-@page
+@page "/Ajustes"
 @model isolaatti_API.Pages.Settings
 
 @{
@@ -8,41 +8,26 @@
 
 @section CSS
 {
-    <script>const pageTitle = "Settings"</script>
+    <script>const pageTitle = "Ajustes"</script>
 }
 
 <div class="col-lg-3 col-md-2"></div>
 <div class="col-lg-6 col-md-8">
-    <h1>Settings</h1>
-    <h3 class="mt-1">Notifications</h3>
-    <div class="d-flex flex-column mt-2">
-        <div class="custom-control custom-switch mb-2">
-            <input type="checkbox" class="custom-control-input" id="notifyByEmail">
-            <label class="custom-control-label" for="notifyByEmail">Send notifications by e-mail</label>
-        </div>
-        <div class="custom-control custom-switch mb-2">
-            <input type="checkbox" class="custom-control-input" id="notifyWhenProcessStarts">
-            <label class="custom-control-label" for="notifyWhenProcessStarts">Notify when server starts to process your song</label>
-        </div>
-        <div class="custom-control custom-switch mb-2">
-            <input type="checkbox" class="custom-control-input" id="notifyWhenProcessFinishes">
-            <label class="custom-control-label" for="notifyWhenProcessFinishes">Notify when your song is ready</label>
-        </div>
-    </div>
-    <h3 class="mt-1">Your password</h3>
+    <h1>Ajustes</h1>
+    <h3 class="mt-1">Tu contraseña</h3>
     <p>
-        <a asp-page="MyProfile" asp-route-open="password">Go to profile to change password</a>
+        <a asp-page="MyProfile" asp-route-open="password">Ir al perfil para cambiar tu contraseña</a>
     </p>
 
-    <h3 class="mt-1">Your sessions</h3>
-    <p>Currently, you have these authorized sessions.</p>
+    <h3 class="mt-1">Tus sesiones activas</h3>
+    <p>Actualmente tienes estas sesiones activas</p>
     <table class="table table-hover table-responsive-md bg-dark text-white">
         <thead>
         <th></th>
-        <th>Current</th>
-        <th>Reference IP Address</th>
+        <th>Actual</th>
+        <th>Dirección IP</th>
         <th>User Agent</th>
-        <th>Creation date</th>
+        <th>Fecha de creación</th>
         </thead>
         <tbody>
         @foreach (var sessionToken in Model.SessionTokens)

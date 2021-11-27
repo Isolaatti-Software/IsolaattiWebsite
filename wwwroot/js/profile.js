@@ -71,7 +71,7 @@ function getPosts(accountId, onComplete, onError) {
                 if(request.readyState === XMLHttpRequest.DONE) {
                     switch (request.status) {
                         case 200 :
-                            followButton.innerHTML = "Unfollow " + '<i class="fas fa-times"></i>';
+                            followButton.innerHTML = "Dejar de seguir " + '<i class="fas fa-times"></i>';
                             followingThisUser = true;
                             break;
                         case 404 :
@@ -117,7 +117,7 @@ function getPosts(accountId, onComplete, onError) {
         },
         computed: {
             openThreadLink: function() {
-                return `/Threads/${this.commentsViewer.postId}`;
+                return `/Hilo/${this.commentsViewer.postId}`;
             }
         },
         methods: {
@@ -303,6 +303,6 @@ function getPosts(accountId, onComplete, onError) {
         vueContainer.posts = responseObject;
         vueContainer.loading = false;
     }, () => {
-        alert("Could not get posts");
+        alert("No fue posible obtener tus publicaciones.");
     });
 })();

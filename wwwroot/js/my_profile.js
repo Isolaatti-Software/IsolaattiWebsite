@@ -273,7 +273,7 @@ profilePictureLoadFormElement.addEventListener("input", function() {
             },
             computed: {
                 openThreadLink: function() {
-                    return `/Threads/${this.commentsViewer.postId}`;
+                    return `/Hilo/${this.commentsViewer.postId}`;
                 },
                 filterAndSortedPosts: function() {
                     let filteredArray = this.posts.filter(value => {
@@ -379,7 +379,7 @@ profilePictureLoadFormElement.addEventListener("input", function() {
                     });
                 },
                 deletePost: function(postId) {
-                    if(!confirm("Are your sure you want to delete this post?")) {
+                    if (!confirm("¿De verdad deseas eliminar esta publicación?")) {
                         return;
                     }
                     let globalThis = this;
@@ -635,7 +635,7 @@ profilePictureLoadFormElement.addEventListener("input", function() {
             vueContainer.posts = response;
             vueContainer.loading = false;
         }, (error) => {
-            alert("Error getting your posts");
+            alert("Ha sucedido un error obteniendo tus publicaciones.");
         });
     });
 

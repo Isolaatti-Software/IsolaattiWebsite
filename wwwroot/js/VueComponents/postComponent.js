@@ -7,16 +7,16 @@ Vue.component('post-template',{
     },
     computed: {
         profileLink: function() {
-            return `/Profile?id=${this.post.userId}`
+            return `/Perfil?id=${this.post.userId}`
         },
         reportLink: function() {
             return `/Reports/ReportPostOrComment?postId=${this.post.id}`;
         },
         openThreadLink: function() {
-            return `/Threads/${this.post.id}`;
+            return `/Hilo/${this.post.id}`;
         },
         editPostLink: function() {
-            return `/PostEditor?edit=True&postId=${this.post.id}`
+            return `/EditorPro?edit=True&postId=${this.post.id}`
         }
     },
     methods: {
@@ -70,15 +70,15 @@ Vue.component('post-template',{
             <span class="user-name"><a :href="profileLink">{{ post.userName }}</a> </span>
             <div class="d-flex privacy-icon-container">
               <div v-if="post.privacy === 1">
-                <i class="fas fa-user" title="Private" aria-hidden="true"></i><span class="sr-only">Only you</span>
+                <i class="fas fa-user" title="Private" aria-hidden="true"></i><span class="sr-only">Privado</span>
               </div>
               <div v-if="post.privacy === 2">
-                <i class="fas fa-user-friends" title="People on Isolaatti" aria-hidden="true"></i><span class="sr-only">People on Isolaatti</span>
+                <i class="fas fa-user-friends" title="People on Isolaatti" aria-hidden="true"></i><span class="sr-only">Usuarios de Isolaatti</span>
               </div>
               <div v-if="post.privacy === 3">
-                <i class="fas fa-globe" title="All the world" aria-hidden="true"></i><span class="sr-only">Everyone</span>
+                <i class="fas fa-globe" title="All the world" aria-hidden="true"></i><span class="sr-only">Todos</span>
               </div>
-              <span>{{new Date(post.date).toUTCString()}}</span>
+              <span>{{ new Date(post.date).toUTCString() }}</span>
             </div>
           </div>
         </div>
@@ -87,14 +87,15 @@ Vue.component('post-template',{
             <i class="fas fa-ellipsis-h"></i>
           </button>
           <div class="dropdown-menu">
-            <a :href="editPostLink" class="dropdown-item" v-if="post.userId===this.userData.id">Edit</a>
-            <a href="#modal-share-post" v-on:click="$emit('input',openThreadLink)" class="dropdown-item" data-toggle="modal">Share</a>
-            <a href="#" class="dropdown-item" v-if="post.userId===this.userData.id" v-on:click="$emit('delete',1)">Delete</a>
-            <a :href="reportLink" class="dropdown-item" target="_blank" v-if="userData.id!==-1">Report</a>
+            <a :href="editPostLink" class="dropdown-item" v-if="post.userId===this.userData.id">Editar</a>
+            <a href="#modal-share-post" v-on:click="$emit('input',openThreadLink)" class="dropdown-item"
+               data-toggle="modal">Compartir</a>
+            <a href="#" class="dropdown-item" v-if="post.userId===this.userData.id" v-on:click="$emit('delete',1)">Eliminar</a>
+            <a :href="reportLink" class="dropdown-item" target="_blank" v-if="userData.id!==-1">Reportar</a>
           </div>
         </div>
       </div>
-      
+
       <div class="d-flex mt-1" v-if="post.audioAttachedUrl!=null">
         <button type="button" class="btn btn-primary btn-sm" v-on:click="$emit('play-audio')">
           <i class="fas fa-play" v-if="post.audioAttachedUrl !== audioUrl || paused"></i>

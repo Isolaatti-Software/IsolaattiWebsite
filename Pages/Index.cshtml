@@ -3,12 +3,12 @@
 
 @{
     Layout = "Shared/_LayoutWebApp";
-    ViewData["Title"] = "Home";
+    ViewData["Title"] = "Inicio";
 }
 
 @section CSS
 {
-    <script>const pageTitle = "Home"</script>
+    <script>const pageTitle = "Inicio"</script>
 }
 
 <div class="col-12">
@@ -18,7 +18,7 @@
              id="feed-and-thread-reader-container"
              ref="feedAndThreadReaderContainer">
             <div class="sticky-sm-top">
-                <h5 class="ml-2 mt-2"><i class="far fa-newspaper"></i> Activity of people you follow</h5>
+                <h5 class="ml-2 mt-2"><i class="far fa-newspaper"></i> Actividad de las personas que sigues</h5>
             </div>
             <section id="posts-deposit" class="d-flex flex-column pt-1 mt-2 mb-3 align-items-center posts-deposit">
                 <post-template v-for="post in posts" :post="post"
@@ -35,11 +35,11 @@
                 </post-template>
                 <div v-if="loading" class="d-flex justify-content-center mt-2">
                     <div class="spinner-border" role="status">
-                        <span class="sr-only">Loading more content...</span>
+                        <span class="sr-only">Cargando más contenido...</span>
                     </div>
                 </div>
                 <div v-if="noMoreContent" class="d-flex flex-column align-items-center mt-2">
-                    <p>You've seen all new activity for now. Refresh in a while...</p>
+                    <p>Ya viste toda la actividad por ahora, refresca en un momento...</p>
                     <button class="btn btn-primary" v-on:click="refresh">
                         <i class="fas fa-redo"></i>
                     </button>
@@ -52,7 +52,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">
-                            Share post
+                            Compartir publicación
                         </h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
@@ -60,9 +60,9 @@
                     </div>
                     <div class="modal-body">
                         <p>
-                            Use this link to share post
+                            Usa este enlace para compartir la publicación
                         </p>
-                        <button class="btn btn-primary" v-on:click="copyToClipboard(postLinkToShare)">Copy to clipboard</button>
+                        <button class="btn btn-primary" v-on:click="copyToClipboard(postLinkToShare)">Copiar al portapapeles</button>
                     </div>
                 </div>
             </div>
@@ -86,7 +86,7 @@
                     </div>
                     <div class="modal-footer">
                         <span>
-                            <a :href="openThreadLink" target="_blank">Open thread</a>
+                            <a :href="openThreadLink" target="_blank">Abrir hilo</a>
                         </span>
                     </div>
                 </div>
@@ -107,111 +107,114 @@
                 </button>
             </div>
             <div class="modal-body">
-                <h5>Privacy</h5>
+                <h5>Privacidad</h5>
                 <ul>
-                    <li>Private: only you can see your post.</li>
-                    <li>People on Isolaatti: every user that has an account can see your post.</li>
+                    <li>Privado: solo tú puedes ver la publicación.</li>
+                    <li>Usuarios de Isolaatti: todos los usuarios que tengan cuenta en Isolaatti pueden ver la publicación</li>
                     <li>Everyone: your post can be seen even without an account.</li>
                 </ul>
                 <hr/>
-                <h5>Audio posts</h5>
+                <h5>Publicaciones con audio</h5>
                 <p>
-                    You can record audio and attach it to your posts. The limit is 2 minutes. To record an audio,
-                    use the <strong>Post Editor</strong>
+                    Puedes grabar un audio de hasta 2 minutos y agregarlo a tu publicación. Para grabar un audio,
+                    usa el <strong>Editor pro</strong>
                 </p>
                 <hr/>
-                <h5>Post editor</h5>
+                <h5>Editor pro</h5>
                 <p>
-                    The Post Editor is the best way to write long posts (and as said above, needed to record audios).
-                    There you will find some markdown helpers and a live preview of your post.
+                    El Editor Pro es la mejor manera de escribir publicaciones largas (y cuando necesitas agregar
+                    audios). En él cuentas con facilitadores de markdown y vista previa de la publicación
                 </p>
                 <hr/>
                 <h5><i class="fab fa-markdown"></i> What is Markdown</h5>
-                <p>Markdown is a special syntax that allows you to give format to plain text. It can be rendered to HTML, which is what is done internally.</p>
-                <h5 class="mt-2">Basics</h5>
-                <h6>Paragraphs</h6>
-                <p>Separate paragrahs by adding two break lines. Note that if you don't add a second break line, the content will be read as the same paragraph.</p>
-                <h6>Heading</h6>
-                <p>There are six heading levels (H1 to H6). Those are defined as follows:</p>
+                <p>Markdown es una sintáxis especial que permite formatear texto de menera sencilla.</p>
+                <h5 class="mt-2">Básico</h5>
+                <h6>Párrafos</h6>
+                <p>
+                    Separa cada párrafo con un salto de línea entre ellos, es decir, salta de linea dos veces al
+                    terminar de escribir el párrafo.
+                </p>
+                <h6>Encabezados</h6>
+                <p>Hay 6 niveles de encabezamiento. Son:</p>
                 <code>
                     <pre>
-    # This is header 1
-    ## This is header 2
-    ### This is header 3
-    #### This is header 4
-    ##### This is header 5
-    ###### This is header 6
+    # Encabezado 1
+    ## Encabezado 2
+    ### Encabezado 3
+    #### Encabezado 4
+    ##### Encabezado 5
+    ###### Encabezado 6
     </pre>
                 </code>
-                <p>Which will render like this</p>
-                <h1>This is header 1</h1>
-                <h2>This is header 2</h2>
-                <h3>This is header 3</h3>
-                <h4>This is header 4</h4>
-                <h5>This is header 5</h5>
-                <h6>This is header 6</h6>
+                <p>Lo cual quedaría así</p>
+                <h1>Encabezado 1</h1>
+                <h2>Encabezado 2</h2>
+                <h3>Encabezado 3</h3>
+                <h4>Encabezado 4</h4>
+                <h5>Encabezado 5</h5>
+                <h6>Encabezado 6</h6>
                 <hr/>
 
-                <h6>Bold and italics</h6>
-                <p>You can make text bold and/or italics. To do that use the following:</p>
+                <h6>Negritas e itálicas</h6>
+                <p>Puedes colocar negristas y/o itálicas. Para hacerlo escribe:</p>
                 <code>
                     <pre>
-    **This is bold** *This is italics* ***This is bold and italics***
+    **Esto está en negritas** *Esto está en itálicas* ***Esto está en negritas e itálicas***
     </pre>
                 </code>
-                <p>Which will render like this:</p>
+                <p>Lo cual quedaría así:</p>
                 <p>
-                    <b>This is bold</b> <i>This is italics</i>
+                    <b>Esto está en negritas</b> <i>Esto está en itálicas</i>
                     <b>
-                        <i>This is bold and italics</i>
+                        <i>Esto está en negritas e itálicas</i>
                     </b>
                 </p>
                 <hr/>
 
-                <h6>Links</h6>
-                <p>There are three ways of defining a link.</p>
-                <p>If you will use the URL just once you can make:</p>
+                <h6>Enlaces</h6>
+                <p>Hay 3 maneras de definir enlaces.</p>
+                <p>Si solo usarás en enlace solo una vez, puedes escribir:</p>
                 <code>
                     <pre>
-    [This is a link](https://isolaatti.com/)
+    [Visita Isolaatti](https://isolaatti.com/)
     </pre>
                 </code>
-                <p>That will render like this:</p>
+                <p>Lo cual quedaría:</p>
                 <p>
-                    <a href="https://isolaatti.com/">This is a link</a>
+                    <a href="https://isolaatti.com/">Visita Isolaatti</a>
                 </p>
                 <hr/>
 
-                <p>But, if you want to use the same URL more than once, you can declare the URL and then use it many times. Make it like so:</p>
+                <p>Pero si quieres utilizar un enlace más de una vez, puedes declararlo y utilizarlo así:</p>
                 <code>
                     <pre>
-    Well, here is my [website]. And yes, to show it again, here is my [website]
+    Atención, este es mi [sitio web]. Y sí, solo para confirmar, este es mi [sitio web]
     
-    [website]: https://erik-swdev.isolaatti.com/
+    [sitio web]: https://erik-swdev.isolaatti.com/
     </pre>
                 </code>
-                <p>Which will render like this:</p>
+                <p>Lo cual quedaría así:</p>
                 <p>
-                    Well, here is my <a href="https://erik-swdev.isolaatti.com/">website</a> . And yes, to show it again, here is my <a href="https://erik-swdev.isolaatti.com/">website</a>
+                    Atención, este es mi <a href="https://erik-swdev.isolaatti.com/">sitio web</a> . Y sí, solo para confirmar, este es mi <a href="https://erik-swdev.isolaatti.com/">sitio web</a>
                 </p>
                 <hr/>
 
-                <p>If you just want to show the URL as the text of the link, make this:</p>
+                <p>Si solo quieres colocar el enlace tal cual, mostrando la URL completa, entonces escribe simplemente:</p>
                 <code>
                     <pre>
     &lt;https://erik-swdev.isolaatti.com&gt;
     </pre>
                 </code>
-                <p>Which will be rendered simply:</p>
+                <p>Lo cual quedaría simplemente:</p>
                 <p>
                     <a href="https://erik-swdev.isolaatti.com">https://erik-swdev.isolaatti.com</a>
                 </p>
                 <hr/>
 
-                <h5>Get more information</h5>
+                <h5>Lee más acerca de Markdown</h5>
                 <p>
-                    This text is not exhaustive, you can make much more using Markdown, such as tables, quotes, lists.
-                    In order to get more information about how to do such and more things, we recommend you to read <a href="https://www.markdownguide.org/basic-syntax/" target="_blank">this guide</a>.
+                    Este texto no es todo, puedes hacer más cosas, como tablas, citas, colocar código, etc.
+                    Para obtener más información, puedes leer <a href="https://www.markdownguide.org/basic-syntax/" target="_blank">esta guía</a> (sitio externo).
                 </p>
             </div>
         </div>
