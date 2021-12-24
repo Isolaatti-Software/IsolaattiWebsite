@@ -72,11 +72,13 @@
             <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-xl">
                 <div class="modal-content">
                     <div class="modal-header">
+                        <h5 class="modal-title">Comentarios</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
+                        <h5 v-if="commentsViewer.comments.length===0" class="m-4 text-center"><i class="fas fa-sad-tear"></i> No hay comentarios que mostrar</h5>
                         <comment v-for="comment in commentsViewer.comments"
                                  :comment="comment"
                                  :audio-url="audioUrl"
@@ -86,7 +88,7 @@
                     </div>
                     <div class="modal-footer">
                         <span>
-                            <a :href="openThreadLink" target="_blank">Abrir hilo</a>
+                            <a :href="openThreadLink" target="_blank">Abrir publicación</a>
                         </span>
                     </div>
                 </div>
