@@ -43,6 +43,17 @@ namespace isolaatti_API.Controllers
             return new FileContentResult(otherUser.ProfileImageData, "image/png");
         }
 
+        [HttpPost]
+        [Route("IsUserOnline/{userId:int}")]
+        public IActionResult IsUserOnline(int userId, [FromForm] string sessionToken)
+        {
+            var accountsManager = new Accounts(_db);
+            var user = accountsManager.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
+
+            return Ok(Hubs.NotificationsHub.Sessions.ContainsValue(userId));
+        }
+
         [HttpGet]
         [Route("rt_con")]
         public IActionResult GetAllRealTimeConnections()
