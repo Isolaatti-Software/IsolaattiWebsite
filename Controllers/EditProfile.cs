@@ -1,5 +1,10 @@
+using System;
+using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
+using System.Threading.Tasks;
+using isolaatti_API.Classes;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Http;
@@ -122,6 +127,45 @@ namespace isolaatti_API.Controllers
             user.DescriptionAudioUrl = url;
             Db.Users.Update(user);
             Db.SaveChanges();
+            return Ok();
+        }
+
+        [HttpPost]
+        [Route("SetProfileColor")]
+        public async Task<IActionResult> SetProfileColor([FromForm] string sessionToken, [FromForm] string htmlColor)
+        {
+            var accountsManager = new Accounts(Db);
+            var user = accountsManager.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
+
+            if (htmlColor == null) return BadRequest(new { error = "error/color-null" });
+
+            try
+            {
+                ColorTranslator.FromHtml(htmlColor);
+            }
+            catch (Exception)
+            {
+                return BadRequest(new { error = "error/color-invalid" });
+            }
+
+            UserPreferences userPreferences;
+            try
+            {
+                userPreferences = JsonSerializer.Deserialize<UserPreferences>(user.UserPreferencesJson);
+            }
+            catch (JsonException)
+            {
+                userPreferences = new UserPreferences();
+            }
+
+            userPreferences.ProfileHtmlColor = htmlColor;
+
+            user.UserPreferencesJson = JsonSerializer.Serialize(userPreferences);
+
+            Db.Users.Update(user);
+            await Db.SaveChangesAsync();
+
             return Ok();
         }
     }
