@@ -1,9 +1,9 @@
-@page "/Pub/Hilo"
+@page "/publico/visorPublicaciones"
 @model isolaatti_API.Pages.PublicContent.PublicThreadViewer
 
 @{
     Layout = "Shared/_LayoutWebAppOutside";
-    ViewData["Title"] = $"Thread {ViewData["threadId"]}";
+    ViewData["Title"] = $"Publicación #{ViewData["threadId"]}";
 }
 
 @section Scripts
@@ -43,7 +43,7 @@
     <a asp-page="/About">Acerca de</a>
 </nav>
 
-<div class="d-flex flex-column w-100" id="vue-container">
+<div class="d-flex flex-column w-100 pt-2" id="vue-container">
     <post-template :post="thread.post"
                    v-model="postLinkToShare"
                    v-on:play-audio="playAudio(thread.post.audioAttachedUrl)"

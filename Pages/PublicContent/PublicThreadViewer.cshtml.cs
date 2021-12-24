@@ -1,4 +1,3 @@
-using System;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -9,13 +8,13 @@ namespace isolaatti_API.Pages.PublicContent
     public class PublicThreadViewer : PageModel
     {
         private readonly DbContextApp _db;
-        
+
         public PublicThreadViewer(DbContextApp dbContext)
         {
             _db = dbContext;
         }
-        
-        public IActionResult OnGet(Guid id)
+
+        public IActionResult OnGet(long id)
         {
             var post = _db.SimpleTextPosts.Find(id);
             if (post == null) return NotFound();
@@ -28,14 +27,13 @@ namespace isolaatti_API.Pages.PublicContent
             var user = accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
             if (user != null)
             {
-                return RedirectToPage($"/Threads",new
+                return RedirectToPage($"/PostViewer", new
                 {
                     id = id
                 });
             }
-            
+
             return Page();
         }
-        
     }
 }

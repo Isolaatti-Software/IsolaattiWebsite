@@ -1,4 +1,4 @@
-@page "/Pub/Feed"
+@page "/publico/Feed"
 @model isolaatti_API.Pages.PublicContent.Feed
 
 @{
@@ -29,13 +29,18 @@
     <meta property="og:image" content="https://isolaatti.com/res/imgs/metadata-image-isolaatti.png"/>
 }
 
+@section css
+{
+    <link href="~/css/webapp_main.css" rel="stylesheet">
+}
+
 <nav class="welcome-page-navbar">
     <a asp-page="/s/Welcome">Bienvenido</a>
     <a asp-page="/s/Welcome" asp-fragment="features">Características</a>
     <a asp-page="/About">Acerca de</a>
 </nav>
 <div id="vue-container" class="w-100">
-    <div class="alert alert-secondary">
+    <div class="alert alert-secondary mt-2">
         <h5 class="alert-heading">No iniciaste sesión</h5>
         Inicia sesión para interactuar. Si no tienes una cuenta, <a asp-page="/MakeAccount" class="alert-link">regrístrate</a>
     </div>
