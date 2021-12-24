@@ -18,20 +18,15 @@ body {
 }
 h1{
     text-decoration-style: unset;
-    font-family: 'Zen Dots', cursive;
     margin-bottom: 5px;
     margin-top: 20px;
 }
 
 .sign-in-up-form {
-    /*background-color: rgb(29, 3, 64);*/
-    border: solid rgb(29, 3, 64) 1px;
     padding: 40px;
-    border-radius: 30px;
     max-width: 500px;
-    /*color:white;*/
-    margin: 10px;
-    margin-top:60px;
+    margin: 60px 10px 10px;
+    box-shadow: 8px 11px 53px -6px rgba(62, 0, 99, 0.2);
 }
 
 .sign-in-up-form-container {
