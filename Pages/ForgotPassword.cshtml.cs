@@ -26,7 +26,7 @@ namespace isolaatti_API.Pages
 
         public IActionResult OnGet()
         {
-            return NotFound();
+            return Page();
         }
 
         public async Task<IActionResult> OnPost([FromForm] string email)
