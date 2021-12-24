@@ -3,20 +3,24 @@ Vue.component('post-template',{
     data: function() {
         return {
             userData: userData,
+            cutContent: true
         }
     },
     computed: {
         profileLink: function() {
-            return `/Perfil?id=${this.post.userId}`
+            return `/perfil/${this.post.userId}`
         },
-        reportLink: function() {
+        reportLink: function () {
             return `/Reports/ReportPostOrComment?postId=${this.post.id}`;
         },
-        openThreadLink: function() {
-            return `/Hilo/${this.post.id}`;
+        openThreadLink: function () {
+            return `/pub/${this.post.id}`;
         },
-        editPostLink: function() {
+        editPostLink: function () {
             return `/EditorPro?edit=True&postId=${this.post.id}`
+        },
+        containerCssClass: function () {
+            return this.cutContent ? "d-flex mb-2 flex-column p-2 post post-cut-height" : "d-flex mb-2 flex-column p-2 post"
         }
     },
     methods: {
@@ -57,12 +61,15 @@ Vue.component('post-template',{
                 border: ${theme.border.size}px ${theme.border.type} ${theme.border.color};
                 border-radius: ${theme.border.radius}px;`;
         },
-        getUserImageUrl: function(userId) {
+        getUserImageUrl: function (userId) {
             return `/api/Fetch/GetUserProfileImage?userId=${userId}`
+        },
+        showFullPost: function () {
+            this.cutContent = false;
         }
     },
     template: `
-      <div class="d-flex mb-2 flex-column p-2 post" :style="getPostStyle(post.themeJson)">
+      <div :class="containerCssClass" :style="getPostStyle(post.themeJson)">
       <div class="d-flex justify-content-between align-items-center">
         <div class="d-flex">
           <img class="user-avatar" :src="getUserImageUrl(post.userId)">
@@ -102,13 +109,17 @@ Vue.component('post-template',{
           <i class="fas fa-pause" v-else></i>
         </button>
       </div>
-      <div class="mt-2 post-content" v-html="compileMarkdown(post.textContent)"></div>
+      <div class="mt-2 post-content" v-html="compileMarkdown(post.textContent)" ref="postContentContainer"></div>
+      <div class="d-flex justify-content-center">
+        <button class="btn btn-primary btn-sm" v-on:click="showFullPost" v-if="cutContent">Mostrar todo</button>
+      </div>
       <div class="d-flex justify-content-end">
         <div class="btn-group btn-group-sm" v-if="userData.id!=-1">
-          <a class="btn btn-dark btn-sm" href="#thread-viewer" data-toggle="modal" v-if="!isModal" v-on:click="$emit('view-thread')">
+          <a class="btn btn-dark btn-sm" href="#thread-viewer" data-toggle="modal" v-if="!isModal"
+             v-on:click="$emit('view-thread')">
             <i class="fas fa-comments" aria-hidden="true"></i> {{ post.numberOfComments }}
           </a>
-          <button v-if="!post.liked"  v-on:click="$emit('like',0.1)" class="btn btn-dark btn-sm" type="button">
+          <button v-if="!post.liked" v-on:click="$emit('like',0.1)" class="btn btn-dark btn-sm" type="button">
             <i class="fas fa-thumbs-up" aria-hidden="true"></i> {{ post.numberOfLikes }}
           </button>
           <button v-if="post.liked" v-on:click="$emit('un-like',0.1)" class="btn btn-primary btn-sm" type="button">
@@ -116,9 +127,12 @@ Vue.component('post-template',{
           </button>
         </div>
         <div class="btn-group btn-group-sm" v-else>
-          <a class="btn btn-dark" :href="openThreadLink"><i class="fas fa-comments"></i> {{post.numberOfComments}}</a>
+          <a class="btn btn-dark" :href="openThreadLink"><i class="fas fa-comments"></i> {{ post.numberOfComments }}</a>
         </div>
       </div>
       </div>
-    `
+    `,
+    mounted: function () {
+        this.cutContent = this.$refs.postContentContainer.scrollHeight > this.$refs.postContentContainer.clientHeight
+    }
 })

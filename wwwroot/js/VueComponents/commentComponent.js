@@ -2,15 +2,22 @@ Vue.component('comment', {
     props: ['comment', 'audio-url', 'paused'],
     data: function () {
         return {
-            userData: userData
+            userData: userData,
+            cutContent: true
         }
     },
     computed: {
         profileLink: function () {
-            return `/Profile?id=${this.comment.whoWrote}`
+            return `/perfil/${this.comment.whoWrote}`
         },
         reportLink: function () {
             return `/Reports/ReportPostOrComment?commentId=${this.comment.id}`;
+        },
+        containerCssClass: function () {
+            return this.cutContent ? "post d-flex mb-2 flex-column p-2 post-cut-height" : "post d-flex mb-2 flex-column p-2"
+        },
+        titleAtr: function () {
+            return `id del comentario: ${this.comment.id}`
         }
     },
     methods: {
@@ -19,10 +26,13 @@ Vue.component('comment', {
         },
         getUserImageUrl: function (userId) {
             return `/api/Fetch/GetUserProfileImage?userId=${userId}`
+        },
+        showFullPost: function () {
+            this.cutContent = false;
         }
     },
     template: `
-      <div class="post d-flex mb-2 flex-column p-2">
+      <div :class="containerCssClass" :title="titleAtr">
       <div class="d-flex justify-content-between align-items-center">
         <div class="d-flex">
           <img class="user-avatar" :src="getUserImageUrl(comment.whoWrote)">
@@ -50,7 +60,13 @@ Vue.component('comment', {
           <i class="fas fa-pause" v-else></i>
         </button>
       </div>
-      <div class="mt-2 post-content" v-html="compileMarkdown(comment.textContent)"></div>
+      <div class="mt-2 post-content" v-html="compileMarkdown(comment.textContent)" ref="commentContentContainer"></div>
+      <div class="d-flex justify-content-center">
+        <button class="btn btn-primary " v-on:click="showFullPost" v-if="cutContent">Mostrar todo</button>
       </div>
-    `
+      </div>
+    `,
+    mounted: function () {
+        this.cutContent = this.$refs.commentContentContainer.scrollHeight > this.$refs.commentContentContainer.clientHeight;
+    }
 })
