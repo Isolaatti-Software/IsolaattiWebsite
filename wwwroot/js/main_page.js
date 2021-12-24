@@ -106,7 +106,7 @@ let vueContainer = new Vue({
     },
     computed: {
         openThreadLink: function() {
-            return `/Hilo/${this.commentsViewer.postId}`;
+            return `/pub/${this.commentsViewer.postId}`;
         }
     },
     methods: {

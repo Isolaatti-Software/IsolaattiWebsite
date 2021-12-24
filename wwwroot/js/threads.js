@@ -123,9 +123,6 @@ let thisVueInstance;
                                     console.log(JSON.parse(request.responseText));
                                     globalThis.commentTextarea = "";
                                     globalThis.getComments();
-                                    if(globalThis.commentBoxFullSize){
-                                        globalThis.toggleCommentBoxFullSize();
-                                    }
                                 }
                             }
                             request.send(form);
@@ -177,24 +174,6 @@ let thisVueInstance;
                             }
                         }
                         this.playing = true;
-                    },
-                    toggleCommentBoxFullSize: function() {
-                        let button = this.$refs.buttonToggleComSize;
-                        if(!this.commentBoxFullSize) {
-
-                            this.$refs.commentBox.style.animation = "expandCommentBox";
-                            this.$refs.commentBox.style.animationDuration = "0.4s"
-                            this.$refs.commentBox.style.animationFillMode = "forwards";
-                            this.commentBoxFullSize = true;
-                            button.innerHTML = '<i class="fas fa-arrow-down"></i>';
-                        } else {
-
-                            this.$refs.commentBox.style.animation = "shrinkCommentBox";
-                            this.$refs.commentBox.style.animationDuration = "0.4s";
-                            this.$refs.commentBox.style.animationFillMode = "forwards";
-                            button.innerHTML = '<i class="fas fa-arrow-up"></i>';
-                            this.commentBoxFullSize = false;
-                        }
                     },
                     insertHeading: function(headingN) {
                         let markdown = "";
@@ -315,7 +294,8 @@ let thisVueInstance;
                         request.onload = () => {
                             if(request.status === 200) {
                                 this.comments = JSON.parse(request.responseText);
-                                window.scrollTo(0, document.body.scrollHeight);
+                                const mainContainer = document.getElementById("main-container");
+                                mainContainer.scroll(0, mainContainer.scrollHeight)
                             }
                         }
                         request.send(form);
