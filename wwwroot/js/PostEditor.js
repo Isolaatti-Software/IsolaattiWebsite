@@ -320,16 +320,23 @@ const vue = new Vue({
             
             $('#add-audio-modal').modal('hide');
         },
-        save: function() {
-            
+        save: function () {
+
         },
-        addColor: function() {
+        addColor: function () {
             this.theme.background.colors.push("#FFFFFF");
         },
-        removeColor: function(index) {
+        removeColor: function (index) {
             this.theme.background.colors.splice(index, 1);
         },
-        applyDefaultTheme: function(event) {
+        switchColors: function (color1Index, color2Index) {
+            // interchange color 1 and color 2
+            // I do it this way because Vue reactivity doesn't detect changes on values when they are made directly with index
+            let temp = this.theme.background.colors[color1Index];
+            this.theme.background.colors.splice(color1Index, 1, this.theme.background.colors[color2Index]);
+            this.theme.background.colors.splice(color2Index, 1, temp);
+        },
+        applyDefaultTheme: function (event) {
             this.theme = this.defaultThemes[event.target.value].data;
         }
     },
