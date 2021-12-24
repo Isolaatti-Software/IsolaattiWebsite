@@ -7,6 +7,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using isolaatti_API.Classes;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
@@ -35,7 +36,8 @@ namespace isolaatti_API.Controllers
             var profile = new Profile()
             {
                 Username = user.Name,
-                Email = user.Email
+                Email = user.Email,
+                Color = JsonSerializer.Deserialize<UserPreferences>(user.UserPreferencesJson).ProfileHtmlColor
             };
             return Ok(profile);
         }
