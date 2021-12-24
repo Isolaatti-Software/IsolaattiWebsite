@@ -1,12 +1,12 @@
 using System;
 using System.Linq;
-using System.Net.Mail;
+using System.Threading.Tasks;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using MimeKit;
-using SmtpClient = MailKit.Net.Smtp.SmtpClient;
+using SendGrid;
+using SendGrid.Helpers.Mail;
 
 namespace isolaatti_API.Pages
 {
@@ -16,18 +16,20 @@ namespace isolaatti_API.Pages
         public bool Post = false;
         public bool EmailFound;
         private User Account;
+        private ISendGridClient _sendGridClient;
 
-        public ForgotPassword(DbContextApp dbContextApp)
+        public ForgotPassword(DbContextApp dbContextApp, ISendGridClient sendGridClient)
         {
             Db = dbContextApp;
-        }
-        
-        public void OnGet()
-        {
-            
+            _sendGridClient = sendGridClient;
         }
 
-        public IActionResult OnPost([FromForm] string email)
+        public IActionResult OnGet()
+        {
+            return NotFound();
+        }
+
+        public async Task<IActionResult> OnPost([FromForm] string email)
         {
             Post = true;
             try
@@ -39,8 +41,9 @@ namespace isolaatti_API.Pages
                 EmailFound = false;
                 return Page();
             }
+
             EmailFound = true;
-            
+
             // here create token
             var userToken = new UserToken()
             {
@@ -56,40 +59,24 @@ namespace isolaatti_API.Pages
             }
 
             Db.UserTokens.Add(userToken);
-            Db.SaveChanges();
-            
+            await Db.SaveChangesAsync();
+
             // send email with link
-            SendEmail(userToken.Token);
+            await SendEmail(userToken.Token);
 
             return Page();
         }
 
-        private void SendEmail(string token)
+        private async Task SendEmail(string token)
         {
             var link = $"https://{Request.HttpContext.Request.Host.Value}/RecoverPassword?token_s={token}";
-            var userEmailAddress = Account.Email;
-            var body = String.Format(EmailTemplates.PasswordRecoveryEmail, link);
-            var message = new MimeMessage();
-            message.From.Add(new MailboxAddress("Isolaatti","validation.isolaatti@gmail.com"));
-            message.To.Add(new MailboxAddress(userEmailAddress));
-            message.Subject = "Isolaatti: Recover your password";
-            message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
-            {
-                Text = body
-            };
-            using var client = new SmtpClient();
-            try
-            {
-                client.ServerCertificateValidationCallback = (s, c, h, e) => true;
-                client.Connect("smtp.gmail.com", 465, true);
-                client.Authenticate("validation.isolaatti@gmail.com","0203_0302_" );
-                client.Send(message);
-                client.Disconnect(true);
-            }
-            catch (SmtpException exception)
-            {
-                
-            }
+            var from = new EmailAddress("no-reply@isolaatti.com", "Isolaatti");
+            var to = new EmailAddress(Account.Email, Account.Name);
+            var subject = "Cambia tu contraseña de Isolaatti";
+            var htmlBody = MailHelper.CreateSingleEmail(from, to, subject,
+                $"Abre el enlace para restablecer tu contraseña. {link}",
+                string.Format(EmailTemplates.PasswordRecoveryEmail, link));
+            await _sendGridClient.SendEmailAsync(htmlBody);
         }
     }
 }
