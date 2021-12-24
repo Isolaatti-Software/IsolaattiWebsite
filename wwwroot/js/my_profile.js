@@ -207,20 +207,35 @@ previewProfilePictureImage.addEventListener("load", function() {
 });
 
 
-profilePictureLoadFormElement.addEventListener("input", function() {
+profilePictureLoadFormElement.addEventListener("input", function () {
     let file = profilePictureLoadFormElement.files[0];
     document.getElementById("fileNameProfilePic").innerHTML = file.name;
     let fileReader = new FileReader();
     fileReader.readAsDataURL(file);
-    fileReader.onload = function() {
+    fileReader.onload = function () {
         previewProfilePictureImage.src = fileReader.result;
     };
 });
 
+document.querySelector("#setColorBtn").addEventListener('click', function () {
+    const htmlColor = document.querySelector('#profileColorField').value;
+    const form = new FormData();
+    form.append("sessionToken", sessionToken);
+    form.append("htmlColor", htmlColor);
+
+    const request = new XMLHttpRequest();
+    request.open("POST", "/api/EditProfile/SetProfileColor");
+
+    request.onload = function () {
+        window.location.reload();
+    }
+
+    request.send(form);
+});
 
 
 // Use this self called function to define events
-(function(){
+(function () {
     // "change password form" validation
     let newPasswordField = document.querySelector("#new_password_field");
     let newPasswordConfField = document.querySelector("#new_password_conf_field");
@@ -269,7 +284,7 @@ profilePictureLoadFormElement.addEventListener("input", function() {
             },
             computed: {
                 openThreadLink: function() {
-                    return `/Hilo/${this.commentsViewer.postId}`;
+                    return `/pub/${this.commentsViewer.postId}`;
                 },
                 filterAndSortedPosts: function() {
                     let filteredArray = this.posts.filter(value => {

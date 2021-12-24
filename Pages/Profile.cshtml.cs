@@ -1,4 +1,6 @@
 using System.Linq;
+using System.Text.Json;
+using isolaatti_API.Classes;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using isolaatti_API.Utils;
@@ -12,13 +14,14 @@ namespace isolaatti_API.Pages
         private readonly DbContextApp _db;
         public string ProfilePhotoUrl = null;
         public string SessionToken;
+        public string ProfileColor;
 
         public Profile(DbContextApp dbContextApp)
         {
             _db = dbContextApp;
         }
 
-        public IActionResult OnGet([FromQuery] int id)
+        public IActionResult OnGet(int id)
         {
             var token = Request.Cookies["isolaatti_user_session_token"];
             var accountsManager = new Accounts(_db);
@@ -56,6 +59,16 @@ namespace isolaatti_API.Pages
             ProfilePhotoUrl = UrlGenerators.GenerateProfilePictureUrl(profile.Id, token, Request);
 
             ViewData["audioDescription"] = profile.DescriptionAudioUrl;
+
+            try
+            {
+                var color = JsonSerializer.Deserialize<UserPreferences>(profile.UserPreferencesJson).ProfileHtmlColor;
+                ProfileColor = color ?? "#30098EE6";
+            }
+            catch (JsonException)
+            {
+                ProfileColor = "#30098EE6";
+            }
 
             return Page();
         }

@@ -1,4 +1,4 @@
-@page "/Perfil"
+@page "/perfil/{id}"
 @model isolaatti_API.Pages.Profile
 
 @{
@@ -13,10 +13,11 @@
 
 
 <div class="col-lg-2 col-md-4 p-0">
-    <header id="left-bar" class="p-2">
+    <header id="left-bar" class="p-2" style="background: linear-gradient(@Model.ProfileColor 5%, white)">
         <div class="d-flex justify-content-center align-items-center flex-column mt-3" id="profile_photo_container">
             <img src="@Model.ProfilePhotoUrl" width="100" height="100" class="profile-pic" id="profile_photo_el" ref="profilePictureElement"/>
             <button id="play-audio-description-btn" v-on:click="playAudioDescription" v-if="audioDescriptionUrl !== null" v-html="audioDescriptionButtonInnerText"></button>
+            <div id="online-dot"></div>
         </div>
         <div class="translucent-white-card" style="margin-top: 30px;">
             <p class="text-center m-0 overflow-auto text-break username-profile">@ViewData["profile_name"]</p>
@@ -117,11 +118,13 @@
                 <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-xl">
                     <div class="modal-content">
                         <div class="modal-header">
+                            <h5 class="modal-title">Comentarios</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
                         <div class="modal-body">
+                            <h5 v-if="commentsViewer.comments.length===0" class="m-4 text-center"><i class="fas fa-sad-tear"></i> No hay comentarios que mostrar</h5>
                             <comment v-for="comment in commentsViewer.comments"
                                      :comment="comment"
                                      :audio-url="audioUrl"
@@ -131,7 +134,7 @@
                         </div>
                         <div class="modal-footer">
                             <span>
-                                <a :href="openThreadLink" target="_blank">Abrir hilo</a>
+                                <a :href="openThreadLink" target="_blank">Abrir publicación</a>
                             </span>
                         </div>
                     </div>
@@ -145,6 +148,7 @@
 @section Scripts
 {
     <script>
+    document.querySelector('#isolaatti-top-bar').style.backgroundColor = '@Model.ProfileColor';
     let thisProfileId = "@ViewData["profile_id"]";
     let thisUserIsFollowingMe = "@ViewData["thisUserIsFollowingMe"]" === "True";
     let followingThisUser = "@ViewData["followingThisUser"]" === "True";
@@ -159,7 +163,7 @@
     }
     <script>
     let accountData = {
-        userId: "@ViewData["profile_id"]"
+        userId: @ViewData["profile_id"]
     }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>

@@ -15,21 +15,49 @@ function getPosts(accountId, onComplete, onError) {
     let request = new XMLHttpRequest();
     request.open("POST", "/api/Feed/GetUserPosts");
     request.onreadystatechange = () => {
-        if(request.readyState === XMLHttpRequest.DONE) {
-            switch(request.status) {
-                case 200: onComplete(JSON.parse(request.responseText)); break;
-                default: onError(JSON.parse(request.responseText)); break;
+        if (request.readyState === XMLHttpRequest.DONE) {
+            switch (request.status) {
+                case 200:
+                    onComplete(JSON.parse(request.responseText));
+                    break;
+                default:
+                    onError(JSON.parse(request.responseText));
+                    break;
             }
         }
     }
     request.send(formData);
 }
 
-(function(){
+function fetchUserOnlineStatus() {
+    const greenDot = document.getElementById("online-dot");
+    const request = new XMLHttpRequest();
+    const form = new FormData();
+    form.append("sessionToken", sessionToken);
+    request.open("POST", `/api/Fetch/IsUserOnline/${accountData.userId}`);
+    request.onload = function () {
+        if (request.status === 200) {
+            if (JSON.parse(request.response)) {
+                greenDot.style.display = "block";
+            } else {
+                greenDot.style.display = "none";
+            }
+        }
+    }
+    request.send(form);
+}
+
+fetchUserOnlineStatus();
+
+setInterval(function () {
+    fetchUserOnlineStatus();
+}, 30000);
+
+(function () {
     let followButton = document.querySelector("#followButton");
-    followButton.addEventListener("click", function(){
+    followButton.addEventListener("click", function () {
         followButton.disabled = true;
-        if(followingThisUser) {
+        if (followingThisUser) {
             let formData = new FormData();
             formData.append("sessionToken", sessionToken);
             formData.append("userToUnfollowId", thisProfileId);
@@ -117,7 +145,7 @@ function getPosts(accountId, onComplete, onError) {
         },
         computed: {
             openThreadLink: function() {
-                return `/Hilo/${this.commentsViewer.postId}`;
+                return `/pub/${this.commentsViewer.postId}`;
             }
         },
         methods: {

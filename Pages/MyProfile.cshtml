@@ -1,4 +1,4 @@
-@page "/MiPerfil"
+@page "/tu"
 @using isolaatti_API.Models
 @using isolaatti_API.Utils
 @model isolaatti_API.Pages.MyProfile
@@ -206,6 +206,7 @@
         </div>
     </div>
 </div>
+
 <!-- Modal change photo -->
 <div class="modal fade" id="modal-change-photo">
     <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
@@ -239,6 +240,32 @@
         </div>
     </div>
 </div>
+
+<!--Modal select profile color-->
+<div class="modal fade" id="modal-set-profile-color">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-palette"></i> Establecer color del perfil</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="color" id="profileColorField" value="@Model.ProfileColor" class="form-control"/>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-sm btn-secondary">
+                    Cancelar
+                </button>
+                <button class="btn btn-sm btn-primary" id="setColorBtn">
+                    Aceptar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <div class="col-xl-2 col-lg-3 col-md-4 p-0" id="vue-container-for-left-bar">
     <!-- Modal audio description -->
@@ -289,7 +316,7 @@
             </div>
         </div>
     </div>
-    <aside id="left-bar" class="p-2">
+    <aside id="left-bar" class="p-2" style="background: linear-gradient(@Model.ProfileColor 5%, white)">
 
         <div class="d-flex justify-content-center align-items-center flex-column" style="position: relative">
             <img src="@Model.ProfilePhotoUrl" width="100" height="100" class="profile-pic mt-3" id="profile_photo" ref="profilePhoto"/>
@@ -308,6 +335,9 @@
                 <button class="btn btn-primary btn-sm" id="edit-profile-button"
                         data-target="#modal-edit-profile" data-toggle="modal">
                     Editar perfil
+                </button>
+                <button class="btn btn-primary btn-sm ml-1" data-target="#modal-set-profile-color" data-toggle="modal">
+                    <i class="fas fa-palette"></i>
                 </button>
             </nav>
 
@@ -420,11 +450,13 @@
                 <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-xl">
                     <div class="modal-content">
                         <div class="modal-header">
+                            <h5 class="modal-title">Comentarios</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
                         <div class="modal-body">
+                            <h5 v-if="commentsViewer.comments.length===0" class="m-4 text-center"><i class="fas fa-sad-tear"></i> No hay comentarios que mostrar</h5>
                             <comment v-for="comment in commentsViewer.comments"
                                      :comment="comment"
                                      :audio-url="audioUrl"
@@ -434,7 +466,7 @@
                         </div>
                         <div class="modal-footer">
                             <span>
-                                <a :href="openThreadLink" target="_blank">Abrir hilo</a>
+                                <a :href="openThreadLink" target="_blank">Abrir publicación</a>
                             </span>
                         </div>
                     </div>
@@ -532,6 +564,9 @@ else if (ViewData["profile_open"].Equals("links"))
 
 @section Scripts
 {
+    <script>
+    document.querySelector('#isolaatti-top-bar').style.backgroundColor = '@Model.ProfileColor';
+    </script>
     <script src="https://www.gstatic.com/firebasejs/7.23.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.23.0/firebase-storage.js"></script>
     <script>

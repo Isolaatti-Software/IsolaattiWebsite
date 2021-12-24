@@ -7,6 +7,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using isolaatti_API.Classes;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
@@ -25,6 +26,7 @@ namespace isolaatti_API.Pages
         public List<User> Followers = new List<User>();
         public List<User> Following = new List<User>();
         public string ProfilePhotoUrl = null;
+        public string ProfileColor;
 
         public MyProfile(DbContextApp dbContextApp)
         {
@@ -83,6 +85,17 @@ namespace isolaatti_API.Pages
 
             ViewData["numberOfFollowers"] = user.NumberOfFollowers;
             ViewData["numberOfFollowing"] = user.NumberOfFollowing;
+
+            try
+            {
+                var color = JsonSerializer.Deserialize<UserPreferences>(user.UserPreferencesJson).ProfileHtmlColor;
+                ProfileColor = color ?? "#30098EE6";
+            }
+            catch (JsonException)
+            {
+                ProfileColor = "#30098EE6";
+            }
+
             return Page();
         }
 
