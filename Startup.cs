@@ -4,8 +4,8 @@
 * This program is not allowed to be copied or reused without explicit permission.
 * erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
 */
+
 using System.IO;
-using System.Net;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using isolaatti_API.Hubs;
@@ -15,10 +15,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.EntityFrameworkCore;
+using SendGrid.Extensions.DependencyInjection;
 
 namespace isolaatti_API
 {
@@ -56,9 +57,12 @@ namespace isolaatti_API
             });
             services.Configure<ForwardedHeadersOptions>(options =>
             {
-                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
+                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto |
+                                           ForwardedHeaders.XForwardedHost;
             });
-            
+
+            services.AddSendGrid(options => { options.ApiKey = Configuration.GetSection("ApiKeys")["SendGrid"]; });
+
             // don't allow uploading files larger than 2 MB, for security reasons
             services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = 1024 * 1024 * 2);
         }
@@ -70,6 +74,7 @@ namespace isolaatti_API
             {
                 app.UseDeveloperExceptionPage();
             }
+
             app.UseForwardedHeaders();
             app.UseRouting();
             app.UseAuthorization();
@@ -81,7 +86,6 @@ namespace isolaatti_API
                 endpoints.MapRazorPages();
                 endpoints.MapHub<NotificationsHub>("/notifications_hub");
             });
-            
         }
     }
 }
