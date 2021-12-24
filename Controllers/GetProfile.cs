@@ -33,11 +33,27 @@ namespace isolaatti_API.Controllers
             var user = accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
+            UserPreferences userPreferences;
+
+            try
+            {
+                userPreferences = JsonSerializer.Deserialize<UserPreferences>(user.UserPreferencesJson);
+            }
+            catch (JsonException)
+            {
+                userPreferences = new UserPreferences()
+                {
+                    EmailNotifications = false,
+                    ProfileHtmlColor = "#731D8C"
+                };
+            }
+
+
             var profile = new Profile()
             {
                 Username = user.Name,
                 Email = user.Email,
-                Color = JsonSerializer.Deserialize<UserPreferences>(user.UserPreferencesJson).ProfileHtmlColor
+                Color = userPreferences.ProfileHtmlColor ?? "#731D8C"
             };
             return Ok(profile);
         }

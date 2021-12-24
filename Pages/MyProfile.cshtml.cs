@@ -89,11 +89,11 @@ namespace isolaatti_API.Pages
             try
             {
                 var color = JsonSerializer.Deserialize<UserPreferences>(user.UserPreferencesJson).ProfileHtmlColor;
-                ProfileColor = color ?? "#30098EE6";
+                ProfileColor = color ?? "#731D8C";
             }
             catch (JsonException)
             {
-                ProfileColor = "#30098EE6";
+                ProfileColor = "#731D8C";
             }
 
             return Page();
