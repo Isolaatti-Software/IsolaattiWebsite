@@ -31,5 +31,11 @@ namespace isolaatti_API.isolaatti_lib
             <h1>Hola. Restablezcamos tu contraseña.</h1>
             <p>Para que puedas restablecer tu contraseña, solo necesitas hacer clic en el enlace. Solo es válido una vez.</p>
             <p><a href='{0}'>{0}</a></p>";
+
+        public const string WelcomeEmail = @"<html><body>
+            <h1>¡Hola, {0}!</h1>
+            <p>Me complace darte la bienvenida a Isolaatti, gracias por crear una cuenta</p>
+            <p>Erik (erikswdev)</p>
+        </body></html>";
     }
 }

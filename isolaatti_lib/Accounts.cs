@@ -10,11 +10,14 @@
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using FirebaseAdmin.Auth;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Net.Http.Headers;
+using SendGrid;
+using SendGrid.Helpers.Mail;
 
 namespace isolaatti_API.isolaatti_lib
 {
@@ -57,7 +60,6 @@ namespace isolaatti_API.isolaatti_lib
             {
                 db.Users.Add(newUser);
                 db.SaveChanges();
-                //SendValidationEmail(newUser.Id, newUser.Uid);
                 return "0";
             }
             catch (Exception e)
@@ -227,6 +229,17 @@ namespace isolaatti_API.isolaatti_lib
             } while (password.Length < lenght);
 
             return password.Remove(0, lenght - 1);
+        }
+
+        public static async Task SendWelcomeEmail(ISendGridClient sendGridClient, string email, string name)
+        {
+            var from = new EmailAddress("no-reply@isolaatti.com", "Isolaatti");
+            var to = new EmailAddress(email, name);
+            var subject = "Cambia tu contraseña de Isolaatti";
+            var htmlBody = MailHelper.CreateSingleEmail(from, to, subject,
+                "Bienvenid@ a Isolaatti",
+                string.Format(EmailTemplates.PasswordRecoveryEmail, name));
+            await sendGridClient.SendEmailAsync(htmlBody);
         }
     }
 }

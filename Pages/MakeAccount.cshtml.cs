@@ -6,10 +6,12 @@
 */
 
 using System.Linq;
+using System.Threading.Tasks;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using SendGrid;
 
 namespace isolaatti_API.Pages
 {
@@ -21,12 +23,15 @@ namespace isolaatti_API.Pages
         public bool nameUsed = false;
         public bool LimitOfAccountsReached = false;
         public bool AccountNotMade = false;
+        private readonly ISendGridClient _sendGridClient;
 
-        public MakeAccount(DbContextApp dbContextApp)
+        public MakeAccount(DbContextApp dbContextApp, ISendGridClient sendGrid)
         {
             _db = dbContextApp;
+            _sendGridClient = sendGrid;
         }
-        public IActionResult OnGet(string user="", string email="", string error="", bool limitOfAccounts=false)
+
+        public IActionResult OnGet(string user = "", string email = "", string error = "", bool limitOfAccounts = false)
         {
             if (error.Equals("emailused"))
             {
@@ -51,38 +56,41 @@ namespace isolaatti_API.Pages
             return Page();
         }
 
-        public IActionResult OnPost(string username, string email, string password)
+        public async Task<IActionResult> OnPost(string username, string email, string password)
         {
             if (_db.Users.Count() >= 50)
             {
-                return RedirectToPage("MakeAccount", new {limitOfAccounts = true});
+                return RedirectToPage("MakeAccount", new { limitOfAccounts = true });
             }
+
             if (username == null || email == null || password == null)
             {
                 return Page();
             }
+
             var accountManager = new Accounts(_db);
             accountManager.DefineHttpRequestObject(Request);
             var result = accountManager.MakeAccount(username, email, password);
             switch (result)
             {
-                case "0"://success
+                case "0": //success
+                    await Accounts.SendWelcomeEmail(_sendGridClient, email, username);
                     return RedirectToPage("LogIn", new
                     {
-                        newUser=true,
-                        username=email
+                        newUser = true,
+                        username = email
                     });
                 case "1": //email unavailable
                     return RedirectToPage("MakeAccount", new
                     {
-                        user=username,
-                        error="emailused"
+                        user = username,
+                        error = "emailused"
                     });
                 case "2": //name unavailable
                     return RedirectToPage("MakeAccount", new
                     {
                         email = email,
-                        error="nameused"
+                        error = "nameused"
                     });
                 default:
                     return RedirectToPage("MakeAccount", new
@@ -91,7 +99,6 @@ namespace isolaatti_API.Pages
                         error = "couldnotsendemail"
                     });
             }
-            return Page();
         }
     }
 }
