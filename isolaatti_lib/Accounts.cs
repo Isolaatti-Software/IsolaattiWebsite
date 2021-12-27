@@ -35,10 +35,6 @@ namespace isolaatti_API.isolaatti_lib
                 return "1";
             }
 
-            if (db.Users.Any(user => user.Name.Equals(username)))
-            {
-                return "2";
-            }
 
             if (username == "" || password == "" || email == "")
             {
@@ -181,24 +177,24 @@ namespace isolaatti_API.isolaatti_lib
 
             var user = userTask.Result;
 
-            // makes the isolaatti account taking the google user information
-            // Generates a random password. It is not needed for the user to know it, as the user will use google account
-            // to sign in. User can still change the password and sign in in the normal way
-            var state = MakeAccount(user.DisplayName, user.Email, GenerateRandomAlphaNumericPassword(10));
-
-            // no errors when making account
-            if (state.Equals("0"))
+            if (!db.Users.Any(u => u.Email.Equals(user.Email)))
             {
-                var isolaattiUser = db.Users.Single(u => u.Email.Equals(user.Email));
-                // Add relation between Isolaatti account and Google Account
-                var googleUser = new GoogleUser()
-                {
-                    UserId = isolaattiUser.Id,
-                    GoogleUid = user.Uid
-                };
-                db.GoogleUsers.Add(googleUser);
-                db.SaveChanges();
+                MakeAccount(user.DisplayName, user.Email, GenerateRandomAlphaNumericPassword(10));
             }
+
+            var isolaattiUser = db.Users.Single(u => u.Email.Equals(user.Email));
+
+            if (db.GoogleUsers.Any(googleUser =>
+                    googleUser.GoogleUid.Equals(user.Uid) && googleUser.UserId.Equals(isolaattiUser.Id))) return;
+
+            // Add relation between Isolaatti account and Google Account
+            var googleUser = new GoogleUser()
+            {
+                UserId = isolaattiUser.Id,
+                GoogleUid = user.Uid
+            };
+            db.GoogleUsers.Add(googleUser);
+            db.SaveChanges();
         }
 
         public SessionToken CreateTokenForGoogleUser(string accessToken)

@@ -27,6 +27,8 @@
                 signInOptions: [
                   // Leave the lines as is for the providers you want to offer your users.
                   firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+                  firebase.auth.FacebookAuthProvider.PROVIDER_ID,
+                  "microsoft.com"
                 ],
                 // tosUrl and privacyPolicyUrl accept either url string or a callback
                 // function.
@@ -125,9 +127,9 @@
 </div>
 <div class="col-lg-5 col-md-6 justify-content-end align-items-center">
     <div class="sign-in-up-form">
-        <h2>Inicia sesión con Google</h2>
-        <p>Nos conectaremos con Google para registrarte o iniciar sesión en Isolaatti.</p>
-        <p>Despues de dar clic en el botón, se te redireccionará a la página de autenticación de Google. Solo atiende la página de Google y espera.</p>
+        <h2>Inicia sesión con proveedor externo</h2>
+        <p>Nos conectaremos con el proveedor para registrarte o iniciar sesión en Isolaatti.</p>
+        <p>Despues de dar clic en el botón, se te redireccionará a la página de autenticación del proveedor. Solo atiende la página del proveedor y espera.</p>
         <div id="firebaseui-auth-container"></div>
     </div>
 </div>
