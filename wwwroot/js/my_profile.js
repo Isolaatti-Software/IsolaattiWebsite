@@ -179,7 +179,7 @@ uploadProfilePhoto.addEventListener("click", function() {
         request.onload = function() {
             if(request.status === 200) {
                 console.log(request.responseText);
-                window.location = "/MyProfile";
+                window.location.reload();
             }
         }
         request.send(form); 
