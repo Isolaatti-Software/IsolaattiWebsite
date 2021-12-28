@@ -472,7 +472,9 @@ document.querySelector("#setColorBtn").addEventListener('click', function () {
                     consolidated: false,
                     timerReference: null,
                     stopTimeoutReference: null
-                }
+                },
+                noAudioSource: false,
+                isUploadingAudio: false
             },
             computed: {
                 clockFormatTime: function() {
@@ -502,24 +504,25 @@ document.querySelector("#setColorBtn").addEventListener('click', function () {
                         let storageRef = storage.ref();
                         
                         let uploadTask = storageRef.child(`audio_descriptions/${this.userData.id}/audio.webm`);
-                        uploadTask.put(this.recorder.audioBlob).then(function(s) {
-                            
+                        this.isUploadingAudio = true;
+                        uploadTask.put(this.recorder.audioBlob).then(function (s) {
+
                             // then get the url and send it to the backend to store it on the database
-                            uploadTask.getDownloadURL().then(function(url) {
-                                
+                            uploadTask.getDownloadURL().then(function (url) {
+
                                 let form = new FormData();
                                 form.append("sessionToken", globalThis.sessionToken);
                                 form.append("url", url);
-                                
+
                                 let request = new XMLHttpRequest();
                                 request.open("POST", "/api/EditProfile/UpdateAudioDescription");
-                                request.onload = function() {
-                                    if(request.status === 200) {
+                                request.onload = function () {
+                                    if (request.status === 200) {
                                         window.location.reload();
                                     }
                                 }
                                 request.send(form);
-                            })
+                            }).catch(error => this.isUploadingAudio = false)
                         })
                     }
                 },
@@ -552,6 +555,9 @@ document.querySelector("#setColorBtn").addEventListener('click', function () {
 
                     audioStreamPromise.then((stream) => {
                         this.recorder.mediaStream = stream;
+                        this.noAudioSource = false;
+                    }).catch(error => {
+                        this.noAudioSource = true;
                     });
                 },
                 onEditProfileAudioDescriptionModal: function() {
