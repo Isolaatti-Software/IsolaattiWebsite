@@ -22,7 +22,7 @@ Vue.component('comment', {
     },
     methods: {
         compileMarkdown: function (raw) {
-            return marked.parse(raw);
+            return DOMPurify.sanitize(marked.parse(raw));
         },
         getUserImageUrl: function (userId) {
             return `/api/Fetch/GetUserProfileImage?userId=${userId}`

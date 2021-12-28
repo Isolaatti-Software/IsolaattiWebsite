@@ -25,7 +25,7 @@ Vue.component('post-template',{
     },
     methods: {
         compileMarkdown: function(raw) {
-            return marked.parse(raw);
+            return DOMPurify.sanitize(marked.parse(raw));
         },
         getPostStyle: function(themeDefinitionJson) {
             if(themeDefinitionJson === null)
