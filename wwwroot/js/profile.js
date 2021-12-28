@@ -136,7 +136,7 @@ setInterval(function () {
                 postId: 0,
                 comments: []
             },
-            profilePictureElement: document.getElementById("profile_photo_el"),
+            // profilePictureElement: this.$refs.profilePictureElement,
             audioDescription: {
                 playing: false,
                 paused: false
@@ -280,11 +280,11 @@ setInterval(function () {
             // methods for audio description behaviour
             startRotatingProfilePicture: function() {
                 if(this.paused) {
-                    this.profilePictureElement.getAnimations().forEach(function(element){
+                    this.$refs.profilePictureElement.getAnimations().forEach(function (element) {
                         element.play();
                     });
                 } else {
-                    this.profilePictureElement.animate([
+                    this.$refs.profilePictureElement.animate([
                         {transform: 'rotate(0deg)'},
                         {transform: 'rotate(360deg)'}
                     ], {
