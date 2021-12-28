@@ -20,12 +20,24 @@ namespace isolaatti_API.Controllers
         {
             _db = dbContextApp;
         }
+
         // GET
         public IActionResult Index()
         {
             var accountsManager = new Accounts(_db);
             accountsManager.RemoveAToken(Request.Cookies["isolaatti_user_session_token"]);
             Response.Cookies.Delete("isolaatti_user_session_token");
+            return RedirectToPage("/Index");
+        }
+
+        [HttpGet]
+        [Route("All")]
+        public IActionResult CloseAllSessions()
+        {
+            var accountsManager = new Accounts(_db);
+            var user = accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
+            if (user == null) return NotFound();
+            accountsManager.RemoveAllUsersTokens(user.Id);
             return RedirectToPage("/Index");
         }
     }

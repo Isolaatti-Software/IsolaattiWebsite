@@ -21,9 +21,8 @@
 
     <h3 class="mt-1">Tus sesiones activas</h3>
     <p>Actualmente tienes estas sesiones activas</p>
-    <table class="table table-hover table-responsive-md bg-dark text-white">
+    <table class="table table-hover table-responsive-md">
         <thead>
-        <th></th>
         <th>Actual</th>
         <th>Dirección IP</th>
         <th>User Agent</th>
@@ -33,9 +32,6 @@
         @foreach (var sessionToken in Model.SessionTokens)
         {
             <tr>
-                <td>
-                    <input type="checkbox" name="">
-                </td>
                 <td>
                     @if (ViewData["curentSessionToken"].Equals(sessionToken.Token))
                     {
@@ -51,6 +47,17 @@
         </tbody>
 
     </table>
+    <h3 class="mt-1">Proveedores externos de autenticación</h3>
+    <p>Son los servicios como Google o Facebook que usaste para iniciar sesión</p>
+    <div class="alert alert-info">
+        ¡Trabajando en esto!
+    </div>
+    <hr/>
+    <h3 class="mt-1">Cerrar sesión</h3>
+    <div class="d-flex justify-content-around mb-3">
+        <a class="btn btn-primary" asp-controller="WebLogOut" asp-action="Index">Cerrar sesión</a>
+        <a class="btn btn-primary" asp-controller="WebLogOut" asp-action="CloseAllSessions">Cerrar todas las sesiones</a>
+    </div>
 </div>
 <div class="col-lg-3 col-md-2"></div>
 
