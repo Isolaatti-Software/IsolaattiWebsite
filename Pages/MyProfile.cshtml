@@ -390,12 +390,8 @@
     <section id="your-posts-deposit" class="d-flex flex-column mt-3 align-items-center">
 
         <div class="w-100 d-flex align-items-center flex-column">
-            <h5 class="m-3"><i class="far fa-newspaper"></i> Tus publicaciones</h5>
+            <h5 class="m-3"><i class="far fa-newspaper"></i> Tus discusiones</h5>
             <div class="d-flex justify-content-end w-100">
-                <button type="button" class="btn btn-primary mb-2 mr-auto"
-                        data-toggle="modal" data-target="#modal-new-post" title="Nueva publicación">
-                    <i class="fas fa-edit"></i>
-                </button>
                 <div class="btn-group mb-2">
                     <button type="button" class="btn btn-secondary" title="Filtrar"
                             data-target="#modal-filter-posts" data-toggle="modal">
@@ -412,17 +408,17 @@
                     <span class="sr-only">Cargando más contenido...</span>
                 </div>
             </div>
-            <post-template v-for="post in filterAndSortedPosts" :post="post"
-                           v-on:like="likePost(post)"
-                           v-on:un-like="unLikePost(post)"
+            <post-template v-for="post in filterAndSortedPosts" :post="post.postData"
+                           v-on:like="likePost(post.postData)"
+                           v-bind:theme="post.theme"
+                           v-on:un-like="unLikePost(post.postData)"
                            v-model="postLinkToShare"
-                           v-on:delete="deletePost(post.id)"
-                           v-on:play-audio="playAudio(post.audioAttachedUrl)"
-                           :audio-url="audioUrl"
+                           v-on:delete="deletePost(post.postData.id)"
+                           v-on:play-audio="playAudio(post.postData.audioUrl)"
                            :paused="paused"
-                           :is-modal="false"
-                           v-on:view-thread="viewComments(post)"
-                           v-bind:key="post.id">
+                           v-on:view-thread="viewComments(post.postData)"
+                           v-bind:audio-url="audioUrl"
+                           v-bind:key="post.postData.id">
             </post-template>
 
             <div class="modal fade" id="modal-share-post">
@@ -461,12 +457,13 @@
                                      :comment="comment"
                                      :audio-url="audioUrl"
                                      :paused="paused"
+                                     v-on:delete-comment="deleteComment(comment.id)"
                                      v-on:play-audio="playAudio(comment.audioUrl)">
                             </comment>
                         </div>
                         <div class="modal-footer">
                             <span>
-                                <a :href="openThreadLink" target="_blank">Abrir publicación</a>
+                                <a :href="openThreadLink">Abrir discusión</a>
                             </span>
                         </div>
                     </div>

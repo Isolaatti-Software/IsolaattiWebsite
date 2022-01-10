@@ -21,12 +21,15 @@ namespace isolaatti_API.Controllers
         {
             Db = _dbContext;
         }
-        public IActionResult Index([FromForm] string sessionToken,[FromForm] string currentPassword, [FromForm] string newPassword)
+
+        [HttpPost]
+        public IActionResult Index([FromForm] string sessionToken, [FromForm] string currentPassword,
+            [FromForm] string newPassword)
         {
             var accountsManager = new Accounts(Db);
             var user = accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
-            
+
             return Ok(accountsManager.ChangeAPassword(user.Id, currentPassword, newPassword));
         }
     }

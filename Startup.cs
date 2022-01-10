@@ -41,6 +41,7 @@ namespace isolaatti_API
                 Credential = GoogleCredential.FromStream(file)
             });
             services.AddControllers();
+            services.AddMvcCore().AddApiExplorer();
             services.AddRazorPages().AddRazorRuntimeCompilation();
             services.AddSignalR();
 
@@ -65,6 +66,8 @@ namespace isolaatti_API
 
             // don't allow uploading files larger than 2 MB, for security reasons
             services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = 1024 * 1024 * 2);
+
+            services.AddSwaggerGen();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -74,6 +77,9 @@ namespace isolaatti_API
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseSwagger();
+            app.UseSwaggerUI();
 
             app.UseForwardedHeaders();
             app.UseRouting();

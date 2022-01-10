@@ -27,6 +27,7 @@
       <PackageReference Include="FirebaseAdmin" Version="1.6.0"/>
       <PackageReference Include="SendGrid" Version="9.25.1"/>
       <PackageReference Include="SendGrid.Extensions.DependencyInjection" Version="1.0.1"/>
+      <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3"/>
   </ItemGroup>
 
   <ItemGroup>

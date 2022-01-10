@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using isolaatti_API.Classes.ApiEndpointsRequestDataModels;
 using isolaatti_API.Hubs;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
@@ -10,25 +11,27 @@ namespace isolaatti_API.Controllers
 {
     [ApiController]
     [Route("/api/[controller]")]
-    public class Follow : Controller
+    public class FollowingController : Controller
     {
         private readonly DbContextApp Db;
         private readonly IHubContext<NotificationsHub> _hubContext;
 
-        public Follow(DbContextApp dbContextApp, IHubContext<NotificationsHub> hubContext)
+        public FollowingController(DbContextApp dbContextApp, IHubContext<NotificationsHub> hubContext)
         {
             Db = dbContextApp;
             _hubContext = hubContext;
         }
 
         [HttpPost]
-        public IActionResult Index([FromForm] string sessionToken, [FromForm] int userToFollowId)
+        [Route("Follow")]
+        public IActionResult Index([FromHeader(Name = "sessionToken")] string sessionToken,
+            SingleIdentification identification)
         {
             var accountsManager = new Accounts(Db);
             var user = accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
-            var userToFollow = Db.Users.Find(userToFollowId);
+            var userToFollow = Db.Users.Find(Convert.ToInt32(identification.Id));
             if (userToFollow == null) return NotFound("User to follow was not found");
 
             // create new relation only if there is not one already
@@ -72,13 +75,14 @@ namespace isolaatti_API.Controllers
 
         [Route("Unfollow")]
         [HttpPost]
-        public IActionResult Unfollow([FromForm] string sessionToken, [FromForm] int userToUnfollowId)
+        public IActionResult Unfollow([FromHeader(Name = "sessionToken")] string sessionToken,
+            SingleIdentification identification)
         {
             var accountsManager = new Accounts(Db);
             var user = accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
-            var userToUnfollow = Db.Users.Find(userToUnfollowId);
+            var userToUnfollow = Db.Users.Find(Convert.ToInt32(identification.Id));
             if (userToUnfollow == null) return NotFound("User to unfollow was not found");
 
             try
@@ -107,7 +111,7 @@ namespace isolaatti_API.Controllers
 
         [Route("Following")]
         [HttpPost]
-        public IActionResult Following([FromForm] string sessionToken)
+        public IActionResult Following([FromHeader(Name = "sessionToken")] string sessionToken)
         {
             var accountsManager = new Accounts(Db);
             var user = accountsManager.ValidateToken(sessionToken);
@@ -130,7 +134,7 @@ namespace isolaatti_API.Controllers
 
         [Route("Followers")]
         [HttpPost]
-        public IActionResult Followers([FromForm] string sessionToken)
+        public IActionResult Followers([FromHeader(Name = "sessionToken")] string sessionToken)
         {
             var accountsManager = new Accounts(Db);
             var user = accountsManager.ValidateToken(sessionToken);

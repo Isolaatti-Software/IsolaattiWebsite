@@ -5,13 +5,13 @@ let audioContext = new AudioContext();
 const vue = new Vue({
     el: "#vue-container",
     data: {
-        input: "",
+        customHeaders: customHttpHeaders,
+        userData: userData,
         selectionStart: 0,
         selectionEnd: 0,
         privacy: "2",
         audio: {
             recording: false,
-            url: "",
             timeInSeconds: 0,
             recorded: false,
             consolidated: false,
@@ -23,26 +23,34 @@ const vue = new Vue({
                 resultantBlob: null
             }
         },
+        post: {
+            userId: userData.id,
+            username: userData.name,
+            liked: false,
+            privacy: 2,
+            content: "",
+            audioUrl: null,
+            timeStamp: Date.now()
+        },
         theme: {
             fontColor: "#000",
             backgroundColor: "#FFFFFF",
-            gradient: "false",
+            gradient: false,
             border: {
                 color: "#FFFFFF",
                 type: "solid",
-                size: "0",
-                radius: "5px"
+                size: 0,
+                radius: 5
             },
             background: {
                 type: "linear",
-                colors: ["#FFFFFF","#30098EE5"],
-                direction: "0"
+                colors: ["#FFFFFF", "#30098EE5"],
+                direction: 0
             }
         },
         defaultThemes: [], // this is populated from a hosted json
-        editing: editExistingPost,
-        existingAudioUrl: null,
-        editingPostId: editPostId
+        editing: editExistingPost ?? false,
+        editingPostId: editPostId ?? undefined
     },
     computed: {
         compiledMarkdown: function() {
@@ -57,30 +65,30 @@ const vue = new Vue({
         postThemeCSSStyle: function() {
             function returnColorsAsString(array) {
                 let res = "";
-                
+
                 for(let i=0; i < array.length - 1; i++) {
                     res += array[i] + ", "
                 }
-                
+
                 res += array[array.length - 1];
-                
+
                 return res;
             }
-            
+
             let backgroundProperty;
-            
+
             // if a gradient of any kind is selected it will generate the corresponding background,
             // otherwise it will return the solid color
-            if(this.theme.gradient === "true"){
-                backgroundProperty = this.theme.background.type === 
-                "linear" ? 
-                    `linear-gradient(${this.theme.background.direction}deg, ${returnColorsAsString(this.theme.background.colors)})` : 
+            if (this.theme.gradient) {
+                backgroundProperty = this.theme.background.type ===
+                "linear" ?
+                    `linear-gradient(${this.theme.background.direction}deg, ${returnColorsAsString(this.theme.background.colors)})` :
                     `radial-gradient(${returnColorsAsString(this.theme.background.colors)})`;
             } else {
                 backgroundProperty = this.theme.backgroundColor;
             }
-            
-           return `color: ${this.theme.fontColor};
+
+            return `color: ${this.theme.fontColor};
                 background: ${backgroundProperty};
                 border: ${this.theme.border.size}px ${this.theme.border.type} ${this.theme.border.color};
                 border-radius: ${this.theme.border.radius}px;
@@ -89,9 +97,6 @@ const vue = new Vue({
         }
     },
     methods: {
-        update: _.debounce(function(e){
-            this.input = e.target.value
-        }, 300),
         insertHeading: function(headingN) {
             let markdown = "";
             switch(headingN) {
@@ -106,13 +111,13 @@ const vue = new Vue({
             if(this.$refs.markdownTextarea.selectionStart === this.$refs.markdownTextarea.selectionEnd) {
                 let textBefore = "";
                 let textAfter = "";
-                for(let i = 0; i < this.$refs.markdownTextarea.selectionStart; i++) {
-                    textBefore += this.input.charAt(i);
+                for (let i = 0; i < this.$refs.markdownTextarea.selectionStart; i++) {
+                    textBefore += this.post.content.charAt(i);
                 }
-                for(let i = this.$refs.markdownTextarea.selectionStart; i < this.input.length; i++ ) {
-                    textAfter += this.input.charAt(i);
+                for (let i = this.$refs.markdownTextarea.selectionStart; i < this.post.content.length; i++) {
+                    textAfter += this.post.content.charAt(i);
                 }
-                if(textBefore.length !== 0) {
+                if (textBefore.length !== 0) {
                     this.input = textBefore + "\n" + markdown + textAfter;
                     this.selectionStart = textBefore.length + markdown.length + 1;
                     this.selectionEnd = textBefore.length + markdown.length + 1;
@@ -140,10 +145,10 @@ const vue = new Vue({
                 let textBefore = "";
                 let textAfter = "";
                 for(let i = 0; i < textarea.selectionStart; i++) {
-                    textBefore += this.input.charAt(i);
+                    textBefore += this.post.content.charAt(i);
                 }
                 for(let i = textarea.selectionStart; i < this.input.length; i++ ) {
-                    textAfter += this.input.charAt(i);
+                    textAfter += this.post.content.charAt(i);
                 }
                 
                 // cursor is not inside any pair of "*"
@@ -151,8 +156,8 @@ const vue = new Vue({
                     if(textBefore.charAt(textBefore.length - 1) === "*") {
                         textBefore += " ";
                     }
-                    
-                    this.input = textBefore + markdownSurrounder + markdownSurrounder + textAfter;
+
+                    this.post.content = textBefore + markdownSurrounder + markdownSurrounder + textAfter;
                     this.selectionStart = textBefore.length + markdownSurrounder.length;
                     this.selectionEnd = textBefore.length + markdownSurrounder.length;
                     
@@ -161,14 +166,14 @@ const vue = new Vue({
                         // this means that it is has only bold, so it can add another * for italics
                         if(textBefore.substring(textBefore.length - 4) !== "***" 
                             && textBefore.substring(textBefore.length - 3) === "**"){
-                            this.input = textBefore + markdownSurrounder + markdownSurrounder + textAfter;
+                            this.post.content = textBefore + markdownSurrounder + markdownSurrounder + textAfter;
                             this.selectionStart = textBefore.length + markdownSurrounder.length;
                             this.selectionEnd = textBefore.length + markdownSurrounder.length;
                         }
                     } else {
                         if(textBefore.substring(textBefore.length - 4) !== "***"
                             && textBefore.substring(textBefore.length - 3) !== "**"){
-                            this.input = textBefore + markdownSurrounder + markdownSurrounder + textAfter;
+                            this.post.content = textBefore + markdownSurrounder + markdownSurrounder + textAfter;
                             this.selectionStart = textBefore.length + markdownSurrounder.length;
                             this.selectionEnd = textBefore.length + markdownSurrounder.length;
                         }
@@ -182,67 +187,64 @@ const vue = new Vue({
                 let textAfter = "";
                 let selectedText = "";
                 for(let i = 0; i < textarea.selectionStart; i++) {
-                    textBefore += this.input.charAt(i);
+                    textBefore += this.post.content.charAt(i);
                 }
                 for(let i = textarea.selectionEnd; i < this.input.length; i++ ) {
-                    textAfter += this.input.charAt(i);
+                    textAfter += this.post.content.charAt(i);
                 }
                 for(let i = textarea.selectionStart; i < textarea.selectionEnd; i++) {
-                    selectedText += this.input.charAt(i);
+                    selectedText += this.post.content.charAt(i);
                 }
                 if(textBefore.substring(textBefore.length - (markdownSurrounder + 1)) !== markdownSurrounder) {
-                    this.input = textBefore + markdownSurrounder + selectedText + markdownSurrounder + textAfter;
+                    this.post.content = textBefore + markdownSurrounder + selectedText + markdownSurrounder + textAfter;
                 }
             }
         },
-        post: function(event) {
+        makePost: async function (event) {
             event.target.disabled = true;
             event.target.innerHTML = '<div class="spinner-border text-light spinner-border-sm" role="status"><span class="sr-only">Loading...</span></div>' + event.target.innerHTML;
-            let form = new FormData();
-            form.append("sessionToken", sessionToken);
-            form.append("privacy", this.privacy);
-            form.append("content", this.input);
-            form.append("themeJson", JSON.stringify(this.theme));
-            if(this.editing) {
-                form.append("postId", this.editingPostId)
+            const globalThis = this;
+            let requestBody = {
+                privacy: this.post.privacy,
+                content: this.post.content,
+                theme: this.theme,
+                audioUrl: this.audioUrl
             }
+
+
+            async function sendPostRequest() {
+                const response = await fetch(requestUrl, {
+                    headers: globalThis.customHeaders,
+                    method: "POST",
+                    body: JSON.stringify(requestBody)
+                });
+                window.location = "/";
+            }
+
+            let requestUrl;
+            if (this.editing) {
+                requestBody.postId = this.editingPostId;
+                requestUrl = "/api/Posting/Edit";
+            } else {
+                requestUrl = "/api/Posting/Make"
+            }
+
             // this means that there is a blob to upload
-            if(this.audio.consolidated && this.existingAudioUrl === null) {
+            if (this.audio.consolidated && this.post.audioUrl === null) {
                 let storageRef = storage.ref();
                 let date = new Date();
-                
+
                 // the resource has this pattern: /audio_posts/{userId}/{name of file}
                 // where name of file follows this rule: {date}-{hours}-{minutes}-{seconds}_audio.webm
                 let uploadTask = storageRef
-                        .child(`audio_posts/${userData.id}/${date.toDateString()}-${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}_audio.webm`);
-                uploadTask.put(this.audio.recorder.resultantBlob).then(function(snapshot) {
-                    uploadTask.getDownloadURL().then(function(url) {
-                        form.append("audioUrl",url);
-                        sendPostRequest();
-                    });
-                });
-            } else {
-                if(this.existingAudioUrl !== null) {
-                    form.append("audioUrl", this.existingAudioUrl);
-                }
-                sendPostRequest();
-            }
-            function sendPostRequest() {
-                let request = new XMLHttpRequest();
-                request.open("POST", "/api/MakePost");
-                request.onreadystatechange = () => {
-                    if (request.readyState === XMLHttpRequest.DONE) {
-                        switch (request.status) {
-                            case 200: window.location = "/"; break;
-                            case 404: alert(request.responseText); break;
-                            case 401: alert(request.responseText); break;
-                            case 500: alert(request.responseText); break;
-                        }
-                    }
-                };
-                request.send(form);
-            }
+                    .child(`audio_posts/${userData.id}/${date.toDateString()}-${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}_audio.webm`);
 
+                await uploadTask.put(this.audio.recorder.resultantBlob);
+                const url = await uploadTask.getDownloadURL();
+                requestBody.audioUrl = url;
+                this.post.audioUrl = url;
+            }
+            await sendPostRequest();
             
         },
         requestMicrophone: function() {
@@ -320,9 +322,6 @@ const vue = new Vue({
             
             $('#add-audio-modal').modal('hide');
         },
-        save: function () {
-
-        },
         addColor: function () {
             this.theme.background.colors.push("#FFFFFF");
         },
@@ -344,50 +343,28 @@ const vue = new Vue({
         let globalThis = this;
         this.$nextTick(function() {
             if(editExistingPost) {
-                
-                // get the post that user wants to edit
-                let form = new FormData();
-                form.append("sessionToken", sessionToken);
-                form.append("postId", editPostId);
-                
-                let request = new XMLHttpRequest();
-                request.open("POST", "/api/GetPost");
-                request.onload = function() {
-                    let post = JSON.parse(request.responseText);
-                    globalThis.input = post.textContent;
-                    globalThis.privacy = post.privacy;
-                    if(post.audioAttachedUrl !== null) {
-                        // set state variables
-                        globalThis.audio.consolidated = true;
-                        globalThis.audio.recorded = true;
-                        globalThis.existingAudioUrl = post.audioAttachedUrl;
-                        // download audio an put it into a blob
-                        fetch(post.audioAttachedUrl)
-                            .then(res => res.blob())
-                            .then(blob => globalThis.audio.recorder.resultantBlob = blob)
-                    }
-                    let theme = JSON.parse(post.themeJson);
+                fetch(`/api/Fetch/Post/${globalThis.editingPostId}`, {headers: globalThis.customHeaders})
+                    .then(result => {
+                        result.json().then(post => {
+                            globalThis.post = post.postData;
+                            if (post.theme !== null) {
+                                globalThis.theme = post.theme;
+                            }
 
-                    // background and gradient properties can be undefined if a post was saved before the new gradient
-                    // feature was added, so in case let's create them
-                    
-                    if(!("background" in theme)) {
-                        theme.background = {
-                            type: "linear",
-                            colors: ["#FFFFFF","#30098EE5"],
-                            direction: "0"
-                        }
-                    }
-                    
-                    if(!("gradient" in theme)) {
-                        theme.gradient = "false";
-                    }
-                    
-                    // now that I am sure that the whole object is as expected, I can assign it
-                    globalThis.theme = theme; // this is fine
-                    
-                }
-                request.send(form);
+
+                            if (post.postData.audioUrl === null)
+                                return;
+
+                            fetch(post.postData.audioUrl).then(audioResult => {
+                                audioResult.blob().then(audioBlob => {
+                                    globalThis.audio.consolidated = true;
+                                    globalThis.audio.recorded = true;
+                                    globalThis.audio.recording = false;
+                                    globalThis.audio.recorder.resultantBlob = audioBlob;
+                                })
+                            })
+                        })
+                    })
             }
             
             // populate default themes

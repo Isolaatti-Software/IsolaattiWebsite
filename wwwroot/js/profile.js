@@ -7,124 +7,192 @@
 * This file should be placed in the Pages/Profile.cshtml
 */
 
-function getPosts(accountId, onComplete, onError) {
-    let formData = new FormData();
-    formData.append("sessionToken", sessionToken);
-    formData.append("accountId", accountId);
-    
-    let request = new XMLHttpRequest();
-    request.open("POST", "/api/Feed/GetUserPosts");
-    request.onreadystatechange = () => {
-        if (request.readyState === XMLHttpRequest.DONE) {
-            switch (request.status) {
-                case 200:
-                    onComplete(JSON.parse(request.responseText));
-                    break;
-                default:
-                    onError(JSON.parse(request.responseText));
-                    break;
-            }
-        }
-    }
-    request.send(formData);
-}
 
 function fetchUserOnlineStatus() {
     const greenDot = document.getElementById("online-dot");
-    const request = new XMLHttpRequest();
-    const form = new FormData();
-    form.append("sessionToken", sessionToken);
-    request.open("POST", `/api/Fetch/IsUserOnline/${accountData.userId}`);
-    request.onload = function () {
-        if (request.status === 200) {
-            if (JSON.parse(request.response)) {
-                greenDot.style.display = "block";
-            } else {
-                greenDot.style.display = "none";
-            }
-        }
-    }
-    request.send(form);
+    fetch(`/api/Fetch/IsUserOnline/${accountData.userId}`, {
+        method: "GET",
+        headers: customHttpHeaders
+    }).then(res => {
+        res.json().then(val => {
+            greenDot.style.display = val ? 'block' : 'none'
+        })
+    })
 }
 
-fetchUserOnlineStatus();
-
-setInterval(function () {
-    fetchUserOnlineStatus();
-}, 30000);
 
 (function () {
+
     let followButton = document.querySelector("#followButton");
     followButton.addEventListener("click", function () {
         followButton.disabled = true;
         if (followingThisUser) {
-            let formData = new FormData();
-            formData.append("sessionToken", sessionToken);
-            formData.append("userToUnfollowId", thisProfileId);
-            
-            let request = new XMLHttpRequest();
-            request.open("POST", "/api/Follow/Unfollow");
-            request.onreadystatechange = function() {
-                if(request.readyState === XMLHttpRequest.DONE) {
-                    switch (request.status) {
-                        case 200 :
-                            followButton.innerHTML = "Follow " + '<i class="fas fa-check"></i>';
-                            followingThisUser = false;
-                            break;
-                        case 404 :
-                            console.error("User was not found. Please report this");
-                            break;
-                        case 401 :
-                            console.error("An authentication error occurred. Please report this");
-                            break;
-                        default :
-                            console.log(request.responseText);
-                            console.log("Status code: " + request.status);
-                            break;
-                            
-                    }
-                    followButton.disabled = false;
-                }
-            }
-            request.send(formData);
+            fetch("/api/Following/Unfollow", {
+                method: "POST",
+                headers: customHttpHeaders,
+                body: JSON.stringify({id: accountData.userId})
+            }).then(res => {
+                followButton.innerHTML = 'Seguir <i class="fas fa-check"></i>';
+                followingThisUser = false;
+                followButton.disabled = false;
+            })
         } else {
-            let formData = new FormData();
-            formData.append("sessionToken", sessionToken);
-            formData.append("userToFollowId", thisProfileId);
-
-            let request = new XMLHttpRequest();
-            request.open("POST","/api/Follow");
-            request.onreadystatechange = function() {
-
-                if(request.readyState === XMLHttpRequest.DONE) {
-                    switch (request.status) {
-                        case 200 :
-                            followButton.innerHTML = "Dejar de seguir " + '<i class="fas fa-times"></i>';
-                            followingThisUser = true;
-                            break;
-                        case 404 :
-                            console.error("User was not found. Please report this");
-                            break;
-                        case 401 :
-                            console.error("An authentication error occurred. Please report this");
-                            break;
-                        default :
-                            console.log(request.responseText);
-                            console.log("Status code: " + request.status);
-                            break;
-                    }
-                    followButton.disabled = false;
-                }
-            }
-            request.send(formData);
+            fetch("/api/Following/Follow", {
+                method: "POST",
+                headers: customHttpHeaders,
+                body: JSON.stringify({id: accountData.userId})
+            }).then(res => {
+                followButton.innerHTML = 'Dejar de seguir <i class="fas fa-times"></i>';
+                followingThisUser = true;
+                followButton.disabled = false
+            })
         }
-        
-        
+
     });
-    
+    /*                                 Vue.js part                                                                    */
+
+    /* Functions for vue methods starts here */
+
+    function fetchMyPosts() {
+        fetch(`/api/Fetch/PostsOfUser/${this.accountData.userId}`, {headers: this.customHeaders}).then(result => {
+            result.json().then(posts => {
+                this.posts = posts;
+                this.loading = false;
+            })
+        })
+    }
+
+    function fetchComments() {
+        fetch(`/api/Fetch/Post/${this.commentsViewer.postId}/Comments`, {
+            headers: this.customHeaders
+        }).then(res => {
+            res.json().then(comments => {
+                this.commentsViewer.comments = comments;
+            })
+        })
+    }
+
+    async function likePost(post) {
+        const postId = post.id;
+        const requestData = {id: postId}
+        const globalThis = this;
+        const response = await fetch("/api/Likes/LikePost", {
+            method: "POST",
+            headers: this.customHeaders,
+            body: JSON.stringify(requestData),
+        });
+
+        response.json().then(function (post) {
+            let index = vueContainer.posts.findIndex(post => post.postData.id === postId);
+            Vue.set(vueContainer.posts, index, post);
+        });
+    }
+
+    async function unLikePost(post) {
+        const postId = post.id;
+        const requestData = {id: postId}
+        const globalThis = this;
+        const response = await fetch("/api/Likes/UnLikePost", {
+            method: "POST",
+            headers: this.customHeaders,
+            body: JSON.stringify(requestData),
+        });
+
+        response.json().then(function (post) {
+            let index = vueContainer.posts.findIndex(post => post.postData.id === postId);
+            Vue.set(vueContainer.posts, index, post);
+        });
+    }
+
+    function compileMarkdown(raw) {
+        if (raw === null) raw = "";
+        return marked(raw);
+    }
+
+    function playAudio(url) {
+        if (this.audioUrl !== url) {
+            this.audioPlayer.pause();
+            this.audioUrl = url
+            this.audioPlayer.src = url;
+            this.audioPlayer.play();
+            this.paused = false;
+        } else {
+            if (!this.audioPlayer.paused) {
+                this.audioPlayer.pause()
+                this.paused = true;
+                this.playing = false;
+            } else {
+                this.audioPlayer.play();
+                this.playing = true;
+                this.paused = false;
+            }
+        }
+        this.playing = true;
+    }
+
+    function getPostStyle(themeDefinitionJson) {
+        if (themeDefinitionJson === null)
+            return "";
+        const theme = themeDefinitionJson;
+        return `color: ${theme.fontColor};
+                        background-color: ${theme.backgroundColor};
+                        border: ${theme.border.size} ${theme.border.type} ${theme.border.color}`;
+    }
+
+    function copyToClipboard(relativeUrl) {
+        let absoluteUrl = `${window.location.protocol}//${window.location.host}${relativeUrl}`;
+        navigator.clipboard.writeText(absoluteUrl).then(function () {
+            alert("Se copió el texto al portapapeles");
+        });
+    }
+
+    function deletePost(postId) {
+        if (!confirm("¿De verdad deseas eliminar esta publicación?")) {
+            return;
+        }
+
+        fetch("/api/Posting/Delete", {
+            method: "POST",
+            headers: this.customHeaders,
+            body: JSON.stringify({id: postId})
+        }).then(res => {
+            if (res.ok) {
+                let postIndex = this.posts.findIndex(value => value.id === postId);
+                this.posts.splice(postIndex, 1);
+            }
+        });
+    }
+
+    function deleteComment(id) {
+        if (!confirm("¿De verdad deseas eliminar esta publicación?")) {
+            return;
+        }
+
+        fetch("/api/Posting/Comment/Delete", {
+            method: "POST",
+            headers: this.customHeaders,
+            body: JSON.stringify({id: id})
+        }).then(res => {
+            if (res.ok) {
+                let commentId = this.commentsViewer.comments.findIndex(value => value.id === id);
+                if (commentId === -1) return;
+                this.commentsViewer.comments.splice(commentId, 1);
+            }
+        });
+    }
+
+    function viewComments(post) {
+        this.commentsViewer.postId = post.id;
+        this.fetchComments();
+    }
+
+    /* Functions for vue methods ends here */
+
     let vueContainer = new Vue({
         el: '#vue-container',
         data: {
+            customHeaders: customHttpHeaders,
+            accountData: accountData,
             posts: [],
             audioPlayer: new Audio(),
             audioUrl: "",
@@ -136,7 +204,6 @@ setInterval(function () {
                 postId: 0,
                 comments: []
             },
-            // profilePictureElement: this.$refs.profilePictureElement,
             audioDescription: {
                 playing: false,
                 paused: false
@@ -144,109 +211,36 @@ setInterval(function () {
             audioDescriptionUrl: audioDescriptionUrl
         },
         computed: {
-            openThreadLink: function() {
+            openThreadLink: function () {
                 return `/pub/${this.commentsViewer.postId}`;
             }
         },
+
+        /* to add a method, add first a function above and then reference it here */
         methods: {
-            likePost: function(post) {
-                let formData = new FormData();
-                formData.append("sessionToken", sessionToken);
-                formData.append("postId", post.id);
-
-                let request = new XMLHttpRequest();
-                request.open("POST", "/api/Likes/LikePost");
-                request.onreadystatechange = () => {
-                    if(request.readyState === XMLHttpRequest.DONE) {
-                        if(request.status === 200) {
-                            let modifiedPost = JSON.parse(request.responseText);
-                            let index = vueContainer.posts.findIndex(post => post.id === modifiedPost.id);
-                            Vue.set(vueContainer.posts,index,modifiedPost);
-                        }
-                    }
-                }
-                request.send(formData);
-            },
-            unLikePost: function(post) {
-                let formData = new FormData();
-                formData.append("sessionToken", sessionToken);
-                formData.append("postId", post.id);
-
-                let request = new XMLHttpRequest();
-                request.open("POST", "/api/Likes/UnLikePost");
-                request.onreadystatechange = () => {
-                    if(request.readyState === XMLHttpRequest.DONE) {
-                        if(request.status === 200) {
-                            let modifiedPost = JSON.parse(request.responseText);
-                            let index = vueContainer.posts.findIndex(post => post.id === modifiedPost.id);
-                            Vue.set(vueContainer.posts,index,modifiedPost);
-                        }
-                    }
-                }
-                request.send(formData);
-            },
-            compileMarkdown: function(raw) {
-                return marked(raw);
-            },
-            playAudio: function(url) {
-                if(this.audioUrl !== url) {
-                    this.audioPlayer.pause();
-                    this.audioUrl = url
-                    this.audioPlayer.src = url;
-                    this.audioPlayer.play();
-                    this.paused = false;
-                } else {
-                    if(!this.audioPlayer.paused) {
-                        this.audioPlayer.pause()
-                        this.paused = true;
-                        this.playing = false;
-                    } else {
-                        this.audioPlayer.play();
-                        this.playing = true;
-                        this.paused = false;
-                    }
-                }
-                this.playing = true;
-            },
-            getPostStyle: function(themeDefinitionJson) {
-                if(themeDefinitionJson === null)
-                    return "";
-                const theme = JSON.parse(themeDefinitionJson);
-                return `color: ${theme.fontColor};
-                        background-color: ${theme.backgroundColor};
-                        border: ${theme.border.size} ${theme.border.type} ${theme.border.color}`;
-            },
-            copyToClipboard: function(relativeUrl) {
-                let absoluteUrl = `${window.location.protocol}//${window.location.host}${relativeUrl}`;
-                navigator.clipboard.writeText(absoluteUrl).then(function() {
-                    alert("Se copió el texto al portapapeles");
-                });
-            },
-            viewComments: function(post) {
-                this.commentsViewer.postId = post.id;
-                this.getComments();
-            },
-            getComments: function() {
-                let form = new FormData();
-                form.append("sessionToken", sessionToken);
-                form.append("postId", this.commentsViewer.postId);
-
-                let request = new XMLHttpRequest();
-                request.open("POST", "/api/GetPost/Comments");
-                request.onload = () => {
-                    if(request.status === 200) {
-                        this.commentsViewer.comments = JSON.parse(request.responseText);
-                    }
-                }
-                request.send(form);
-            },
+            likePost: likePost,
+            unLikePost: unLikePost,
+            compileMarkdown: compileMarkdown,
+            playAudio: playAudio,
+            getPostStyle: getPostStyle,
+            copyToClipboard: copyToClipboard,
+            viewComments: viewComments,
+            fetchPosts: fetchMyPosts,
+            fetchComments: fetchComments,
+            deleteComment: deleteComment
         },
-        mounted: function() {
-            this.$nextTick(function() {
+        mounted: function () {
+            this.$nextTick(function () {
+                fetchUserOnlineStatus();
+                setInterval(function () {
+                    fetchUserOnlineStatus();
+                }, 30000);
+
+                this.fetchPosts();
                 let globalThis = this;
-                this.audioPlayer.onended = function() {
+                this.audioPlayer.onended = function () {
                     // if it was playing the description it has to stop the photo rotating
-                    if(globalThis.audioUrl === leftBarVueJsInstance.audioDescriptionUrl) {
+                    if (globalThis.audioUrl === leftBarVueJsInstance.audioDescriptionUrl) {
                         leftBarVueJsInstance.stopRotatingProfilePicture();
                         leftBarVueJsInstance.playing = false;
                     }
@@ -255,9 +249,13 @@ setInterval(function () {
             });
         }
     });
-    
+
+
+    /*****************************************************************************************************************/
+
+
     const leftBarVueJsInstance = new Vue({
-        el: '#profile_photo_container', 
+        el: '#profile_photo_container',
         data: {
             sessionToken: sessionToken,
             userData: userData,
@@ -321,16 +319,8 @@ setInterval(function () {
             }
         },
         mounted: function(){
-            this.$nextTick(function() {
-                
-            });
+
         }
     });
     
-    getPosts(accountData.userId, (responseObject) => {
-        vueContainer.posts = responseObject;
-        vueContainer.loading = false;
-    }, () => {
-        alert("No fue posible obtener tus publicaciones.");
-    });
 })();

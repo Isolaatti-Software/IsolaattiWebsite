@@ -6,6 +6,7 @@
 */
 
 using System.Linq;
+using isolaatti_API.Classes.ApiEndpointsRequestDataModels;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -24,14 +25,14 @@ namespace isolaatti_API.Controllers
         }
 
         [HttpPost]
-        public IActionResult Index([FromForm] string email, [FromForm] string password)
+        public IActionResult Index(SignInFormModel data)
         {
-            var user = dbContext.Users.Single(_user => _user.Email.Equals(email));
+            var user = dbContext.Users.Single(_user => _user.Email.Equals(data.Email));
             if (user == null) return NotFound("User not found");
 
             var accounts = new Accounts(dbContext);
             accounts.DefineHttpRequestObject(Request);
-            var tokenObj = accounts.CreateNewToken(user.Id, password);
+            var tokenObj = accounts.CreateNewToken(user.Id, data.Password);
             if (tokenObj == null) return Unauthorized("Could not get session. Password might be wrong");
             return Ok(tokenObj.Token);
         }

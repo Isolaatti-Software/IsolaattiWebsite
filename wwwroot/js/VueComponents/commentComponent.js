@@ -8,7 +8,7 @@ Vue.component('comment', {
     },
     computed: {
         profileLink: function () {
-            return `/perfil/${this.comment.whoWrote}`
+            return `/perfil/${this.comment.authorId}`
         },
         reportLink: function () {
             return `/Reports/ReportPostOrComment?commentId=${this.comment.id}`;
@@ -35,10 +35,10 @@ Vue.component('comment', {
       <div :class="containerCssClass" :title="titleAtr">
       <div class="d-flex justify-content-between align-items-center">
         <div class="d-flex">
-          <img class="user-avatar" :src="getUserImageUrl(comment.whoWrote)">
+          <img class="user-avatar" :src="getUserImageUrl(comment.authorId)">
           <div class="d-flex flex-column ml-2">
-            <span class="user-name"><a :href="profileLink">{{ comment.whoWroteName }}</a> </span>
-            <span>{{ new Date(comment.date).toUTCString() }}</span>
+            <span class="user-name"><a :href="profileLink">{{ comment.authorName }}</a> </span>
+            <span>{{ new Date(comment.timeStamp).toUTCString() }}</span>
           </div>
         </div>
         <div class="dropdown dropleft" v-if="userData.id!==-1">
@@ -46,8 +46,8 @@ Vue.component('comment', {
             <i class="fas fa-ellipsis-h"></i>
           </button>
           <div class="dropdown-menu">
-            <a href="#" class="dropdown-item" v-if="comment.whoWrote===this.userData.id">Editar</a>
-            <a href="#" class="dropdown-item" v-if="comment.whoWrote===this.userData.id"
+            <a href="#" class="dropdown-item" v-if="comment.authorId===this.userData.id">Editar</a>
+            <a href="#" class="dropdown-item" v-if="comment.authorId===this.userData.id"
                v-on:click="$emit('delete-comment')">Eliminar</a>
             <a :href="reportLink" class="dropdown-item" target="_blank">Reportar</a>
           </div>
@@ -60,7 +60,7 @@ Vue.component('comment', {
           <i class="fas fa-pause" v-else></i>
         </button>
       </div>
-      <div class="mt-2 post-content" v-html="compileMarkdown(comment.textContent)" ref="commentContentContainer"></div>
+      <div class="mt-2 post-content" v-html="compileMarkdown(comment.content)" ref="commentContentContainer"></div>
       <div class="d-flex justify-content-center">
         <button class="btn btn-primary " v-on:click="showFullPost" v-if="cutContent">Mostrar todo</button>
       </div>

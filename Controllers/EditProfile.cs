@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using isolaatti_API.Classes;
+using isolaatti_API.Classes.ApiEndpointsRequestDataModels;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Http;
@@ -24,7 +25,7 @@ namespace isolaatti_API.Controllers
         }
 
         [HttpPost]
-        public IActionResult Index([FromForm] string sessionToken, [FromForm] string newEmail,
+        public IActionResult Index([FromHeader(Name = "sessionToken")] string sessionToken, [FromForm] string newEmail,
             [FromForm] string newUsername)
         {
             var accountsManager = new Accounts(Db);
@@ -97,7 +98,8 @@ namespace isolaatti_API.Controllers
 
         [HttpPost]
         [Route("UpdatePhoto")]
-        public IActionResult UpdatePhoto([FromForm] string sessionToken, [FromForm] IFormFile file)
+        public IActionResult UpdatePhoto([FromHeader(Name = "sessionToken")] string sessionToken,
+            [FromForm] IFormFile file)
         {
             var accountsManager = new Accounts(Db);
             var user = accountsManager.ValidateToken(sessionToken);
@@ -118,13 +120,14 @@ namespace isolaatti_API.Controllers
 
         [HttpPost]
         [Route("UpdateAudioDescription")]
-        public IActionResult UpdateAudioDescription([FromForm] string sessionToken, [FromForm] string url)
+        public IActionResult UpdateAudioDescription([FromHeader(Name = "sessionToken")] string sessionToken,
+            SimpleStringData payload)
         {
             var accountsManager = new Accounts(Db);
             var user = accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
-            user.DescriptionAudioUrl = url;
+            user.DescriptionAudioUrl = payload.Data;
             Db.Users.Update(user);
             Db.SaveChanges();
             return Ok();
@@ -132,8 +135,10 @@ namespace isolaatti_API.Controllers
 
         [HttpPost]
         [Route("SetProfileColor")]
-        public async Task<IActionResult> SetProfileColor([FromForm] string sessionToken, [FromForm] string htmlColor)
+        public async Task<IActionResult> SetProfileColor([FromHeader(Name = "sessionToken")] string sessionToken,
+            SimpleStringData color)
         {
+            var htmlColor = color.Data;
             var accountsManager = new Accounts(Db);
             var user = accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");

@@ -21,17 +21,17 @@
                 <h5 class="ml-2 mt-2"><i class="far fa-newspaper"></i> Actividad de las personas que sigues</h5>
             </div>
             <section id="posts-deposit" class="d-flex flex-column pt-1 mt-2 mb-3 align-items-center posts-deposit">
-                <post-template v-for="post in posts" :post="post"
-                               v-on:like="likePost(post)"
-                               v-on:un-like="unLikePost(post)"
+                <post-template v-for="post in posts" :post="post.postData"
+                               v-on:like="likePost(post.postData)"
+                               v-bind:theme="post.theme"
+                               v-on:un-like="unLikePost(post.postData)"
                                v-model="postLinkToShare"
-                               v-on:delete="deletePost(post.id)"
-                               v-on:play-audio="playAudio(post.audioAttachedUrl)"
-                               :audio-url="audioUrl"
+                               v-on:delete="deletePost(post.postData.id)"
+                               v-on:play-audio="playAudio(post.postData.audioUrl)"
                                :paused="paused"
-                               :is-modal="false"
-                               v-on:view-thread="viewComments(post)"
-                               v-bind:key="post.id">
+                               v-on:view-thread="viewComments(post.postData)"
+                               v-bind:audio-url="audioUrl"
+                               v-bind:key="post.postData.id">
                 </post-template>
                 <div v-if="loading" class="d-flex justify-content-center mt-2">
                     <div class="spinner-border" role="status">
@@ -40,9 +40,12 @@
                 </div>
                 <div v-if="noMoreContent" class="d-flex flex-column align-items-center mt-2">
                     <p>Ya viste toda la actividad por ahora, refresca en un momento...</p>
-                    <button class="btn btn-primary" v-on:click="refresh">
+                    <button class="btn btn-primary" v-on:click="refresh()">
                         <i class="fas fa-redo"></i>
                     </button>
+                </div>
+                <div v-else>
+                    <button class="btn btn-primary" v-on:click="fetchFeed()">Cargar más</button>
                 </div>
             </section>
         </div>
@@ -88,7 +91,7 @@
                     </div>
                     <div class="modal-footer">
                         <span>
-                            <a :href="openThreadLink" target="_blank">Abrir publicación</a>
+                            <a :href="openThreadLink" target="_blank">Abrir discusión</a>
                         </span>
                     </div>
                 </div>

@@ -31,6 +31,9 @@
     <script>
     const userData = {id:@ViewData["userId"],name:"@ViewData["name"]",email:"@ViewData["email"]"};
     const sessionToken = '@Html.Raw(Context.Request.Cookies["isolaatti_user_session_token"])';
+    const customHttpHeaders = new Headers();
+    customHttpHeaders.append("sessionToken",sessionToken);
+    customHttpHeaders.append("Content-Type", "application/json")
     </script>
 </head>
 <body>
@@ -59,13 +62,11 @@
                 </div>
 
                 <div class="d-flex ml-auto mr-5 flex-column">
-                    <a class="nav-link custom-nav-link ml-2"
-                       href="#modal-new-post"
-                       data-toggle="modal"
-                       title="Nueva publicación"
-                       id="post-editor-link">
+                    <a class="btn btn-dark ml-2"
+                       asp-page="PostEditor"
+                       title="Nueva publicación">
                         <i class="fas fa-feather"></i>
-                        <small>Nuevo</small>
+                        <small>Nueva discusión</small>
                     </a>
 
                 </div>

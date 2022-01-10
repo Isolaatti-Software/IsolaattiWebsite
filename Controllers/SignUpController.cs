@@ -7,6 +7,7 @@
 
 //Handles the data to create a new account for users
 
+using isolaatti_API.Classes.ApiEndpointsRequestDataModels;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -33,11 +34,10 @@ namespace isolaatti_API.Controllers
          Exception => Returns the exception string if something didn't go well on the server
         */
         [HttpPost]
-        public string Index([FromForm] string username = "", [FromForm] string email = "",
-            [FromForm] string password = "")
+        public string Index(SignUpDataModel signUpData)
         {
             Accounts accounts = new Accounts(dbContextApp);
-            return accounts.MakeAccount(username, email, password);
+            return accounts.MakeAccount(signUpData.Username, signUpData.Email, signUpData.Password);
         }
     }
 }

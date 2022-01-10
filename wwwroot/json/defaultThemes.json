@@ -3,38 +3,44 @@
     {
       "name": "Isolaatti",
       "data": {
-        "fontColor": "#000",
+        "fontColor": "#000000",
         "backgroundColor": "#FFFFFF",
-        "gradient": "false",
+        "gradient": false,
         "border": {
           "color": "#FFFFFF",
           "type": "solid",
-          "size": "0",
-          "radius": "5px"
+          "size": 0,
+          "radius": 5
         },
         "background": {
           "type": "linear",
-          "colors": ["#FFFFFF","#30098EE5"],
-          "direction": "0"
+          "colors": [
+            "#FFFFFF",
+            "#30098EE5"
+          ],
+          "direction": 0
         }
       }
     },
     {
       "name": "Isolaatti with gradient",
       "data": {
-        "fontColor": "#000",
+        "fontColor": "#000000",
         "backgroundColor": "#FFFFFF",
-        "gradient": "true",
+        "gradient": true,
         "border": {
           "color": "#FFFFFF",
           "type": "solid",
-          "size": "0",
-          "radius": "5px"
+          "size": 0,
+          "radius": 5
         },
         "background": {
           "type": "linear",
-          "colors": ["#FFFFFF","#30098EE5"],
-          "direction": "180"
+          "colors": [
+            "#FFFFFF",
+            "#30098EE5"
+          ],
+          "direction": 180
         }
       }
     },
@@ -43,17 +49,20 @@
       "data": {
         "fontColor": "#FFFFFF",
         "backgroundColor": "#006328",
-        "gradient": "true",
+        "gradient": true,
         "border": {
           "color": "#FFFFFF",
           "type": "solid",
-          "size": "0",
-          "radius": "5px"
+          "size": 0,
+          "radius": 5
         },
         "background": {
           "type": "linear",
-          "colors": ["#006328","#285007"],
-          "direction": "0"
+          "colors": [
+            "#006328",
+            "#285007"
+          ],
+          "direction": 0
         }
       }
     },
@@ -62,17 +71,20 @@
       "data": {
         "fontColor": "#000000",
         "backgroundColor": "#4CAA40",
-        "gradient": "true",
+        "gradient": true,
         "border": {
           "color": "#FFFFFF",
           "type": "solid",
-          "size": "0",
-          "radius": "5px"
+          "size": 0,
+          "radius": 5
         },
         "background": {
           "type": "linear",
-          "colors": ["#4CAA40","#98F64A"],
-          "direction": "180"
+          "colors": [
+            "#4CAA40",
+            "#98F64A"
+          ],
+          "direction": 180
         }
       }
     },
@@ -81,17 +93,20 @@
       "data": {
         "fontColor": "#FFFFFF",
         "backgroundColor": "#FF0000",
-        "gradient": "true",
+        "gradient": true,
         "border": {
           "color": "#FFFFFF",
           "type": "solid",
-          "size": "0",
-          "radius": "5px"
+          "size": 0,
+          "radius": 5
         },
         "background": {
           "type": "linear",
-          "colors": ["#FF0000","#9D1515"],
-          "direction": "180"
+          "colors": [
+            "#FF0000",
+            "#9D1515"
+          ],
+          "direction": 180
         }
       }
     },
@@ -100,12 +115,12 @@
       "data": {
         "fontColor": "#FFFFFF",
         "backgroundColor": "#3D3F61",
-        "gradient": "true",
+        "gradient": true,
         "border": {
           "color": "#FFFFFF",
           "type": "solid",
-          "size": "0",
-          "radius": "5px"
+          "size": 0,
+          "radius": 5
         },
         "background": {
           "type": "radial",
@@ -113,7 +128,7 @@
             "#000000",
             "#3D3F61"
           ],
-          "direction": "180"
+          "direction": 180
         }
       }
     },
@@ -122,12 +137,12 @@
       "data": {
         "fontColor": "#FFFFFF",
         "backgroundColor": "#3D3F61",
-        "gradient": "true",
+        "gradient": true,
         "border": {
           "color": "#FFFFFF",
           "type": "solid",
-          "size": "0",
-          "radius": "5px"
+          "size": 0,
+          "radius": 5
         },
         "background": {
           "type": "radial",
@@ -135,7 +150,7 @@
             "#B72A2A",
             "#000000"
           ],
-          "direction": "180"
+          "direction": 180
         }
       }
     }

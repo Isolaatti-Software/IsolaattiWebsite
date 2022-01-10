@@ -1,8 +1,10 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using System.Threading.Tasks;
 using isolaatti_API.Classes;
+using isolaatti_API.Classes.ApiEndpointsRequestDataModels;
+using isolaatti_API.Classes.ApiEndpointsResponseDataModels;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -20,85 +22,66 @@ namespace isolaatti_API.Controllers
             Db = dbContextApp;
         }
 
-        [HttpPost]
-        public IActionResult Index([FromForm] string sessionToken, [FromForm] string postsInDom)
+        [HttpGet]
+        [Route("{lastId:long}/{length:int}")]
+        public async Task<IActionResult> Index([FromHeader(Name = "sessionToken")] string sessionToken, long lastId = 0,
+            int length = 10)
         {
             var accountsManager = new Accounts(Db);
             var user = accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
-            var followingIds = JsonSerializer.Deserialize<List<Guid>>(user.FollowingIdsJson);
-            var renderedPosts = JsonSerializer.Deserialize<List<Guid>>(postsInDom);
-
-            var posts = (from post in Db.SimpleTextPosts
-                where !post.Privacy.Equals(1)
-                      && post.UserId.Equals(user.Id)
-                select post).ToList();
-
-
-            var response = new List<ReturningPostsComposedResponse>();
-            foreach (var post in posts)
+            IQueryable<SimpleTextPost> postsQuery;
+            if (lastId <= 0)
             {
-                response.Add(new ReturningPostsComposedResponse(post)
-                {
-                    UserName = Db.Users.Find(post.UserId).Name,
-                    Liked = Db.Likes.Any(element => element.PostId == post.Id && element.UserId == user.Id)
-                });
-                if (Db.UserSeenPostHistories.Any(element =>
-                    element.PostId == post.Id && element.UserId == user.Id))
-                {
-                    var historyToUpdate = Db.UserSeenPostHistories.Single(element =>
-                        element.UserId.Equals(user.Id) && element.PostId == post.Id);
-                    historyToUpdate.TimesSeen++;
-                    Db.UserSeenPostHistories.Update(historyToUpdate);
-                }
-                else
-                {
-                    var historyToAdd = new UserSeenPostHistory()
-                    {
-                        PostId = post.Id,
-                        TimesSeen = 1,
-                        UserId = user.Id
-                    };
-                    Db.UserSeenPostHistories.Add(historyToAdd);
-                }
+                postsQuery =
+                    from post in Db.SimpleTextPosts.OrderByDescending(post => post.Id)
+                    from following in Db.FollowerRelations
+                    where following.UserId == user.Id
+                          && post.UserId == following.TargetUserId
+                          && post.Privacy != 1
+                    select post;
+                postsQuery = postsQuery.Take(length);
+            }
+            else
+            {
+                postsQuery =
+                    from post in Db.SimpleTextPosts.OrderByDescending(post => post.Id)
+                    from following in Db.FollowerRelations
+                    where following.UserId == user.Id
+                          && post.UserId == following.TargetUserId
+                          && post.Privacy != 1
+                          && post.Id < lastId
+                    select post;
+                postsQuery = postsQuery.Take(length);
             }
 
-            Db.SaveChanges();
-
-
-            return Ok(response);
-        }
-
-        [HttpPost]
-        [Route("GetUserPosts")]
-        public IActionResult GetUserPosts([FromForm] string sessionToken, [FromForm] int accountId)
-        {
-            var accountsManager = new Accounts(Db);
-            var user = accountsManager.ValidateToken(sessionToken);
-            if (user == null) return Unauthorized("Token is not valid");
-
-            var account = Db.Users.Find(accountId);
-            if (account == null)
-                return NotFound("That account does not exist. Please be sure the accountId parameter is correct");
-
-            // var usersLikes = Db.Likes.Where(like => like.UserId == user.Id).ToList();
-
-            var posts = Db.SimpleTextPosts
-                .Where(post => post.UserId == account.Id && !post.Privacy.Equals(1))
-                .OrderByDescending(post => post.Id)
-                .ToList();
-
-
-            var response = posts.Select(post => new ReturningPostsComposedResponse(post)
+            var posts = postsQuery.ToList().Select(rawPost => new
+            {
+                postData = new FeedPost
                 {
-                    UserName = Db.Users.Find(post.UserId).Name,
-                    Liked = Db.Likes.Any(element => element.PostId == post.Id && element.UserId == user.Id)
-                })
-                .ToList();
-
-            return Ok(response);
+                    Id = rawPost.Id,
+                    Username = Db.Users.Find(rawPost.UserId).Name,
+                    UserId = rawPost.UserId,
+                    Liked = Db.Likes.Any(element => element.PostId == rawPost.Id && element.UserId == user.Id),
+                    Content = rawPost.TextContent,
+                    NumberOfLikes = rawPost.NumberOfLikes,
+                    NumberOfComments = rawPost.NumberOfComments,
+                    Privacy = rawPost.Privacy,
+                    AudioUrl = rawPost.AudioAttachedUrl,
+                    TimeStamp = rawPost.Date
+                    // the other attributes are null, but they can be useful in the future
+                },
+                theme = rawPost.ThemeJson == null ? null : JsonSerializer.Deserialize<PostTheme>(rawPost.ThemeJson)
+            }).OrderByDescending(post => post.postData.NumberOfComments).ToList();
+            return Ok(new
+            {
+                LastPostId = posts.Last().postData.Id,
+                MoreContent = posts.Count == length,
+                Posts = posts
+            });
         }
+
 
         [HttpGet]
         [Route("Public")]

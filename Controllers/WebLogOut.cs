@@ -21,7 +21,7 @@ namespace isolaatti_API.Controllers
             _db = dbContextApp;
         }
 
-        // GET
+        [HttpGet]
         public IActionResult Index()
         {
             var accountsManager = new Accounts(_db);
