@@ -10,6 +10,17 @@
 {
     <link href="~/css/threads.css" rel="stylesheet">
     <script>const pageTitle = "Hilo"</script>
+
+    <style>
+    @@media screen and (min-width: 768px)  {
+    .post-container {
+                position: sticky; 
+                top: 0.5rem; 
+                height: calc(100vh - 55px - 0.5rem);
+                overflow: auto;
+        }
+    }
+    </style>
 }
 
 @section Scripts
@@ -41,12 +52,9 @@
 }
 
 <div id="vue-container" class="mt-2 w-100">
-    <div class="d-flex justify-content-end">
-        <small>Id del usuario: @Model.ThisPost.UserId, Id de la publicación: @Model.ThisPost.Id</small>
-    </div>
     <div class="container-fluid">
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-6 post-container">
                 <post-template v-if="post!==undefined"
                                :post="post.postData"
                                :theme="post.theme"
