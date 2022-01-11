@@ -13,55 +13,55 @@
 
 <div class="col-lg-3 col-md-2"></div>
 <div class="col-lg-6 col-md-8">
-    <h1>Ajustes</h1>
-    <h3 class="mt-1">Tu contraseña</h3>
+    <h5 class="mt-3 text-center"><i class="fas fa-cog"></i> Ajustes</h5>
+
+    @* <h3 class="mt-1">Feed</h3> *@
+    @* <p>Personaliza el comportamiento del Feed</p> *@
+    @* <form> *@
+    @*     <div class="custom-control-inline"> *@
+    @*         <label>Numero máximo de publicaciones por pagina de feed</label> *@
+    @*         <input type="number" class="form-control"> *@
+    @*     </div> *@
+    @*     <div class="form-check mt-2"> *@
+    @*       <input class="form-check-input" type="checkbox" value="" id="see-my-posts-on-feed"> *@
+    @*       <label class="form-check-label" for="see-my-posts-on-feed"> *@
+    @*         Ver mis publicaciones en el feed *@
+    @*       </label> *@
+    @*     </div> *@
+    @* </form> *@
+
+    <h6 class="mt-3">Tu contraseña</h6>
     <p>
         <a asp-page="MyProfile" asp-route-open="password">Ir al perfil para cambiar tu contraseña</a>
     </p>
 
-    <h3 class="mt-1">Tus sesiones activas</h3>
+    <h6 class="mt-3">Tus sesiones activas</h6>
     <p>Actualmente tienes estas sesiones activas</p>
-    <table class="table table-hover table-responsive-md">
-        <thead>
-        <th>Actual</th>
-        <th>Dirección IP</th>
-        <th>User Agent</th>
-        <th>Fecha de creación</th>
-        </thead>
-        <tbody>
+
+
+    <div class="list-group">
         @foreach (var sessionToken in Model.SessionTokens)
         {
-            <tr>
-                <td>
-                    @if (ViewData["curentSessionToken"].Equals(sessionToken.Token))
-                    {
-                        <i class="fas fa-check"></i>
-                    }
-
-                </td>
-                <td>@sessionToken.IpAddress</td>
-                <td>@sessionToken.UserAgent</td>
-                <td>@sessionToken.Date</td>
-            </tr>
+            <div class="list-group-item">
+                @if (ViewData["curentSessionToken"].Equals(sessionToken.Token))
+                {
+                    <i class="fas fa-check"></i>
+                }
+                <h6>@sessionToken.IpAddress</h6>
+                <h6>@sessionToken.Date</h6>
+                <small>@sessionToken.UserAgent</small>
+            </div>
         }
-        </tbody>
-
-    </table>
-    <h3 class="mt-1">Proveedores externos de autenticación</h3>
-    <p>Son los servicios como Google o Facebook que usaste para iniciar sesión</p>
-    <div class="alert alert-info">
-        ¡Trabajando en esto!
     </div>
+    @* <h6 class="mt-3">Proveedores externos de autenticación</h6> *@
+    @* <p>Son los servicios como Google o Facebook que usaste para iniciar sesión</p> *@
+    @* <div class="alert alert-info"> *@
+    @*     ¡Trabajando en esto! *@
+    @* </div> *@
     <hr/>
-    <h3 class="mt-1">Cerrar sesión</h3>
-    <div class="d-flex justify-content-around mb-3">
+    <div class="d-flex mb-3">
         <a class="btn btn-primary" asp-controller="WebLogOut" asp-action="Index">Cerrar sesión</a>
-        <a class="btn btn-primary" asp-controller="WebLogOut" asp-action="CloseAllSessions">Cerrar todas las sesiones</a>
+        <a class="btn btn-primary ml-2" asp-controller="WebLogOut" asp-action="CloseAllSessions">Cerrar todas las sesiones</a>
     </div>
 </div>
 <div class="col-lg-3 col-md-2"></div>
-
-@section Scripts
-{
-    <script src="~/js/settings.js"></script>
-}
