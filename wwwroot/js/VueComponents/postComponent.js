@@ -46,7 +46,7 @@ Vue.component('post-template',{
             return this.preview ? "#" : `/Reports/ReportPostOrComment?postId=${this.post.id}`;
         },
         openThreadLink: function () {
-            return `/pub/${this.post.id}`;
+            return this.preview ? "#" : `/pub/${this.post.id}`;
         },
         editPostLink: function () {
             return this.preview ? "#" : `/EditorPro?edit=True&postId=${this.post.id}`
