@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
@@ -73,10 +74,21 @@ namespace isolaatti_API.Controllers
                     // the other attributes are null, but they can be useful in the future
                 },
                 theme = rawPost.ThemeJson == null ? null : JsonSerializer.Deserialize<PostTheme>(rawPost.ThemeJson)
-            }).OrderByDescending(post => post.postData.NumberOfComments).ToList();
+            }).ToList();
+
+            long lastPostId;
+            try
+            {
+                lastPostId = posts.Last().postData.Id;
+            }
+            catch (InvalidOperationException)
+            {
+                lastPostId = -1;
+            }
+
             return Ok(new
             {
-                LastPostId = posts.Last().postData.Id,
+                LastPostId = lastPostId,
                 MoreContent = posts.Count == length,
                 Posts = posts
             });

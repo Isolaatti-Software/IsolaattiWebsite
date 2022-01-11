@@ -139,7 +139,10 @@ namespace isolaatti_API.Controllers
                     TimeStamp = post.Date
                     // the other attributes are null, but they can be useful in the future
                 },
-                theme = post.ThemeJson == null ? null : JsonSerializer.Deserialize<PostTheme>(post.ThemeJson)
+                theme = post.ThemeJson == null
+                    ? null
+                    : JsonSerializer.Deserialize<PostTheme>(post.ThemeJson,
+                        new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase })
             });
         }
 

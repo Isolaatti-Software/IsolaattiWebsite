@@ -84,7 +84,8 @@ namespace isolaatti_API.Controllers
             existingPost.Privacy = editedPost.Privacy;
             existingPost.TextContent = editedPost.Content;
             existingPost.AudioAttachedUrl = editedPost.AudioUrl;
-            existingPost.ThemeJson = JsonSerializer.Serialize(editedPost.Theme);
+            existingPost.ThemeJson = JsonSerializer.Serialize(editedPost.Theme,
+                new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
 
             Db.SimpleTextPosts.Update(existingPost);
 
@@ -113,7 +114,8 @@ namespace isolaatti_API.Controllers
                 },
                 theme = existingPost.ThemeJson == null
                     ? null
-                    : JsonSerializer.Deserialize<PostTheme>(existingPost.ThemeJson)
+                    : JsonSerializer.Deserialize<PostTheme>(existingPost.ThemeJson,
+                        new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase })
             });
         }
 
