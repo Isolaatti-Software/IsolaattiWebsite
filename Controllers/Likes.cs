@@ -82,7 +82,10 @@ namespace isolaatti_API.Controllers
                     Username = (await Db.Users.FindAsync(post.UserId)).Name,
                     UserId = post.UserId
                 },
-                theme = post.ThemeJson == null ? null : JsonSerializer.Deserialize<PostTheme>(post.ThemeJson)
+                theme = post.ThemeJson == null
+                    ? null
+                    : JsonSerializer.Deserialize<PostTheme>(post.ThemeJson,
+                        new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase })
             });
         }
 
@@ -125,7 +128,10 @@ namespace isolaatti_API.Controllers
                     Username = (await Db.Users.FindAsync(post.UserId)).Name,
                     UserId = post.UserId
                 },
-                theme = post.ThemeJson == null ? null : JsonSerializer.Deserialize<PostTheme>(post.ThemeJson)
+                theme = post.ThemeJson == null
+                    ? null
+                    : JsonSerializer.Deserialize<PostTheme>(post.ThemeJson,
+                        new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase })
             });
         }
     }
