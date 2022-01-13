@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using System.Threading.Tasks;
 using isolaatti_API.Classes;
 using isolaatti_API.Classes.ApiEndpointsRequestDataModels;
 using isolaatti_API.Classes.ApiEndpointsResponseDataModels;
@@ -31,6 +32,43 @@ namespace isolaatti_API.Controllers
             var user = accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
+            UserPreferences userPreferences;
+
+            try
+            {
+                userPreferences = JsonSerializer.Deserialize<UserPreferences>(user.UserPreferencesJson);
+            }
+            catch (JsonException)
+            {
+                userPreferences = new UserPreferences()
+                {
+                    EmailNotifications = false,
+                    ProfileHtmlColor = "#731D8C"
+                };
+            }
+
+            var profile = new Profile
+            {
+                Username = user.Name,
+                Email = user.Email,
+                Description = user.DescriptionText,
+                Color = userPreferences.ProfileHtmlColor ?? "#731D8C",
+                AudioUrl = user.DescriptionAudioUrl,
+                NumberOfPosts = _db.SimpleTextPosts.Count(post => post.UserId == user.Id),
+                ProfilePictureUrl = UrlGenerators.GenerateProfilePictureUrl(user.Id, sessionToken, Request)
+            };
+            return Ok(profile);
+        }
+
+        public async Task<IActionResult> GetProfile([FromHeader(Name = "sessionToken")] string sessionToken,
+            SingleIdentification identification)
+        {
+            var accountsManager = new Accounts(_db);
+            var user = accountsManager.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
+
+            var account = await _db.Users.FindAsync(Convert.ToInt32(identification.Id));
+            if (account == null) return NotFound();
             UserPreferences userPreferences;
 
             try
