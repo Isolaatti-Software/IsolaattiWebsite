@@ -29,7 +29,7 @@ body {
 .custom-nav {
     background-color: var(--isolaatti-primary-color);
     align-items: center;
-    box-shadow: 4px 11px 53px -3px black;
+    box-shadow: 0 0 53px 0 black;
 }
 .custom-nav-link {
     color: rgba(255,255,255,0.5);
@@ -73,9 +73,21 @@ body {
     max-width: 400px;
 }
 
-#songs-link {
-    margin-right: auto;
+.search-bar-on-top {
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 0.5rem;
+    border: none;
 }
+
+.search-bar-on-top:focus {
+    background-color: white;
+    border: none;
+}
+
+button.isolaatti-btn:hover {
+    color: white;
+}
+
 
 #bottom-mobile-navbar {
     display: none;
@@ -83,7 +95,6 @@ body {
 
 #main-container {
     overflow: auto;
-
 }
 
 @media screen and (max-width: 576px) {
