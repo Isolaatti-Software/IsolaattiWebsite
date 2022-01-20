@@ -60,6 +60,8 @@ namespace isolaatti_API.Controllers
             return Ok(profile);
         }
 
+        [HttpGet]
+        [Route("UserProfile")]
         public async Task<IActionResult> GetProfile([FromHeader(Name = "sessionToken")] string sessionToken,
             SingleIdentification identification)
         {
