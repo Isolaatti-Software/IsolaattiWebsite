@@ -199,13 +199,12 @@ namespace isolaatti_API.isolaatti_lib
             db.SaveChanges();
         }
 
-        public SessionToken CreateTokenForGoogleUser(string accessToken)
+        public async Task<SessionToken> CreateTokenForGoogleUser(string accessToken)
         {
             var decodedTokenTask = FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(accessToken);
-            decodedTokenTask.Wait();
-            var uid = decodedTokenTask.Result.Uid;
+            var uid = (await decodedTokenTask).Uid;
             var relation = db.GoogleUsers.Single(u => u.GoogleUid.Equals(uid));
-            var user = db.Users.Find(relation.UserId);
+            var user = await db.Users.FindAsync(relation.UserId);
             var sessionToken = new SessionToken()
             {
                 UserId = user.Id,
