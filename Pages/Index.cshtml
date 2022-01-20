@@ -11,7 +11,7 @@
     <script>const pageTitle = "Inicio"</script>
 }
 
-<div class="col-12">
+<div class="col-lg-9 col-md-8">
     <main class="mt-4" id="vue-container">
 
         <div class="d-flex align-items-center flex-column"
@@ -99,132 +99,17 @@
         </div>
     </main>
 </div>
-@* <div class="col-lg-3 col-md-4"> *@
-@*     $1$ <ins class="adsbyexoclick" data-zoneid="4460778"></ins>  #1# *@
-@* </div> *@
-<div class="modal fade" id="help-modal">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Help</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <h5>Privacidad</h5>
-                <ul>
-                    <li>Privado: solo tú puedes ver la publicación.</li>
-                    <li>Usuarios de Isolaatti: todos los usuarios que tengan cuenta en Isolaatti pueden ver la publicación</li>
-                    <li>Everyone: your post can be seen even without an account.</li>
-                </ul>
-                <hr/>
-                <h5>Publicaciones con audio</h5>
-                <p>
-                    Puedes grabar un audio de hasta 2 minutos y agregarlo a tu publicación. Para grabar un audio,
-                    usa el <strong>Editor pro</strong>
-                </p>
-                <hr/>
-                <h5>Editor pro</h5>
-                <p>
-                    El Editor Pro es la mejor manera de escribir publicaciones largas (y cuando necesitas agregar
-                    audios). En él cuentas con facilitadores de markdown y vista previa de la publicación
-                </p>
-                <hr/>
-                <h5><i class="fab fa-markdown"></i> What is Markdown</h5>
-                <p>Markdown es una sintáxis especial que permite formatear texto de menera sencilla.</p>
-                <h5 class="mt-2">Básico</h5>
-                <h6>Párrafos</h6>
-                <p>
-                    Separa cada párrafo con un salto de línea entre ellos, es decir, salta de linea dos veces al
-                    terminar de escribir el párrafo.
-                </p>
-                <h6>Encabezados</h6>
-                <p>Hay 6 niveles de encabezamiento. Son:</p>
-                <code>
-                    <pre>
-    # Encabezado 1
-    ## Encabezado 2
-    ### Encabezado 3
-    #### Encabezado 4
-    ##### Encabezado 5
-    ###### Encabezado 6
-    </pre>
-                </code>
-                <p>Lo cual quedaría así</p>
-                <h1>Encabezado 1</h1>
-                <h2>Encabezado 2</h2>
-                <h3>Encabezado 3</h3>
-                <h4>Encabezado 4</h4>
-                <h5>Encabezado 5</h5>
-                <h6>Encabezado 6</h6>
-                <hr/>
-
-                <h6>Negritas e itálicas</h6>
-                <p>Puedes colocar negristas y/o itálicas. Para hacerlo escribe:</p>
-                <code>
-                    <pre>
-    **Esto está en negritas** *Esto está en itálicas* ***Esto está en negritas e itálicas***
-    </pre>
-                </code>
-                <p>Lo cual quedaría así:</p>
-                <p>
-                    <b>Esto está en negritas</b> <i>Esto está en itálicas</i>
-                    <b>
-                        <i>Esto está en negritas e itálicas</i>
-                    </b>
-                </p>
-                <hr/>
-
-                <h6>Enlaces</h6>
-                <p>Hay 3 maneras de definir enlaces.</p>
-                <p>Si solo usarás en enlace solo una vez, puedes escribir:</p>
-                <code>
-                    <pre>
-    [Visita Isolaatti](https://isolaatti.com/)
-    </pre>
-                </code>
-                <p>Lo cual quedaría:</p>
-                <p>
-                    <a href="https://isolaatti.com/">Visita Isolaatti</a>
-                </p>
-                <hr/>
-
-                <p>Pero si quieres utilizar un enlace más de una vez, puedes declararlo y utilizarlo así:</p>
-                <code>
-                    <pre>
-    Atención, este es mi [sitio web]. Y sí, solo para confirmar, este es mi [sitio web]
-    
-    [sitio web]: https://erik-swdev.isolaatti.com/
-    </pre>
-                </code>
-                <p>Lo cual quedaría así:</p>
-                <p>
-                    Atención, este es mi <a href="https://erik-swdev.isolaatti.com/">sitio web</a> . Y sí, solo para confirmar, este es mi <a href="https://erik-swdev.isolaatti.com/">sitio web</a>
-                </p>
-                <hr/>
-
-                <p>Si solo quieres colocar el enlace tal cual, mostrando la URL completa, entonces escribe simplemente:</p>
-                <code>
-                    <pre>
-    &lt;https://erik-swdev.isolaatti.com&gt;
-    </pre>
-                </code>
-                <p>Lo cual quedaría simplemente:</p>
-                <p>
-                    <a href="https://erik-swdev.isolaatti.com">https://erik-swdev.isolaatti.com</a>
-                </p>
-                <hr/>
-
-                <h5>Lee más acerca de Markdown</h5>
-                <p>
-                    Este texto no es todo, puedes hacer más cosas, como tablas, citas, colocar código, etc.
-                    Para obtener más información, puedes leer <a href="https://www.markdownguide.org/basic-syntax/" target="_blank">esta guía</a> (sitio externo).
-                </p>
-            </div>
-        </div>
+<div class="col-lg-3 col-md-4">
+    <div class="mt-auto position-sticky d-flex flex-column" style="top: 100px">
+        <span>Desarrollado y mantenido por <a href="https://isolaattisoftware.com.mx">Isolaatti Software</a> (Erik Cavazos)</span>
+        <span>2020 - 2022</span>
+        <span><a asp-page="/s/Legal/PrivacyPolicy">Privacy policy</a>, <a asp-page="/s/Legal/TermsOfUse">Terms of use</a></span>
+        <span>
+            <a href="mailto:software@isolaatti.com">Reporta un error</a>
+        </span>
     </div>
 </div>
+
 
 @section Scripts
 {
