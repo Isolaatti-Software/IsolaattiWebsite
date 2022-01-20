@@ -15,19 +15,8 @@ let infoContainerText = document.getElementById("info");
 
 firebase.auth().onAuthStateChanged(function(user){
     user.getIdToken().then(function(token){
-       console.log(token);
-       // call /api/ValidateGoogleAccessToken and wait until I get response
-        
-        let formData = new FormData();
-        formData.append("accessToken",token);
-        
-        let request = new XMLHttpRequest();
-        request.open("post", "/api/ValidateGoogleAccessToken");
-        request.onload = function() {
-            if(request.status === 200){
-                window.location = "/";
-            }
-        }
-        request.send(formData);
+        const param = encodeURIComponent(token)
+        const url = `/api/ExternalSignIn/Web?accessToken=${param}`;
+        window.location = url;
     });
 });
