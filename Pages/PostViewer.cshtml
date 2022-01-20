@@ -67,10 +67,10 @@
                                :audio-url="audioUrl"
                                :paused="paused">
                 </post-template>
-                <section class="d-flex flex-column justify-content-between p-2 ml-auto mr-auto">
+                <section class="d-flex flex-column justify-content-between p-2 ml-auto mr-auto bg-light" style="position: sticky; bottom: 0px">
                     <h5><i class="fab fa-markdown"></i> Comentar</h5>
                     <div class="d-flex  flex-fill">
-                        <textarea id="comment-textarea" class="form-control" v-model="commentTextarea" ref="commentTextareaRef" rows="8" v-bind:selection-start.prop="selectionStart" v-bind:selection-end.prop="selectionEnd"></textarea>
+                        <textarea id="comment-textarea" class="form-control" v-model="commentTextarea" ref="commentTextareaRef" rows="8" v-bind:selection-start.prop="selectionStart" v-bind:selection-end.prop="selectionEnd" placeholder="Escribe tu comentario usando Markdown. Puedes agregar un audio con el botón de abajo."></textarea>
                     </div>
                     <div class="progress mt-2" style="height: 10px;" v-if="uploadingData.uploading">
                         <div class="progress-bar" role="progressbar" :style="uploadingProgressBarStyleCss" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
