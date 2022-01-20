@@ -3,7 +3,7 @@
 
 @{
     Layout = "Shared/_LayoutWebAppOutside";
-    ViewData["Title"] = "Login";
+    ViewData["Title"] = "Inicia sesión";
 }
 
 @section scripts_google
@@ -23,7 +23,7 @@
         firebase.initializeApp(firebaseConfig);
                       
         var uiConfig = {
-                signInSuccessUrl: 'GoogleAuth',
+                signInSuccessUrl: 'ExternalAuth',
                 signInOptions: [
                   // Leave the lines as is for the providers you want to offer your users.
                   firebase.auth.GoogleAuthProvider.PROVIDER_ID,
@@ -53,11 +53,7 @@
     <meta property="og:image" content="https://isolaatti.com/res/imgs/metadata-image-isolaatti.png"/>
 }
 
-<nav class="welcome-page-navbar">
-    <a asp-page="/s/Welcome">Bienvenido</a>
-    <a asp-page="/s/Welcome" asp-fragment="features">Características</a>
-    <a asp-page="/About">Acerca de</a>
-</nav>
+
 @* @if (Model.NewUser) *@
 @* { *@
 @*     <div class="alert alert-info"> *@
