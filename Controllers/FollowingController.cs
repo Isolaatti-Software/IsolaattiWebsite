@@ -110,7 +110,7 @@ namespace isolaatti_API.Controllers
         }
 
         [Route("Following")]
-        [HttpPost]
+        [HttpGet]
         public IActionResult Following([FromHeader(Name = "sessionToken")] string sessionToken)
         {
             var accountsManager = new Accounts(Db);
@@ -133,7 +133,7 @@ namespace isolaatti_API.Controllers
         }
 
         [Route("Followers")]
-        [HttpPost]
+        [HttpGet]
         public IActionResult Followers([FromHeader(Name = "sessionToken")] string sessionToken)
         {
             var accountsManager = new Accounts(Db);
@@ -146,9 +146,9 @@ namespace isolaatti_API.Controllers
                     where _relation.TargetUserId == user.Id && _relation.UserId == _user.Id
                     select new
                     {
-                        Id = _relation.TargetUserId,
+                        Id = _relation.UserId,
                         Name = _user.Name,
-                        ImageUrl = Utils.UrlGenerators.GenerateProfilePictureUrl(_relation.TargetUserId, sessionToken,
+                        ImageUrl = Utils.UrlGenerators.GenerateProfilePictureUrl(_relation.UserId, sessionToken,
                             Request)
                     }).ToList();
             return Ok(listOfFollowers);

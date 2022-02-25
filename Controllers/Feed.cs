@@ -73,7 +73,10 @@ namespace isolaatti_API.Controllers
                     TimeStamp = rawPost.Date
                     // the other attributes are null, but they can be useful in the future
                 },
-                theme = rawPost.ThemeJson == null ? null : JsonSerializer.Deserialize<PostTheme>(rawPost.ThemeJson)
+                theme = rawPost.ThemeJson == null
+                    ? null
+                    : JsonSerializer.Deserialize<PostTheme>(rawPost.ThemeJson,
+                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true })
             }).ToList();
 
             long lastPostId;

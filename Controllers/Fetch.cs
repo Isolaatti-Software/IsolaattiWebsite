@@ -217,12 +217,12 @@ namespace isolaatti_API.Controllers
             return Ok(comments);
         }
 
-        [HttpPost]
+        [HttpGet]
         [Route("PublicThread/{id:long}")]
         public IActionResult PublicThread(long id)
         {
             var post = _db.SimpleTextPosts.Find(id);
-            if (!(post is { Privacy: 3 })) return NotFound();
+            if (!post.Privacy.Equals(3)) return NotFound();
             var author = _db.Users.Find(post.UserId).Name;
             return Ok(new
             {
@@ -244,6 +244,7 @@ namespace isolaatti_API.Controllers
                 {
                     Id = post.Id,
                     Username = _db.Users.Find(post.UserId).Name,
+                    UserId = post.UserId,
                     Liked = false,
                     Content = post.TextContent,
                     NumberOfLikes = post.NumberOfLikes,
@@ -252,7 +253,11 @@ namespace isolaatti_API.Controllers
                     AudioUrl = post.AudioAttachedUrl,
                     TimeStamp = DateTime.Now
                     // the other attributes are null, but they can be useful in the future
-                }
+                },
+                theme = post.ThemeJson == null
+                    ? null
+                    : JsonSerializer.Deserialize<PostTheme>(post.ThemeJson,
+                        new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase })
             });
         }
 

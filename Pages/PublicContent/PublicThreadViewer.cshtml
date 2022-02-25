@@ -17,6 +17,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script src="~/js/lib/purify.min.js"></script>
     <script src="~/js/VueComponents/postComponent.js"></script>
     <script src="~/js/VueComponents/commentComponent.js"></script>
     <script src="~/js/publicThread.js"></script>
@@ -38,19 +39,17 @@
 }
 
 <div class="d-flex flex-column w-100 pt-2" id="vue-container">
-    <post-template :post="thread.post"
+    <post-template v-if="thread.post!==undefined"
+                   :post="thread.post"
+                   :theme="thread.theme"
                    v-model="postLinkToShare"
                    v-on:play-audio="playAudio(thread.post.audioAttachedUrl)"
+                   :key="thread.post.id"
                    :audio-url="audioUrl"
                    :paused="paused">
     </post-template>
     <div class="d-flex flex-column ml-4 comments-container">
-        <comment v-for="comment in thread.comments"
-                 :comment="comment"
-                 :audio-url="audioUrl"
-                 :paused="paused"
-                 v-on:play-audio="playAudio(comment.audioUrl)">
-        </comment>
+
     </div>
 
 

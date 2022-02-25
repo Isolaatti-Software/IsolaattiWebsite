@@ -156,7 +156,7 @@ namespace isolaatti_API.Controllers
             var post = await Db.SimpleTextPosts.FindAsync(postId);
             if (post == null) return Unauthorized("Post does not exist");
 
-            if (post.UserId.Equals(user.Id) && post.Privacy == 1) return Unauthorized("Post is private");
+            if (!post.UserId.Equals(user.Id) && post.Privacy == 1) return Unauthorized("Post is private");
 
             var commentToMake = new Comment
             {

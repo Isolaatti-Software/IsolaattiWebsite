@@ -1,4 +1,4 @@
-@page "/Ajustes"
+@page "/ajustes"
 @model isolaatti_API.Pages.Settings
 
 @{
@@ -32,33 +32,13 @@
 
     <h6 class="mt-3">Tu contraseña</h6>
     <p>
-        <a asp-page="MyProfile" asp-route-open="password">Ir al perfil para cambiar tu contraseña</a>
+        <a asp-page="/ChangePassword">Cambia tu contraseña</a>
     </p>
 
     <h6 class="mt-3">Tus sesiones activas</h6>
-    <p>Actualmente tienes estas sesiones activas</p>
-
-
-    <div class="list-group">
-        @foreach (var sessionToken in Model.SessionTokens)
-        {
-            <div class="list-group-item">
-                @if (ViewData["curentSessionToken"].Equals(sessionToken.Token))
-                {
-                    <i class="fas fa-check"></i>
-                }
-                <h6>@sessionToken.IpAddress</h6>
-                <h6>@sessionToken.Date</h6>
-                <small>@sessionToken.UserAgent</small>
-            </div>
-        }
-    </div>
-    @* <h6 class="mt-3">Proveedores externos de autenticación</h6> *@
-    @* <p>Son los servicios como Google o Facebook que usaste para iniciar sesión</p> *@
-    @* <div class="alert alert-info"> *@
-    @*     ¡Trabajando en esto! *@
-    @* </div> *@
-    <hr/>
+    <p>
+        <a asp-page="/Sessions">Consulta dónde mantienes una sesión iniciada</a>
+    </p>
     <div class="d-flex mb-3">
         <a class="btn btn-primary" asp-controller="WebLogOut" asp-action="Index">Cerrar sesión</a>
         <a class="btn btn-primary ml-2" asp-controller="WebLogOut" asp-action="CloseAllSessions">Cerrar todas las sesiones</a>

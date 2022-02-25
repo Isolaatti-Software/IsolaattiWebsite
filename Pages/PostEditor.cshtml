@@ -1,9 +1,9 @@
-@page "/EditorPro"
+@page "/editor"
 @model isolaatti_API.Pages.PostEditor
 
 @{
     Layout = "Shared/_LayoutWebApp";
-    ViewData["Title"] = "Nueva Discusión";
+    ViewData["Title"] = Model.Edit ? "Modificando Discusión" : "Nueva Discusión";
 }
 
 @section CSS
@@ -12,6 +12,165 @@
 }
 
 <div id="vue-container" class="container-fluid p-0">
+<div class="modal" id="modal-theme">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-sliders-h"></i> Personaliza el tema
+                </h5>
+                <button class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <h5 class="card-title">Predefinido</h5>
+                <div class="form-group">
+                    <select class="custom-select custom-select-sm" v-on:input="applyDefaultTheme">
+                        <option v-for="(theme, index) in defaultThemes" :value="index">{{theme.name}}</option>
+                    </select>
+                </div>
+                <h5 class="card-title">Color de letra</h5>
+                <div class="form-group">
+                    <input type="color" class="form-control form-control-sm"
+                           v-model="theme.fontColor">
+                </div>
+
+                <h5 class="card-title">Fondo</h5>
+                <div class="form-check mb-1">
+                    <input class="form-check-input" type="checkbox" id="isGradient"
+                           v-model="theme.gradient" :true-value="true" :false-value="false">
+                    <label class="form-check-label" for="isGradient">
+                        Gradiente
+                    </label>
+                </div>
+                <div v-if="theme.gradient">
+                    <select class="custom-select" v-model="theme.background.type">
+                        <option value="linear">Gradiente lineal</option>
+                        <option value="radial">Gradiente radial</option>
+                    </select>
+                    <div v-if="theme.background.type==='linear'" class="mt-2">
+                        <div class="form-group">
+                            <div class="input-group input-group-sm">
+                                <input type="number"
+                                       v-model.number="theme.background.direction"
+                                       class="form-control form-control-sm"/>
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">grados</span>
+                                </div>
+                            </div>
+                            <div class="d-flex mt-2" v-for="(color,index) in theme.background.colors">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-primary" :disabled="index===0" v-on:click="switchColors(index,index-1)">
+                                        <i class="fas fa-chevron-up"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-primary" :disabled="index===theme.background.colors.length - 1" v-on:click="switchColors(index,index+1)">
+                                        <i class="fas fa-chevron-down"></i>
+                                    </button>
+                                </div>
+                                <input type="color"
+                                       v-model="theme.background.colors[index]"
+                                       class="form-control"/>
+                                <button type="button" class="btn btn-primary btn-sm ml-1" v-on:click="removeColor(index)" v-bind:disabled="theme.background.colors.length <= 2">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                            </div>
+
+                            <div class="d-flex w-100 justify-content-end">
+                                <button class="btn btn-primary btn-sm mt-1 ml-auto" v-on:click="addColor">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-else class="mt-2">
+                        <div class="form-group">
+                            <div class="d-flex mt-2" v-for="(color,index) in theme.background.colors">
+                                <input type="color"
+                                       v-model="theme.background.colors[index]"
+                                       class="form-control"/>
+                                <button type="button" class="btn btn-primary btn-sm ml-1" v-on:click="removeColor(index)" v-bind:disabled="theme.background.colors.length <= 2">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                            </div>
+
+                            <div class="d-flex w-100 justify-content-end">
+                                <button class="btn btn-primary btn-sm mt-1 ml-auto" v-on:click="addColor">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div v-else>
+                    <div class="form-group">
+                        <input type="color" class="form-control form-control-sm"
+                               v-model="theme.backgroundColor">
+                    </div>
+                </div>
+
+                <h5 class="card-title">Borde</h5>
+                <div class="form-group">
+                    <label>Color</label>
+                    <input type="color" class="form-control form-control-sm"
+                           v-model="theme.border.color">
+                </div>
+                <div class="form-group">
+                    <label>Tipo</label>
+                    <select class="custom-select custom-select-sm"
+                            v-model="theme.border.type">
+                        <option value="none">Ninguno</option>
+                        <option value="solid">Sólido</option>
+                        <option value="dotted">Punteado</option>
+                        <option value="dashed">Con guiones</option>
+                        <option value="ridge">Cresta</option>
+                        <option value="groove">Ranura</option>
+                        <option value="inset">Recuadro hacia adentro</option>
+                        <option value="outset">Recuadro hacia afuera</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Tamaño</label>
+                    <div class="input-group input-group-sm">
+                        <input type="number" class="form-control form-control-sm"
+                               v-model.number="theme.border.size"/>
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">px</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Radio (valor máximo recomendado 30px)</label>
+                    <div class="input-group input-group-sm">
+                        <input type="number" class="form-control form-control-sm"
+                               max="30" min="0"
+                               v-model.number="theme.border.radius">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">px</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="modal-privacy">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content ">
+            <div class="modal-header">
+                <h5 class="modal-title">Privacidad</h5>
+                <button class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <select class="custom-select w-100 custom-select-sm" v-model="post.privacy" title="Select privacy">
+                    <option :value="1">Privado</option>
+                    <option :value="2">Usuarios de Isolaatti</option>
+                    <option :value="3">Todos</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
 
 <header class="col-12 sticky-top" style="background-color: rgba(255,255,255,0.7)">
     <div class="d-flex justify-content-between align-items-center">
@@ -29,13 +188,13 @@
         }
         @if (Model.Edit)
         {
-            <button class="btn btn-primary" v-on:click="makePost" v-bind:disabled="post.content===''">
+            <button class="btn btn-light" v-on:click="makePost" v-bind:disabled="post.content===''">
                 <i class="fas fa-upload"></i> Guardar
             </button>
         }
         else
         {
-            <button class="btn btn-primary" v-on:click="makePost" v-bind:disabled="post.content===''">
+            <button class="btn btn-light" v-on:click="makePost" v-bind:disabled="post.content===''">
                 <i class="fas fa-upload"></i> Publicar
             </button>
         }
@@ -43,175 +202,33 @@
 </header>
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-6 col-lg-5 col-xl-3">
-            <div class="card mb-2">
-                <h5 class="card-header">
-                    <i class="fas fa-eye"></i> Privacidad
-                </h5>
-                <div class="card-body">
-                    <select class="custom-select m-2 w-100 custom-select-sm" v-model="post.privacy" title="Select privacy">
-                        <option :value="1">Privado</option>
-                        <option :value="2">Usuarios de Isolaatti</option>
-                        <option :value="3">Todos</option>
-                    </select>
-                </div>
-            </div>
-            <div class="card mb-2">
-                <h5 class="card-header"><i class="fas fa-microphone"></i> Audio</h5>
-                <div class="card-body">
-                    <button class="btn btn-primary btn-sm ml-auto" v-on:click="requestMicrophone()" data-target="#add-audio-modal" data-toggle="modal">
-                        <i class="fas fa-microphone"></i> {{addAudioButtonText}}
-                    </button>
-                </div>
-            </div>
-
-            <h5 class="mt-5 mb-4 ml-2"><i class="fas fa-palette"></i> Tema de la publicación</h5>
-            <div class="card mb-2">
-                <h5 class="card-header"><i class="fas fa-check"></i> Selecciona un tema predefinido</h5>
-                <div class="card-body">
-                    <select class="custom-select" v-on:input="applyDefaultTheme">
-                        <option v-for="(theme, index) in defaultThemes" :value="index">{{theme.name}}</option>
-                    </select>
-                </div>
-            </div>
-            <div class="card">
-                <h5 class="card-header">
-                    <i class="fas fa-sliders-h"></i> Personaliza el tema
-                </h5>
-                <div class="card-body">
-                    <h5 class="card-title">Color de letra</h5>
-                    <div class="form-group">
-                        <input type="color" class="form-control form-control-sm"
-                               v-model="theme.fontColor">
-                    </div>
-
-                    <h5 class="card-title">Fondo</h5>
-                    <div class="form-check mb-1">
-                        <input class="form-check-input" type="checkbox" id="isGradient"
-                               v-model="theme.gradient" :true-value="true" :false-value="false">
-                        <label class="form-check-label" for="isGradient">
-                            Gradiente
-                        </label>
-                    </div>
-                    <div v-if="theme.gradient">
-                        <select class="custom-select" v-model="theme.background.type">
-                            <option value="linear">Gradiente lineal</option>
-                            <option value="radial">Gradiente radial</option>
-                        </select>
-                        <div v-if="theme.background.type==='linear'" class="mt-2">
-                            <div class="form-group">
-                                <div class="input-group input-group-sm">
-                                    <input type="number"
-                                           v-model.number="theme.background.direction"
-                                           class="form-control form-control-sm"/>
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text">grados</span>
-                                    </div>
-                                </div>
-                                <div class="d-flex mt-2" v-for="(color,index) in theme.background.colors">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-primary" :disabled="index===0" v-on:click="switchColors(index,index-1)">
-                                            <i class="fas fa-chevron-up"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-primary" :disabled="index===theme.background.colors.length - 1" v-on:click="switchColors(index,index+1)">
-                                            <i class="fas fa-chevron-down"></i>
-                                        </button>
-                                    </div>
-                                    <input type="color"
-                                           v-model="theme.background.colors[index]"
-                                           class="form-control"/>
-                                    <button type="button" class="btn btn-primary btn-sm ml-1" v-on:click="removeColor(index)" v-bind:disabled="theme.background.colors.length <= 2">
-                                        <i class="fas fa-minus"></i>
-                                    </button>
-                                </div>
-
-                                <div class="d-flex w-100 justify-content-end">
-                                    <button class="btn btn-primary btn-sm mt-1 ml-auto" v-on:click="addColor">
-                                        <i class="fas fa-plus"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div v-else class="mt-2">
-                            <div class="form-group">
-                                <div class="d-flex mt-2" v-for="(color,index) in theme.background.colors">
-                                    <input type="color"
-                                           v-model="theme.background.colors[index]"
-                                           class="form-control"/>
-                                    <button type="button" class="btn btn-primary btn-sm ml-1" v-on:click="removeColor(index)" v-bind:disabled="theme.background.colors.length <= 2">
-                                        <i class="fas fa-minus"></i>
-                                    </button>
-                                </div>
-
-                                <div class="d-flex w-100 justify-content-end">
-                                    <button class="btn btn-primary btn-sm mt-1 ml-auto" v-on:click="addColor">
-                                        <i class="fas fa-plus"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div v-else>
-                        <div class="form-group">
-                            <input type="color" class="form-control form-control-sm"
-                                   v-model="theme.backgroundColor">
-                        </div>
-                    </div>
-
-                    <h5 class="card-title">Borde</h5>
-                    <div class="form-group">
-                        <label>Color</label>
-                        <input type="color" class="form-control form-control-sm"
-                               v-model="theme.border.color">
-                    </div>
-                    <div class="form-group">
-                        <label>Tipo</label>
-                        <select class="custom-select custom-select-sm"
-                                v-model="theme.border.type">
-                            <option value="none">Ninguno</option>
-                            <option value="solid">Sólido</option>
-                            <option value="dotted">Punteado</option>
-                            <option value="dashed">Con guiones</option>
-                            <option value="ridge">Cresta</option>
-                            <option value="groove">Ranura</option>
-                            <option value="inset">Recuadro hacia adentro</option>
-                            <option value="outset">Recuadro hacia afuera</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Tamaño</label>
-                        <div class="input-group input-group-sm">
-                            <input type="number" class="form-control form-control-sm"
-                                   v-model.number="theme.border.size"/>
-                            <div class="input-group-prepend">
-                                <span class="input-group-text">px</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Radio (valor máximo recomendado 30px)</label>
-                        <div class="input-group input-group-sm">
-                            <input type="number" class="form-control form-control-sm"
-                                   max="30" min="0"
-                                   v-model.number="theme.border.radius">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text">px</span>
-                            </div>
-                        </div>
-
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header d-flex">
+                    <h5 class="modal-title">Contenido</h5>
+                    <div class="d-flex ml-auto">
+                        <button type="button" class="btn btn-light btn-sm" data-target="#modal-theme" data-toggle="modal">
+                            <i class="fa-solid fa-palette"></i>
+                        </button>
+                        <button type="button" class="btn btn-light btn-sm" data-target="#modal-privacy" data-toggle="modal">
+                            <i class="fas fa-user" v-if="post.privacy === 1" title="Private" aria-hidden="true"></i>
+                            <i class="fas fa-user-friends" v-if="post.privacy === 2" title="People on Isolaatti" aria-hidden="true"></i>
+                            <i class="fas fa-globe" v-if="post.privacy === 3" title="All the world" aria-hidden="true"></i>
+                        </button>
+                        <button type="button" class="btn btn-light btn-sm" v-on:click="requestMicrophone()" data-target="#add-audio-modal" data-toggle="modal">
+                            <i class="fas fa-microphone"></i>
+                        </button>
                     </div>
                 </div>
-            </div>
-        </div>
-        <div class="col-md-6 col-lg-7 col-xl-9">
-            <div class="card mb-2">
-                <h5 class="card-header"><i class="fab fa-markdown"></i> Texto</h5>
                 <div class="card-body">
-                    <section class="ml-2 mr-2 w-100">
-                        <textarea class="form-control" rows="10" v-model="post.content" ref="markdownTextarea" v-bind:selection-start.prop="selectionStart" v-bind:selection-end.prop="selectionEnd" placeholder="Escribe aqui el contenido para iniciar la discusión. Markdown es compatible."></textarea>
+                    <section class="ml-2 mr-2 w-100 h-100">
+                        <textarea class="form-control h-100" v-model="post.content" ref="markdownTextarea" v-bind:selection-start.prop="selectionStart" v-bind:selection-end.prop="selectionEnd" placeholder="Escribe aqui el contenido para iniciar la discusión. Markdown es compatible."></textarea>
                     </section>
                 </div>
             </div>
+        </div>
+
+        <div class="col-md-6">
             <div class="card">
                 <h5 class="card-header"><i class="fas fa-vote-yea"></i> Vista previa</h5>
                 <div class="card-body">
@@ -229,7 +246,7 @@
     </div>
 </div>
 
-<div class="modal fade" id="add-audio-modal">
+<div class="modal" id="add-audio-modal">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">

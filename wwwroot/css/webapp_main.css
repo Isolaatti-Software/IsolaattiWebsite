@@ -29,7 +29,6 @@ body {
 .custom-nav {
     background-color: var(--isolaatti-primary-color);
     align-items: center;
-    box-shadow: 0 0 53px 0 black;
 }
 .custom-nav-link {
     color: rgba(255,255,255,0.5);
@@ -121,7 +120,8 @@ button.isolaatti-btn:hover {
     #left-bar {
         position: sticky;
         top: 0;
-        background: linear-gradient(rgba(48, 9, 142, 0.9) 5%, white);
+        background: white;
+
         padding-bottom: 50px;
         height: max-content !important;
     }
@@ -336,9 +336,10 @@ span.user-name a{
     height: calc(100vh - 60px);
 }
 #left-bar {
-    position:sticky;
+    position: sticky;
     top: 0;
-    background: linear-gradient(rgba(48, 9, 142,0.9) 5% ,white);
+    background: white;
+    box-shadow: 1px 1px 2px rgb(175, 175, 175);
     padding-bottom: 50px;
     height: calc(100vh - 55px);
     overflow: auto;
@@ -430,7 +431,8 @@ footer#footer>a, footer#footer>span {
 }
 
 #change-profile-photo-btn {
-    transform: translate(25px, -25px);
+    transform: translate(40px, 40px);
+    position: absolute;
 }
 #play-audio-description-btn {
     position: absolute;
@@ -464,4 +466,12 @@ footer#footer>a, footer#footer>span {
     height: 20px;
     border-radius: 50%;
     transform: translate(25px, -20px);
+}
+
+.post p img {
+    width: 100%;
+}
+
+.max-500px {
+    max-width: 500px;
 }

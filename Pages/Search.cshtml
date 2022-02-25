@@ -18,19 +18,19 @@
 
     <h4 class="text-center mt-2 mb-3">Resultados para "@ViewData["query"]"</h4>
 
-    <form id="form-search" asp-page="Search" method="get">
+    <form id="form-search1" asp-page="/Search" method="get">
         <div class="d-flex">
             <input type="text" name="q" class="form-control mb-2 mr-1" value="@ViewData["query"]"
                    placeholder="Busca personas, hilos, etc."/>
-            <button type="submit" class="btn btn-primary mb-2">
+            <button type="submit" class="btn btn-light mb-2">
                 <i class="fas fa-search"></i>
             </button>
         </div>
     </form>
 
-    <ul class="nav nav-pills">
+    <ul class="nav nav-pills ">
         <li class="nav-item">
-            <a class="nav-link active" href="#people-pane" data-toggle="tab">Personas</a>
+            <a class="nav-link btn-light active" href="#people-pane" data-toggle="tab">Personas</a>
         </li>
     </ul>
     <div class="tab-content">

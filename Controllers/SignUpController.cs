@@ -16,11 +16,11 @@ namespace isolaatti_API.Controllers
 {
     [Route("/api/[controller]")]
     [ApiController]
-    public class SignIn : ControllerBase
+    public class SignUpController : ControllerBase
     {
         private readonly DbContextApp dbContextApp;
 
-        public SignIn(DbContextApp context)
+        public SignUpController(DbContextApp context)
         {
             dbContextApp = context;
         }

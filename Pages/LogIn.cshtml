@@ -1,4 +1,5 @@
 @page "/IniciaSesion"
+@using isolaatti_API.isolaatti_lib
 @model isolaatti_API.Pages.LogIn
 
 @{
@@ -47,9 +48,9 @@
 
 @section metadata
 {
-    <meta property="og:url" content="https://isolaatti.com/LogIn"/>
+    <meta property="og:url" content="https://isolaatti.com/IniciaSesion"/>
     <meta property="og:type" content="website"/>
-    <meta property="og:description" content="Inicia sesión. Isolaatti is una red social basada en publicaciones de audio y texto."/>
+    <meta property="og:description" content="Inicia sesión. Isolaatti es una plataforma para escuchar la voz del mundo. Una red social donde todo es audio y texto."/>
     <meta property="og:image" content="https://isolaatti.com/res/imgs/metadata-image-isolaatti.png"/>
 }
 
@@ -84,7 +85,7 @@
 
 <div class="d-flex col-lg-7 col-md-6 flex-column">
     <form method="POST" class="sign-in-up-form" asp-antiforgery="false">
-        <h2>Iniciar sesión</h2>
+        <h2>@Languages.Spanish[Languages.SignIn]</h2>
         <p>
             <a asp-page="MakeAccount">Regístrate</a>
         </p>

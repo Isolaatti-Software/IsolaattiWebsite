@@ -49,7 +49,7 @@ Vue.component('post-template',{
             return this.preview ? "#" : `/pub/${this.post.id}`;
         },
         editPostLink: function () {
-            return this.preview ? "#" : `/EditorPro?edit=True&postId=${this.post.id}`
+            return this.preview ? "#" : `/editor?edit=True&postId=${this.post.id}`
         },
         containerCssClass: function () {
             return this.cutContent ? "d-flex mb-2 flex-column p-2 post post-cut-height" : "d-flex mb-2 flex-column p-2 post"
@@ -122,7 +122,7 @@ Vue.component('post-template',{
           </div>
         </div>
         <div class="dropdown dropleft">
-          <button class="btn btn-primary btn-sm" data-toggle="dropdown" aria-haspopup="true">
+          <button class="btn btn-light btn-sm" data-toggle="dropdown" aria-haspopup="true">
             <i class="fas fa-ellipsis-h"></i>
           </button>
           <div class="dropdown-menu">

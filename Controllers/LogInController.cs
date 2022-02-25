@@ -5,8 +5,10 @@
 * erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
 */
 
+using System;
 using System.Linq;
 using isolaatti_API.Classes.ApiEndpointsRequestDataModels;
+using isolaatti_API.Classes.ApiEndpointsResponseDataModels;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -34,17 +36,31 @@ namespace isolaatti_API.Controllers
             accounts.DefineHttpRequestObject(Request);
             var tokenObj = accounts.CreateNewToken(user.Id, data.Password);
             if (tokenObj == null) return Unauthorized("Could not get session. Password might be wrong");
-            return Ok(tokenObj.Token);
+            return Ok(new Classes.ApiEndpointsResponseDataModels.SessionToken
+            {
+                Created = DateTime.Now,
+                Expires = DateTime.Now.AddMonths(12),
+                Token = tokenObj.Token
+            });
         }
 
         [Route("Verify")]
         [HttpPost]
-        public IActionResult GetUserData([FromForm] string sessionToken)
+        public IActionResult GetUserData([FromHeader(Name = "sessionToken")] string sessionToken)
         {
             var accounts = new Accounts(dbContext);
             var user = accounts.ValidateToken(sessionToken);
-            if (user == null) return Unauthorized("token is not valid");
-            return Ok("ok");
+            if (user == null)
+                return Unauthorized(new SessionTokenValidated
+                {
+                    IsValid = false,
+                    UserId = -1
+                });
+            return Ok(new SessionTokenValidated
+            {
+                IsValid = true,
+                UserId = user.Id
+            });
         }
     }
 }

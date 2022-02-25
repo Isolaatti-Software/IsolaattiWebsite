@@ -1,3 +1,4 @@
+@using isolaatti_API.isolaatti_lib
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -61,15 +62,21 @@
                     </button>
                 </div>
 
-                <div class="d-flex ml-auto mr-5 flex-column">
-                    <a class="btn ml-2 nav-link custom-nav-link"
-                       asp-page="PostEditor"
-                       title="Nueva publicación">
-                        <i class="fas fa-feather"></i>
-                        <small>Nueva discusión</small>
-                    </a>
+                <a class="btn nav-link ml-auto custom-nav-link"
+                   asp-page="PostEditor"
+                   title="Nueva discusión">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <a asp-page="/Squads"
+                   class="btn nav-link custom-nav-link"
+                   title="Squads">
+                    <i class="fas fa-users"></i>
+                </a>
+                <a asp-page="/Lists"
+                   class="btn nav-link custom-nav-link mr-auto" title="Listas">
+                    <i class="fas fa-list"></i>
+                </a>
 
-                </div>
                 <a class="nav-link custom-nav-link mr-1"
                    href="#"
                    role="button"
@@ -127,7 +134,7 @@
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item"
                            href="/WebLogOut">
-                            <i class="fas fa-sign-out-alt"></i>Cerrar sesión
+                            <i class="fas fa-sign-out-alt"></i>@Languages.Spanish[Languages.SignOut]
                         </a>
                     </div>
                 </div>
