@@ -43,7 +43,7 @@
                    :post="thread.post"
                    :theme="thread.theme"
                    v-model="postLinkToShare"
-                   v-on:play-audio="playAudio(thread.post.audioAttachedUrl)"
+                   v-on:play-audio="playAudio(thread.post.audioUrl)"
                    :key="thread.post.id"
                    :audio-url="audioUrl"
                    :paused="paused">

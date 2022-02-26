@@ -207,8 +207,8 @@ const vue = new Vue({
             let requestBody = {
                 privacy: this.post.privacy,
                 content: this.post.content,
-                theme: this.theme,
-                audioUrl: this.audioUrl
+                theme: this.post.theme,
+                audioUrl: this.post.audioUrl
             }
 
 
@@ -357,6 +357,7 @@ const vue = new Vue({
 
                             fetch(post.postData.audioUrl).then(audioResult => {
                                 audioResult.blob().then(audioBlob => {
+                                    globalThis.post.audioUrl = post.postData.audioUrl;
                                     globalThis.audio.consolidated = true;
                                     globalThis.audio.recorded = true;
                                     globalThis.audio.recording = false;

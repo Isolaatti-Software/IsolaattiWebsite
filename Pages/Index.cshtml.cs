@@ -27,8 +27,8 @@ namespace isolaatti_API.Pages
         {
             var accountsManager = new Accounts(_db);
             var user = accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
-            if (user == null) return RedirectToPage("/PublicContent/Feed");
-            
+            if (user == null) return RedirectToPage("/LogIn");
+
             // here it's know that account is correct. Data binding!
             ViewData["name"] = user.Name;
             ViewData["email"] = user.Email;
@@ -37,7 +37,7 @@ namespace isolaatti_API.Pages
             ViewData["profilePicUrl"] = user.ProfileImageData == null
                 ? null
                 : UrlGenerators.GenerateProfilePictureUrl(user.Id, Request.Cookies["isolaatti_user_session_token"]);
-            
+
             return Page();
         }
     }
