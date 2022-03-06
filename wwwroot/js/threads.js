@@ -82,6 +82,18 @@ let vueInstance = new Vue({
         },
         uploadingProgressBarStyleCss: function () {
             return `width: ${this.uploadingData.progress}%;`
+        },
+        progressStyle: function () {
+            return `width:${(this.audio.timeInSeconds * 100) / 120}%`
+        },
+        clockFormatTime: function () {
+            let truncatedSecs = Math.round(this.audio.timeInSeconds);
+            let minutes = truncatedSecs / 60;
+            let seconds = truncatedSecs % 60;
+            if (seconds < 10) {
+                seconds = `0${seconds}`
+            }
+            return `${Math.trunc(minutes)}:${seconds}`;
         }
     },
     methods: {

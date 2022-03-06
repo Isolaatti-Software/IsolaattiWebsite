@@ -364,6 +364,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 } else {
                     return '<i class="far fa-play-circle"></i>'
                 }
+            },
+            progressStyle: function () {
+                return `width:${(this.recorder.timeInSeconds * 100) / 120}%`
             }
         },
         methods: {
