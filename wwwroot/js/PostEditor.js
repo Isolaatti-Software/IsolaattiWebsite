@@ -94,6 +94,18 @@ const vue = new Vue({
                 border-radius: ${this.theme.border.radius}px;
                 max-height: calc(100vh - 150px); 
                 overflow: auto; cursor: not-allowed;`;
+        },
+        progressStyle: function () {
+            return `width:${(this.audio.timeInSeconds * 100) / 120}%`
+        },
+        clockFormatTime: function () {
+            let truncatedSecs = Math.round(this.audio.timeInSeconds);
+            let minutes = truncatedSecs / 60;
+            let seconds = truncatedSecs % 60;
+            if (seconds < 10) {
+                seconds = `0${seconds}`
+            }
+            return `${Math.trunc(minutes)}:${seconds}`;
         }
     },
     methods: {
@@ -207,7 +219,7 @@ const vue = new Vue({
             let requestBody = {
                 privacy: this.post.privacy,
                 content: this.post.content,
-                theme: this.post.theme,
+                theme: this.theme,
                 audioUrl: this.post.audioUrl
             }
 
