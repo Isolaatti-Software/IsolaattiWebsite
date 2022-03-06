@@ -67,27 +67,28 @@
                                :audio-url="audioUrl"
                                :paused="paused">
                 </post-template>
-                <section class="d-flex flex-column justify-content-between p-2 ml-auto mr-auto bg-light" style="position: sticky; bottom: 0px">
-                    <h5><i class="fab fa-markdown"></i> Comentar</h5>
-                    <div class="d-flex  flex-fill">
-                        <textarea id="comment-textarea" class="form-control" v-model="commentTextarea" ref="commentTextareaRef" rows="8" v-bind:selection-start.prop="selectionStart" v-bind:selection-end.prop="selectionEnd" placeholder="Escribe tu comentario usando Markdown. Puedes agregar un audio con el botón de abajo."></textarea>
-                    </div>
-                    <div class="progress mt-2" style="height: 10px;" v-if="uploadingData.uploading">
-                        <div class="progress-bar" role="progressbar" :style="uploadingProgressBarStyleCss" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                    <div class="d-flex justify-content-between">
-                        <button class="btn btn-primary mt-1 mb-1" data-target="#add-audio-modal" data-toggle="modal" v-on:click="requestMicrophone()">
-                            <i class="fas fa-microphone"></i> {{addAudioButtonText}}
-                        </button>
-                        <button class="btn btn-primary mt-1 mb-1" v-on:click="makeComment"
-                                v-bind:disabled="makeCommentButtonDisabled">
-                            <i class="fas fa-paper-plane"></i> Comentar
-                        </button>
-                    </div>
-                </section>
+
             </div>
             <div class="col-md-6">
                 <div class="d-flex flex-column ml-4 comments-container">
+                    <section class="d-flex flex-column justify-content-between p-2 ml-auto mr-auto bg-light w-100 mb-2">
+                        <h5><i class="fab fa-markdown"></i> Comentar</h5>
+                        <div class="d-flex  flex-fill">
+                            <textarea id="comment-textarea" class="form-control" v-model="commentTextarea" ref="commentTextareaRef" rows="8" v-bind:selection-start.prop="selectionStart" v-bind:selection-end.prop="selectionEnd" placeholder="Escribe tu comentario usando Markdown. Puedes agregar un audio con el botón de abajo."></textarea>
+                        </div>
+                        <div class="progress mt-2" style="height: 10px;" v-if="uploadingData.uploading">
+                            <div class="progress-bar" role="progressbar" :style="uploadingProgressBarStyleCss" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <button class="btn btn-primary mt-1 mb-1" data-target="#add-audio-modal" data-toggle="modal" v-on:click="requestMicrophone()">
+                                <i class="fas fa-microphone"></i> {{addAudioButtonText}}
+                            </button>
+                            <button class="btn btn-primary mt-1 mb-1" v-on:click="makeComment"
+                                    v-bind:disabled="makeCommentButtonDisabled">
+                                <i class="fas fa-paper-plane"></i> Comentar
+                            </button>
+                        </div>
+                    </section>
                     <h5 v-if="comments.length===0" class="m-4 text-center"><i class="fas fa-sad-tear"></i> No hay comentarios que mostrar</h5>
                     <comment v-for="comment in comments"
                              :comment="comment"
@@ -131,8 +132,10 @@
                     </button>
                 </div>
                 <div class="modal-body d-flex flex-column">
-                    <progress max="120" v-bind:value="audio.timeInSeconds"></progress>
-                    <span>{{audio.timeInSeconds}} segundos</span>
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped" role="progressbar" :style="progressStyle" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <span>{{clockFormatTime}} / 2:00</span>
                 </div>
                 <div class="modal-footer d-flex flex-column">
                     <div class="d-flex">

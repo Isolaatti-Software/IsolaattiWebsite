@@ -256,8 +256,10 @@
                 </button>
             </div>
             <div class="modal-body d-flex flex-column">
-                <progress max="120" v-bind:value="audio.timeInSeconds" class="w-100"></progress>
-                <span>{{audio.timeInSeconds}} segundos</span>
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped" role="progressbar" :style="progressStyle" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <span>{{clockFormatTime}} / 2:00</span>
             </div>
             <div class="modal-footer d-flex flex-column">
                 <div class="d-flex">
