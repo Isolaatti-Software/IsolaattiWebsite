@@ -20,6 +20,7 @@ namespace isolaatti_API.Models
 
         // fields for user preferences
         public string UserPreferencesJson { get; set; }
+        public bool ShowEmail { get; set; }
 
         // language field is used to decide what language to use in notifications by E-mail
         public string AppLanguage { get; set; }
