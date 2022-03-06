@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using isolaatti_API.Classes;
@@ -15,6 +16,8 @@ namespace isolaatti_API.Pages
         public string ProfilePhotoUrl = null;
         public string SessionToken;
         public string ProfileColor;
+        public List<User> Followers = new List<User>();
+        public List<User> Following = new List<User>();
 
         public Profile(DbContextApp dbContextApp)
         {
@@ -59,6 +62,18 @@ namespace isolaatti_API.Pages
             ProfilePhotoUrl = UrlGenerators.GenerateProfilePictureUrl(profile.Id, token, Request);
 
             ViewData["audioDescription"] = profile.DescriptionAudioUrl;
+            ViewData["showEmail"] = profile.ShowEmail;
+
+            Followers = (
+                from _user in _db.Users
+                from relation in _db.FollowerRelations
+                where relation.TargetUserId == profile.Id && relation.UserId == _user.Id
+                select _user).ToList();
+            Following = (
+                from _user in _db.Users
+                from relation in _db.FollowerRelations
+                where relation.UserId == profile.Id && relation.TargetUserId == _user.Id
+                select _user).ToList();
 
             try
             {

@@ -1,4 +1,6 @@
 @page "/perfil/{id}"
+@using isolaatti_API.Models
+@using isolaatti_API.Utils
 @model isolaatti_API.Pages.Profile
 
 @{
@@ -11,6 +13,70 @@
     <script>const pageTitle = "@ViewData["profile_name"]"</script>
 }
 
+<!-- Modal followers -->
+<div class="modal fade" id="modal-followers">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Seguidores</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="profiles-list-container">
+                    @if (!Model.Followers.Any())
+                    {
+                        <p class="m-3">
+                            Esta cuenta no tiene seguidores. Puedes ser su primer seguidor.
+                        </p>
+                    }
+                    @foreach (User user in Model.Followers)
+                    {
+                        <a class="user-profile-card"
+                           asp-page="Profile" asp-route-id="@user.Id">
+                            <img src='@UrlGenerators.GenerateProfilePictureUrl(user.Id, (string)ViewData["sessionToken"])'
+                                 width="100" height="100" class="profile-pic mt-3"/>
+                            <h6>@user.Name</h6>
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal following -->
+<div class="modal fade" id="modal-following">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Siguiendo</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="profiles-list-container">
+                    @if (!Model.Following.Any())
+                    {
+                        <p class="m-3">
+                            Esta cuenta no sigue a nadie. Tal vez tú puedas ser la primera persona que siga.
+                        </p>
+                    }
+                    @foreach (User user in Model.Following)
+                    {
+                        <a class="user-profile-card" asp-page="Profile" asp-route-id="@user.Id">
+                            <img src='@UrlGenerators.GenerateProfilePictureUrl(user.Id, (string)ViewData["sessionToken"])'
+                                 width="100" height="100" class="profile-pic mt-3"/>
+                            <h6>@user.Name</h6>
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="col-lg-2 col-md-4 p-0">
     <header id="left-bar" class="p-2" style="background: linear-gradient(@Model.ProfileColor 5%, white)">
@@ -21,6 +87,12 @@
         </div>
         <div class="translucent-white-card" style="margin-top: 30px;">
             <p class="text-center m-0 overflow-auto text-break username-profile">@ViewData["profile_name"]</p>
+            @if ((bool)ViewData["showEmail"])
+            {
+                <p class="text-center m-0 overflow-auto text-break">
+                    @ViewData["profile_email"]
+                </p>
+            }
             <p class="text-center text-break">@ViewData["description"]</p>
             <div class="d-flex mt-2 flex-column">
                 <div class="btn-group btn-group-sm">
