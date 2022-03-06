@@ -55,7 +55,10 @@ namespace isolaatti_API.Controllers
                 Color = userPreferences.ProfileHtmlColor ?? "#731D8C",
                 AudioUrl = user.DescriptionAudioUrl,
                 NumberOfPosts = _db.SimpleTextPosts.Count(post => post.UserId == user.Id),
-                ProfilePictureUrl = UrlGenerators.GenerateProfilePictureUrl(user.Id, sessionToken, Request)
+                ProfilePictureUrl = UrlGenerators.GenerateProfilePictureUrl(user.Id, sessionToken, Request),
+                NumberOfFollowers = user.NumberOfFollowers,
+                NumberOfFollowings = user.NumberOfFollowing,
+                NumberOfLikes = _db.Likes.Count(like => like.TargetUserId == user.Id)
             };
             return Ok(profile);
         }
@@ -75,7 +78,7 @@ namespace isolaatti_API.Controllers
 
             try
             {
-                userPreferences = JsonSerializer.Deserialize<UserPreferences>(user.UserPreferencesJson);
+                userPreferences = JsonSerializer.Deserialize<UserPreferences>(account.UserPreferencesJson);
             }
             catch (JsonException)
             {
@@ -88,13 +91,16 @@ namespace isolaatti_API.Controllers
 
             var profile = new Profile
             {
-                Username = user.Name,
-                Email = user.Email,
-                Description = user.DescriptionText,
+                Username = account.Name,
+                Email = account.ShowEmail ? account.Email : null,
+                Description = account.DescriptionText,
                 Color = userPreferences.ProfileHtmlColor ?? "#731D8C",
-                AudioUrl = user.DescriptionAudioUrl,
-                NumberOfPosts = _db.SimpleTextPosts.Count(post => post.UserId == user.Id),
-                ProfilePictureUrl = UrlGenerators.GenerateProfilePictureUrl(user.Id, sessionToken, Request)
+                AudioUrl = account.DescriptionAudioUrl,
+                NumberOfPosts = _db.SimpleTextPosts.Count(post => post.UserId == account.Id),
+                ProfilePictureUrl = UrlGenerators.GenerateProfilePictureUrl(user.Id, sessionToken, Request),
+                NumberOfFollowers = account.NumberOfFollowers,
+                NumberOfFollowings = account.NumberOfFollowing,
+                NumberOfLikes = _db.Likes.Count(like => like.TargetUserId == account.Id)
             };
             return Ok(profile);
         }

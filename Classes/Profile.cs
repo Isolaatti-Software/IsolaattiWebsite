@@ -16,5 +16,8 @@ namespace isolaatti_API.Classes
         public string AudioUrl { get; set; }
         public int NumberOfPosts { get; set; }
         public string ProfilePictureUrl { get; set; }
+        public int NumberOfFollowers { get; set; }
+        public int NumberOfFollowings { get; set; }
+        public int NumberOfLikes { get; set; }
     }
 }
