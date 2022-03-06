@@ -1,10 +1,5 @@
-/*
-* Isolaatti project
-* Erik Cavazos, 2020
-* This program is not allowed to be copied or reused without explicit permission.
-* erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
-*/
-
+﻿using System.Collections.Generic;
+using System.Linq;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using isolaatti_API.Utils;
@@ -13,11 +8,13 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace isolaatti_API.Pages
 {
-    public class Settings : PageModel
+    public class UserData : PageModel
     {
         private readonly DbContextApp _db;
+        public User IsolaattiUser;
+        public List<string> AudioUrls;
 
-        public Settings(DbContextApp dbContextApp)
+        public UserData(DbContextApp dbContextApp)
         {
             _db = dbContextApp;
         }
@@ -27,6 +24,7 @@ namespace isolaatti_API.Pages
             var accountsManager = new Accounts(_db);
             var user = accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
             if (user == null) return RedirectToPage("LogIn");
+            IsolaattiUser = user;
 
             // here it's know that account is correct. Data binding!
             ViewData["name"] = user.Name;
@@ -38,6 +36,15 @@ namespace isolaatti_API.Pages
                 : UrlGenerators.GenerateProfilePictureUrl(user.Id, Request.Cookies["isolaatti_user_session_token"]);
 
             ViewData["curentSessionToken"] = Request.Cookies["isolaatti_user_session_token"];
+
+            AudioUrls = (
+                from post in _db.SimpleTextPosts
+                where post.UserId.Equals(user.Id) && post.AudioAttachedUrl != null
+                select post.AudioAttachedUrl).ToList();
+
+            AudioUrls.AddRange((from comment in _db.Comments
+                where comment.WhoWrote.Equals(user.Id) && comment.AudioUrl != null
+                select comment.AudioUrl).ToList());
 
             return Page();
         }

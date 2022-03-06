@@ -1,11 +1,4 @@
-/*
-* Isolaatti project
-* Erik Cavazos, 2020
-* This program is not allowed to be copied or reused without explicit permission.
-* erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
-*/
-
-using isolaatti_API.isolaatti_lib;
+﻿using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using isolaatti_API.Utils;
 using Microsoft.AspNetCore.Mvc;
@@ -13,14 +6,16 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace isolaatti_API.Pages
 {
-    public class Settings : PageModel
+    public class PrivacySettings : PageModel
     {
         private readonly DbContextApp _db;
 
-        public Settings(DbContextApp dbContextApp)
+        public PrivacySettings(DbContextApp dbContextApp)
         {
             _db = dbContextApp;
         }
+
+        [BindProperty] public bool ShowEmail { get; set; }
 
         public IActionResult OnGet()
         {
@@ -39,7 +34,22 @@ namespace isolaatti_API.Pages
 
             ViewData["curentSessionToken"] = Request.Cookies["isolaatti_user_session_token"];
 
+            ShowEmail = user.ShowEmail;
+
             return Page();
+        }
+
+
+        public IActionResult OnPostEmailPrivacy()
+        {
+            var accountsManager = new Accounts(_db);
+            var user = accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
+            if (user == null) return RedirectToPage("LogIn");
+
+            user.ShowEmail = ShowEmail;
+            _db.Users.Update(user);
+            _db.SaveChanges();
+            return RedirectToPage("/PrivacySettings");
         }
     }
 }

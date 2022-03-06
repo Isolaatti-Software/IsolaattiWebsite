@@ -1,0 +1,38 @@
+﻿@page "/ajustes/consulta_datos/comentarios"
+@model isolaatti_API.Pages.CommentsConsultation
+
+@{
+    Layout = "Shared/_LayoutWebApp";
+    ViewData["Title"] = "Consulta todos los comentarios que has hecho y tenemos almacenados";
+}
+
+<div class="col-lg-3 col-md-2"></div>
+<div class="col-lg-6 col-md-8">
+    <h5 class="mt-3 text-center"><i class="fas fa-cog"></i> Ajustes</h5>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a asp-page="/Settings">Ajustes</a>
+            </li>
+            <li class="breadcrumb-item">
+                <a asp-page="/UserData">Datos del usuario</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Comentarios</li>
+        </ol>
+    </nav>
+
+    @foreach (var comment in Model.Comments)
+    {
+        <div class="card">
+            <div class="card-header">
+                <p>Id del comentario: <strong>@comment.Id</strong></p>
+                <p>Id de la publicación: <a asp-page="/PostViewer" asp-route-id="@comment.SimpleTextPostId">@comment.SimpleTextPostId</a></p>
+                <p>Fecha: <strong>@comment.Date</strong></p>
+            </div>
+            <div class="card-body">
+                <pre>@comment.TextContent</pre>
+            </div>
+        </div>
+    }
+</div>
+<div class="col-lg-3 col-md-2"></div>

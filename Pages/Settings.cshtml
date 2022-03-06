@@ -3,7 +3,7 @@
 
 @{
     Layout = "Shared/_LayoutWebApp";
-    ViewData["Title"] = "Settings";
+    ViewData["Title"] = "Ajustes";
 }
 
 @section CSS
@@ -15,24 +15,18 @@
 <div class="col-lg-6 col-md-8">
     <h5 class="mt-3 text-center"><i class="fas fa-cog"></i> Ajustes</h5>
 
-    @* <h3 class="mt-1">Feed</h3> *@
-    @* <p>Personaliza el comportamiento del Feed</p> *@
-    @* <form> *@
-    @*     <div class="custom-control-inline"> *@
-    @*         <label>Numero máximo de publicaciones por pagina de feed</label> *@
-    @*         <input type="number" class="form-control"> *@
-    @*     </div> *@
-    @*     <div class="form-check mt-2"> *@
-    @*       <input class="form-check-input" type="checkbox" value="" id="see-my-posts-on-feed"> *@
-    @*       <label class="form-check-label" for="see-my-posts-on-feed"> *@
-    @*         Ver mis publicaciones en el feed *@
-    @*       </label> *@
-    @*     </div> *@
-    @* </form> *@
-
     <h6 class="mt-3">Tu contraseña</h6>
     <p>
         <a asp-page="/ChangePassword">Cambia tu contraseña</a>
+    </p>
+
+    <h6 class="mt-3">Privacidad</h6>
+    <p>
+        <a asp-page="/PrivacySettings">Configura la privacidad</a>
+    </p>
+    <h6 class="mt-3">Tus datos</h6>
+    <p>
+        <a asp-page="/UserData">Consulta y descarga tus datos</a>
     </p>
 
     <h6 class="mt-3">Tus sesiones activas</h6>
