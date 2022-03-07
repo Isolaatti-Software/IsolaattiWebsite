@@ -109,9 +109,9 @@ namespace isolaatti_API.Controllers
             }
         }
 
-        [Route("Following")]
+        [Route("FollowingsOf/{userId:int}")]
         [HttpGet]
-        public IActionResult Following([FromHeader(Name = "sessionToken")] string sessionToken)
+        public IActionResult Following([FromHeader(Name = "sessionToken")] string sessionToken, int userId)
         {
             var accountsManager = new Accounts(Db);
             var user = accountsManager.ValidateToken(sessionToken);
@@ -120,7 +120,7 @@ namespace isolaatti_API.Controllers
             var listOfFollowing =
                 (from _user in Db.Users
                     from _relation in Db.FollowerRelations
-                    where _relation.UserId == user.Id && _user.Id == _relation.TargetUserId
+                    where _relation.UserId == userId && _user.Id == _relation.TargetUserId
                     select new
                     {
                         Id = _relation.TargetUserId,
@@ -132,9 +132,9 @@ namespace isolaatti_API.Controllers
             return Ok(listOfFollowing);
         }
 
-        [Route("Followers")]
+        [Route("FollowersOf/{userId:int}")]
         [HttpGet]
-        public IActionResult Followers([FromHeader(Name = "sessionToken")] string sessionToken)
+        public IActionResult Followers([FromHeader(Name = "sessionToken")] string sessionToken, int userId)
         {
             var accountsManager = new Accounts(Db);
             var user = accountsManager.ValidateToken(sessionToken);
@@ -143,7 +143,7 @@ namespace isolaatti_API.Controllers
             var listOfFollowers =
                 (from _user in Db.Users
                     from _relation in Db.FollowerRelations
-                    where _relation.TargetUserId == user.Id && _relation.UserId == _user.Id
+                    where _relation.TargetUserId == userId && _relation.UserId == _user.Id
                     select new
                     {
                         Id = _relation.UserId,
