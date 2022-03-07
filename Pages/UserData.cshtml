@@ -47,7 +47,7 @@
             Foto de perfil
         </div>
         <div class="card-body">
-            <p class="card-text">Esta es la foto que tú subiste a su perfil. Solo conservamos la imagen actual del perfil.</p>
+            <p class="card-text">Esta es la foto que tú subiste a tu perfil. Solo conservamos la imagen actual del perfil.</p>
             <img src="@UrlGenerators.GenerateProfilePictureUrl((int)@ViewData["userId"], (string)@ViewData["curentSessionToken"])"/>
             <p>
                 <a href="@UrlGenerators.GenerateProfilePictureUrl((int)@ViewData["userId"], (string)@ViewData["curentSessionToken"])" download="descarga_imagen_perfil_usuario_@ViewData["userId"]">Descargar</a>

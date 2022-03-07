@@ -1,4 +1,4 @@
-﻿@page "/Squads"
+﻿@page "/squads"
 @model isolaatti_API.Pages.Squads
 
 @{
@@ -13,9 +13,9 @@
         </h5>
 
         <div class="d-flex flex-column mt-2">
-            <a href="#" class="btn btn-primary">Nuevo squad</a>
+            <a asp-page="/CreateSquad" class="btn btn-primary">Nuevo squad</a>
             <div class="d-flex">
-                <a href="#" class="mt-1 ml-2">Mis squads</a>
+                <a asp-page="/Squads" class="mt-1 ml-2">Mis squads</a>
                 <a href="#" class="mt-1 ml-2">Solicitudes</a>
             </div>
             <hr/>
@@ -27,6 +27,6 @@
 </div>
 <div class="col-xl-8 col-lg-7 col-md-6">
     <div class="d-flex justify-content-center">
-
+        <p>Aqui mostrar el contenido</p>
     </div>
 </div>

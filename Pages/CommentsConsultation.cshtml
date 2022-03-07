@@ -23,7 +23,7 @@
 
     @foreach (var comment in Model.Comments)
     {
-        <div class="card">
+        <div class="card mt-1">
             <div class="card-header">
                 <p>Id del comentario: <strong>@comment.Id</strong></p>
                 <p>Id de la publicación: <a asp-page="/PostViewer" asp-route-id="@comment.SimpleTextPostId">@comment.SimpleTextPostId</a></p>
