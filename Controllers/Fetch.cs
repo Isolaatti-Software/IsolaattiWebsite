@@ -63,7 +63,7 @@ namespace isolaatti_API.Controllers
             return Ok(profile);
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("UserProfile")]
         public async Task<IActionResult> GetProfile([FromHeader(Name = "sessionToken")] string sessionToken,
             SingleIdentification identification)
@@ -97,7 +97,7 @@ namespace isolaatti_API.Controllers
                 Color = userPreferences.ProfileHtmlColor ?? "#731D8C",
                 AudioUrl = account.DescriptionAudioUrl,
                 NumberOfPosts = _db.SimpleTextPosts.Count(post => post.UserId == account.Id),
-                ProfilePictureUrl = UrlGenerators.GenerateProfilePictureUrl(user.Id, sessionToken, Request),
+                ProfilePictureUrl = UrlGenerators.GenerateProfilePictureUrl(account.Id, sessionToken, Request),
                 NumberOfFollowers = account.NumberOfFollowers,
                 NumberOfFollowings = account.NumberOfFollowing,
                 NumberOfLikes = _db.Likes.Count(like => like.TargetUserId == account.Id)
