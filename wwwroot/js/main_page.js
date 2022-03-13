@@ -115,14 +115,33 @@ let vueContainer = new Vue({
             });
         },
         deletePost: function(postId) {
+            if (!confirm("¿De verdad deseas eliminar esta publicación?")) {
+                return;
+            }
 
+            fetch("/api/Posting/Delete", {
+                method: "POST",
+                headers: this.customHeaders,
+                body: JSON.stringify({id: postId})
+            }).then(res => {
+                if (res.ok) {
+                    let postIndex = this.posts.findIndex(value => value.id === postId);
+                    this.posts.splice(postIndex, 1);
+                }
+            });
         },
         viewComments: function(post) {
             this.commentsViewer.postId = post.id;
             this.getComments();
         },
         getComments: function() {
-
+            fetch(`api/Fetch/Post/${this.commentsViewer.postId}/Comments`, {
+                headers: this.customHeaders
+            }).then(res => {
+                res.json().then(comments => {
+                    this.commentsViewer.comments = comments;
+                })
+            })
         }
     },
     mounted: function() {
