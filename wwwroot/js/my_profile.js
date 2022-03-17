@@ -198,7 +198,7 @@ document.addEventListener("DOMContentLoaded", function () {
             body: JSON.stringify({id: postId})
         }).then(res => {
             if (res.ok) {
-                let postIndex = this.posts.findIndex(value => value.id === postId);
+                let postIndex = this.posts.findIndex(value => value.postData.id === postId);
                 this.posts.splice(postIndex, 1);
             }
         });

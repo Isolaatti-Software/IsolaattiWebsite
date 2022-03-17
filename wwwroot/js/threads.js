@@ -191,19 +191,16 @@ let vueInstance = new Vue({
             if (!confirm("¿De verdad deseas eliminar esta publicación?")) {
                 return;
             }
-            let globalThis = this;
-            let form = new FormData();
-            form.append("sessionToken", sessionToken);
-            form.append("postId", postId);
 
-            let request = new XMLHttpRequest();
-            request.open("POST", "/api/EditPost/Delete");
-            request.onload = function () {
-                if (request.status === 200) {
+            fetch("/api/Posting/Delete", {
+                method: "POST",
+                headers: this.customHeaders,
+                body: JSON.stringify({id: postId})
+            }).then(res => {
+                if (res.ok) {
                     window.location = "/";
                 }
-            }
-            request.send(form);
+            });
         },
         playAudio: function (url) {
             if (this.audioUrl !== url) {
