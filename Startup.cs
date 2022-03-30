@@ -5,6 +5,7 @@
 * erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
 */
 
+using System;
 using System.IO;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
@@ -44,11 +45,14 @@ namespace isolaatti_API
             services.AddMvcCore().AddApiExplorer();
             services.AddRazorPages().AddRazorRuntimeCompilation();
             services.AddSignalR();
+            bool isDev = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != null;
 
             services.AddDbContext<DbContextApp>(options =>
             {
-                //options.UseSqlite(Configuration.GetConnectionString("Database"));
-                options.UseSqlServer(Configuration.GetConnectionString("Database"));
+                // db-connection-string env variable must be set on production
+                options.UseSqlServer(isDev
+                    ? Configuration.GetConnectionString("Database")
+                    : Environment.GetEnvironmentVariable("db-connection-string"));
             });
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -62,7 +66,13 @@ namespace isolaatti_API
                                            ForwardedHeaders.XForwardedHost;
             });
 
-            services.AddSendGrid(options => { options.ApiKey = Configuration.GetSection("ApiKeys")["SendGrid"]; });
+            // send-grid-api-key env variable must be set on production
+            services.AddSendGrid(options =>
+            {
+                options.ApiKey = isDev
+                    ? Configuration.GetSection("ApiKeys")["SendGrid"]
+                    : Environment.GetEnvironmentVariable("send-grid-api-key");
+            });
 
             // don't allow uploading files larger than 2 MB, for security reasons
             services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = 1024 * 1024 * 2);
