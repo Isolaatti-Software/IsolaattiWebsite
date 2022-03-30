@@ -1,0 +1,45 @@
+﻿@page "/auth/getAccess"
+@model isolaatti_API.Pages.auth.ExternalLogin
+
+@{
+    Layout = "Shared/_LayoutWebApp";
+    ViewData["Title"] = "Vinculación";
+}
+
+<div class="col-12 d-flex align-items-center flex-column">
+    <h1>Vinculación de cuenta</h1>
+    @if (Model.MalformedUrl)
+    {
+        <div class="alert alert-danger">La url es nula o malformada</div>
+    }
+    else
+    {
+        if (Model.IsNotSecure)
+        {
+            <div class="alert alert-danger">La url de redirección no es segura, continúe bajo su propia responsabilidad</div>
+        }
+        <div class="card">
+            <div class="card-body">
+                <form method="post">
+                    <div class="form-group">
+                        <label>Confirma tu contraseña para darle acceso a <strong>@Model.HostToLink</strong></label>
+                        @if (Model.IncorrectPassword)
+                        {
+                            <input type="password" class="form-control is-invalid" asp-for="Password"/>
+                        }
+                        else
+                        {
+                            <input type="password" class="form-control" asp-for="Password"/>
+                        }
+                        <div class="invalid-feedback">
+                            Contraseña incorrecta
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <button class="btn btn-light" type="submit">Continuar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    }
+</div>

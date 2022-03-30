@@ -4,6 +4,7 @@
 * This program is not allowed to be copied or reused without explicit permission.
 * erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
 */
+
 using System;
 using System.Linq;
 using isolaatti_API.isolaatti_lib;
@@ -16,7 +17,7 @@ namespace isolaatti_API.Pages
 {
     [IgnoreAntiforgeryToken]
     public class LogIn : PageModel
-    
+
     {
         private DbContextApp _db;
         public bool WrongCredential = false;
@@ -30,20 +31,23 @@ namespace isolaatti_API.Pages
         {
             _db = dbContextApp;
         }
-        
-        
+
+
         public IActionResult OnGet(
-            bool newUser=false, 
-            bool badCredential=false,
-            string username=null,
-            bool notVerified=false,
-            bool justVerified=false,
-            bool changedPassword=false)
+            bool newUser = false,
+            bool badCredential = false,
+            string username = null,
+            bool notVerified = false,
+            bool justVerified = false,
+            bool changedPassword = false)
         {
             var accountsManager = new Accounts(_db);
             var user = accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
-            if (user != null) return RedirectToPage("/Index");
-            
+            if (user != null)
+            {
+                return RedirectToPage("/Index");
+            }
+
             NewUser = newUser;
             WrongCredential = badCredential;
             NotVerifiedEmail = notVerified;
@@ -53,18 +57,18 @@ namespace isolaatti_API.Pages
             //                   !WrongCredential && !NotVerifiedEmail && !JustVerifiedEmail && !NewUser;
             ChangedPassword = changedPassword;
 
-            if (NewUser || WrongCredential || NotVerifiedEmail || JustVerifiedEmail || ChangedPassword) 
+            if (NewUser || WrongCredential || NotVerifiedEmail || JustVerifiedEmail || ChangedPassword)
                 ViewData["username_field"] = username;
-            
-            
+
+
             return Page();
         }
-        
-        public IActionResult OnPost(string email = null, string password = null)
+
+        public IActionResult OnPost(string email = null, string password = null, [FromQuery] string then = null)
         {
             if (email == null || password == null)
                 return Page();
-            
+
             var accountsManager = new Accounts(_db);
             try
             {
@@ -77,6 +81,7 @@ namespace isolaatti_API.Pages
                         username = user.Email
                     });
                 }
+
                 accountsManager.DefineHttpRequestObject(Request);
                 var sessionToken = accountsManager.CreateNewToken(user.Id, password);
                 if (sessionToken == null)
@@ -87,10 +92,16 @@ namespace isolaatti_API.Pages
                         username = email
                     });
                 }
+
                 Response.Cookies.Append("isolaatti_user_session_token", sessionToken.Token, new CookieOptions()
                 {
                     Expires = new DateTimeOffset(DateTime.Today.AddMonths(1))
                 });
+                if (then != null)
+                {
+                    return Redirect(then);
+                }
+
                 return RedirectToPage("Index");
             }
             catch (InvalidOperationException)

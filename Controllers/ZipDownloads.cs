@@ -26,10 +26,12 @@ namespace isolaatti_API.Controllers
             var user = accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
             if (user == null) return RedirectToPage("LogIn");
 
-            var posts = _db.SimpleTextPosts.Where(post => post.UserId.Equals(user.Id))
-                .Select(postEntry => JsonSerializer.Serialize(postEntry, null)).ToArray();
-            var comments = _db.Comments.Where(comment => comment.WhoWrote.Equals(user.Id))
-                .Select(comment => JsonSerializer.Serialize(comment, null)).ToArray();
+            var posts = _db.SimpleTextPosts.Where(post => post.UserId.Equals(user.Id)).AsEnumerable()
+                .Select(postEntry => JsonSerializer.Serialize(postEntry, typeof(SimpleTextPost))).ToArray();
+
+
+            var comments = _db.Comments.Where(comment => comment.WhoWrote.Equals(user.Id)).AsEnumerable()
+                .Select(comment => JsonSerializer.Serialize(comment, typeof(Comment))).ToArray();
 
             using var memoryStream = new MemoryStream();
             using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
