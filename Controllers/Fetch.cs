@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -106,41 +105,60 @@ namespace isolaatti_API.Controllers
         }
 
         [HttpGet]
-        [Route("PostsOfUser/{userId:int}")]
-        public IActionResult GetPosts([FromHeader(Name = "sessionToken")] string sessionToken, int userId)
+        [Route("PostsOfUser/{userId:int}/{length:int?}/{lastId:long?}")]
+        public IActionResult GetPosts([FromHeader(Name = "sessionToken")] string sessionToken, int userId,
+            int length = 10, long lastId = -1)
         {
             var accountsManager = new Accounts(_db);
             var user = accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
-            List<SimpleTextPost> posts;
-
+            IQueryable<SimpleTextPost> posts;
+            var likes = _db.Likes.Where(like => like.UserId == user.Id);
             if (user.Id == userId)
             {
-                posts = _db.SimpleTextPosts
-                    .Where(post => post.UserId == user.Id)
-                    .OrderByDescending(post => post.Id).ToList();
+                if (lastId < 0)
+                {
+                    posts = _db.SimpleTextPosts
+                        .Where(post => post.UserId == user.Id)
+                        .OrderByDescending(post => post.Id).Take(length);
+                }
+                else
+                {
+                    posts = _db.SimpleTextPosts
+                        .Where(post => post.UserId == user.Id && post.Id < lastId)
+                        .OrderByDescending(post => post.Id).Take(length);
+                }
             }
             else
             {
                 var requestedAuthor = _db.Users.Find(userId);
                 if (requestedAuthor == null) return NotFound();
 
-                posts = _db.SimpleTextPosts
-                    .Where(post => post.UserId == requestedAuthor.Id && post.Privacy != 1)
-                    .OrderByDescending(post => post.Id).ToList();
+                if (lastId < 0)
+                {
+                    posts = _db.SimpleTextPosts
+                        .Where(post => post.UserId == requestedAuthor.Id && post.Privacy != 1)
+                        .OrderByDescending(post => post.Id).Take(length);
+                }
+                else
+                {
+                    posts = _db.SimpleTextPosts
+                        .Where(post => post.UserId == requestedAuthor.Id && post.Privacy != 1 && post.Id < lastId)
+                        .OrderByDescending(post => post.Id).Take(length);
+                }
             }
 
 
-            var response = posts.ToList()
+            var feed = posts
                 .Select(post => new
                 {
                     postData = new FeedPost
                     {
                         Id = post.Id,
-                        Username = _db.Users.Find(post.UserId).Name,
+                        Username = post.User.Name,
                         UserId = post.UserId,
-                        Liked = _db.Likes.Any(element => element.PostId == post.Id && element.UserId == user.Id),
+                        Liked = likes.Any(element => element.PostId == post.Id && element.UserId == user.Id),
                         Content = post.TextContent,
                         NumberOfLikes = post.NumberOfLikes,
                         NumberOfComments = post.NumberOfComments,
@@ -153,10 +171,24 @@ namespace isolaatti_API.Controllers
                         ? null
                         : JsonSerializer.Deserialize<PostTheme>(post.ThemeJson,
                             new JsonSerializerOptions { PropertyNameCaseInsensitive = true })
-                })
-                .ToList();
+                }).ToList();
 
-            return Ok(response);
+            long lastPostId;
+            try
+            {
+                lastPostId = feed.Last().postData.Id;
+            }
+            catch (InvalidOperationException)
+            {
+                lastPostId = -1;
+            }
+
+            return Ok(new
+            {
+                feed,
+                moreContent = feed.Count == length,
+                lastId = lastPostId
+            });
         }
 
         [HttpGet]

@@ -53,11 +53,13 @@ function fetchUserOnlineStatus() {
 
     /* Functions for vue methods starts here */
 
-    function fetchMyPosts() {
-        fetch(`/api/Fetch/PostsOfUser/${this.accountData.userId}`, {headers: this.customHeaders}).then(result => {
-            result.json().then(posts => {
-                this.posts = posts;
+    function fetchMyPosts(lastId) {
+        fetch(`/api/Fetch/PostsOfUser/${this.accountData.userId}/8/${lastId}`, {headers: this.customHeaders}).then(result => {
+            result.json().then(res => {
+                this.posts = this.posts.concat(res.feed);
+                this.moreContent = res.moreContent;
                 this.loading = false;
+                this.lastId = res.lastId;
             })
         })
     }
@@ -199,6 +201,8 @@ function fetchUserOnlineStatus() {
             playing: false,
             paused: false,
             loading: true,
+            moreContent: false,
+            lastId: -1,
             postLinkToShare: "",
             commentsViewer: {
                 postId: 0,
@@ -236,7 +240,7 @@ function fetchUserOnlineStatus() {
                     fetchUserOnlineStatus();
                 }, 30000);
 
-                this.fetchPosts();
+                this.fetchPosts(-1);
                 let globalThis = this;
                 this.audioPlayer.onended = function () {
                     // if it was playing the description it has to stop the photo rotating

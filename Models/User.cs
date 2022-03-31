@@ -5,6 +5,8 @@
 * erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
 */
 
+using System.Collections.Generic;
+
 namespace isolaatti_API.Models
 {
     public class User
@@ -34,5 +36,7 @@ namespace isolaatti_API.Models
         public byte[] ProfileImageData { get; set; }
         public string DescriptionText { get; set; }
         public string DescriptionAudioUrl { get; set; }
+
+        public List<SimpleTextPost> Posts { get; set; }
     }
 }

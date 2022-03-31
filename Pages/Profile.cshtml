@@ -145,11 +145,6 @@
         <h5 class="m-3 text-center"><i class="far fa-newspaper"></i> Discusiones de @ViewData["profile_name"]</h5>
         <section id="vue-container" class="d-flex flex-column pt-1 mt-2 mb-3 align-items-center">
             <h5 class="m-2 text-center" v-if="posts.length === 0">@ViewData["profile_name"] no tiene ninguna publicación</h5>
-            <div v-if="loading" class="d-flex justify-content-center mt-2">
-                <div class="spinner-border" role="status">
-                    <span class="sr-only">Cargando más contenido...</span>
-                </div>
-            </div>
             <post-template v-for="post in posts" :post="post.postData"
                            v-bind:theme="post.theme"
                            v-bind:preview="false"
@@ -164,6 +159,14 @@
                            v-on:view-thread="viewComments(post.postData)"
                            v-bind:key="post.postData.id">
             </post-template>
+            <div v-if="loading" class="d-flex justify-content-center mt-2">
+                <div class="spinner-border" role="status">
+                    <span class="sr-only">Cargando más contenido...</span>
+                </div>
+            </div>
+            <div v-if="moreContent" class="d-flex flex-column align-items-center mt-2">
+                <button class="btn btn-primary" v-on:click="fetchPosts(lastId)">Cargar más</button>
+            </div>
             <div class="modal fade" id="modal-share-post">
                 <div class="modal-dialog-centered modal-dialog">
                     <div class="modal-content">

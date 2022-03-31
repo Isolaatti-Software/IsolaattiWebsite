@@ -9,5 +9,7 @@ namespace isolaatti_API.Models
         public int UserId { get; set; }
         public int TargetUserId { get; set; }
         public DateTime Date { get; set; }
+
+        public User User { get; set; }
     }
 }
