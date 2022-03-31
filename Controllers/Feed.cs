@@ -32,6 +32,7 @@ namespace isolaatti_API.Controllers
             var user = accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
+            var likes = Db.Likes.Where(like => like.UserId == user.Id);
             IQueryable<SimpleTextPost> postsQuery;
             if (lastId <= 0)
             {
@@ -57,14 +58,14 @@ namespace isolaatti_API.Controllers
                 postsQuery = postsQuery.Take(length);
             }
 
-            var posts = postsQuery.ToList().Select(rawPost => new
+            var posts = postsQuery.Select(rawPost => new
             {
                 postData = new FeedPost
                 {
                     Id = rawPost.Id,
-                    Username = Db.Users.Find(rawPost.UserId).Name,
+                    Username = rawPost.User.Name,
                     UserId = rawPost.UserId,
-                    Liked = Db.Likes.Any(element => element.PostId == rawPost.Id && element.UserId == user.Id),
+                    Liked = likes.Any(l => l.PostId == rawPost.Id),
                     Content = rawPost.TextContent,
                     NumberOfLikes = rawPost.NumberOfLikes,
                     NumberOfComments = rawPost.NumberOfComments,
