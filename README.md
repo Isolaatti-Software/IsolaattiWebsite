@@ -8,7 +8,7 @@ El proyecto puede funcionar en Windows, Linux o Mac.
 
 ## Cosas a instalar
 * Microsoft .NET 6 https://dotnet.microsoft.com/en-us/download/dotnet/6.0
-* SQL Server. Puedes instalar SQL Server 2019 Developer Edition, ya sea de la forma normal o con Docker. Revisa la siguiente página para más información: https://dotnet.microsoft.com/en-us/download/dotnet/6.0. Si no quieres instalar SQL Server en tu máquina, puedes usar una base de datos SQL Server en la nube, como prefieras. Solo es aconsejable no usar la misma base de datos para producción y para desarrollo.
+* SQL Server. Puedes instalar SQL Server 2019 Developer Edition, ya sea de la forma normal o con Docker. Revisa la siguiente página para más información: https://www.microsoft.com/en-us/sql-server/sql-server-downloads. Si no quieres instalar SQL Server en tu máquina, puedes usar una base de datos SQL Server en la nube, como prefieras. Solo es aconsejable no usar la misma base de datos para producción y para desarrollo.
 * (Opcional pero recomendado) Instalar un IDE compatible con .NET. Puede ser Visual Studio 2022, JetBrains Rider o cualquier editor de código compatible, como VS Code.
 * (Opcional) Si quieres hacer queries directamente a tu base de datos, puedes instalar Azure Data Studio o alguno de tu preferencia.
 
