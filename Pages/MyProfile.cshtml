@@ -335,11 +335,8 @@
                     </button>
                 </div>
             </div>
-            <div v-if="loading" class="d-flex justify-content-center mt-2">
-                <div class="spinner-border" role="status">
-                    <span class="sr-only">Cargando más contenido...</span>
-                </div>
-            </div>
+
+
             <post-template v-for="post in filterAndSortedPosts" :post="post.postData"
                            v-on:like="likePost(post.postData)"
                            v-bind:theme="post.theme"
@@ -352,6 +349,14 @@
                            v-bind:audio-url="audioUrl"
                            v-bind:key="post.postData.id">
             </post-template>
+            <div v-if="loading" class="d-flex justify-content-center mt-2">
+                <div class="spinner-border" role="status">
+                    <span class="sr-only">Cargando más contenido...</span>
+                </div>
+            </div>
+            <div v-if="moreContent" class="d-flex flex-column align-items-center mt-2">
+                <button class="btn btn-primary" v-on:click="fetchPosts(lastId)">Cargar más</button>
+            </div>
 
             <div class="modal fade" id="modal-share-post">
                 <div class="modal-dialog-centered modal-dialog">

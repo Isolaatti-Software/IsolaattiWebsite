@@ -94,11 +94,13 @@ document.addEventListener("DOMContentLoaded", function () {
     editEmailField.value = userData.email;
     editNameField.value = userData.name;
 
-    function fetchMyPosts() {
-        fetch(`api/Fetch/PostsOfUser/${this.userData.id}`, {headers: this.customHeaders}).then(result => {
-            result.json().then(posts => {
-                this.posts = posts;
+    function fetchMyPosts(lastId) {
+        fetch(`api/Fetch/PostsOfUser/${this.userData.id}/8/${lastId}`, {headers: this.customHeaders}).then(result => {
+            result.json().then(res => {
+                this.posts = this.posts.concat(res.feed);
+                this.moreContent = res.moreContent;
                 this.loading = false;
+                this.lastId = res.lastId;
             })
         })
     }
@@ -227,6 +229,11 @@ document.addEventListener("DOMContentLoaded", function () {
         this.fetchComments();
     }
 
+    function loadMore() {
+        this.postLoader.loading = true;
+        this.fetchPosts(this.postLoader.lastId)
+    }
+
     let vueContainer = new Vue({
         el: '#vue-container',
         data: {
@@ -241,6 +248,8 @@ document.addEventListener("DOMContentLoaded", function () {
             playing: false,
             paused: false,
             loading: true,
+            moreContent: false,
+            lastId: -1,
             postLinkToShare: "",
             commentsViewer: {
                 postId: 0,
@@ -256,7 +265,7 @@ document.addEventListener("DOMContentLoaded", function () {
             },
             sortingData: {
                 ascending: "0"
-            },
+            }
         },
         computed: {
             openThreadLink: function () {
@@ -309,7 +318,7 @@ document.addEventListener("DOMContentLoaded", function () {
         mounted: function () {
             this.$nextTick(function () {
                 let globalThis = this;
-                this.fetchPosts();
+                this.fetchPosts(-1);
                 this.audioPlayer.onended = function () {
                     // if it was playing the description it has to stop the photo rotating
                     if (globalThis.audioUrl === vueContainerForLeftBar.audioDescriptionUrl) {
