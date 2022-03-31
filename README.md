@@ -45,11 +45,11 @@ de Google, Microsoft y Facebook. También se necesita para acceder al Bucket de 
 
 Lee lo siguiente:
 * Admin: https://firebase.google.com/docs/admin/setup?authuser=0&%3Bhl=es&hl=es
-* Cuentas de servicio Google Cloud:https://cloud.google.com/iam/docs/service-accounts y https://cloud.google.com/docs/authentication/production
+* Cuentas de servicio Google Cloud: https://cloud.google.com/iam/docs/service-accounts y https://cloud.google.com/docs/authentication/production
 ## Instrucciones para correr en tu estación de trabajo
 1. Clona el repositorio
 2. Abre la solución con tu IDE. Si no usas un IDE, entonces desplazate hasta la carpeta del proyecto con tu línea de comandos.
-3. Si estás en un IDE, los paquetes nuget deberían empezar a reestablecerse. Si lo correras con la línea de comandos, entonces has lo siguiente.
+3. Si estás en un IDE, los paquetes nuget deberían empezar a reestablecerse. Si lo correras con la línea de comandos, entonces haz lo siguiente.
 ```
 cd /carpeta/del/proyecto
 dotnet run
