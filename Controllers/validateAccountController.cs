@@ -4,8 +4,10 @@
 * This program is not allowed to be copied or reused without explicit permission.
 * erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
 */
-using Microsoft.AspNetCore.Mvc;
+
+using System.Threading.Tasks;
 using isolaatti_API.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace isolaatti_API.Controllers
 {
@@ -14,21 +16,23 @@ namespace isolaatti_API.Controllers
     public class validateAccount : ControllerBase
     {
         private readonly DbContextApp dbContext;
+
         public validateAccount(DbContextApp dbContextApp)
         {
             dbContext = dbContextApp;
         }
+
         [HttpGet]
-        public IActionResult Index(int id, string code)
+        public async Task<IActionResult> Index(int id, string code)
         {
             try
             {
-                User userToValidate = dbContext.Users.Find(id);
-                if(userToValidate.Uid == code)
+                var userToValidate = await dbContext.Users.FindAsync(id);
+                if (userToValidate.Uid == code)
                 {
                     userToValidate.EmailValidated = true;
                     dbContext.Users.Update(userToValidate);
-                    dbContext.SaveChanges();
+                    await dbContext.SaveChangesAsync();
                 }
                 else
                 {

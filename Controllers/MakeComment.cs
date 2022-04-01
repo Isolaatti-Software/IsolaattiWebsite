@@ -2,11 +2,9 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using isolaatti_API.Classes;
-using isolaatti_API.Hubs;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 
 namespace isolaatti_API.Controllers
 {
@@ -15,12 +13,10 @@ namespace isolaatti_API.Controllers
     public class MakeComment : ControllerBase
     {
         private readonly DbContextApp _db;
-        private readonly IHubContext<NotificationsHub> _hubContext;
 
-        public MakeComment(DbContextApp dbContextApp, IHubContext<NotificationsHub> hubContext)
+        public MakeComment(DbContextApp dbContextApp)
         {
             _db = dbContextApp;
-            _hubContext = hubContext;
         }
 
         [HttpPost]
@@ -31,15 +27,15 @@ namespace isolaatti_API.Controllers
             [FromForm] string audioUrl = null)
         {
             var accountsManager = new Accounts(_db);
-            var user = accountsManager.ValidateToken(sessionToken);
+            var user = await accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
-            var post = _db.SimpleTextPosts.Find(postId);
+            var post = await _db.SimpleTextPosts.FindAsync(postId);
             if (post == null || (post.Privacy == 1 && post.UserId != user.Id))
                 return NotFound("Post does not exist or is private");
 
 
-            var newComment = new Comment()
+            var newComment = new Comment
             {
                 Privacy = 2,
                 SimpleTextPostId = post.Id,
@@ -63,11 +59,6 @@ namespace isolaatti_API.Controllers
             post.NumberOfComments = _db.Comments.Count(comment => comment.SimpleTextPostId == postId);
             await _db.SaveChangesAsync();
 
-            // improve this. This should send notification to all related users and also update thread in realtime
-            var sessionsId = Hubs.NotificationsHub.Sessions
-                .Where(element =>
-                    element.Value.Equals(post.UserId) ||
-                    element.Value.Equals(user.Id));
 
             // this is returned as API response and sent through signalR
             var response = new ReturningCommentComposedResponse()
@@ -81,12 +72,6 @@ namespace isolaatti_API.Controllers
                 Date = newComment.Date
             };
 
-            // this send signalR event
-            foreach (var id in sessionsId)
-            {
-                await _hubContext.Clients.Client(id.Key)
-                    .SendAsync("fetchNotification", notificationData, NotificationsAdministration.TypePosts, response);
-            }
 
             // returns just created comment to show it on the frontend
             return Ok(response);

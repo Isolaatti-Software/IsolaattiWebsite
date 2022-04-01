@@ -6,14 +6,17 @@
 */
 
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Threading.Tasks;
 using isolaatti_API.Classes;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using isolaatti_API.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 
 namespace isolaatti_API.Pages
 {
@@ -33,7 +36,7 @@ namespace isolaatti_API.Pages
             _db = dbContextApp;
         }
 
-        public IActionResult OnGet(
+        public async Task<IActionResult> OnGet(
             string open = "",
             bool currentPasswordIsWrong = false,
             bool profileUpdate = false,
@@ -43,7 +46,7 @@ namespace isolaatti_API.Pages
             string statusData = "")
         {
             var accountsManager = new Accounts(_db);
-            var user = accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
+            var user = await accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
             if (user == null) return RedirectToPage("LogIn");
 
             // here it's know that account is correct. Data binding!
@@ -64,31 +67,32 @@ namespace isolaatti_API.Pages
             ViewData["audioDescriptionUrl"] = user.DescriptionAudioUrl;
             PasswordIsWrong = currentPasswordIsWrong;
 
-            ViewData["numberOfLikes"] = _db.Likes.Count(like => like.TargetUserId.Equals(user.Id));
-            ViewData["numberOfPosts"] = _db.SimpleTextPosts.Count(post => post.UserId.Equals(user.Id));
+            ViewData["numberOfLikes"] = await _db.Likes.CountAsync(like => like.TargetUserId.Equals(user.Id));
+            ViewData["numberOfPosts"] = await _db.SimpleTextPosts.CountAsync(post => post.UserId.Equals(user.Id));
             ProfilePhotoUrl =
                 UrlGenerators.GenerateProfilePictureUrl(user.Id, Request.Cookies["isolaatti_user_session_token"],
                     Request);
 
             ViewData["sessionToken"] = Request.Cookies["isolaatti_user_session_token"];
 
-            Followers = (
+            Followers = await (
                 from _user in _db.Users
                 from relation in _db.FollowerRelations
                 where relation.TargetUserId == user.Id && relation.UserId == _user.Id
-                select _user).ToList();
-            Following = (
+                select _user).ToListAsync();
+            Following = await (
                 from _user in _db.Users
                 from relation in _db.FollowerRelations
                 where relation.UserId == user.Id && relation.TargetUserId == _user.Id
-                select _user).ToList();
+                select _user).ToListAsync();
 
             ViewData["numberOfFollowers"] = user.NumberOfFollowers;
             ViewData["numberOfFollowing"] = user.NumberOfFollowing;
 
             try
             {
-                var color = JsonSerializer.Deserialize<UserPreferences>(user.UserPreferencesJson).ProfileHtmlColor;
+                var color = (await JsonSerializer.DeserializeAsync<UserPreferences>(
+                    new MemoryStream(System.Text.Encoding.UTF8.GetBytes(user.UserPreferencesJson)))).ProfileHtmlColor;
                 ProfileColor = color ?? "#731D8C";
             }
             catch (JsonException)
@@ -99,7 +103,7 @@ namespace isolaatti_API.Pages
             return Page();
         }
 
-        public IActionResult OnPost(int userId, string current_password, string new_password)
+        public async Task<IActionResult> OnPost(int userId, string current_password, string new_password)
         {
             if (current_password == null || new_password == null)
             {
@@ -111,7 +115,7 @@ namespace isolaatti_API.Pages
 
             var accountsManager = new Accounts(_db);
 
-            if (!accountsManager.ChangeAPassword(userId, current_password, new_password))
+            if (!await accountsManager.ChangeAPassword(userId, current_password, new_password))
             {
                 return RedirectToPage("MyProfile", new
                 {
@@ -119,7 +123,7 @@ namespace isolaatti_API.Pages
                 });
             }
 
-            accountsManager.RemoveAllUsersTokens(userId);
+            await accountsManager.RemoveAllUsersTokens(userId);
             return Redirect("WebLogOut");
         }
     }

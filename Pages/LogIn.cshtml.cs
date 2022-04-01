@@ -7,6 +7,7 @@
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Http;
@@ -33,7 +34,7 @@ namespace isolaatti_API.Pages
         }
 
 
-        public IActionResult OnGet(
+        public async Task<IActionResult> OnGet(
             bool newUser = false,
             bool badCredential = false,
             string username = null,
@@ -42,7 +43,7 @@ namespace isolaatti_API.Pages
             bool changedPassword = false)
         {
             var accountsManager = new Accounts(_db);
-            var user = accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
+            var user = await accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
             if (user != null)
             {
                 return RedirectToPage("/Index");
@@ -64,7 +65,8 @@ namespace isolaatti_API.Pages
             return Page();
         }
 
-        public IActionResult OnPost(string email = null, string password = null, [FromQuery] string then = null)
+        public async Task<IActionResult> OnPost(string email = null, string password = null,
+            [FromQuery] string then = null)
         {
             if (email == null || password == null)
                 return Page();
@@ -73,7 +75,7 @@ namespace isolaatti_API.Pages
             try
             {
                 var user = _db.Users.Single(u => u.Email.Equals(email));
-                if (!accountsManager.IsUserEmailVerified(user.Id))
+                if (!await accountsManager.IsUserEmailVerified(user.Id))
                 {
                     return RedirectToPage(new
                     {
@@ -83,7 +85,7 @@ namespace isolaatti_API.Pages
                 }
 
                 accountsManager.DefineHttpRequestObject(Request);
-                var sessionToken = accountsManager.CreateNewToken(user.Id, password);
+                var sessionToken = await accountsManager.CreateNewToken(user.Id, password);
                 if (sessionToken == null)
                 {
                     return RedirectToPage("LogIn", new

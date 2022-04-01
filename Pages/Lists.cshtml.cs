@@ -1,4 +1,5 @@
-﻿using isolaatti_API.isolaatti_lib;
+﻿using System.Threading.Tasks;
+using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using isolaatti_API.Utils;
 using Microsoft.AspNetCore.Mvc;
@@ -15,10 +16,10 @@ namespace isolaatti_API.Pages
             _db = dbContextApp;
         }
 
-        public IActionResult OnGet()
+        public async Task<IActionResult> OnGet()
         {
             var accountsManager = new Accounts(_db);
-            var user = accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
+            var user = await accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
             if (user == null) return RedirectToPage("/PublicContent/Feed");
 
             // here it's know that account is correct. Data binding!

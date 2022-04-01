@@ -1,4 +1,5 @@
-﻿using isolaatti_API.isolaatti_lib;
+﻿using System.Threading.Tasks;
+using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using isolaatti_API.Utils;
 using Microsoft.AspNetCore.Mvc;
@@ -17,10 +18,10 @@ namespace isolaatti_API.Pages
 
         [BindProperty] public bool ShowEmail { get; set; }
 
-        public IActionResult OnGet()
+        public async Task<IActionResult> OnGet()
         {
             var accountsManager = new Accounts(_db);
-            var user = accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
+            var user = await accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
             if (user == null) return RedirectToPage("LogIn");
 
             // here it's know that account is correct. Data binding!
@@ -40,15 +41,15 @@ namespace isolaatti_API.Pages
         }
 
 
-        public IActionResult OnPostEmailPrivacy()
+        public async Task<IActionResult> OnPostEmailPrivacy()
         {
             var accountsManager = new Accounts(_db);
-            var user = accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
+            var user = await accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
             if (user == null) return RedirectToPage("LogIn");
 
             user.ShowEmail = ShowEmail;
             _db.Users.Update(user);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
             return RedirectToPage("/PrivacySettings");
         }
     }

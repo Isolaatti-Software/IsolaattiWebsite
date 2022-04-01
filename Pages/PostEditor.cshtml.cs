@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using isolaatti_API.Utils;
@@ -21,10 +22,10 @@ namespace isolaatti_API.Pages
             zeroes = new Guid(new Byte[16]);
         }
 
-        public IActionResult OnGet(bool edit = false, long postId = -1)
+        public async Task<IActionResult> OnGet(bool edit = false, long postId = -1)
         {
             var accountsManager = new Accounts(_db);
-            var user = accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
+            var user = await accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
             if (user == null) return RedirectToPage("LogIn");
             Edit = edit;
             EditPostId = postId;
@@ -39,7 +40,7 @@ namespace isolaatti_API.Pages
 
             if (!edit || postId == -1) return Page();
 
-            var post = _db.SimpleTextPosts.Find(postId);
+            var post = await _db.SimpleTextPosts.FindAsync(postId);
             if (post == null || post.UserId != user.Id) return NotFound();
 
             return Page();

@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Threading.Tasks;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using isolaatti_API.Utils;
@@ -16,7 +17,7 @@ namespace isolaatti_API.Pages.Reports
             _db = dbContextApp;
         }
 
-        public IActionResult OnGet(string postId = "", string commentId = "")
+        public async Task<IActionResult> OnGet(string postId = "", string commentId = "")
         {
             // as 0 is default value, it can know that user didn't specified anything
             // both parameters cannot be more than 0, only one can be
@@ -26,7 +27,7 @@ namespace isolaatti_API.Pages.Reports
             }
 
             var accountsManager = new Accounts(_db);
-            var user = accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
+            var user = await accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
             if (user == null) return RedirectToPage("GetStarted");
 
             // here it's known that account is correct. Data binding!
@@ -57,7 +58,7 @@ namespace isolaatti_API.Pages.Reports
             return Page();
         }
 
-        public IActionResult OnPost(int typeOfReport, long id, int category, string userReason)
+        public async Task<IActionResult> OnPost(int typeOfReport, long id, int category, string userReason)
         {
             switch (typeOfReport)
             {
@@ -75,9 +76,8 @@ namespace isolaatti_API.Pages.Reports
                     };
 
                     _db.PostReports.Add(postReport);
-                    _db.SaveChanges();
+                    await _db.SaveChangesAsync();
                     return RedirectToPage("/Reports/ThankYou");
-                    break;
                 case 2:
                     if (!_db.Comments.Any(comment => comment.Id.Equals(id)))
                     {
@@ -91,9 +91,8 @@ namespace isolaatti_API.Pages.Reports
                         UserReason = userReason
                     };
                     _db.CommentReports.Add(commentReport);
-                    _db.SaveChanges();
+                    await _db.SaveChangesAsync();
                     return RedirectToPage("/Reports/ThankYou");
-                    break;
                 default: return NotFound();
             }
         }

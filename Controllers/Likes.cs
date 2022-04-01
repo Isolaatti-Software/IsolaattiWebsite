@@ -3,11 +3,9 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using isolaatti_API.Classes.ApiEndpointsRequestDataModels;
 using isolaatti_API.Classes.ApiEndpointsResponseDataModels;
-using isolaatti_API.Hubs;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 
 namespace isolaatti_API.Controllers
 {
@@ -16,12 +14,10 @@ namespace isolaatti_API.Controllers
     public class Likes : Controller
     {
         private readonly DbContextApp Db;
-        private readonly IHubContext<NotificationsHub> _hubContext;
 
-        public Likes(DbContextApp dbContextApp, IHubContext<NotificationsHub> hubContext)
+        public Likes(DbContextApp dbContextApp)
         {
             Db = dbContextApp;
-            _hubContext = hubContext;
         }
 
         [HttpPost]
@@ -30,7 +26,7 @@ namespace isolaatti_API.Controllers
             SingleIdentification identification)
         {
             var accountsManager = new Accounts(Db);
-            var user = accountsManager.ValidateToken(sessionToken);
+            var user = await accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
             var post = await Db.SimpleTextPosts.FindAsync(identification.Id);
@@ -38,8 +34,6 @@ namespace isolaatti_API.Controllers
             if (Db.Likes.Any(element => element.UserId == user.Id && element.PostId == identification.Id))
                 return Unauthorized("Post already liked");
 
-
-            var notificationsAdministration = new NotificationsAdministration(Db);
 
             Db.Likes.Add(new Like
             {
@@ -52,17 +46,6 @@ namespace isolaatti_API.Controllers
             Db.SimpleTextPosts.Update(post);
             await Db.SaveChangesAsync();
 
-            var notificationData =
-                notificationsAdministration.NewLikesActivityNotification(post.UserId, user.Id, post.Id,
-                    post.NumberOfLikes);
-
-            var sessionsId = Hubs.NotificationsHub.Sessions.Where(element => element.Value.Equals(post.UserId));
-
-            foreach (var id in sessionsId)
-            {
-                await _hubContext.Clients.Client(id.Key)
-                    .SendAsync("fetchNotification", notificationData, NotificationsAdministration.TypeLikes);
-            }
 
             return Ok(new
             {
@@ -95,7 +78,7 @@ namespace isolaatti_API.Controllers
             SingleIdentification identification)
         {
             var accountsManager = new Accounts(Db);
-            var user = accountsManager.ValidateToken(sessionToken);
+            var user = await accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
             var post = await Db.SimpleTextPosts.FindAsync(identification.Id);

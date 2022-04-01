@@ -1,4 +1,5 @@
-﻿using isolaatti_API.isolaatti_lib;
+﻿using System.Threading.Tasks;
+using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using isolaatti_API.Utils;
 using Microsoft.AspNetCore.Mvc;
@@ -19,10 +20,10 @@ namespace isolaatti_API.Pages
 
         [BindProperty] public string NewPassword { get; set; }
 
-        public IActionResult OnGet()
+        public async Task<IActionResult> OnGet()
         {
             var accountsManager = new Accounts(_db);
-            var user = accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
+            var user = await accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
             if (user == null) return RedirectToPage("LogIn");
 
             // here it's know that account is correct. Data binding!
@@ -36,7 +37,7 @@ namespace isolaatti_API.Pages
             return Page();
         }
 
-        public IActionResult OnPost()
+        public async Task<IActionResult> OnPost()
         {
             if (CurrentPassword == null || NewPassword == null)
             {
@@ -48,7 +49,7 @@ namespace isolaatti_API.Pages
 
             var accountsManager = new Accounts(_db);
 
-            var user = accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
+            var user = await accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
             if (user == null) return RedirectToPage("LogIn");
 
             // here it's know that account is correct. Data binding!
@@ -60,7 +61,7 @@ namespace isolaatti_API.Pages
                 ? null
                 : UrlGenerators.GenerateProfilePictureUrl(user.Id, Request.Cookies["isolaatti_user_session_token"]);
 
-            if (!accountsManager.ChangeAPassword(user.Id, CurrentPassword, NewPassword))
+            if (!await accountsManager.ChangeAPassword(user.Id, CurrentPassword, NewPassword))
             {
                 return RedirectToPage("MyProfile", new
                 {
@@ -68,7 +69,7 @@ namespace isolaatti_API.Pages
                 });
             }
 
-            accountsManager.RemoveAllUsersTokens(user.Id);
+            await accountsManager.RemoveAllUsersTokens(user.Id);
             return Redirect("/WebLogOut");
         }
     }

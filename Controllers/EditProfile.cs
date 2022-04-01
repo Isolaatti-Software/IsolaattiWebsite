@@ -25,11 +25,12 @@ namespace isolaatti_API.Controllers
         }
 
         [HttpPost]
-        public IActionResult Index([FromHeader(Name = "sessionToken")] string sessionToken, [FromForm] string newEmail,
+        public async Task<IActionResult> Index([FromHeader(Name = "sessionToken")] string sessionToken,
+            [FromForm] string newEmail,
             [FromForm] string newUsername)
         {
             var accountsManager = new Accounts(Db);
-            var user = accountsManager.ValidateToken(sessionToken);
+            var user = await accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
             // find if there is someone else with the same username or email
@@ -46,18 +47,18 @@ namespace isolaatti_API.Controllers
             user.Name = newUsername;
             user.Email = newEmail;
             Db.Users.Update(user);
-            Db.SaveChanges();
+            Db.SaveChangesAsync();
             return Ok("profile updated");
         }
 
         [HttpPost]
         [Route("FromWeb")]
-        public IActionResult FromWeb([FromForm] string newUsername, [FromForm] string newEmail,
+        public async Task<IActionResult> FromWeb([FromForm] string newUsername, [FromForm] string newEmail,
             [FromForm] string newDescription)
         {
             var accountsManager = new Accounts(Db);
             var sessionToken = Request.Cookies["isolaatti_user_session_token"];
-            var user = accountsManager.ValidateToken(sessionToken);
+            var user = await accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
             user.DescriptionText = newDescription;
@@ -71,7 +72,7 @@ namespace isolaatti_API.Controllers
                 user.Name = newUsername;
                 user.Email = newEmail;
                 Db.Users.Update(user);
-                Db.SaveChanges();
+                await Db.SaveChangesAsync();
                 Response.Cookies.Append("isolaatti_user_name", newEmail);
                 return RedirectToPage("/MyProfile", new { profileUpdate = true });
             }
@@ -86,50 +87,50 @@ namespace isolaatti_API.Controllers
             {
                 user.Email = newEmail;
                 Db.Users.Update(user);
-                Db.SaveChanges();
+                await Db.SaveChangesAsync();
                 return RedirectToPage("/MyProfile", new { nameNotAvailable = true, statusData = newUsername });
             }
 
             user.Name = newUsername;
             Db.Users.Update(user);
-            Db.SaveChanges();
+            await Db.SaveChangesAsync();
             return RedirectToPage("/MyProfile", new { emailNotAvailable = true, statusData = newEmail });
         }
 
         [HttpPost]
         [Route("UpdatePhoto")]
-        public IActionResult UpdatePhoto([FromHeader(Name = "sessionToken")] string sessionToken,
+        public async Task<IActionResult> UpdatePhoto([FromHeader(Name = "sessionToken")] string sessionToken,
             [FromForm] IFormFile file)
         {
             var accountsManager = new Accounts(Db);
-            var user = accountsManager.ValidateToken(sessionToken);
+            var user = await accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
             var stream = new MemoryStream();
-            file.CopyTo(stream);
+            await file.CopyToAsync(stream);
 
             var array = stream.ToArray();
 
             user.ProfileImageData = array;
 
             Db.Users.Update(user);
-            Db.SaveChanges();
+            await Db.SaveChangesAsync();
 
             return Ok("Imagen cargada");
         }
 
         [HttpPost]
         [Route("UpdateAudioDescription")]
-        public IActionResult UpdateAudioDescription([FromHeader(Name = "sessionToken")] string sessionToken,
+        public async Task<IActionResult> UpdateAudioDescription([FromHeader(Name = "sessionToken")] string sessionToken,
             SimpleStringData payload)
         {
             var accountsManager = new Accounts(Db);
-            var user = accountsManager.ValidateToken(sessionToken);
+            var user = await accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
             user.DescriptionAudioUrl = payload.Data;
             Db.Users.Update(user);
-            Db.SaveChanges();
+            await Db.SaveChangesAsync();
             return Ok();
         }
 
@@ -140,7 +141,7 @@ namespace isolaatti_API.Controllers
         {
             var htmlColor = color.Data;
             var accountsManager = new Accounts(Db);
-            var user = accountsManager.ValidateToken(sessionToken);
+            var user = await accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
             if (htmlColor == null) return BadRequest(new { error = "error/color-null" });

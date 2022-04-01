@@ -7,10 +7,12 @@
 
 using System.Linq;
 using System.Threading.Tasks;
+using isolaatti_API.Enums;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 using SendGrid;
 
 namespace isolaatti_API.Pages
@@ -31,7 +33,8 @@ namespace isolaatti_API.Pages
             _sendGridClient = sendGrid;
         }
 
-        public IActionResult OnGet(string user = "", string email = "", string error = "", bool limitOfAccounts = false)
+        public async Task<IActionResult> OnGet(string user = "", string email = "", string error = "",
+            bool limitOfAccounts = false)
         {
             if (error.Equals("emailused"))
             {
@@ -51,7 +54,7 @@ namespace isolaatti_API.Pages
             }
 
             AccountNotMade = limitOfAccounts;
-            LimitOfAccountsReached = _db.Users.Count() >= 50;
+            LimitOfAccountsReached = await _db.Users.CountAsync() >= 50;
 
             return Page();
         }
@@ -70,27 +73,21 @@ namespace isolaatti_API.Pages
 
             var accountManager = new Accounts(_db);
             accountManager.DefineHttpRequestObject(Request);
-            var result = accountManager.MakeAccount(username, email, password);
+            var result = await accountManager.MakeAccountAsync(username, email, password);
             switch (result)
             {
-                case "0": //success
+                case AccountMakingResult.Ok:
                     await Accounts.SendWelcomeEmail(_sendGridClient, email, username);
                     return RedirectToPage("LogIn", new
                     {
                         newUser = true,
                         username = email
                     });
-                case "1": //email unavailable
+                case AccountMakingResult.EmailNotAvailable:
                     return RedirectToPage("MakeAccount", new
                     {
                         user = username,
                         error = "emailused"
-                    });
-                case "2": //name unavailable
-                    return RedirectToPage("MakeAccount", new
-                    {
-                        email = email,
-                        error = "nameused"
                     });
                 default:
                     return RedirectToPage("MakeAccount", new

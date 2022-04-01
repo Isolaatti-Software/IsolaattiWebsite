@@ -12,9 +12,11 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using FirebaseAdmin.Auth;
+using isolaatti_API.Enums;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Net.Http.Headers;
 using SendGrid;
 using SendGrid.Helpers.Mail;
@@ -31,25 +33,29 @@ namespace isolaatti_API.isolaatti_lib
             this.db = db;
         }
 
-        public string MakeAccount(string username, string email, string password)
+        public async Task<AccountMakingResult> MakeAccountAsync(string username, string email, string password)
         {
-            if (db.Users.Any(user => user.Email.Equals(email)))
-            {
-                return "1";
-            }
+            // Now I don't care about usernames availability
 
+
+            if (await db.Users.AnyAsync(user => user.Email.Equals(email)))
+            {
+                return AccountMakingResult.EmailNotAvailable;
+            }
 
             if (username == "" || password == "" || email == "")
             {
-                return "3";
+                return AccountMakingResult.EmptyFields;
             }
 
             var passwordHasher = new PasswordHasher<string>();
-            User newUser = new User()
+            var hashedPassword = "";
+            await Task.Run(() => { hashedPassword = passwordHasher.HashPassword(email, password); });
+            var newUser = new User
             {
                 Name = username,
                 Email = email,
-                Password = passwordHasher.HashPassword(email, password),
+                Password = hashedPassword,
                 Uid = Guid.NewGuid().ToString(),
                 UserPreferencesJson = "{}",
                 FollowersIdsJson = "[]",
@@ -59,40 +65,24 @@ namespace isolaatti_API.isolaatti_lib
             try
             {
                 db.Users.Add(newUser);
-                db.SaveChanges();
-                return "0";
+                await db.SaveChangesAsync();
+                return AccountMakingResult.Ok;
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                return e.ToString();
+                return AccountMakingResult.Error;
             }
         }
 
-        public bool IsUserEmailVerified(int userId)
+        public async Task<bool> IsUserEmailVerified(int userId)
         {
-            var user = db.Users.Find(userId);
+            var user = await db.Users.FindAsync(userId);
             return user.EmailValidated;
         }
 
-        /* Only to be used at admins portal (me)*/
-        public bool DeleteAccount(int userId)
+        public async Task<bool> ChangeAPassword(int userId, string currentPassword, string newPassword)
         {
-            try
-            {
-                db.Users.Remove(db.Users.Find(userId));
-                db.SaveChanges();
-            }
-            catch (Exception e)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        public bool ChangeAPassword(int userId, string currentPassword, string newPassword)
-        {
-            var user = db.Users.Find(userId);
+            var user = await db.Users.FindAsync(userId);
             if (user == null) return false;
             var passwordHasher = new PasswordHasher<string>();
             var verificationResult =
@@ -102,7 +92,7 @@ namespace isolaatti_API.isolaatti_lib
             var newPasswordHashed = passwordHasher.HashPassword(user.Email, newPassword);
             user.Password = newPasswordHashed;
             db.Users.Update(user);
-            db.SaveChanges();
+            await db.SaveChangesAsync();
             return true;
         }
 
@@ -111,9 +101,9 @@ namespace isolaatti_API.isolaatti_lib
             _request = request;
         }
 
-        public SessionToken CreateNewToken(int userId, string plainTextPassword)
+        public async Task<SessionToken> CreateNewToken(int userId, string plainTextPassword)
         {
-            var user = db.Users.Find(userId);
+            var user = await db.Users.FindAsync(userId);
             if (user == null) return null;
             var passwordHasher = new PasswordHasher<string>();
             var passwordVerificationResult =
@@ -130,16 +120,16 @@ namespace isolaatti_API.isolaatti_lib
                     : "Not provided"
             };
             db.SessionTokens.Add(tokenObj);
-            db.SaveChanges();
+            await db.SaveChangesAsync();
             return tokenObj;
         }
 
-        public User ValidateToken(string token)
+        public async Task<User> ValidateToken(string token)
         {
             try
             {
-                var tokenObj = db.SessionTokens.Single(sessionToken => sessionToken.Token.Equals(token));
-                var user = db.Users.Find(tokenObj.UserId);
+                var tokenObj = await db.SessionTokens.SingleAsync(sessionToken => sessionToken.Token.Equals(token));
+                var user = await db.Users.FindAsync(tokenObj.UserId);
                 return user;
             }
             catch (InvalidOperationException)
@@ -148,55 +138,53 @@ namespace isolaatti_API.isolaatti_lib
             }
         }
 
-        public void RemoveAToken(string token)
+        public async Task RemoveAToken(string token)
         {
             try
             {
-                var tokenObj = db.SessionTokens.Single(sessionToken => sessionToken.Token.Equals(token));
+                var tokenObj = await db.SessionTokens.SingleAsync(sessionToken => sessionToken.Token.Equals(token));
                 db.SessionTokens.Remove(tokenObj);
-                db.SaveChanges();
+                await db.SaveChangesAsync();
             }
             catch (InvalidOperationException)
             {
             }
         }
 
-        public void RemoveAllUsersTokens(int userId)
+        public async Task RemoveAllUsersTokens(int userId)
         {
             var tokenObjs = db.SessionTokens.Where(sessionToken => sessionToken.UserId == userId);
             db.SessionTokens.RemoveRange(tokenObjs);
-            db.SaveChanges();
+            await db.SaveChangesAsync();
         }
 
-        public void MakeAccountFromGoogleAccount(string accessToken)
+        public async Task MakeAccountFromGoogleAccount(string accessToken)
         {
             var decodedTokenTask = FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(accessToken);
-            decodedTokenTask.Wait();
 
-            var uid = decodedTokenTask.Result.Uid;
+            var uid = (await decodedTokenTask).Uid;
             var userTask = FirebaseAuth.DefaultInstance.GetUserAsync(uid);
-            userTask.Wait();
 
-            var user = userTask.Result;
+            var user = await userTask;
 
             if (!db.Users.Any(u => u.Email.Equals(user.Email)))
             {
-                MakeAccount(user.DisplayName, user.Email, GenerateRandomAlphaNumericPassword(10));
+                await MakeAccountAsync(user.DisplayName, user.Email, GenerateRandomAlphaNumericPassword(10));
             }
 
             var isolaattiUser = db.Users.Single(u => u.Email.Equals(user.Email));
 
-            if (db.GoogleUsers.Any(googleUser =>
+            if (await db.GoogleUsers.AnyAsync(googleUser =>
                     googleUser.GoogleUid.Equals(user.Uid) && googleUser.UserId.Equals(isolaattiUser.Id))) return;
 
             // Add relation between Isolaatti account and Google Account
-            var googleUser = new GoogleUser()
+            var googleUser = new GoogleUser
             {
                 UserId = isolaattiUser.Id,
                 GoogleUid = user.Uid
             };
             db.GoogleUsers.Add(googleUser);
-            db.SaveChanges();
+            await db.SaveChangesAsync();
         }
 
         public async Task<SessionToken> CreateTokenForGoogleUser(string accessToken)
@@ -205,7 +193,7 @@ namespace isolaatti_API.isolaatti_lib
             var uid = (await decodedTokenTask).Uid;
             var relation = db.GoogleUsers.Single(u => u.GoogleUid.Equals(uid));
             var user = await db.Users.FindAsync(relation.UserId);
-            var sessionToken = new SessionToken()
+            var sessionToken = new SessionToken
             {
                 UserId = user.Id,
                 IpAddress = _request.HttpContext.Connection.RemoteIpAddress.ToString(),

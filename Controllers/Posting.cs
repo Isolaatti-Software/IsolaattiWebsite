@@ -9,6 +9,7 @@ using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using isolaatti_API.Utils;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace isolaatti_API.Controllers
 {
@@ -32,10 +33,11 @@ namespace isolaatti_API.Controllers
 
         [HttpPost]
         [Route("Make")]
-        public IActionResult Index([FromHeader(Name = "sessionToken")] string sessionToken, MakePostModel post)
+        public async Task<IActionResult> Index([FromHeader(Name = "sessionToken")] string sessionToken,
+            MakePostModel post)
         {
             var accountsManager = new Accounts(Db);
-            var user = accountsManager.ValidateToken(sessionToken);
+            var user = await accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
 
@@ -52,24 +54,25 @@ namespace isolaatti_API.Controllers
             };
 
             Db.SimpleTextPosts.Add(newPost);
-            Db.SaveChanges();
+            await Db.SaveChangesAsync();
 
             return Ok(new ReturningPostsComposedResponse(newPost)
             {
-                UserName = Db.Users.Find(newPost.UserId).Name,
-                Liked = Db.Likes.Any(element => element.PostId == newPost.Id && element.UserId == user.Id)
+                UserName = (await Db.Users.FindAsync(newPost.UserId)).Name,
+                Liked = await Db.Likes.AnyAsync(element => element.PostId == newPost.Id && element.UserId == user.Id)
             });
         }
 
         [HttpPost]
         [Route("Edit")]
-        public IActionResult EditPost([FromHeader(Name = "sessionToken")] string sessionToken, EditPostModel editedPost)
+        public async Task<IActionResult> EditPost([FromHeader(Name = "sessionToken")] string sessionToken,
+            EditPostModel editedPost)
         {
             var accountsManager = new Accounts(Db);
-            var user = accountsManager.ValidateToken(sessionToken);
+            var user = await accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
-            var existingPost = Db.SimpleTextPosts.Find(editedPost.PostId);
+            var existingPost = await Db.SimpleTextPosts.FindAsync(editedPost.PostId);
             if (existingPost == null) return NotFound("Post not found");
             if (existingPost.UserId != user.Id) return Unauthorized("Post is not yours, cannot edit");
 
@@ -94,14 +97,14 @@ namespace isolaatti_API.Controllers
                 Db.UserSeenPostHistories.Where(history => history.PostId.Equals(existingPost.Id));
             Db.UserSeenPostHistories.RemoveRange(historyOfThisPost);
 
-            Db.SaveChanges();
+            await Db.SaveChangesAsync();
 
             return Ok(new
             {
                 postData = new FeedPost
                 {
                     Id = existingPost.Id,
-                    Username = Db.Users.Find(existingPost.UserId).Name,
+                    Username = (await Db.Users.FindAsync(existingPost.UserId)).Name,
                     UserId = existingPost.UserId,
                     Liked = Db.Likes.Any(element => element.PostId == existingPost.Id && element.UserId == user.Id),
                     Content = existingPost.TextContent,
@@ -121,11 +124,11 @@ namespace isolaatti_API.Controllers
 
         [HttpPost]
         [Route("Delete")]
-        public IActionResult DeletePost([FromHeader(Name = "sessionToken")] string sessionToken,
+        public async Task<IActionResult> DeletePost([FromHeader(Name = "sessionToken")] string sessionToken,
             SingleIdentification identification)
         {
             var accountsManager = new Accounts(Db);
-            var user = accountsManager.ValidateToken(sessionToken);
+            var user = await accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
             var post = Db.SimpleTextPosts.Find(identification.Id);
@@ -139,7 +142,7 @@ namespace isolaatti_API.Controllers
             var likesOfPost = Db.Likes.Where(like => like.PostId == post.Id).ToList();
             Db.Likes.RemoveRange(likesOfPost);
 
-            Db.SaveChanges();
+            await Db.SaveChangesAsync();
 
             return Ok("Post deleted");
         }
@@ -150,7 +153,7 @@ namespace isolaatti_API.Controllers
             long postId, MakeCommentModel commentModel)
         {
             var accountsManager = new Accounts(Db);
-            var user = accountsManager.ValidateToken(sessionToken);
+            var user = await accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
             var post = await Db.SimpleTextPosts.FindAsync(postId);
@@ -191,11 +194,11 @@ namespace isolaatti_API.Controllers
 
         [Route("Comment/Delete")]
         [HttpPost]
-        public IActionResult Delete([FromHeader(Name = "sessionToken")] string sessionToken,
+        public async Task<IActionResult> Delete([FromHeader(Name = "sessionToken")] string sessionToken,
             SingleIdentification identification)
         {
             var accountsManager = new Accounts(Db);
-            var user = accountsManager.ValidateToken(sessionToken);
+            var user = await accountsManager.ValidateToken(sessionToken);
             if (user == null)
             {
                 return Unauthorized("Token is not valid");
@@ -217,14 +220,14 @@ namespace isolaatti_API.Controllers
             }
 
             Db.Comments.Remove(comment);
-            Db.SaveChanges();
+            await Db.SaveChangesAsync();
             // updates comments count of the post this comment belongs
-            var post = Db.SimpleTextPosts.Find(comment.SimpleTextPostId);
+            var post = await Db.SimpleTextPosts.FindAsync(comment.SimpleTextPostId);
             if (post != null)
             {
                 post.NumberOfComments = Db.Comments.Count(c => c.SimpleTextPostId.Equals(post.Id));
                 Db.SimpleTextPosts.Update(post);
-                Db.SaveChangesAsync();
+                await Db.SaveChangesAsync();
             }
 
             return Ok("Comment delete successfully");

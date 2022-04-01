@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using isolaatti_API.Utils;
@@ -16,25 +17,23 @@ namespace isolaatti_API.Pages
             _db = dbContextApp;
         }
 
-        public IActionResult OnGet([FromRoute] long id)
+        public async Task<IActionResult> OnGet([FromRoute] long id)
         {
             var accountsManager = new Accounts(_db);
-            var user = accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
-            ThisPost = _db.SimpleTextPosts.Find(id);
+            var user = await accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
+            ThisPost = await _db.SimpleTextPosts.FindAsync(id);
 
             if (ThisPost == null) return NotFound();
 
-            if (user == null && ThisPost.Privacy != 3)
+            switch (user)
             {
-                return RedirectToPage("LogIn");
-            }
-
-            if (user == null && ThisPost.Privacy == 3)
-            {
-                return RedirectToPage("/PublicContent/PublicThreadViewer", new
-                {
-                    id = ThisPost.Id
-                });
+                case null when ThisPost.Privacy != 3:
+                    return RedirectToPage("LogIn");
+                case null when ThisPost.Privacy == 3:
+                    return RedirectToPage("/PublicContent/PublicThreadViewer", new
+                    {
+                        id = ThisPost.Id
+                    });
             }
 
             // here it's know that account is correct. Data binding!

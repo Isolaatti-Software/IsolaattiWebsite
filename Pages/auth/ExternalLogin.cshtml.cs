@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Web;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
@@ -25,11 +26,11 @@ namespace isolaatti_API.Pages.auth
 
         [BindProperty] public string Password { get; set; }
 
-        public IActionResult OnGet(string canonicalUrl = "", string tokenParamName = "")
+        public async Task<IActionResult> OnGet(string canonicalUrl = "", string tokenParamName = "")
         {
             var accountsManager = new Accounts(_db);
             var token = Request.Cookies["isolaatti_user_session_token"];
-            var user = accountsManager.ValidateToken(token);
+            var user = await accountsManager.ValidateToken(token);
             if (user == null) return RedirectToPage("/LogIn", new { then = Request.GetEncodedUrl() });
 
             // here it's know that account is correct. Data binding!
@@ -55,11 +56,12 @@ namespace isolaatti_API.Pages.auth
             return Page();
         }
 
-        public IActionResult OnPost([FromQuery] string canonicalUrl = "", [FromQuery] string tokenParamName = "")
+        public async Task<IActionResult> OnPost([FromQuery] string canonicalUrl = "",
+            [FromQuery] string tokenParamName = "")
         {
             var accountsManager = new Accounts(_db);
             var token = Request.Cookies["isolaatti_user_session_token"];
-            var user = accountsManager.ValidateToken(token);
+            var user = await accountsManager.ValidateToken(token);
             if (user == null) return RedirectToPage("/LogIn", new { then = Request.GetEncodedUrl() });
 
             // I must check if the password is correct, because the confirmation button still could be clicked by a robot

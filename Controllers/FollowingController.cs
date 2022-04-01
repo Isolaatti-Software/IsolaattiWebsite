@@ -1,11 +1,11 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using isolaatti_API.Classes.ApiEndpointsRequestDataModels;
-using isolaatti_API.Hubs;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 
 namespace isolaatti_API.Controllers
 {
@@ -14,33 +14,32 @@ namespace isolaatti_API.Controllers
     public class FollowingController : Controller
     {
         private readonly DbContextApp Db;
-        private readonly IHubContext<NotificationsHub> _hubContext;
 
-        public FollowingController(DbContextApp dbContextApp, IHubContext<NotificationsHub> hubContext)
+        public FollowingController(DbContextApp dbContextApp)
         {
             Db = dbContextApp;
-            _hubContext = hubContext;
         }
 
         [HttpPost]
         [Route("Follow")]
-        public IActionResult Index([FromHeader(Name = "sessionToken")] string sessionToken,
+        public async Task<IActionResult> Index([FromHeader(Name = "sessionToken")] string sessionToken,
             SingleIdentification identification)
         {
             var accountsManager = new Accounts(Db);
-            var user = accountsManager.ValidateToken(sessionToken);
+            var user = await accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
-            var userToFollow = Db.Users.Find(Convert.ToInt32(identification.Id));
+            var userToFollow = await Db.Users.FindAsync(Convert.ToInt32(identification.Id));
             if (userToFollow == null) return NotFound("User to follow was not found");
 
             // create new relation only if there is not one already
-            if (Db.FollowerRelations.Any(rel => rel.UserId.Equals(user.Id) && rel.TargetUserId.Equals(userToFollow.Id)))
+            if (await Db.FollowerRelations.AnyAsync(rel =>
+                    rel.UserId.Equals(user.Id) && rel.TargetUserId.Equals(userToFollow.Id)))
             {
                 return Unauthorized("user already followed");
             }
 
-            var followerRelation = new FollowerRelation()
+            var followerRelation = new FollowerRelation
             {
                 UserId = user.Id,
                 TargetUserId = userToFollow.Id
@@ -48,19 +47,7 @@ namespace isolaatti_API.Controllers
 
             Db.FollowerRelations.Add(followerRelation);
 
-            var notificationsAdministration = new NotificationsAdministration(Db);
-
-            var notificationData = notificationsAdministration.CreateNewFollowerNotification(user.Id, userToFollow.Id);
-
-            var sessionsId = Hubs.NotificationsHub.Sessions.Where(element => element.Value.Equals(userToFollow.Id));
-
-            foreach (var id in sessionsId)
-            {
-                _hubContext.Clients.Client(id.Key)
-                    .SendAsync("fetchNotification", notificationData, NotificationsAdministration.TypeNewFollower);
-            }
-
-            Db.SaveChanges();
+            await Db.SaveChangesAsync();
 
             // update number of followings and followers of involved users
             user.NumberOfFollowing = Db.FollowerRelations.Count(relation => relation.UserId.Equals(user.Id));
@@ -69,38 +56,38 @@ namespace isolaatti_API.Controllers
 
             Db.Users.Update(user);
             Db.Users.Update(userToFollow);
-            Db.SaveChanges();
+            await Db.SaveChangesAsync();
             return Ok("Followers updated!");
         }
 
         [Route("Unfollow")]
         [HttpPost]
-        public IActionResult Unfollow([FromHeader(Name = "sessionToken")] string sessionToken,
+        public async Task<IActionResult> Unfollow([FromHeader(Name = "sessionToken")] string sessionToken,
             SingleIdentification identification)
         {
             var accountsManager = new Accounts(Db);
-            var user = accountsManager.ValidateToken(sessionToken);
+            var user = await accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
-            var userToUnfollow = Db.Users.Find(Convert.ToInt32(identification.Id));
+            var userToUnfollow = await Db.Users.FindAsync(Convert.ToInt32(identification.Id));
             if (userToUnfollow == null) return NotFound("User to unfollow was not found");
 
             try
             {
                 // finds and removes follower relation
-                var followerRelation = Db.FollowerRelations.Single(relation =>
+                var followerRelation = await Db.FollowerRelations.SingleAsync(relation =>
                     relation.UserId.Equals(user.Id) && relation.TargetUserId.Equals(userToUnfollow.Id));
                 Db.FollowerRelations.Remove(followerRelation);
 
-                Db.SaveChanges();
+                await Db.SaveChangesAsync();
 
                 // update number of followings and followers of involved users
                 user.NumberOfFollowing = Db.FollowerRelations.Count(relation => relation.UserId.Equals(user.Id));
                 userToUnfollow.NumberOfFollowers =
-                    Db.FollowerRelations.Count(relation => relation.TargetUserId.Equals(userToUnfollow.Id));
+                    await Db.FollowerRelations.CountAsync(relation => relation.TargetUserId.Equals(userToUnfollow.Id));
                 Db.Users.Update(user);
                 Db.Users.Update(userToUnfollow);
-                Db.SaveChanges();
+                await Db.SaveChangesAsync();
                 return Ok("Followers updated!");
             }
             catch (InvalidOperationException)
@@ -111,10 +98,10 @@ namespace isolaatti_API.Controllers
 
         [Route("FollowingsOf/{userId:int}")]
         [HttpGet]
-        public IActionResult Following([FromHeader(Name = "sessionToken")] string sessionToken, int userId)
+        public async Task<IActionResult> Following([FromHeader(Name = "sessionToken")] string sessionToken, int userId)
         {
             var accountsManager = new Accounts(Db);
-            var user = accountsManager.ValidateToken(sessionToken);
+            var user = await accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
             var listOfFollowing =
@@ -134,10 +121,10 @@ namespace isolaatti_API.Controllers
 
         [Route("FollowersOf/{userId:int}")]
         [HttpGet]
-        public IActionResult Followers([FromHeader(Name = "sessionToken")] string sessionToken, int userId)
+        public async Task<IActionResult> Followers([FromHeader(Name = "sessionToken")] string sessionToken, int userId)
         {
             var accountsManager = new Accounts(Db);
-            var user = accountsManager.ValidateToken(sessionToken);
+            var user = await accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
             var listOfFollowers =

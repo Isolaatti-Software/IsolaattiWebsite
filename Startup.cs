@@ -9,9 +9,9 @@ using System;
 using System.IO;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
-using isolaatti_API.Hubs;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
@@ -52,8 +52,19 @@ namespace isolaatti_API
                 // db-connection-string env variable must be set on production
                 options.UseSqlServer(isDev
                     ? Configuration.GetConnectionString("Database")
-                    : Environment.GetEnvironmentVariable("db-connection-string"));
+                    : Environment.GetEnvironmentVariable("db_connection_string"));
             });
+
+            services.AddDbContext<MyKeysDbContext>(options =>
+            {
+                // key_database_con_string env variable must be set on production
+                options.UseSqlServer(isDev
+                    ? Configuration.GetConnectionString("KeysDatabase")
+                    : Environment.GetEnvironmentVariable("key_database_con_string"));
+            });
+
+            services.AddDataProtection().PersistKeysToDbContext<MyKeysDbContext>();
+
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // No consent check needed here
@@ -71,7 +82,7 @@ namespace isolaatti_API
             {
                 options.ApiKey = isDev
                     ? Configuration.GetSection("ApiKeys")["SendGrid"]
-                    : Environment.GetEnvironmentVariable("send-grid-api-key");
+                    : Environment.GetEnvironmentVariable("send_grid_api_key");
             });
 
             // don't allow uploading files larger than 2 MB, for security reasons
@@ -100,7 +111,6 @@ namespace isolaatti_API
             {
                 endpoints.MapControllers();
                 endpoints.MapRazorPages();
-                endpoints.MapHub<NotificationsHub>("/notifications_hub");
             });
         }
     }

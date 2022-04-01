@@ -8,12 +8,14 @@
   </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Azure.Extensions.AspNetCore.DataProtection.Blobs" Version="1.2.1"/>
         <PackageReference Include="FirebaseAdmin" Version="1.6.0"/>
         <PackageReference Include="Flurl.Http" Version="3.2.2"/>
         <PackageReference Include="Google.Cloud.Storage.V1" Version="3.7.0"/>
         <PackageReference Include="Mailkit" Version="3.2.0"/>
         <PackageReference Include="Microsoft.AspNet.SignalR.JS" Version="2.4.3"/>
         <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7"/>
+        <PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" Version="6.0.3"/>
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.3"/>
         <PackageReference Include="Microsoft.AspNetCore.SignalR.Core" Version="1.1.0"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.3"/>
@@ -31,6 +33,7 @@
     </ItemGroup>
 
   <ItemGroup>
+      <Folder Include="Hubs"/>
     <Folder Include="Migrations" />
     <Folder Include="wwwroot\appsJS\demixer" />
   </ItemGroup>

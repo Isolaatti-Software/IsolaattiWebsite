@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -29,7 +30,7 @@ namespace isolaatti_API.Controllers
             int length = 10)
         {
             var accountsManager = new Accounts(Db);
-            var user = accountsManager.ValidateToken(sessionToken);
+            var user = await accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
             var likes = Db.Likes.Where(like => like.UserId == user.Id);
@@ -76,7 +77,8 @@ namespace isolaatti_API.Controllers
                 },
                 theme = rawPost.ThemeJson == null
                     ? null
-                    : JsonSerializer.Deserialize<PostTheme>(rawPost.ThemeJson,
+                    : JsonSerializer.Deserialize<PostTheme>(
+                        new MemoryStream(System.Text.Encoding.UTF8.GetBytes(rawPost.ThemeJson)),
                         new JsonSerializerOptions { PropertyNameCaseInsensitive = true })
             }).ToList();
 

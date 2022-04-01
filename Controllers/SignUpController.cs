@@ -7,7 +7,9 @@
 
 //Handles the data to create a new account for users
 
+using System.Threading.Tasks;
 using isolaatti_API.Classes.ApiEndpointsRequestDataModels;
+using isolaatti_API.Enums;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -25,19 +27,19 @@ namespace isolaatti_API.Controllers
             dbContextApp = context;
         }
 
-        /*
-         Return codes:
-         1 => An existing user has used the same email address
-         2 => An existing user has the same username
-         3 => By an unknown reason, one or more of the fields are empty
-         0 => Everything is OK, the user is now recorded
-         Exception => Returns the exception string if something didn't go well on the server
-        */
         [HttpPost]
-        public string Index(SignUpDataModel signUpData)
+        public async Task<IActionResult> Index(SignUpDataModel signUpData)
         {
-            Accounts accounts = new Accounts(dbContextApp);
-            return accounts.MakeAccount(signUpData.Username, signUpData.Email, signUpData.Password);
+            var accounts = new Accounts(dbContextApp);
+            var result = await accounts.MakeAccountAsync(signUpData.Username, signUpData.Email, signUpData.Password);
+            return result switch
+            {
+                AccountMakingResult.Ok => Ok(),
+                AccountMakingResult.EmptyFields => BadRequest(new { error = "Empty fields" }),
+                AccountMakingResult.EmailNotAvailable => Unauthorized(new { error = "Email already used" }),
+                AccountMakingResult.Error => Problem(title: "A database error occurred"),
+                _ => NoContent()
+            };
         }
     }
 }

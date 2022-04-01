@@ -1,12 +1,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using System.Threading.Tasks;
 using isolaatti_API.Classes;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using isolaatti_API.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 
 namespace isolaatti_API.Pages
 {
@@ -24,11 +26,11 @@ namespace isolaatti_API.Pages
             _db = dbContextApp;
         }
 
-        public IActionResult OnGet(int id)
+        public async Task<IActionResult> OnGet(int id)
         {
             var token = Request.Cookies["isolaatti_user_session_token"];
             var accountsManager = new Accounts(_db);
-            var user = accountsManager.ValidateToken(token);
+            var user = await accountsManager.ValidateToken(token);
             if (user == null) return RedirectToPage("/PublicContent/Profile", new { id = id });
 
             // here it's know that account is correct. Data binding!
@@ -48,16 +50,16 @@ namespace isolaatti_API.Pages
                 ? null
                 : UrlGenerators.GenerateProfilePictureUrl(user.Id, Request.Cookies["isolaatti_user_session_token"]);
 
-            ViewData["numberOfLikes"] = _db.Likes.Count(like => like.TargetUserId.Equals(profile.Id));
+            ViewData["numberOfLikes"] = await _db.Likes.CountAsync(like => like.TargetUserId.Equals(profile.Id));
             ViewData["followingThisUser"] =
                 _db.FollowerRelations.Any(rel => rel.UserId.Equals(user.Id) && rel.TargetUserId.Equals(profile.Id));
-            ViewData["thisUserIsFollowingMe"] = _db.FollowerRelations.Any(rel =>
+            ViewData["thisUserIsFollowingMe"] = await _db.FollowerRelations.AnyAsync(rel =>
                 rel.UserId.Equals(profile.Id) && rel.TargetUserId.Equals(user.Id));
             ViewData["numberOfFollowers"] = profile.NumberOfFollowers;
             ViewData["numberOfFollowing"] = profile.NumberOfFollowing;
             ViewData["description"] = profile.DescriptionText;
 
-            ViewData["numberOfPosts"] = _db.SimpleTextPosts.Count(post => post.UserId.Equals(profile.Id));
+            ViewData["numberOfPosts"] = await _db.SimpleTextPosts.CountAsync(post => post.UserId.Equals(profile.Id));
 
             ProfilePhotoUrl = UrlGenerators.GenerateProfilePictureUrl(profile.Id, token, Request);
 
