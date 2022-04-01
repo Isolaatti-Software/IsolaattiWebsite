@@ -3,7 +3,15 @@ WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
+ARG dbcon
+ARG keysdbcon
+ARG sendgrid
+
+ENV db_connection_string=$dbcon
+ENV key_database_con_string=$keysdbcon
+ENV send_grid_api_key=$sendgrid
+
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 COPY ["isolaatti_API.csproj", "./"]
 RUN dotnet restore "isolaatti_API.csproj"
