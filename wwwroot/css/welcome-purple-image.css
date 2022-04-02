@@ -53,15 +53,6 @@ h1{
     filter: drop-shadow(-10px 16px 50px rgb(62, 0, 99));
 }
 
-#isolaatti-icon:after {
-    content: "olaatti";
-    font-family: 'Zen Dots', serif;
-    color: white;
-    font-size: 40px;
-    text-shadow: -3px 4px #11022b;
-    text-decoration: none;
-}
-
 .external-content-bar {
     background-color: black;
     border-bottom: #9800f5 solid 5px;
@@ -121,12 +112,16 @@ nav.welcome-page-navbar a {
 }
 
 footer {
-    padding-top: 50px;
-    padding-bottom: 50px;
+    padding-top: 30px;
+    padding-bottom: 40px;
     background-color: black;
 }
 
 footer a {
     font-size: large;
     font-weight: bold;
+}
+
+.isolaatti-name-footer {
+    font-family: 'Zen Dots', serif;
 }
