@@ -25,7 +25,7 @@ namespace isolaatti_API.Controllers
             accountManager.DefineHttpRequestObject(Request);
 
             // this call won't create an account if one already exists
-            accountManager.MakeAccountFromGoogleAccount(accessToken);
+            await accountManager.MakeAccountFromGoogleAccount(accessToken);
 
             var sessionToken = await accountManager.CreateTokenForGoogleUser(accessToken);
 
