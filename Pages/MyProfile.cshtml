@@ -338,9 +338,9 @@
 
 
             <post-template v-for="post in filterAndSortedPosts" :post="post.postData"
-                           v-on:like="likePost(post.postData)"
+                           v-on:like="likePost(post.postData, $event)"
                            v-bind:theme="post.theme"
-                           v-on:un-like="unLikePost(post.postData)"
+                           v-on:un-like="unLikePost(post.postData, $event)"
                            v-model="postLinkToShare"
                            v-on:delete="deletePost(post.postData.id)"
                            v-on:play-audio="playAudio(post.postData.audioUrl)"
@@ -355,7 +355,7 @@
                 </div>
             </div>
             <div v-if="moreContent" class="d-flex flex-column align-items-center mt-2">
-                <button class="btn btn-primary" v-on:click="fetchPosts(lastId)">Cargar más</button>
+                <button class="btn btn-primary mb-3" v-on:click="fetchPosts(lastId, $event)">Cargar más</button>
             </div>
 
             <div class="modal fade" id="modal-share-post">

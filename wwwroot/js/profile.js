@@ -53,12 +53,19 @@ function fetchUserOnlineStatus() {
 
     /* Functions for vue methods starts here */
 
-    function fetchMyPosts(lastId) {
+    function fetchMyPosts(lastId, event) {
+        this.loading = true;
+        if (event !== undefined) {
+            event.target.disabled = true;
+        }
         fetch(`/api/Fetch/PostsOfUser/${this.accountData.userId}/8/${lastId}`, {headers: this.customHeaders}).then(result => {
             result.json().then(res => {
                 this.posts = this.posts.concat(res.feed);
                 this.moreContent = res.moreContent;
                 this.loading = false;
+                if (event !== undefined) {
+                    event.target.disabled = false;
+                }
                 this.lastId = res.lastId;
             })
         })
@@ -74,10 +81,11 @@ function fetchUserOnlineStatus() {
         })
     }
 
-    async function likePost(post) {
+    async function likePost(post, event) {
         const postId = post.id;
         const requestData = {id: postId}
         const globalThis = this;
+        event.target.disabled = true;
         const response = await fetch("/api/Likes/LikePost", {
             method: "POST",
             headers: this.customHeaders,
@@ -87,13 +95,15 @@ function fetchUserOnlineStatus() {
         response.json().then(function (post) {
             let index = vueContainer.posts.findIndex(post => post.postData.id === postId);
             Vue.set(vueContainer.posts, index, post);
+            event.target.disabled = false;
         });
     }
 
-    async function unLikePost(post) {
+    async function unLikePost(post, event) {
         const postId = post.id;
         const requestData = {id: postId}
         const globalThis = this;
+        event.target.disabled = true;
         const response = await fetch("/api/Likes/UnLikePost", {
             method: "POST",
             headers: this.customHeaders,
@@ -103,6 +113,7 @@ function fetchUserOnlineStatus() {
         response.json().then(function (post) {
             let index = vueContainer.posts.findIndex(post => post.postData.id === postId);
             Vue.set(vueContainer.posts, index, post);
+            event.target.disabled = false;
         });
     }
 

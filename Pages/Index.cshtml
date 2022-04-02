@@ -22,9 +22,9 @@
             </div>
             <section id="posts-deposit" class="d-flex flex-column pt-1 mt-2 mb-3 align-items-center posts-deposit">
                 <post-template v-for="post in posts" :post="post.postData"
-                               v-on:like="likePost(post.postData)"
+                               v-on:like="likePost(post.postData, $event)"
                                v-bind:theme="post.theme"
-                               v-on:un-like="unLikePost(post.postData)"
+                               v-on:un-like="unLikePost(post.postData, $event)"
                                v-model="postLinkToShare"
                                v-on:delete="deletePost(post.postData.id)"
                                v-on:play-audio="playAudio(post.postData.audioUrl)"

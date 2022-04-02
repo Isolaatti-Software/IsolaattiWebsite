@@ -1,7 +1,8 @@
-async function likePost(post) {
+async function likePost(post, event) {
     const postId = post.id;
     const requestData = {id: postId}
     const globalThis = this;
+    event.target.disabled = true;
     const response = await fetch("/api/Likes/LikePost", {
         method: "POST",
         headers: this.customHeaders,
@@ -11,13 +12,15 @@ async function likePost(post) {
     response.json().then(function (post) {
         let index = vueContainer.posts.findIndex(post => post.postData.id === postId);
         Vue.set(vueContainer.posts, index, post);
+        event.target.disabled = false;
     });
 }
 
-async function unLikePost(post) {
+async function unLikePost(post, event) {
     const postId = post.id;
     const requestData = {id: postId}
     const globalThis = this;
+    event.target.disabled = true;
     const response = await fetch("/api/Likes/UnLikePost", {
         method: "POST",
         headers: this.customHeaders,
@@ -27,6 +30,7 @@ async function unLikePost(post) {
     response.json().then(function (post) {
         let index = vueContainer.posts.findIndex(post => post.postData.id === postId);
         Vue.set(vueContainer.posts, index, post);
+        event.target.disabled = false;
     });
 }
 

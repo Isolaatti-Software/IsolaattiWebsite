@@ -153,10 +153,10 @@ Vue.component('post-template',{
              v-on:click="$emit('view-thread')">
             <i class="fas fa-comments" aria-hidden="true"></i> {{ post.numberOfComments }}
           </a>
-          <button v-if="!post.liked" v-on:click="$emit('like',0.1)" class="btn btn-dark btn-sm" type="button">
+          <button v-if="!post.liked" v-on:click="$emit('like',$event)" class="btn btn-dark btn-sm" type="button">
             <i class="fas fa-thumbs-up" aria-hidden="true"></i> {{ post.numberOfLikes }}
           </button>
-          <button v-if="post.liked" v-on:click="$emit('un-like',0.1)" class="btn btn-primary btn-sm" type="button">
+          <button v-if="post.liked" v-on:click="$emit('un-like',$event)" class="btn btn-primary btn-sm" type="button">
             <i class="fas fa-thumbs-up" aria-hidden="true"></i> {{ post.numberOfLikes }}
           </button>
         </div>

@@ -97,9 +97,10 @@ let vueInstance = new Vue({
         }
     },
     methods: {
-        likePost: async function (post) {
+        likePost: async function (post, event) {
             const requestData = {id: post.id}
             const globalThis = this;
+            event.target.disabled = true;
             const response = await fetch("/api/Likes/LikePost", {
                 method: "POST",
                 headers: this.customHeaders,
@@ -108,11 +109,13 @@ let vueInstance = new Vue({
 
             response.json().then(function (post) {
                 globalThis.post = post;
+                event.target.disabled = false;
             });
         },
-        unLikePost: async function (post) {
+        unLikePost: async function (post, event) {
             const requestData = {id: post.id}
             const globalThis = this;
+            event.target.disabled = true;
             const response = await fetch("/api/Likes/UnLikePost", {
                 method: "POST",
                 headers: this.customHeaders,
@@ -121,6 +124,7 @@ let vueInstance = new Vue({
 
             response.json().then(function (post) {
                 globalThis.post = post;
+                event.target.disabled = false;
             });
         },
         makeComment: async function () {
