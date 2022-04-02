@@ -109,7 +109,7 @@
                 <a asp-page="/CommentsConsultation">Consulta los comentarios</a>
             </p>
             <p>
-                <a asp-controller="ZipDownloads" asp-action="GetMyPostsAndCommentsZip">
+                <a asp-controller="ZipDownloads" asp-action="GetMyPostsAndCommentsZip" asp-route-guid="@Guid.NewGuid()">
                     Descarga archivo zip
                 </a>
             </p>

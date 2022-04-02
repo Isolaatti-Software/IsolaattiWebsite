@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
@@ -20,8 +21,8 @@ namespace isolaatti_API.Controllers
             _db = dbContextApp;
         }
 
-        [Route("data.zip")]
-        public async Task<IActionResult> GetMyPostsAndCommentsZip()
+        [Route("{guid:Guid}.zip")]
+        public async Task<IActionResult> GetMyPostsAndCommentsZip(Guid guid)
         {
             var accountsManager = new Accounts(_db);
             var user = await accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
