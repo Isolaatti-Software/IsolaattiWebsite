@@ -103,19 +103,29 @@ nav.welcome-page-navbar {
     padding: 10px;
     background-color: black;
 }
+
 nav.welcome-page-navbar a {
     margin: 0 10px;
     font-size: larger;
     color: #ffffff;
 }
+
 .footer-font-color {
     color: white;
 }
+
+.footer-font-color a.link {
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: lighter;
+    margin: 0 0.5rem;
+}
+
 footer {
     padding-top: 50px;
     padding-bottom: 50px;
     background-color: black;
 }
+
 footer a {
     font-size: large;
     font-weight: bold;
