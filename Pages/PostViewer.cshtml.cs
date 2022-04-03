@@ -28,7 +28,13 @@ namespace isolaatti_API.Pages
             switch (user)
             {
                 case null when ThisPost.Privacy != 3:
-                    return RedirectToPage("LogIn");
+                    var protocol = Request.IsHttps ? "https://" : "http://";
+                    var url = $"{protocol}{Request.HttpContext.Request.Host.Value}";
+                    url += Request.Path;
+                    return RedirectToPage("LogIn", new
+                    {
+                        then = url
+                    });
                 case null when ThisPost.Privacy == 3:
                     return RedirectToPage("/PublicContent/PublicThreadViewer", new
                     {
