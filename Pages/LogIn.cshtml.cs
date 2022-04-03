@@ -40,7 +40,8 @@ namespace isolaatti_API.Pages
             string username = null,
             bool notVerified = false,
             bool justVerified = false,
-            bool changedPassword = false)
+            bool changedPassword = false,
+            string then = "")
         {
             var accountsManager = new Accounts(_db);
             var user = await accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
@@ -61,6 +62,7 @@ namespace isolaatti_API.Pages
             if (NewUser || WrongCredential || NotVerifiedEmail || JustVerifiedEmail || ChangedPassword)
                 ViewData["username_field"] = username;
 
+            ViewData["then"] = then;
 
             return Page();
         }

@@ -19,7 +19,7 @@ namespace isolaatti_API.Controllers
 
         [HttpGet]
         [Route("Web")]
-        public async Task<IActionResult> Index([FromQuery] string accessToken)
+        public async Task<IActionResult> Index([FromQuery] string accessToken, [FromQuery] string then = "")
         {
             var accountManager = new Accounts(_db);
             accountManager.DefineHttpRequestObject(Request);
@@ -38,6 +38,11 @@ namespace isolaatti_API.Controllers
             {
                 Expires = DateTimeOffset.Now.AddMonths(1)
             });
+            if (!then.Equals(""))
+            {
+                return Redirect(then);
+            }
+
             return RedirectToPage("/Index");
         }
     }

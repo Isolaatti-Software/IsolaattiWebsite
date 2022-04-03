@@ -5,6 +5,7 @@
 * erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
 */
 
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using isolaatti_API.Enums;
@@ -12,7 +13,6 @@ using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 using SendGrid;
 
 namespace isolaatti_API.Pages
@@ -34,32 +34,29 @@ namespace isolaatti_API.Pages
         }
 
         public async Task<IActionResult> OnGet(string user = "", string email = "", string error = "",
-            bool limitOfAccounts = false)
+            string referer = "", string then = "")
         {
+            ViewData["alerts"] = new Dictionary<string, string>();
             if (error.Equals("emailused"))
             {
-                emailUsed = true;
-                ViewData["user_field"] = user;
+                ((Dictionary<string, string>)ViewData["alerts"])["error"] =
+                    "La dirección de correo introducida ya ha sido utilizada. Intenta con otra.";
             }
 
-            if (error.Equals("nameused"))
+
+            if (referer.Equals("demixer"))
             {
-                nameUsed = true;
-                ViewData["email_field"] = email;
+                ((Dictionary<string, string>)ViewData["alerts"])["info"] =
+                    "Crearemos tu cuenta y te regresaremos a Demixer";
             }
 
-            if (error.Equals("couldnotsendemail"))
-            {
-                ViewData["error_msg"] = "We could not verify your email address, maybe it doesn't exist";
-            }
-
-            AccountNotMade = limitOfAccounts;
-            LimitOfAccountsReached = await _db.Users.CountAsync() >= 50;
+            ViewData["then"] = then;
 
             return Page();
         }
 
-        public async Task<IActionResult> OnPost(string username, string email, string password)
+        public async Task<IActionResult> OnPost(string username, string email, string password,
+            [FromQuery] string then = "")
         {
             if (_db.Users.Count() >= 50)
             {
@@ -78,6 +75,11 @@ namespace isolaatti_API.Pages
             {
                 case AccountMakingResult.Ok:
                     await Accounts.SendWelcomeEmail(_sendGridClient, email, username);
+                    if (!then.Equals(""))
+                    {
+                        return Redirect(then);
+                    }
+
                     return RedirectToPage("LogIn", new
                     {
                         newUser = true,

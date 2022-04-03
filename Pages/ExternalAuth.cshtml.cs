@@ -1,11 +1,14 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace isolaatti_API.Pages
 {
     public class ExternalAuthPage : PageModel
     {
-        public void OnGet()
+        public IActionResult OnGet(string then)
         {
+            ViewData["then"] = then;
+            return Page();
         }
     }
 }

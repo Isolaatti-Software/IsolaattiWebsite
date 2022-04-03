@@ -16,7 +16,8 @@ let infoContainerText = document.getElementById("info");
 firebase.auth().onAuthStateChanged(function(user){
     user.getIdToken().then(function(token){
         const param = encodeURIComponent(token)
-        const url = `/api/ExternalSignIn/Web?accessToken=${param}`;
+        const thenParamAppend = typeof thenParam === 'undefined' ? "" : `&then=${encodeURIComponent(thenParam)}`;
+        const url = `/api/ExternalSignIn/Web?accessToken=${param}` + thenParamAppend;
         window.location = url;
     });
 });

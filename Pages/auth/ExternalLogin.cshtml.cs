@@ -5,7 +5,6 @@ using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using isolaatti_API.Utils;
 using Microsoft.AspNetCore.Http.Extensions;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -23,8 +22,6 @@ namespace isolaatti_API.Pages.auth
         {
             _db = db;
         }
-
-        [BindProperty] public string Password { get; set; }
 
         public async Task<IActionResult> OnGet(string canonicalUrl = "", string tokenParamName = "")
         {
@@ -64,8 +61,6 @@ namespace isolaatti_API.Pages.auth
             var user = await accountsManager.ValidateToken(token);
             if (user == null) return RedirectToPage("/LogIn", new { then = Request.GetEncodedUrl() });
 
-            // I must check if the password is correct, because the confirmation button still could be clicked by a robot
-            var passwordHasher = new PasswordHasher<string>();
             try
             {
                 var url = new Uri(canonicalUrl);
@@ -76,20 +71,6 @@ namespace isolaatti_API.Pages.auth
             {
                 MalformedUrl = true;
             }
-
-            if (Password == null)
-            {
-                IncorrectPassword = true;
-                return Page();
-            }
-
-            var verificationResult = passwordHasher.VerifyHashedPassword(user.Name, user.Password, Password);
-            if (verificationResult == PasswordVerificationResult.Failed)
-            {
-                IncorrectPassword = true;
-                return Page();
-            }
-
 
             if (canonicalUrl.Length == 0 || tokenParamName.Length == 0)
             {
