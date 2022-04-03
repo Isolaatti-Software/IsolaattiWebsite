@@ -475,3 +475,7 @@ footer#footer>a, footer#footer>span {
 .max-500px {
     max-width: 500px;
 }
+
+.isolaatti-name-footer {
+    font-family: 'Zen Dots', serif;
+}
