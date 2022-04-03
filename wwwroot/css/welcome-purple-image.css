@@ -24,10 +24,9 @@ h1{
 }
 
 .sign-in-up-form {
-    padding: 40px;
+    padding: 0 40px;
     max-width: 500px;
-    margin: 60px 10px 10px;
-    box-shadow: 8px 11px 53px -6px rgba(0, 0, 0, 0.3);
+    /*margin: 60px 10px 10px;*/
 }
 
 .sign-in-up-form-container {
@@ -55,7 +54,7 @@ h1{
 
 .external-content-bar {
     background-color: black;
-    border-bottom: #9800f5 solid 5px;
+    border-bottom: #9800f5 solid 3px;
 }
 
 article.isolaatti-feature {
