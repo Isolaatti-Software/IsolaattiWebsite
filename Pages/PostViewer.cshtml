@@ -62,7 +62,7 @@
                                v-on:un-like="unLikePost(post.postData, $event)"
                                v-model="postLinkToShare"
                                v-on:delete="deletePost(post.postData.id)"
-                               v-on:play-audio="playAudio(post.audioAttachedUrl)"
+                               v-on:play-audio="playAudio(post.postData.audioUrl)"
                                :key="post.postData.id"
                                :audio-url="audioUrl"
                                :paused="paused">
