@@ -47,7 +47,7 @@ namespace isolaatti_API.Controllers
             user.Name = newUsername;
             user.Email = newEmail;
             Db.Users.Update(user);
-            Db.SaveChangesAsync();
+            await Db.SaveChangesAsync();
             return Ok("profile updated");
         }
 
