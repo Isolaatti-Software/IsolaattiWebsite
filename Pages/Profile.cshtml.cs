@@ -55,7 +55,7 @@ namespace isolaatti_API.Pages
             ViewData["profile_email"] = profile.Email;
             ViewData["profile_id"] = profile.Id;
             if (user.Id == profile.Id) return RedirectToPage("MyProfile");
-            ViewData["profilePicUrl"] = user.ProfileImageData == null
+            ViewData["profilePicUrl"] = user.ProfileImageId == null
                 ? null
                 : UrlGenerators.GenerateProfilePictureUrl(user.Id, Request.Cookies["isolaatti_user_session_token"]);
 

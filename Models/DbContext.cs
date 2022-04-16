@@ -29,5 +29,6 @@ namespace isolaatti_API.Models
         public DbSet<GoogleUser> GoogleUsers { get; set; }
         public DbSet<SocialNotification> SocialNotifications { get; set; }
         public DbSet<FollowerRelation> FollowerRelations { get; set; }
+        public DbSet<ProfileImage> ProfileImages { get; set; }
     }
 }

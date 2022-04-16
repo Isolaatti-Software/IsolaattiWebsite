@@ -310,8 +310,10 @@ namespace isolaatti_API.Controllers
         {
             var otherUser = await _db.Users.FindAsync(userId);
             if (otherUser == null) return NotFound("User not found");
-            if (otherUser.ProfileImageData == null) return Redirect("/res/imgs/user.png");
-            return new FileContentResult(otherUser.ProfileImageData, "image/png");
+            if (otherUser.ProfileImageId == null) return Redirect("/res/imgs/user-solid.svg");
+            var profileImage = await _db.ProfileImages.FindAsync(otherUser.ProfileImageId);
+            if (profileImage == null) return Redirect("/res/imgs/user-solid.svg");
+            return new FileContentResult(profileImage.ImageData, "image/png");
         }
     }
 }

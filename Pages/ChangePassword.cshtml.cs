@@ -31,7 +31,7 @@ namespace isolaatti_API.Pages
             ViewData["email"] = user.Email;
             ViewData["userId"] = user.Id;
             ViewData["password"] = user.Password;
-            ViewData["profilePicUrl"] = user.ProfileImageData == null
+            ViewData["profilePicUrl"] = user.ProfileImageId == null
                 ? null
                 : UrlGenerators.GenerateProfilePictureUrl(user.Id, Request.Cookies["isolaatti_user_session_token"]);
             return Page();
@@ -57,7 +57,7 @@ namespace isolaatti_API.Pages
             ViewData["email"] = user.Email;
             ViewData["userId"] = user.Id;
             ViewData["password"] = user.Password;
-            ViewData["profilePicUrl"] = user.ProfileImageData == null
+            ViewData["profilePicUrl"] = user.ProfileImageId == null
                 ? null
                 : UrlGenerators.GenerateProfilePictureUrl(user.Id, Request.Cookies["isolaatti_user_session_token"]);
 

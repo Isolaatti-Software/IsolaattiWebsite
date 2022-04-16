@@ -5,6 +5,7 @@
 * erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
 */
 
+using System;
 using System.Collections.Generic;
 
 namespace isolaatti_API.Models
@@ -33,7 +34,7 @@ namespace isolaatti_API.Models
         public int NumberOfFollowers { get; set; }
         public int NumberOfFollowing { get; set; }
 
-        public byte[] ProfileImageData { get; set; }
+        public Guid? ProfileImageId { get; set; }
         public string DescriptionText { get; set; }
         public string DescriptionAudioUrl { get; set; }
 

@@ -27,7 +27,7 @@ namespace isolaatti_API.Pages
             ViewData["name"] = user.Name;
             ViewData["email"] = user.Email;
             ViewData["userId"] = user.Id;
-            ViewData["profilePicUrl"] = user.ProfileImageData == null
+            ViewData["profilePicUrl"] = user.ProfileImageId == null
                 ? null
                 : UrlGenerators.GenerateProfilePictureUrl(user.Id, Request.Cookies["isolaatti_user_session_token"]);
 

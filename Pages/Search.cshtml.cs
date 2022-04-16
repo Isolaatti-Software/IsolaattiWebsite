@@ -33,7 +33,7 @@ namespace isolaatti_API.Pages
             ViewData["userId"] = user.Id;
             ViewData["password"] = user.Password;
             ViewData["query"] = q;
-            ViewData["profilePicUrl"] = user.ProfileImageData == null
+            ViewData["profilePicUrl"] = user.ProfileImageId == null
                 ? null
                 : UrlGenerators.GenerateProfilePictureUrl(user.Id, sessionToken);
 

@@ -69,7 +69,7 @@ namespace isolaatti_API.Pages
             ViewData["emailNotAvailable"] = emailNotAvailable;
             ViewData["nameNotAvailable"] = nameNotAvailable;
             ViewData["statusData"] = statusData;
-            ViewData["profilePicUrl"] = user.ProfileImageData == null
+            ViewData["profilePicUrl"] = user.ProfileImageId == null
                 ? null
                 : UrlGenerators.GenerateProfilePictureUrl(user.Id, Request.Cookies["isolaatti_user_session_token"]);
             ViewData["description"] = user.DescriptionText;

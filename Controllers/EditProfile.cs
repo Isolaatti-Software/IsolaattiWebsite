@@ -111,8 +111,18 @@ namespace isolaatti_API.Controllers
 
             var array = stream.ToArray();
 
-            user.ProfileImageData = array;
+            // user.ProfileImageData = array;
 
+            // add the image
+            var profileImage = new ProfileImage
+            {
+                ImageData = array,
+                UserId = user.Id
+            };
+            Db.ProfileImages.Add(profileImage);
+            await Db.SaveChangesAsync();
+
+            user.ProfileImageId = profileImage.Id;
             Db.Users.Update(user);
             await Db.SaveChangesAsync();
 
