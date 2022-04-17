@@ -1,0 +1,8 @@
+﻿@page "/imagen/{imageId}"
+@model isolaatti_API.Pages.ImageViewer
+
+@{
+    Layout = "Shared/_LayoutWebApp";
+    ViewData["Title"] = "Imagen";
+}
+<img src="@Url.Action("GetProfileImage", "Fetch", new { id = Model.Image.Id })"/>

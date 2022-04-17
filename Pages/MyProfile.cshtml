@@ -251,7 +251,8 @@
     <aside id="left-bar" class="p-2" style="background: linear-gradient(@Model.ProfileColor 5%, white)">
 
         <div class="d-flex justify-content-center align-items-center flex-column mb-3" style="position: relative">
-            <img src="@Model.ProfilePhotoUrl" width="100" height="100" class="profile-pic" id="profile_photo" ref="profilePhoto"/>
+            <img src="@Model.ProfilePhotoUrl" width="100" height="100" class="profile-pic" id="profile_photo" ref="profilePhoto"
+                 data-target="#modal-view-image" data-toggle="modal" data-url="@Model.ProfilePhotoUrl" data-userid="@ViewData["userId"]"/>
             <button class="btn btn-sm btn-secondary" id="change-profile-photo-btn" data-toggle="modal"
                     data-target="#modal-edit-photo-or-audio">
                 <i class="far fa-edit"></i>

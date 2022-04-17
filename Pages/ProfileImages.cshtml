@@ -1,0 +1,36 @@
+﻿@page "/perfil/{id}/imagenes_perfil"
+@model isolaatti_API.Pages.ProfileImages
+
+@{
+    Layout = "Shared/_LayoutWebApp";
+    ViewData["Title"] = $"Imagenes de perfil de {Model.Name}";
+}
+
+<div class="col-lg-3 col-md-2"></div>
+<div class="col-lg-6 col-md-8">
+    <div class="list-group">
+        @foreach (var profileImage in Model.ProfileImagesList)
+        {
+            <div class="list-group-item">
+                <div class="d-flex">
+                    <img src="@Url.Action("GetProfileImage", "Fetch", new { id = profileImage.Id })"/>
+                    <div class="d-flex flex-column ml-2">
+                        <span>
+                            Url descarga:
+                            <a asp-controller="Fetch" asp-action="GetProfileImage" asp-route-id="@profileImage.Id" download>
+                                @Url.ActionLink("GetProfileImage", "Fetch", new { id = profileImage.Id })
+                            </a>
+                        </span>
+                        <span>
+                            Enlace permanente:
+                            <a asp-page="ImageViewer" asp-route-imageId="@profileImage.Id">
+                                @Url.PageLink("ImageViewer", null, new { imageId = profileImage.Id })
+                            </a>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<div class="col-lg-3 col-md-2"></div>

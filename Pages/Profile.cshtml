@@ -81,7 +81,8 @@
 <div class="col-lg-2 col-md-4 p-0">
     <header id="left-bar" class="p-2" style="background: linear-gradient(@Model.ProfileColor 5%, white)">
         <div class="d-flex justify-content-center align-items-center flex-column mt-3" id="profile_photo_container">
-            <img src="@Model.ProfilePhotoUrl" width="100" height="100" class="profile-pic" id="profile_photo_el" ref="profilePictureElement"/>
+            <img src="@Model.ProfilePhotoUrl" width="100" height="100" class="profile-pic" id="profile_photo_el" ref="profilePictureElement"
+                 data-target="#modal-view-image" data-toggle="modal" data-url="@Model.ProfilePhotoUrl" data-userid="@ViewData["profile_id"]"/>
             <button id="play-audio-description-btn" v-on:click="playAudioDescription" v-if="audioDescriptionUrl !== null" v-html="audioDescriptionButtonInnerText"></button>
             <div id="online-dot"></div>
         </div>
