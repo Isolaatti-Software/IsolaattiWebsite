@@ -315,5 +315,15 @@ namespace isolaatti_API.Controllers
             if (profileImage == null) return Redirect("/res/imgs/user-solid.svg");
             return new FileContentResult(profileImage.ImageData, "image/png");
         }
+
+        [HttpGet]
+        [Route("ProfileImages/{id:guid}.png")]
+        public async Task<IActionResult> GetProfileImage(Guid id)
+        {
+            var image = await _db.ProfileImages.FindAsync(id);
+            if (image == null) return NotFound();
+            if (image.ImageData == null) return NotFound();
+            return new FileContentResult(image.ImageData, "image/png");
+        }
     }
 }
