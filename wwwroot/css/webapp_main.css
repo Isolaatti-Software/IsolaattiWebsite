@@ -19,7 +19,7 @@ body {
 #app {
     display: grid;
     grid-template-rows: min-content 1fr min-content;
-    height: 100vh;
+    /*height: 100vh;*/
 }
 
 #mobile-bar-title {
@@ -478,4 +478,18 @@ footer#footer>a, footer#footer>span {
 
 .isolaatti-name-footer {
     font-family: 'Zen Dots', serif;
+}
+
+.grid-3-columns {
+    display: grid;
+    grid-template: none / auto auto auto;
+    grid-gap: 0.4rem;
+}
+
+.hover-image-container {
+    cursor: pointer;
+}
+
+.hover-image-container:hover {
+    opacity: 0.6;
 }
