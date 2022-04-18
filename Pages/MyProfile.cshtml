@@ -455,9 +455,9 @@
                             </button>
                         </div>
                         <div class="modal-body">
-                            <select class="custom-select" v-model="sortingData.ascending">
-                                <option value="0">Descendente</option>
-                                <option value="1">Ascendente</option>
+                            <select class="custom-select" v-model="sortingData.ascending" v-on:change="reloadPosts">
+                                <option value="0">Más nuevo primero</option>
+                                <option value="1">Más viejo primero</option>
                             </select>
                         </div>
                     </div>

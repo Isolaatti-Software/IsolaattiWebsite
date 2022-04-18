@@ -99,7 +99,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (event !== undefined) {
             event.target.disabled = true;
         }
-        fetch(`api/Fetch/PostsOfUser/${this.userData.id}/8/${lastId}`, {headers: this.customHeaders}).then(result => {
+        fetch(`api/Fetch/PostsOfUser/${this.userData.id}/8/${lastId}?olderFirst=${this.sortingData.ascending === "1" ? "True" : "False"}`, {headers: this.customHeaders}).then(result => {
             result.json().then(res => {
                 this.posts = this.posts.concat(res.feed);
                 this.moreContent = res.moreContent;
@@ -283,6 +283,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 return `/pub/${this.commentsViewer.postId}`;
             },
             filterAndSortedPosts: function () {
+
                 let filteredArray = this.posts.filter(value => {
                     let privacy = value.postData.privacy;
                     let audioUrl = value.postData.audioUrl;
@@ -307,9 +308,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                 });
 
-                if (this.sortingData.ascending === "1") {
-                    return filteredArray.reverse();
-                }
+                // if (this.sortingData.ascending === "1") {
+                //     return filteredArray.reverse();
+                // }
                 return filteredArray;
             }
         },
@@ -324,7 +325,11 @@ document.addEventListener("DOMContentLoaded", function () {
             copyToClipboard: copyToClipboard,
             deletePost: deletePost,
             viewComments: viewComments,
-            deleteComment: deleteComment
+            deleteComment: deleteComment,
+            reloadPosts: function (event) {
+                this.posts = [];
+                this.fetchPosts(-1, event);
+            }
         },
         mounted: function () {
             this.$nextTick(function () {
