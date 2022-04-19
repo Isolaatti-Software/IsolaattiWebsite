@@ -111,7 +111,7 @@ namespace isolaatti_API.Controllers
         [HttpGet]
         [Route("PostsOfUser/{userId:int}/{length:int?}/{lastId:long?}")]
         public async Task<IActionResult> GetPosts([FromHeader(Name = "sessionToken")] string sessionToken, int userId,
-            int length = 10, long lastId = -1)
+            int length = 10, long lastId = -1, bool olderFirst = false)
         {
             var accountsManager = new Accounts(_db);
             var user = await accountsManager.ValidateToken(sessionToken);
@@ -121,17 +121,33 @@ namespace isolaatti_API.Controllers
             var likes = _db.Likes.Where(like => like.UserId == user.Id);
             if (user.Id == userId)
             {
-                if (lastId < 0)
+                if (olderFirst)
                 {
-                    posts = _db.SimpleTextPosts
-                        .Where(post => post.UserId == user.Id)
-                        .OrderByDescending(post => post.Id).Take(length);
+                    if (lastId < 0)
+                    {
+                        posts = _db.SimpleTextPosts
+                            .Where(post => post.UserId == user.Id).Take(length);
+                    }
+                    else
+                    {
+                        posts = _db.SimpleTextPosts
+                            .Where(post => post.UserId == user.Id && post.Id > lastId).Take(length);
+                    }
                 }
                 else
                 {
-                    posts = _db.SimpleTextPosts
-                        .Where(post => post.UserId == user.Id && post.Id < lastId)
-                        .OrderByDescending(post => post.Id).Take(length);
+                    if (lastId < 0)
+                    {
+                        posts = _db.SimpleTextPosts
+                            .Where(post => post.UserId == user.Id)
+                            .OrderByDescending(post => post.Id).Take(length);
+                    }
+                    else
+                    {
+                        posts = _db.SimpleTextPosts
+                            .Where(post => post.UserId == user.Id && post.Id < lastId)
+                            .OrderByDescending(post => post.Id).Take(length);
+                    }
                 }
             }
             else
@@ -139,17 +155,34 @@ namespace isolaatti_API.Controllers
                 var requestedAuthor = await _db.Users.FindAsync(userId);
                 if (requestedAuthor == null) return NotFound();
 
-                if (lastId < 0)
+                if (olderFirst)
                 {
-                    posts = _db.SimpleTextPosts
-                        .Where(post => post.UserId == requestedAuthor.Id && post.Privacy != 1)
-                        .OrderByDescending(post => post.Id).Take(length);
+                    if (lastId < 0)
+                    {
+                        posts = _db.SimpleTextPosts
+                            .Where(post => post.UserId == requestedAuthor.Id && post.Privacy != 1).Take(length);
+                    }
+                    else
+                    {
+                        posts = _db.SimpleTextPosts
+                            .Where(post => post.UserId == requestedAuthor.Id && post.Privacy != 1 && post.Id > lastId)
+                            .Take(length);
+                    }
                 }
                 else
                 {
-                    posts = _db.SimpleTextPosts
-                        .Where(post => post.UserId == requestedAuthor.Id && post.Privacy != 1 && post.Id < lastId)
-                        .OrderByDescending(post => post.Id).Take(length);
+                    if (lastId < 0)
+                    {
+                        posts = _db.SimpleTextPosts
+                            .Where(post => post.UserId == requestedAuthor.Id && post.Privacy != 1)
+                            .OrderByDescending(post => post.Id).Take(length);
+                    }
+                    else
+                    {
+                        posts = _db.SimpleTextPosts
+                            .Where(post => post.UserId == requestedAuthor.Id && post.Privacy != 1 && post.Id < lastId)
+                            .OrderByDescending(post => post.Id).Take(length);
+                    }
                 }
             }
 

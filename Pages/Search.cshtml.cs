@@ -23,6 +23,7 @@ namespace isolaatti_API.Pages
 
         public async Task<IActionResult> OnGet([FromQuery] string q = "")
         {
+            q ??= "";
             var accountsManager = new Accounts(_db);
             var user = await accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
             if (user == null) return RedirectToPage("LogIn");

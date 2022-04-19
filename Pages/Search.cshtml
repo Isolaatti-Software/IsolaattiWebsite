@@ -15,10 +15,13 @@
 <div class="col-lg-3 col-md-2"></div>
 <div class="col-lg-6 col-md-8">
 
+    @if (((string)ViewData["query"]).Length > 0)
+    {
+        <h4 class="text-center mt-2 mb-3">Resultados para "@ViewData["query"]"</h4>
+    }
 
-    <h4 class="text-center mt-2 mb-3">Resultados para "@ViewData["query"]"</h4>
 
-    <form id="form-search1" asp-page="/Search" method="get">
+    <form id="form-search1" asp-page="/Search" method="get" class="mt-2">
         <div class="d-flex">
             <input type="text" name="q" class="form-control mb-2 mr-1" value="@ViewData["query"]"
                    placeholder="Busca personas, hilos, etc."/>
@@ -56,10 +59,13 @@
                 }
                 else
                 {
-                    <h3 class="text-center">
-                        <i class="fas fa-sad-tear"></i>
-                    </h3>
-                    <h4>No se ha encontrado nada que satisfaga tu búsqueda</h4>
+                    @if (((string)ViewData["query"]).Length > 0)
+                    {
+                        <h3 class="text-center">
+                            <i class="fas fa-sad-tear"></i>
+                        </h3>
+                        <h4>No se ha encontrado nada que satisfaga tu búsqueda</h4>
+                    }
                 }
             </div>
         </div>

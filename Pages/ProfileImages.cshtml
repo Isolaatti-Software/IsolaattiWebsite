@@ -6,29 +6,19 @@
     ViewData["Title"] = $"Imagenes de perfil de {Model.Name}";
 }
 
+@section CSS
+{
+    <script>const pageTitle = "Imagenes del perfil"</script>
+}
+
 <div class="col-lg-3 col-md-2"></div>
 <div class="col-lg-6 col-md-8">
-    <div class="list-group">
+    <h5 class="mt-3 text-center"><i class="fas fa-camera" aria-hidden="true"></i> Imágenes del perfil</h5>
+    <div class="grid-3-columns mt-2">
         @foreach (var profileImage in Model.ProfileImagesList)
         {
-            <div class="list-group-item">
-                <div class="d-flex">
-                    <img src="@Url.Action("GetProfileImage", "Fetch", new { id = profileImage.Id })"/>
-                    <div class="d-flex flex-column ml-2">
-                        <span>
-                            Url descarga:
-                            <a asp-controller="Fetch" asp-action="GetProfileImage" asp-route-id="@profileImage.Id" download>
-                                @Url.ActionLink("GetProfileImage", "Fetch", new { id = profileImage.Id })
-                            </a>
-                        </span>
-                        <span>
-                            Enlace permanente:
-                            <a asp-page="ImageViewer" asp-route-imageId="@profileImage.Id">
-                                @Url.PageLink("ImageViewer", null, new { imageId = profileImage.Id })
-                            </a>
-                        </span>
-                    </div>
-                </div>
+            <div class="d-flex justify-content-center w-100 hover-image-container" onclick="window.location='@Url.PageLink("ImageViewer", null, new { imageId = profileImage.Id })'">
+                <img src="@Url.Action("GetProfileImage", "Fetch", new { id = profileImage.Id })" class="w-100"/>
             </div>
         }
     </div>

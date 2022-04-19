@@ -4,12 +4,6 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <!-- Chrome, Firefox OS and Opera -->
-    <meta name="theme-color" content="#30098E">
-    <!-- Windows Phone -->
-    <meta name="msapplication-navbutton-color" content="#30098E">
-    <!-- iOS Safari -->
-    <meta name="apple-mobile-web-app-status-bar-style" content="#30098E">
     <title>@ViewData["Title"] | Isolaatti</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
           integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
@@ -40,10 +34,10 @@
 <body>
 <div id="app">
 <nav class="d-flex custom-nav sticky-top pr-2 pl-2" id="isolaatti-top-bar">
-    <div id="mobile-bar-title"></div>
+    <a href="/" class="nav-link custom-nav-link mr-md-auto" id="isolaatti_brand"></a>
     <div class="container-md container-fluid" id="top-bar-content">
         <div class="d-flex w-100 align-items-center">
-            <a href="/" class="nav-link custom-nav-link mr-auto" id="isolaatti_brand"></a>
+
             <div class="d-flex flex-grow-1" id="search-bar-fixed-top">
                 <button type="button"
                         class="btn btn-dark btn-sm mr-1 nav-link custom-nav-link"
@@ -196,7 +190,7 @@
             Inicio
         </div>
     </a>
-    <a class="bottom-mobile-bar-item" asp-page="/Search" asp-route-q="**">
+    <a class="bottom-mobile-bar-item" asp-page="/Search">
         <div class="text-center">
             <i class="fas fa-search"></i>
         </div>
@@ -204,7 +198,7 @@
             Buscar
         </div>
     </a>
-    <a class="bottom-mobile-bar-item" href="#modal-new-post" data-toggle="modal">
+    <a class="bottom-mobile-bar-item" asp-page="/PostEditor">
         <div class="text-center">
             <i class="fas fa-feather"></i>
         </div>
@@ -273,10 +267,6 @@
 @* Add here vue.js components files *@
 <script src="~/js/VueComponents/notificationComponent.js"></script>
 
-<!-- For small screens, the top bar is used to show a title. Set the pageTitle variable before this script is loaded to set title-->
-<script>
-document.getElementById("mobile-bar-title").innerText = pageTitle;
-</script>
 <script>
 $('#modal-view-image').on("show.bs.modal", function(event) {
      const image = $(event.relatedTarget);
@@ -285,6 +275,12 @@ $('#modal-view-image').on("show.bs.modal", function(event) {
      $(this).find('#image-modal-image-el').attr("src", imageUrl);
      $(this).find('#image-modal-all-images-a-el').attr("href", `/perfil/${userId}/imagenes_perfil`);
 });
+</script>
+<script>
+document.getElementById("app").style.height = `${window.innerHeight}px`;
+window.onresize = function() {
+    document.getElementById("app").style.height = `${window.innerHeight}px`;
+}
 </script>
 </body>
 </html>
