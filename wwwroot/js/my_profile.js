@@ -245,6 +245,64 @@ document.addEventListener("DOMContentLoaded", function () {
         this.fetchPosts(this.postLoader.lastId)
     }
 
+    async function loadProfileLink() {
+        const that = this;
+        let response = await fetch(`/api/UserLinks/Get/${this.userData.id}`, {
+            method: "GET",
+            headers: this.customHeaders
+        });
+
+        if (!response.ok) {
+            this.userLink.error = true
+            return;
+        }
+        try {
+            let parsedResponse = await response.json();
+            this.userLink.isCustom = parsedResponse.isCustom;
+            if (this.userLink.isCustom) {
+                this.userLink.customId = parsedResponse.customId;
+            } else {
+                this.userLink.url = parsedResponse.url;
+                await that.createCustomLink();
+            }
+
+        } catch (error) {
+            this.userLink.error = true;
+        }
+    }
+
+    async function createCustomLink() {
+        let response = await fetch("/api/UserLinks/Create", {
+            method: "POST",
+            headers: this.customHeaders
+        });
+        if (response.ok) {
+            let parsedResponse = await response.json();
+            this.userLink.customId = parsedResponse.id;
+        }
+    }
+
+    async function modifyCustomLink() {
+        const that = this;
+        let response = await fetch("api/UserLinks/ChangeUserLink", {
+            method: "POST",
+            headers: this.customHeaders,
+            body: JSON.stringify({
+                data: that.userLink.customId
+            })
+        });
+        if (response.ok) {
+            this.userLink.isCustom = true;
+            this.userLink.error = false;
+            this.userLink.available = true;
+            $('#modal-custom-user-link').modal('hide');
+        } else if (response.status === 400) {
+            this.userLink.error = true;
+        } else if (response.status === 401) {
+            this.userLink.available = false
+        }
+    }
+
     let vueContainer = new Vue({
         el: '#vue-container',
         data: {
@@ -276,6 +334,14 @@ document.addEventListener("DOMContentLoaded", function () {
             },
             sortingData: {
                 ascending: "0"
+            },
+            userLink: {
+                isCustom: false,
+                url: "",
+                customId: "",
+                available: true,
+                error: false,
+                isValid: true
             }
         },
         computed: {
@@ -329,6 +395,13 @@ document.addEventListener("DOMContentLoaded", function () {
             reloadPosts: function (event) {
                 this.posts = [];
                 this.fetchPosts(-1, event);
+            },
+            loadProfileLink: loadProfileLink,
+            createCustomLink: createCustomLink,
+            modifyCustomLink: modifyCustomLink,
+            validateCustomLink: function () {
+                const regex = new RegExp('^([a-zA-Z0-9 _-]+)$')
+                this.userLink.isValid = regex.test(this.userLink.customId)
             }
         },
         mounted: function () {
@@ -343,6 +416,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                     globalThis.audioUrl = "";
                 }
+                this.loadProfileLink();
             });
         }
     })
