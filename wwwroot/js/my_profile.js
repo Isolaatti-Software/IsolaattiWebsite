@@ -259,8 +259,14 @@ document.addEventListener("DOMContentLoaded", function () {
         try {
             let parsedResponse = await response.json();
             this.userLink.isCustom = parsedResponse.isCustom;
+            const that = this;
             if (this.userLink.isCustom) {
                 this.userLink.customId = parsedResponse.customId;
+                this.userLink.url = "https://isolaatti.com/" + this.userLink.customId;
+                new QRious({
+                    element: document.getElementById('user-profile-link-qr'),
+                    value: that.userLink.url
+                });
             } else {
                 this.userLink.url = parsedResponse.url;
                 await that.createCustomLink();
@@ -277,8 +283,14 @@ document.addEventListener("DOMContentLoaded", function () {
             headers: this.customHeaders
         });
         if (response.ok) {
+            const that = this;
             let parsedResponse = await response.json();
             this.userLink.customId = parsedResponse.id;
+            this.userLink.url = "https://isolaatti.com/" + this.userLink.customId;
+            new QRious({
+                element: document.getElementById('user-profile-link-qr'),
+                value: that.userLink.url
+            });
         }
     }
 
@@ -402,6 +414,17 @@ document.addEventListener("DOMContentLoaded", function () {
             validateCustomLink: function () {
                 const regex = new RegExp('^([a-zA-Z0-9 _-]+)$')
                 this.userLink.isValid = regex.test(this.userLink.customId)
+                if (this.userLink.isValid) {
+                    this.userLink.url = "https://isolaatti.com/" + this.userLink.customId;
+                    new QRious({
+                        element: document.getElementById('user-profile-link-qr'),
+                        value: this.userLink.url
+                    });
+                } else {
+                    const canvas = document.getElementById('user-profile-link-qr');
+                    canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+
+                }
             }
         },
         mounted: function () {
