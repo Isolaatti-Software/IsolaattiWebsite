@@ -29,6 +29,7 @@ body {
 .custom-nav {
     background-color: var(--isolaatti-primary-color);
     align-items: center;
+    z-index: 1050;
 }
 .custom-nav-link {
     color: rgba(255,255,255,0.5);
@@ -85,6 +86,10 @@ body {
 
 button.isolaatti-btn:hover {
     color: white;
+}
+
+.max-640 {
+    max-width: 640px;
 }
 
 
@@ -492,4 +497,74 @@ footer#footer>a, footer#footer>span {
 
 .hover-image-container:hover {
     opacity: 0.6;
+}
+
+.success-cover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 100;
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.comments-start-line {
+    height: 2px;
+    width: 1rem;
+    background-color: rgba(27, 10, 185, 0.32);
+}
+
+.comments-section {
+    border-left: solid rgba(27, 10, 185, 0.32) 2px;
+    margin-left: 15px;
+}
+
+.notifications-stack {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    display: flex;
+    z-index: 1000;
+}
+
+.audio-attachment-component {
+    display: flex;
+    padding: 0.5em;
+    align-items: center;
+    border: 1px solid #f8f9fa;
+    border-radius: 0.25rem;
+    background-color: #f8f9fa;
+}
+
+.global-audio-player {
+    position: relative;
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 0 0.5rem;
+}
+
+.global-audio-player:hover .global-player-label {
+    color: white;
+}
+
+.global-audio-player .collapsable-container {
+    display: none;
+    position: absolute;
+    padding: 0.5rem;
+    background-color: white;
+    width: 400px;
+    flex-direction: column;
+    box-shadow: 1px 1px 2px rgb(175, 175, 175);
+}
+
+.global-audio-player:hover .collapsable-container {
+    display: flex;
+    left: -50%;
+}
+
+.btn-liked {
+    color: rgb(169, 10, 215)
 }

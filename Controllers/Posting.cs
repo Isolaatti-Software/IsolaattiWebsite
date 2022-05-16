@@ -2,14 +2,12 @@ using System;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
-using isolaatti_API.Classes;
 using isolaatti_API.Classes.ApiEndpointsRequestDataModels;
 using isolaatti_API.Classes.ApiEndpointsResponseDataModels;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using isolaatti_API.Utils;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace isolaatti_API.Controllers
 {
@@ -24,11 +22,11 @@ namespace isolaatti_API.Controllers
     [Route("/api/Posting")]
     public class MakePost : ControllerBase
     {
-        private readonly DbContextApp Db;
+        private readonly DbContextApp _db;
 
         public MakePost(DbContextApp dbContextApp)
         {
-            Db = dbContextApp;
+            _db = dbContextApp;
         }
 
         [HttpPost]
@@ -36,7 +34,7 @@ namespace isolaatti_API.Controllers
         public async Task<IActionResult> Index([FromHeader(Name = "sessionToken")] string sessionToken,
             MakePostModel post)
         {
-            var accountsManager = new Accounts(Db);
+            var accountsManager = new Accounts(_db);
             var user = await accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
@@ -47,19 +45,35 @@ namespace isolaatti_API.Controllers
                 UserId = user.Id,
                 TextContent = post.Content,
                 Privacy = post.Privacy,
-                AudioAttachedUrl = post.AudioUrl,
+                AudioId = post.AudioId,
                 ThemeJson = JsonSerializer.Serialize(post.Theme,
                     new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }),
                 Date = DateTime.Now
             };
 
-            Db.SimpleTextPosts.Add(newPost);
-            await Db.SaveChangesAsync();
+            _db.SimpleTextPosts.Add(newPost);
+            await _db.SaveChangesAsync();
 
-            return Ok(new ReturningPostsComposedResponse(newPost)
+            return Ok(new
             {
-                UserName = (await Db.Users.FindAsync(newPost.UserId)).Name,
-                Liked = await Db.Likes.AnyAsync(element => element.PostId == newPost.Id && element.UserId == user.Id)
+                postData = new FeedPost
+                {
+                    Id = newPost.Id,
+                    Username = (await _db.Users.FindAsync(newPost.UserId)).Name,
+                    UserId = newPost.UserId,
+                    Liked = _db.Likes.Any(element => element.PostId == newPost.Id && element.UserId == user.Id),
+                    Content = newPost.TextContent,
+                    NumberOfLikes = newPost.NumberOfLikes,
+                    NumberOfComments = newPost.NumberOfComments,
+                    Privacy = newPost.Privacy,
+                    AudioId = newPost.AudioId,
+                    TimeStamp = newPost.Date
+                    // the other attributes are null, but they can be useful in the future
+                },
+                theme = newPost.ThemeJson == null
+                    ? null
+                    : JsonSerializer.Deserialize<PostTheme>(newPost.ThemeJson,
+                        new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase })
             });
         }
 
@@ -68,50 +82,43 @@ namespace isolaatti_API.Controllers
         public async Task<IActionResult> EditPost([FromHeader(Name = "sessionToken")] string sessionToken,
             EditPostModel editedPost)
         {
-            var accountsManager = new Accounts(Db);
+            var accountsManager = new Accounts(_db);
             var user = await accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
-            var existingPost = await Db.SimpleTextPosts.FindAsync(editedPost.PostId);
+            var existingPost = await _db.SimpleTextPosts.FindAsync(editedPost.PostId);
             if (existingPost == null) return NotFound("Post not found");
             if (existingPost.UserId != user.Id) return Unauthorized("Post is not yours, cannot edit");
 
-            // this means user removed or changed audio, so let's delete from firebase
-            if ((existingPost.AudioAttachedUrl != null && editedPost.AudioUrl == null)
-                || (existingPost.AudioAttachedUrl != editedPost.AudioUrl && existingPost.AudioAttachedUrl != null))
-            {
-                GoogleCloudBucket.GetInstance()
-                    .DeleteFile(Utils.GoogleCloudStorageUrlUtils.GetFileRefFromUrl(existingPost.AudioAttachedUrl));
-            }
 
             existingPost.Privacy = editedPost.Privacy;
             existingPost.TextContent = editedPost.Content;
-            existingPost.AudioAttachedUrl = editedPost.AudioUrl;
+            existingPost.AudioId = editedPost.AudioId;
             existingPost.ThemeJson = JsonSerializer.Serialize(editedPost.Theme,
                 new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
 
-            Db.SimpleTextPosts.Update(existingPost);
+            _db.SimpleTextPosts.Update(existingPost);
 
             // let's reset the history, to make it appear on the users' feed
             var historyOfThisPost =
-                Db.UserSeenPostHistories.Where(history => history.PostId.Equals(existingPost.Id));
-            Db.UserSeenPostHistories.RemoveRange(historyOfThisPost);
+                _db.UserSeenPostHistories.Where(history => history.PostId.Equals(existingPost.Id));
+            _db.UserSeenPostHistories.RemoveRange(historyOfThisPost);
 
-            await Db.SaveChangesAsync();
+            await _db.SaveChangesAsync();
 
             return Ok(new
             {
                 postData = new FeedPost
                 {
                     Id = existingPost.Id,
-                    Username = (await Db.Users.FindAsync(existingPost.UserId)).Name,
+                    Username = (await _db.Users.FindAsync(existingPost.UserId)).Name,
                     UserId = existingPost.UserId,
-                    Liked = Db.Likes.Any(element => element.PostId == existingPost.Id && element.UserId == user.Id),
+                    Liked = _db.Likes.Any(element => element.PostId == existingPost.Id && element.UserId == user.Id),
                     Content = existingPost.TextContent,
                     NumberOfLikes = existingPost.NumberOfLikes,
                     NumberOfComments = existingPost.NumberOfComments,
                     Privacy = existingPost.Privacy,
-                    AudioUrl = existingPost.AudioAttachedUrl,
+                    AudioId = existingPost.AudioId,
                     TimeStamp = existingPost.Date
                     // the other attributes are null, but they can be useful in the future
                 },
@@ -127,22 +134,22 @@ namespace isolaatti_API.Controllers
         public async Task<IActionResult> DeletePost([FromHeader(Name = "sessionToken")] string sessionToken,
             SingleIdentification identification)
         {
-            var accountsManager = new Accounts(Db);
+            var accountsManager = new Accounts(_db);
             var user = await accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
-            var post = Db.SimpleTextPosts.Find(identification.Id);
+            var post = _db.SimpleTextPosts.Find(identification.Id);
             if (!post.UserId.Equals(user.Id)) return Unauthorized("You cannot delete a post that is not yours");
 
             // Yep, here I can delete the post
-            Db.SimpleTextPosts.Remove(post);
-            var commentsOfPost = Db.Comments.Where(comment => comment.SimpleTextPostId == post.Id).ToList();
-            Db.Comments.RemoveRange(commentsOfPost);
+            _db.SimpleTextPosts.Remove(post);
+            var commentsOfPost = _db.Comments.Where(comment => comment.SimpleTextPostId == post.Id).ToList();
+            _db.Comments.RemoveRange(commentsOfPost);
 
-            var likesOfPost = Db.Likes.Where(like => like.PostId == post.Id).ToList();
-            Db.Likes.RemoveRange(likesOfPost);
+            var likesOfPost = _db.Likes.Where(like => like.PostId == post.Id).ToList();
+            _db.Likes.RemoveRange(likesOfPost);
 
-            await Db.SaveChangesAsync();
+            await _db.SaveChangesAsync();
 
             return Ok("Post deleted");
         }
@@ -152,11 +159,11 @@ namespace isolaatti_API.Controllers
         public async Task<IActionResult> MakeComment([FromHeader(Name = "sessionToken")] string sessionToken,
             long postId, MakeCommentModel commentModel)
         {
-            var accountsManager = new Accounts(Db);
+            var accountsManager = new Accounts(_db);
             var user = await accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
-            var post = await Db.SimpleTextPosts.FindAsync(postId);
+            var post = await _db.SimpleTextPosts.FindAsync(postId);
             if (post == null) return Unauthorized("Post does not exist");
 
             if (!post.UserId.Equals(user.Id) && post.Privacy == 1) return Unauthorized("Post is private");
@@ -172,17 +179,17 @@ namespace isolaatti_API.Controllers
                 Date = DateTime.Now
             };
 
-            Db.Comments.Add(commentToMake);
-            await Db.SaveChangesAsync();
-            post.NumberOfComments = Db.Comments.Count(comment => comment.SimpleTextPostId == post.Id);
-            Db.SimpleTextPosts.Update(post);
-            await Db.SaveChangesAsync();
+            _db.Comments.Add(commentToMake);
+            await _db.SaveChangesAsync();
+            post.NumberOfComments = _db.Comments.Count(comment => comment.SimpleTextPostId == post.Id);
+            _db.SimpleTextPosts.Update(post);
+            await _db.SaveChangesAsync();
 
             return Ok(new FeedComment
             {
                 AudioUrl = commentToMake.AudioUrl,
                 AuthorId = commentToMake.WhoWrote,
-                AuthorName = (await Db.Users.FindAsync(commentToMake.WhoWrote)).Name,
+                AuthorName = (await _db.Users.FindAsync(commentToMake.WhoWrote)).Name,
                 Content = commentToMake.TextContent,
                 Id = commentToMake.Id,
                 PostId = commentToMake.SimpleTextPostId,
@@ -197,14 +204,14 @@ namespace isolaatti_API.Controllers
         public async Task<IActionResult> Delete([FromHeader(Name = "sessionToken")] string sessionToken,
             SingleIdentification identification)
         {
-            var accountsManager = new Accounts(Db);
+            var accountsManager = new Accounts(_db);
             var user = await accountsManager.ValidateToken(sessionToken);
             if (user == null)
             {
                 return Unauthorized("Token is not valid");
             }
 
-            var comment = Db.Comments.Find(identification.Id);
+            var comment = _db.Comments.Find(identification.Id);
             if (comment == null) return NotFound("Comment not found");
 
             if (comment.WhoWrote != user.Id)
@@ -219,15 +226,15 @@ namespace isolaatti_API.Controllers
                 storage.DeleteFile(GoogleCloudStorageUrlUtils.GetFileRefFromUrl(comment.AudioUrl));
             }
 
-            Db.Comments.Remove(comment);
-            await Db.SaveChangesAsync();
+            _db.Comments.Remove(comment);
+            await _db.SaveChangesAsync();
             // updates comments count of the post this comment belongs
-            var post = await Db.SimpleTextPosts.FindAsync(comment.SimpleTextPostId);
+            var post = await _db.SimpleTextPosts.FindAsync(comment.SimpleTextPostId);
             if (post != null)
             {
-                post.NumberOfComments = Db.Comments.Count(c => c.SimpleTextPostId.Equals(post.Id));
-                Db.SimpleTextPosts.Update(post);
-                await Db.SaveChangesAsync();
+                post.NumberOfComments = _db.Comments.Count(c => c.SimpleTextPostId.Equals(post.Id));
+                _db.SimpleTextPosts.Update(post);
+                await _db.SaveChangesAsync();
             }
 
             return Ok("Comment delete successfully");

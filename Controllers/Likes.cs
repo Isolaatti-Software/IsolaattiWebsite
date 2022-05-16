@@ -51,7 +51,7 @@ namespace isolaatti_API.Controllers
             {
                 postData = new FeedPost
                 {
-                    AudioUrl = post.AudioAttachedUrl,
+                    AudioId = post.AudioId,
                     Content = post.TextContent,
                     Description = post.Description,
                     Id = post.Id,
@@ -97,7 +97,7 @@ namespace isolaatti_API.Controllers
             {
                 postData = new FeedPost
                 {
-                    AudioUrl = post.AudioAttachedUrl,
+                    AudioId = post.AudioId,
                     Content = post.TextContent,
                     Description = post.Description,
                     Id = post.Id,

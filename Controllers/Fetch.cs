@@ -116,6 +116,7 @@ namespace isolaatti_API.Controllers
             var accountsManager = new Accounts(_db);
             var user = await accountsManager.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
+            User requestedAuthor = null;
 
             IQueryable<SimpleTextPost> posts;
             var likes = _db.Likes.Where(like => like.UserId == user.Id);
@@ -152,7 +153,7 @@ namespace isolaatti_API.Controllers
             }
             else
             {
-                var requestedAuthor = await _db.Users.FindAsync(userId);
+                requestedAuthor = await _db.Users.FindAsync(userId);
                 if (requestedAuthor == null) return NotFound();
 
                 if (olderFirst)
@@ -200,7 +201,7 @@ namespace isolaatti_API.Controllers
                         NumberOfLikes = post.NumberOfLikes,
                         NumberOfComments = post.NumberOfComments,
                         Privacy = post.Privacy,
-                        AudioUrl = post.AudioAttachedUrl,
+                        AudioId = post.AudioId,
                         TimeStamp = post.Date
                         // the other attributes are null, but they can be useful in the future
                     },
@@ -222,6 +223,7 @@ namespace isolaatti_API.Controllers
 
             return Ok(new
             {
+                username = requestedAuthor == null ? user.Name : requestedAuthor.Name,
                 feed,
                 moreContent = feed.Count == length,
                 lastId = lastPostId
@@ -250,7 +252,7 @@ namespace isolaatti_API.Controllers
                     NumberOfLikes = post.NumberOfLikes,
                     NumberOfComments = post.NumberOfComments,
                     Privacy = post.Privacy,
-                    AudioUrl = post.AudioAttachedUrl,
+                    AudioId = post.AudioId,
                     TimeStamp = post.Date
                     // the other attributes are null, but they can be useful in the future
                 },
@@ -262,9 +264,9 @@ namespace isolaatti_API.Controllers
         }
 
         [HttpGet]
-        [Route("Post/{postId:long}/Comments")]
+        [Route("Post/{postId:long}/Comments/{take:int?}/{lastId:long?}")]
         public async Task<IActionResult> GetComments([FromHeader(Name = "sessionToken")] string sessionToken,
-            long postId)
+            long postId, long lastId = long.MaxValue, int take = 10)
         {
             var accountsManager = new Accounts(_db);
             var user = await accountsManager.ValidateToken(sessionToken);
@@ -275,8 +277,9 @@ namespace isolaatti_API.Controllers
                 return Unauthorized("post does not exist or is private");
 
             var comments = _db.Comments
-                .Where(comment => comment.SimpleTextPostId.Equals(post.Id))
+                .Where(comment => comment.SimpleTextPostId.Equals(post.Id) && comment.Id < lastId)
                 .OrderByDescending(comment => comment.Id)
+                .Take(take)
                 .ToList()
                 .Select(com => new FeedComment
                 {
@@ -326,7 +329,7 @@ namespace isolaatti_API.Controllers
                     NumberOfLikes = post.NumberOfLikes,
                     NumberOfComments = post.NumberOfComments,
                     Privacy = post.Privacy,
-                    AudioUrl = post.AudioAttachedUrl,
+                    AudioId = post.AudioId,
                     TimeStamp = DateTime.Now
                     // the other attributes are null, but they can be useful in the future
                 },

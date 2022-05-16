@@ -12,7 +12,7 @@ namespace isolaatti_API.Classes.ApiEndpointsResponseDataModels
         public int NumberOfLikes { get; set; }
         public int NumberOfComments { get; set; }
         public int Privacy { get; set; }
-        public string AudioUrl { get; set; }
+        public Guid? AudioId { get; set; }
         public DateTime TimeStamp { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }

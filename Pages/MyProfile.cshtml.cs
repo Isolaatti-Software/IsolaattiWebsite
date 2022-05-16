@@ -30,6 +30,7 @@ namespace isolaatti_API.Pages
         public List<User> Following = new List<User>();
         public string ProfilePhotoUrl = null;
         public string ProfileColor;
+        public List<ProfileImage> ProfileImagesList;
 
         public MyProfile(DbContextApp dbContextApp)
         {
@@ -97,6 +98,7 @@ namespace isolaatti_API.Pages
 
             ViewData["numberOfFollowers"] = user.NumberOfFollowers;
             ViewData["numberOfFollowing"] = user.NumberOfFollowing;
+            ProfileImagesList = _db.ProfileImages.Where(image => image.UserId == user.Id).ToList();
 
             try
             {

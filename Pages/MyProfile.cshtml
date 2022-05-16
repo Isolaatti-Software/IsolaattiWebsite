@@ -195,7 +195,6 @@
     </div>
 </div>
 
-
 <div class="col-xl-2 col-lg-3 col-md-4 p-0" id="vue-container-for-left-bar">
     <!-- Modal audio description -->
     <div class="modal fade" id="modal-audio-description">
@@ -272,6 +271,10 @@
                 <button class="btn btn-primary btn-sm ml-1" data-target="#modal-set-profile-color" data-toggle="modal">
                     <i class="fas fa-palette"></i>
                 </button>
+                <button class="btn btn-primary btn-sm ml-1" data-target="#modal-custom-user-link"
+                        data-toggle="modal" title="Enlace personalizado">
+                    <i class="fa-solid fa-link"></i>
+                </button>
             </nav>
 
             <div class="d-flex flex-wrap mt-2">
@@ -306,6 +309,50 @@
     </aside>
 </div>
 <div class="col-xl-8 col-lg-7 col-md-6" id="vue-container">
+    <!-- Modal custom profile link -->
+    <div class="modal fade" id="modal-custom-user-link">
+        <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-palette"></i> Enlace personalizado</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        &times;
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="d-flex justify-content-center">
+                        <canvas width="140" height="140" id="user-profile-link-qr"></canvas>
+                    </div>
+                    <div class="alert alert-danger" v-if="userLink.error">
+                        Ocurrió un error en el servidor al tratar de obtener tu enlace.
+                    </div>
+                    <div class="alert alert-danger" v-if="!userLink.available">
+                        El nombre no está disponible, prueba con otro
+                    </div>
+                    <div class="alert alert-info" v-if="!userLink.isCustom">
+                        Acabamos de crear un enlace para ti. Puedes dejarlo así o modificarlo.
+                    </div>
+                    <div class="alert alert-danger" v-if="!userLink.isValid">
+                        Solo puedes usar caracteres alfanuméricos (A-Z, a-z, 0-9, _ y -)
+                    </div>
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">https://isolaatti.com/</div>
+                        </div>
+                        <input type="text" class="form-control" id="inlineFormInputGroup" v-model="userLink.customId" v-on:input="validateCustomLink">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-sm btn-secondary" data-dismiss="modal" aria-label="Close">
+                        Cancelar
+                    </button>
+                    <button class="btn btn-sm btn-primary" v-on:click="modifyCustomLink" :disabled="!userLink.isValid">
+                        Aceptar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     @if ((bool)ViewData["profile_updated"])
     {
@@ -319,153 +366,71 @@
     {
         <div class="alert alert-warning"><strong>@ViewData["statusData"]</strong> no está disponible</div>
     }
+    <new-post
+        v-on:new-discussion=""
+        v-on:new-audio="">
+    </new-post>
 
-    <section id="your-posts-deposit" class="d-flex flex-column mt-3 align-items-center">
-
-        <div class="w-100 d-flex align-items-center flex-column">
-            <h5 class="m-3"><i class="far fa-newspaper"></i> Tus discusiones</h5>
-            <div class="d-flex justify-content-end w-100">
-                <div class="btn-group mb-2">
-                    <button type="button" class="btn btn-secondary" title="Filtrar"
-                            data-target="#modal-filter-posts" data-toggle="modal">
-                        <i class="fas fa-filter"></i>
-                    </button>
-                    <button type="button" class="btn btn-secondary" title="Ordenar"
-                            data-target="#modal-sort-posts" data-toggle="modal">
-                        <i class="fas fa-sort"></i>
-                    </button>
-                </div>
-            </div>
-
-
-            <post-template v-for="post in filterAndSortedPosts" :post="post.postData"
-                           v-on:like="likePost(post.postData, $event)"
-                           v-bind:theme="post.theme"
-                           v-on:un-like="unLikePost(post.postData, $event)"
-                           v-model="postLinkToShare"
-                           v-on:delete="deletePost(post.postData.id)"
-                           v-on:play-audio="playAudio(post.postData.audioUrl)"
-                           :paused="paused"
-                           v-on:view-thread="viewComments(post.postData)"
-                           v-bind:audio-url="audioUrl"
-                           v-bind:key="post.postData.id">
-            </post-template>
-            <div v-if="loading" class="d-flex justify-content-center mt-2">
-                <div class="spinner-border" role="status">
-                    <span class="sr-only">Cargando más contenido...</span>
-                </div>
-            </div>
-            <div v-if="moreContent" class="d-flex flex-column align-items-center mt-2">
-                <button class="btn btn-primary mb-3" v-on:click="fetchPosts(lastId, $event)">Cargar más</button>
-            </div>
-
-            <div class="modal fade" id="modal-share-post">
-                <div class="modal-dialog-centered modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">
-                                Compartir publicación
-                            </h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <p>
-                                Usa este enlace para compartir publicación
-                            </p>
-                            <button class="btn btn-primary" v-on:click="copyToClipboard(postLinkToShare)">Copiar al portapapeles</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="modal fade" id="thread-viewer">
-                <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-xl">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Comentarios</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <h5 v-if="commentsViewer.comments.length===0" class="m-4 text-center"><i class="fas fa-sad-tear"></i> No hay comentarios que mostrar</h5>
-                            <comment v-for="comment in commentsViewer.comments"
-                                     :comment="comment"
-                                     :audio-url="audioUrl"
-                                     :paused="paused"
-                                     v-on:delete-comment="deleteComment(comment.id)"
-                                     v-on:play-audio="playAudio(comment.audioUrl)">
-                            </comment>
-                        </div>
-                        <div class="modal-footer">
-                            <span>
-                                <a :href="openThreadLink">Abrir discusión</a>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Modal filter posts -->
-            <div class="modal fade" id="modal-filter-posts">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Filtrar</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <h6>Contenido</h6>
-                            <select class="custom-select" v-model="filterData.content">
-                                <option value="all">Todo</option>
-                                <option value="withAudio">Solo con audio</option>
-                                <option value="withoutAudio">Solo sin audio</option>
-                            </select>
-
-                            <h6 class="mt-3">Privacidad</h6>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" id="privacy-filter-option-private" v-model="filterData.privacy.private">
-                                <label class="form-check-label" for="privacy-filter-option-private">Privado</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" id="privacy-filter-option-isolaatti" v-model="filterData.privacy.isolaatti">
-                                <label class="form-check-label" for="privacy-filter-option-isolaatti">Usuarios de Isolaatti</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" id="privacy-filter-option-everybody" v-model="filterData.privacy.public">
-                                <label class="form-check-label" for="privacy-filter-option-everybody">Todos</label>
+    <ul class="nav nav-tabs mt-3 sticky-top bg-white max-640" id="main-tab">
+        <li class="nav-item">
+            <a class="nav-link active" id="posts-tab" href="#posts" data-toggle="tab"><i class="far fa-newspaper"></i> Tus discusiones</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#audios" data-toggle="tab">Audios</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#cards" data-toggle="tab">Tarjetas</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#profile-photos" data-toggle="tab">Fotos de perfil</a>
+        </li>
+    </ul>
+    <div class="tab-content max-640" id="main-tab-content">
+        <div class="tab-pane show active" id="posts" role="tabpanel">
+            <section id="your-posts-deposit" class="d-flex flex-column mt-3 align-items-center">
+                <div class="w-100 d-flex align-items-center flex-column">
+                    <posts-list :user-id="userData.id"></posts-list>
+                    <div class="modal fade" id="modal-share-post">
+                        <div class="modal-dialog-centered modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">
+                                        Compartir publicación
+                                    </h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>
+                                        Usa este enlace para compartir publicación
+                                    </p>
+                                    <button class="btn btn-primary" v-on:click="copyToClipboard(postLinkToShare)">Copiar al portapapeles</button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <!-- Modal sort posts -->
-            <div class="modal fade" id="modal-sort-posts">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Ordenar</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <select class="custom-select" v-model="sortingData.ascending" v-on:change="reloadPosts">
-                                <option value="0">Más nuevo primero</option>
-                                <option value="1">Más viejo primero</option>
-                            </select>
-                        </div>
-                    </div>
                 </div>
+
+            </section>
+        </div>
+        <div class="tab-pane" id="audios" role="tabpanel">
+            <audios-list :user-id="userData.id"></audios-list>
+        </div>
+        <div class="tab-pane" id="cards" role="tabpanel">...</div>
+        <div class="tab-pane" id="profile-photos" role="tabpanel">
+            <div class="grid-3-columns mt-2">
+                @foreach (var profileImage in Model.ProfileImagesList)
+                {
+                    <div class="d-flex justify-content-center w-100 hover-image-container" onclick="window.location='@Url.PageLink("ImageViewer", null, new { imageId = profileImage.Id })'">
+                        <img src="@Url.Action("GetProfileImage", "Fetch", new { id = profileImage.Id })" class="w-100"/>
+                    </div>
+                }
             </div>
         </div>
+    </div>
 
-    </section>
 </div>
 <div class="col-xl-2 col-lg-2 col-md-2">
 </div>
@@ -530,8 +495,16 @@ else if (ViewData["profile_open"].Equals("links"))
     }
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="~/js/lib/purify.min.js"></script>
+    <script src="~/js/lib/qrious.min.js"></script>
+
+    <script src="~/js/VueComponents/newDiscussionComponent.js"></script>
     <script src="~/js/VueComponents/postComponent.js"></script>
     <script src="~/js/VueComponents/commentComponent.js"></script>
+    <script src="~/js/VueComponents/audioRecorder.js"></script>
+    <script src="~/js/VueComponents/newQuickPost.js"></script>
+    <script src="~/js/VueComponents/commentsViewer.js"></script>
+    <script src="~/js/VueComponents/postsList.js"></script>
+    <script src="~/js/VueComponents/audiosList.js"></script>
     <script src="~/js/utils.js"></script>
     <script src="~/js/my_profile.js"></script>
 }
