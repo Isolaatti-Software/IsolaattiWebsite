@@ -71,7 +71,7 @@ namespace isolaatti_API.Controllers
                     NumberOfLikes = rawPost.NumberOfLikes,
                     NumberOfComments = rawPost.NumberOfComments,
                     Privacy = rawPost.Privacy,
-                    AudioUrl = rawPost.AudioAttachedUrl,
+                    AudioId = rawPost.AudioId,
                     TimeStamp = rawPost.Date
                     // the other attributes are null, but they can be useful in the future
                 },

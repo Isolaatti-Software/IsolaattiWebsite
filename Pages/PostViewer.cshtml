@@ -45,9 +45,11 @@
     <script src="~/js/lib/purify.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script>const threadToReadId = "@Model.ThisPost.Id";</script>
+    <script>const threadToReadId = @Model.ThisPost.Id;</script>
+    <script src="~/js/VueComponents/commentsViewer.js"></script>
     <script src="~/js/VueComponents/postComponent.js"></script>
     <script src="~/js/VueComponents/commentComponent.js"></script>
+    <script src="~/js/VueComponents/audioRecorder.js"></script>
     <script src="~/js/threads.js"></script>
 }
 
@@ -58,14 +60,8 @@
                 <post-template v-if="post!==undefined"
                                :post="post.postData"
                                :theme="post.theme"
-                               v-on:like="likePost(post.postData, $event)"
-                               v-on:un-like="unLikePost(post.postData, $event)"
-                               v-model="postLinkToShare"
-                               v-on:delete="deletePost(post.postData.id)"
-                               v-on:play-audio="playAudio(post.postData.audioUrl)"
-                               :key="post.postData.id"
-                               :audio-url="audioUrl"
-                               :paused="paused">
+                               :key="threadId"
+                               :is-full-page="true">
                 </post-template>
 
             </div>
@@ -76,11 +72,9 @@
                         <div class="d-flex  flex-fill">
                             <textarea id="comment-textarea" class="form-control" v-model="commentTextarea" ref="commentTextareaRef" rows="8" v-bind:selection-start.prop="selectionStart" v-bind:selection-end.prop="selectionEnd" placeholder="Escribe tu comentario usando Markdown. Puedes agregar un audio con el botón de abajo."></textarea>
                         </div>
-                        <div class="progress mt-2" style="height: 10px;" v-if="uploadingData.uploading">
-                            <div class="progress-bar" role="progressbar" :style="uploadingProgressBarStyleCss" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
+                        <audio-recorder class="mt-2"></audio-recorder>
                         <div class="d-flex justify-content-between">
-                            <button class="btn btn-primary mt-1 mb-1" data-target="#add-audio-modal" data-toggle="modal" v-on:click="requestMicrophone()">
+                            <button class="btn btn-light mt-1 mb-1">
                                 <i class="fas fa-microphone"></i> {{addAudioButtonText}}
                             </button>
                             <button class="btn btn-primary mt-1 mb-1" v-on:click="makeComment"
@@ -89,15 +83,7 @@
                             </button>
                         </div>
                     </section>
-                    <h5 v-if="comments.length===0" class="m-4 text-center"><i class="fas fa-sad-tear"></i> No hay comentarios que mostrar</h5>
-                    <comment v-for="comment in comments"
-                             :comment="comment"
-                             :audio-url="audioUrl"
-                             :paused="paused"
-                             :key="comment.id"
-                             v-on:delete-comment="deleteComment(comment.id)"
-                             v-on:play-audio="playAudio(comment.audioUrl)">
-                    </comment>
+                    <comments-viewer :post-id="threadId" :just-added-comments="comments" :number-of-comments="post.postData.numberOfComments"></comments-viewer>
                 </div>
             </div>
         </div>

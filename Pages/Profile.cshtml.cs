@@ -60,6 +60,12 @@ namespace isolaatti_API.Pages
                 : UrlGenerators.GenerateProfilePictureUrl(user.Id, Request.Cookies["isolaatti_user_session_token"]);
 
             ViewData["numberOfLikes"] = await _db.Likes.CountAsync(like => like.TargetUserId.Equals(profile.Id));
+            ViewData["numberOfLikesGiven"] = await _db.Likes.CountAsync(like => like.UserId.Equals(profile.Id));
+            ViewData["numberOfComments"] =
+                await _db.Comments.CountAsync(comment => comment.TargetUser.Equals(profile.Id));
+            ViewData["numberOfCommentsGiven"] =
+                await _db.Comments.CountAsync(comment => comment.WhoWrote.Equals(profile.Id));
+
             ViewData["followingThisUser"] =
                 _db.FollowerRelations.Any(rel => rel.UserId.Equals(user.Id) && rel.TargetUserId.Equals(profile.Id));
             ViewData["thisUserIsFollowingMe"] = await _db.FollowerRelations.AnyAsync(rel =>

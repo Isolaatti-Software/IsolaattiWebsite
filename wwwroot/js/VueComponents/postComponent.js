@@ -2,12 +2,7 @@ Vue.component('post-template',{
     // ['post','paused','is-modal', 'theme', "audioUrl", "preview"]
     props: {
         post: Object,
-        paused: {
-            type: Boolean,
-            default: false,
-            required: false
-        },
-        audioUrl: String,
+        isFullPage: false,
         preview: {
             type: Boolean,
             default: false
@@ -35,7 +30,12 @@ Vue.component('post-template',{
     data: function () {
         return {
             userData: userData,
-            cutContent: true
+            cutContent: true,
+            customHeaders: customHttpHeaders,
+            thisTime: Date.now(),
+            editable: false,
+            renderPost: undefined,
+            renderTheme: undefined
         }
     },
     computed: {
@@ -52,7 +52,24 @@ Vue.component('post-template',{
             return this.preview ? "#" : `/editor?edit=True&postId=${this.post.id}`
         },
         containerCssClass: function () {
-            return this.cutContent ? "d-flex mb-2 flex-column p-2 post post-cut-height" : "d-flex mb-2 flex-column p-2 post"
+            return this.cutContent ? "d-flex flex-column p-2 post post-cut-height" : "d-flex flex-column p-2 mt-3 post"
+        }
+    },
+    watch: {
+        post: {
+            immediate: true,
+            deep: true,
+            handler: function (value, old) {
+                console.log(this);
+                this.renderPost = value;
+            }
+        },
+        theme: {
+            immediate: true,
+            deep: true,
+            handler: function (value, old) {
+                this.renderTheme = value;
+            }
         }
     },
     methods: {
@@ -98,75 +115,124 @@ Vue.component('post-template',{
         },
         showFullPost: function () {
             this.cutContent = false;
+        },
+        like: async function (event) {
+            if (this.preview) return;
+
+            const postId = this.renderPost.id;
+            const requestData = {id: postId}
+            const globalThis = this;
+            event.target.disabled = true;
+            const response = await fetch("/api/Likes/LikePost", {
+                method: "POST",
+                headers: this.customHeaders,
+                body: JSON.stringify(requestData),
+            });
+
+            response.json().then(function (res) {
+                globalThis.renderPost = res.postData;
+                event.target.disabled = false;
+            });
+        },
+        unlike: async function (event) {
+            if (this.preview) return;
+
+            const postId = this.renderPost.id;
+            const requestData = {id: postId}
+            const globalThis = this;
+            event.target.disabled = true;
+            const response = await fetch("/api/Likes/UnLikePost", {
+                method: "POST",
+                headers: this.customHeaders,
+                body: JSON.stringify(requestData),
+            });
+
+            response.json().then(function (res) {
+                globalThis.renderPost = res.postData;
+                event.target.disabled = false;
+            });
+        },
+        updateFromModified: function (feedPost) {
+            this.renderPost = feedPost.postData;
+            this.renderTheme = feedPost.theme;
+            this.editable = false;
         }
     },
     template: `
-      <div :class="containerCssClass" :style="getPostStyle(theme)">
-      <div class="d-flex justify-content-between align-items-center">
-        <div class="d-flex">
-          <img class="user-avatar" :src="getUserImageUrl(post.userId)">
-          <div class="d-flex flex-column ml-2">
-            <span class="user-name"><a :href="profileLink">{{ post.username }}</a> </span>
-            <div class="d-flex privacy-icon-container">
-              <div v-if="post.privacy === 1">
-                <i class="fas fa-user" title="Private" aria-hidden="true"></i><span class="sr-only">Privado</span>
+      <div class="w-100 mt-2" v-if="renderPost !== undefined && renderTheme !== undefined">
+      <section v-if="editable" class="d-flex justify-content-end">
+        <button @click="editable=false" class="btn btn-danger btn-sm">Cancelar edición</button>
+      </section>
+      <article class="d-flex flex-column w-100" v-if="!editable">
+        <div :class="containerCssClass" :style="getPostStyle(renderTheme)">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex">
+              <img class="user-avatar" :src="getUserImageUrl(renderPost.userId)">
+              <div class="d-flex flex-column ml-2">
+                <span class="user-name"><a :href="profileLink">{{ renderPost.username }}</a> </span>
+                <div class="d-flex privacy-icon-container">
+                  <div v-if="renderPost.privacy === 1">
+                    <i class="fas fa-user" title="Private" aria-hidden="true"></i><span class="sr-only">Privado</span>
+                  </div>
+                  <div v-if="renderPost.privacy === 2">
+                    <i class="fas fa-user-friends" title="People on Isolaatti" aria-hidden="true"></i><span
+                      class="sr-only">Usuarios de Isolaatti</span>
+                  </div>
+                  <div v-if="renderPost.privacy === 3">
+                    <i class="fas fa-globe" title="All the world" aria-hidden="true"></i><span
+                      class="sr-only">Todos</span>
+                  </div>
+                  <span>{{ new Date(renderPost.timeStamp).toUTCString() }}</span>
+                </div>
               </div>
-              <div v-if="post.privacy === 2">
-                <i class="fas fa-user-friends" title="People on Isolaatti" aria-hidden="true"></i><span class="sr-only">Usuarios de Isolaatti</span>
+            </div>
+            <div class="dropdown dropleft" v-if="!preview">
+              <button class="btn btn-light btn-sm" data-toggle="dropdown" aria-haspopup="true">
+                <i class="fas fa-ellipsis-h"></i>
+              </button>
+              <div class="dropdown-menu">
+                <a href="#" class="dropdown-item" v-if="renderPost.userId===this.userData.id" @click="editable=true">Editar</a>
+                <a href="#modal-share-post" v-on:click="$emit('input',openThreadLink)" class="dropdown-item"
+                   data-toggle="modal">Compartir</a>
+                <a href="#" class="dropdown-item" v-if="renderPost.userId===this.userData.id"
+                   v-on:click="$emit('delete',1)">Eliminar</a>
+                <a :href="reportLink" class="dropdown-item" target="_blank" v-if="userData.id!==-1">Reportar</a>
               </div>
-              <div v-if="post.privacy === 3">
-                <i class="fas fa-globe" title="All the world" aria-hidden="true"></i><span class="sr-only">Todos</span>
-              </div>
-              <span>{{ new Date(post.timeStamp).toUTCString() }}</span>
+            </div>
+          </div>
+
+          <audio-attachment :audio-id="renderPost.audioId" v-if="renderPost.audioId!==null"></audio-attachment>
+          <div class="mt-2 post-content" v-html="compileMarkdown(renderPost.content)" ref="postContentContainer"></div>
+          <div class="d-flex justify-content-center">
+            <button class="btn btn-primary btn-sm" v-on:click="showFullPost" v-if="cutContent">Mostrar todo</button>
+          </div>
+          <div class="d-flex justify-content-end">
+            <a class="btn btn-light mr-auto btn-sm" :href="openThreadLink"><i class="fas fa-external-link-alt"></i> </a>
+            <div class="btn-group btn-group-sm" v-if="userData.id!==-1">
+
+              <a class="btn btn-light" :href="openThreadLink"><i class="fas fa-comments"></i>
+                {{ renderPost.numberOfComments }}</a>
+              <button v-if="!renderPost.liked" v-on:click="like($event)" class="btn btn-light btn-sm" type="button">
+                <i class="fas fa-thumbs-up" aria-hidden="true"></i> {{ renderPost.numberOfLikes }}
+              </button>
+              <button v-if="renderPost.liked" v-on:click="unlike($event)" class="btn btn-light btn-sm btn-liked"
+                      type="button">
+                <i class="fas fa-thumbs-up" aria-hidden="true"></i> {{ renderPost.numberOfLikes }}
+              </button>
             </div>
           </div>
         </div>
-        <div class="dropdown dropleft">
-          <button class="btn btn-light btn-sm" data-toggle="dropdown" aria-haspopup="true">
-            <i class="fas fa-ellipsis-h"></i>
-          </button>
-          <div class="dropdown-menu">
-            <a :href="editPostLink" class="dropdown-item" v-if="post.userId===this.userData.id">Editar</a>
-            <a href="#modal-share-post" v-on:click="$emit('input',openThreadLink)" class="dropdown-item"
-               data-toggle="modal">Compartir</a>
-            <a href="#" class="dropdown-item" v-if="post.userId===this.userData.id" v-on:click="$emit('delete',1)">Eliminar</a>
-            <a :href="reportLink" class="dropdown-item" target="_blank" v-if="userData.id!==-1">Reportar</a>
-          </div>
-        </div>
-      </div>
-
-      <div class="d-flex mt-1" v-if="post.audioUrl!=null">
-        <button type="button" class="btn btn-primary btn-sm" v-on:click="$emit('play-audio')">
-          <i class="fas fa-play" v-if="post.audioUrl !== audioUrl || paused"></i>
-          <i class="fas fa-pause" v-else></i>
-        </button>
-      </div>
-      <div class="mt-2 post-content" v-html="compileMarkdown(post.content)" ref="postContentContainer"></div>
-      <div class="d-flex justify-content-center">
-        <button class="btn btn-primary btn-sm" v-on:click="showFullPost" v-if="cutContent">Mostrar todo</button>
-      </div>
-      <div class="d-flex justify-content-end">
-        <a class="btn btn-dark mr-auto btn-sm" :href="openThreadLink"><i class="fas fa-external-link-alt"></i> </a>
-        <div class="btn-group btn-group-sm" v-if="userData.id!=-1">
-
-          <a class="btn btn-dark btn-sm" href="#thread-viewer" data-toggle="modal"
-             v-on:click="$emit('view-thread')">
-            <i class="fas fa-comments" aria-hidden="true"></i> {{ post.numberOfComments }}
-          </a>
-          <button v-if="!post.liked" v-on:click="$emit('like',$event)" class="btn btn-dark btn-sm" type="button">
-            <i class="fas fa-thumbs-up" aria-hidden="true"></i> {{ post.numberOfLikes }}
-          </button>
-          <button v-if="post.liked" v-on:click="$emit('un-like',$event)" class="btn btn-primary btn-sm" type="button">
-            <i class="fas fa-thumbs-up" aria-hidden="true"></i> {{ post.numberOfLikes }}
-          </button>
-        </div>
-        <div class="btn-group btn-group-sm" v-else>
-          <a class="btn btn-dark" :href="openThreadLink"><i class="fas fa-comments"></i> {{ post.numberOfComments }}</a>
-        </div>
-      </div>
+        <comments-viewer :post-id="post.id" :is-under-post="true" v-if="!isFullPage && !preview"
+                         :number-of-comments="post.numberOfComments"></comments-viewer>
+      </article>
+      <new-discussion v-else :mode="'modify'" :post-to-modify-id="post.id"
+                      @modified="updateFromModified"></new-discussion>
       </div>
     `,
     mounted: function () {
-        this.cutContent = this.$refs.postContentContainer.scrollHeight > this.$refs.postContentContainer.clientHeight
+        const that = this;
+        this.$nextTick(function () {
+            this.cutContent = this.$refs.postContentContainer.scrollHeight > this.$refs.postContentContainer.clientHeight;
+        });
     }
 })

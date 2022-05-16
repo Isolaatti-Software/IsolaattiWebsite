@@ -122,129 +122,6 @@ document.addEventListener("DOMContentLoaded", function () {
         })
     }
 
-    async function likePost(post, event) {
-        const postId = post.id;
-        const requestData = {id: postId}
-        const globalThis = this;
-        event.target.disabled = true;
-        const response = await fetch("/api/Likes/LikePost", {
-            method: "POST",
-            headers: this.customHeaders,
-            body: JSON.stringify(requestData),
-        });
-
-        response.json().then(function (post) {
-            let index = vueContainer.posts.findIndex(post => post.postData.id === postId);
-            Vue.set(vueContainer.posts, index, post);
-            event.target.disabled = false;
-        });
-    }
-
-    async function unLikePost(post, event) {
-        const postId = post.id;
-        const requestData = {id: postId}
-        const globalThis = this;
-        event.target.disabled = true;
-        const response = await fetch("/api/Likes/UnLikePost", {
-            method: "POST",
-            headers: this.customHeaders,
-            body: JSON.stringify(requestData),
-        });
-
-        response.json().then(function (post) {
-            let index = vueContainer.posts.findIndex(post => post.postData.id === postId);
-            Vue.set(vueContainer.posts, index, post);
-            event.target.disabled = false;
-        });
-    }
-
-    function compileMarkdown(raw) {
-        if (raw === null) raw = "";
-        return marked(raw);
-    }
-
-    function playAudio(url) {
-        if (this.audioUrl !== url) {
-            this.audioPlayer.pause();
-            this.audioUrl = url
-            this.audioPlayer.src = url;
-            this.audioPlayer.play();
-            this.paused = false;
-        } else {
-            if (!this.audioPlayer.paused) {
-                this.audioPlayer.pause()
-                this.paused = true;
-                this.playing = false;
-            } else {
-                this.audioPlayer.play();
-                this.playing = true;
-                this.paused = false;
-            }
-        }
-        this.playing = true;
-    }
-
-    function getPostStyle(themeDefinitionJson) {
-        if (themeDefinitionJson === null)
-            return "";
-        const theme = themeDefinitionJson;
-        return `color: ${theme.fontColor};
-                        background-color: ${theme.backgroundColor};
-                        border: ${theme.border.size} ${theme.border.type} ${theme.border.color}`;
-    }
-
-    function copyToClipboard(relativeUrl) {
-        let absoluteUrl = `${window.location.protocol}//${window.location.host}${relativeUrl}`;
-        navigator.clipboard.writeText(absoluteUrl).then(function () {
-            alert("Se copió el texto al portapapeles");
-        });
-    }
-
-    function deletePost(postId) {
-        if (!confirm("¿De verdad deseas eliminar esta publicación?")) {
-            return;
-        }
-
-        fetch("/api/Posting/Delete", {
-            method: "POST",
-            headers: this.customHeaders,
-            body: JSON.stringify({id: postId})
-        }).then(res => {
-            if (res.ok) {
-                let postIndex = this.posts.findIndex(value => value.postData.id === postId);
-                this.posts.splice(postIndex, 1);
-            }
-        });
-    }
-
-    function deleteComment(id) {
-        if (!confirm("¿De verdad deseas eliminar esta publicación?")) {
-            return;
-        }
-
-        fetch("/api/Posting/Comment/Delete", {
-            method: "POST",
-            headers: this.customHeaders,
-            body: JSON.stringify({id: id})
-        }).then(res => {
-            if (res.ok) {
-                let commentId = this.commentsViewer.comments.findIndex(value => value.id === id);
-                if (commentId === -1) return;
-                this.commentsViewer.comments.splice(commentId, 1);
-            }
-        });
-    }
-
-    function viewComments(post) {
-        this.commentsViewer.postId = post.id;
-        this.fetchComments();
-    }
-
-    function loadMore() {
-        this.postLoader.loading = true;
-        this.fetchPosts(this.postLoader.lastId)
-    }
-
     async function loadProfileLink() {
         const that = this;
         let response = await fetch(`/api/UserLinks/Get/${this.userData.id}`, {
@@ -320,33 +197,6 @@ document.addEventListener("DOMContentLoaded", function () {
         data: {
             customHeaders: customHttpHeaders,
             userData: userData,
-            posts: [],
-            selectedPostForModalsId: 0,
-            textareaEditPost: "",
-            privacyEditPost: "",
-            audioPlayer: new Audio(),
-            audioUrl: "",
-            playing: false,
-            paused: false,
-            loading: true,
-            moreContent: false,
-            lastId: -1,
-            postLinkToShare: "",
-            commentsViewer: {
-                postId: 0,
-                comments: []
-            },
-            filterData: {
-                privacy: {
-                    private: true,
-                    isolaatti: true,
-                    public: true
-                },
-                content: "all"
-            },
-            sortingData: {
-                ascending: "0"
-            },
             userLink: {
                 isCustom: false,
                 url: "",
@@ -356,58 +206,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 isValid: true
             }
         },
-        computed: {
-            openThreadLink: function () {
-                return `/pub/${this.commentsViewer.postId}`;
-            },
-            filterAndSortedPosts: function () {
-
-                let filteredArray = this.posts.filter(value => {
-                    let privacy = value.postData.privacy;
-                    let audioUrl = value.postData.audioUrl;
-
-                    //let's filter first by audio availability
-                    if (audioUrl === null && this.filterData.content === "withAudio") {
-                        return false;
-                    }
-
-                    if (audioUrl !== null && this.filterData.content === "withoutAudio") {
-                        return false;
-                    }
-
-                    // and then by privacy
-                    switch (privacy) {
-                        case 1:
-                            return this.filterData.privacy.private;
-                        case 2:
-                            return this.filterData.privacy.isolaatti;
-                        case 3:
-                            return this.filterData.privacy.public;
-                    }
-                });
-
-                // if (this.sortingData.ascending === "1") {
-                //     return filteredArray.reverse();
-                // }
-                return filteredArray;
-            }
-        },
         methods: {
-            fetchPosts: fetchMyPosts,
-            fetchComments: fetchComments,
-            likePost: likePost,
-            unLikePost: unLikePost,
-            compileMarkdown: compileMarkdown,
-            playAudio: playAudio,
-            getPostStyle: getPostStyle,
-            copyToClipboard: copyToClipboard,
-            deletePost: deletePost,
-            viewComments: viewComments,
-            deleteComment: deleteComment,
-            reloadPosts: function (event) {
-                this.posts = [];
-                this.fetchPosts(-1, event);
-            },
             loadProfileLink: loadProfileLink,
             createCustomLink: createCustomLink,
             modifyCustomLink: modifyCustomLink,
@@ -430,15 +229,6 @@ document.addEventListener("DOMContentLoaded", function () {
         mounted: function () {
             this.$nextTick(function () {
                 let globalThis = this;
-                this.fetchPosts(-1);
-                this.audioPlayer.onended = function () {
-                    // if it was playing the description it has to stop the photo rotating
-                    if (globalThis.audioUrl === vueContainerForLeftBar.audioDescriptionUrl) {
-                        vueContainerForLeftBar.stopRotatingProfilePicture();
-                        vueContainerForLeftBar.playing = false;
-                    }
-                    globalThis.audioUrl = "";
-                }
                 this.loadProfileLink();
             });
         }

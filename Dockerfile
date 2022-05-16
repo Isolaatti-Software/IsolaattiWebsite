@@ -3,13 +3,13 @@ WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-ARG dbcon
-ARG keysdbcon
-ARG sendgrid
-
-ENV db_connection_string=$dbcon
-ENV key_database_con_string=$keysdbcon
-ENV send_grid_api_key=$sendgrid
+#ARG dbcon
+#ARG keysdbcon
+#ARG sendgrid
+#
+#ENV db_connection_string=$dbcon
+#ENV key_database_con_string=$keysdbcon
+#ENV send_grid_api_key=$sendgrid
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src

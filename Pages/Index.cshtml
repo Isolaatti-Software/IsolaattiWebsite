@@ -13,12 +13,12 @@
 
 <div class="col-lg-9 col-md-8">
     <main class="mt-4" id="vue-container">
-
         <div class="d-flex align-items-center flex-column"
              id="feed-and-thread-reader-container"
              ref="feedAndThreadReaderContainer">
-            <div class="sticky-sm-top">
-                <h5 class="ml-2 mt-2"><i class="far fa-newspaper"></i> Actividad de las personas que sigues</h5>
+            <new-post class="w-100"></new-post>
+            <div class="sticky-top bg-white w-100">
+                <h5 class="ml-2 mt-2 text-center"><i class="far fa-newspaper"></i> Actividad de las personas que sigues</h5>
             </div>
             <section id="posts-deposit" class="d-flex flex-column pt-1 mt-2 mb-3 align-items-center posts-deposit">
                 <post-template v-for="post in posts" :post="post.postData"
@@ -50,53 +50,7 @@
             </section>
         </div>
 
-        <div class="modal fade" id="modal-share-post">
-            <div class="modal-dialog-centered modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">
-                            Compartir publicación
-                        </h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <p>
-                            Usa este enlace para compartir la publicación
-                        </p>
-                        <button class="btn btn-primary" v-on:click="copyToClipboard(postLinkToShare)">Copiar al portapapeles</button>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <div class="modal fade" id="thread-viewer">
-            <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-xl">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Comentarios</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <h5 v-if="commentsViewer.comments.length===0" class="m-4 text-center"><i class="fas fa-sad-tear"></i> No hay comentarios que mostrar</h5>
-                        <comment v-for="comment in commentsViewer.comments"
-                                 :comment="comment"
-                                 :audio-url="audioUrl"
-                                 :paused="paused"
-                                 v-on:play-audio="playAudio(comment.audioUrl)">
-                        </comment>
-                    </div>
-                    <div class="modal-footer">
-                        <span>
-                            <a :href="openThreadLink" target="_blank">Abrir discusión</a>
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
     </main>
 </div>
 <div class="col-lg-3 col-md-4">
@@ -124,7 +78,14 @@
 {
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="~/js/lib/purify.min.js"></script>
+    <script src="~/js/play.js"></script>
+    <script src="~/js/VueComponents/audioAttachmentComponent.js"></script>
+    <script src="~/js/VueComponents/newDiscussionComponent.js"></script>
+    <script src="~/js/VueComponents/commentsViewer.js"></script>
     <script src="~/js/VueComponents/postComponent.js"></script>
     <script src="~/js/VueComponents/commentComponent.js"></script>
+    <script src="~/js/VueComponents/audioRecorder.js"></script>
+    <script src="~/js/VueComponents/newQuickPost.js"></script>
+    <script src="~/js/VueComponents/audiosList.js"></script>
     <script src="~/js/main_page.js"></script>
 }

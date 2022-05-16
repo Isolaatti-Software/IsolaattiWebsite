@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
@@ -12,23 +11,19 @@ namespace isolaatti_API.Pages
     public class PostEditor : PageModel
     {
         private readonly DbContextApp _db;
-        public bool Edit = false;
-        public long EditPostId;
-        private Guid zeroes;
+
 
         public PostEditor(DbContextApp dbContextApp, IWebHostEnvironment env)
         {
             _db = dbContextApp;
-            zeroes = new Guid(new Byte[16]);
         }
 
-        public async Task<IActionResult> OnGet(bool edit = false, long postId = -1)
+        public async Task<IActionResult> OnGet()
         {
             var accountsManager = new Accounts(_db);
             var user = await accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
             if (user == null) return RedirectToPage("LogIn");
-            Edit = edit;
-            EditPostId = postId;
+
 
             // here it's know that account is correct. Data binding!
             ViewData["name"] = user.Name;
@@ -37,11 +32,6 @@ namespace isolaatti_API.Pages
             ViewData["profilePicUrl"] = user.ProfileImageId == null
                 ? null
                 : UrlGenerators.GenerateProfilePictureUrl(user.Id, Request.Cookies["isolaatti_user_session_token"]);
-
-            if (!edit || postId == -1) return Page();
-
-            var post = await _db.SimpleTextPosts.FindAsync(postId);
-            if (post == null || post.UserId != user.Id) return NotFound();
 
             return Page();
         }

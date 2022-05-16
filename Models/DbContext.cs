@@ -31,5 +31,6 @@ namespace isolaatti_API.Models
         public DbSet<FollowerRelation> FollowerRelations { get; set; }
         public DbSet<ProfileImage> ProfileImages { get; set; }
         public DbSet<UserProfileLink> UserProfileLinks { get; set; }
+        public DbSet<Audio> Audios { get; set; }
     }
 }
