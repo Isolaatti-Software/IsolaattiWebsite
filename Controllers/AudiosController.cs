@@ -22,7 +22,8 @@ public class AudiosController : ControllerBase
     public AudiosController(DbContextApp dbContextApp)
     {
         _db = dbContextApp;
-        var file = System.IO.File.Open("isolaatti-firebase-adminsdk.json", FileMode.Open, FileAccess.Read);
+        var file = System.IO.File.Open("isolaatti-firebase-adminsdk.json", FileMode.Open, FileAccess.Read,
+            FileShare.Read);
         var credential = GoogleCredential.FromStream(file);
         _storage = StorageClient.Create(credential);
     }
@@ -122,5 +123,18 @@ public class AudiosController : ControllerBase
         var memoryStream = new MemoryStream();
         await _storage.DownloadObjectAsync(audioObject, memoryStream);
         return new FileContentResult(memoryStream.ToArray(), audioObject.ContentType);
+    }
+
+    [HttpGet]
+    [Route("Newest")]
+    public async Task<IActionResult> GetNewestAudios([FromHeader(Name = "sessionToken")] string sessionToken)
+    {
+        var accountsManager = new Accounts(_db);
+        var user = await accountsManager.ValidateToken(sessionToken);
+        if (user == null) return Unauthorized("Token is not valid");
+
+        var lastAudios = _db.Audios.OrderByDescending(audio => audio.CreatedAt).Take(10).ToList();
+
+        return Ok(lastAudios);
     }
 }
