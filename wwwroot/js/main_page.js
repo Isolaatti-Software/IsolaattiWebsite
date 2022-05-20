@@ -86,7 +86,7 @@ let vueContainer = new Vue({
 
     },
     mounted: function() {
-        this.$nextTick(function() {
+        this.$nextTick(function () {
             this.fetchFeed();
             let globalThis = this;
             this.audioPlayer.onended = function () {
@@ -95,4 +95,9 @@ let vueContainer = new Vue({
             globalEventEmmiter.$on("posted", this.concatPost)
         });
     }
+});
+
+
+new Vue({
+    el: "#rightbar"
 });

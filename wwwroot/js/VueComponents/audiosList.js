@@ -73,13 +73,8 @@ Vue.component("audios-list", {
     },
     template: `
       <div>
-      <div class="list-group">
-        <button class="list-group-item list-group-item-action" data-dismiss="modal"
-                v-for="audio in audios"
-
-                v-on:click="$emit('audio-selected',audio.id)"
-        >{{ audio.name }}
-        </button>
+      <div class="d-flex flex-column">
+        <audio-attachment :audio-id="audio.id" v-for="audio in audios" v-on:click="$emit('audio-selected',audio.id)" data-dismiss="modal" class="mt-1"></audio-attachment>
       </div>
       </div>
     `

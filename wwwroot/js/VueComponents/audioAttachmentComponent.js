@@ -73,17 +73,19 @@
         });
     },
     template: `
-        <div class="audio-attachment-component">
-        <div class="btn-group-sm" v-if="playbackStatus.url !== null">
-          <button type="button" class="btn btn-light btn-sm" v-on:click="play" v-if="playbackStatus.paused || playbackStatus.stopped">
-            <i class="fas fa-play"></i>
-          </button>
-          <button type="button" class="btn btn-light btn-sm" v-on:click="pause" v-if="playbackStatus.playing">
-            <i class="fas fa-pause"></i>
-          </button>
-          <button type="button" class="btn btn-light btn-sm" v-on:click="stop" v-if="playbackStatus.paused || playbackStatus.playing">
-            <i class="fas fa-stop"></i>
-          </button>
+      <div class="audio-attachment-component" v-on:click="$emit('click')">
+      <div class="btn-group-sm" v-if="playbackStatus.url !== null">
+        <button type="button" class="btn btn-light btn-sm" v-on:click="play"
+                v-if="playbackStatus.paused || playbackStatus.stopped">
+          <i class="fas fa-play"></i>
+        </button>
+        <button type="button" class="btn btn-light btn-sm" v-on:click="pause" v-if="playbackStatus.playing">
+          <i class="fas fa-pause"></i>
+        </button>
+        <button type="button" class="btn btn-light btn-sm" v-on:click="stop"
+                v-if="playbackStatus.paused || playbackStatus.playing">
+          <i class="fas fa-stop"></i>
+        </button>
         </div>
           <span class="text-black-50">{{name}}</span>
           <button type="button" class="close ml-auto" v-if="canRemove" v-on:click="$emit('remove')">&times;</button>

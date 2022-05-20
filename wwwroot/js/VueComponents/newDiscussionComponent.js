@@ -193,7 +193,7 @@
                         v-if="discussion.audioId!==null"
                         v-on:remove="removeAudio"></audio-attachment>
 
-      <textarea class="form-control mt-2" v-model="discussion.content"
+      <textarea class="mt-2 isolaatti-discussion-text" v-model="discussion.content"
                 placeholder="Escribe aqui el contenido para iniciar la discusión. Markdown es compatible."></textarea>
 
       <div class="d-flex justify-content-end mt-2">

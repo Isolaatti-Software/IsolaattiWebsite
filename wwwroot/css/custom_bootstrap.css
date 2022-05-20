@@ -23,11 +23,25 @@
 }
 
 .badge-primary {
-    background-color: #300D87!important;
+    background-color: #300D87 !important;
 }
+
 a {
     color: #8400ff;
 }
+
 a:hover {
     color: #340072;
+}
+
+.isolaatti-discussion-text {
+    display: block;
+    width: 100%;
+    padding: 0.5rem;
+    border-radius: 0.3rem;
+}
+
+.isolaatti-discussion-text:focus {
+    height: 400px;
+    border: #b20ee3 solid 3px;
 }
