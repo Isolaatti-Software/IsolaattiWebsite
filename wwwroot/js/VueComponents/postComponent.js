@@ -35,7 +35,8 @@ Vue.component('post-template',{
             thisTime: Date.now(),
             editable: false,
             renderPost: undefined,
-            renderTheme: undefined
+            renderTheme: undefined,
+            deleteDialog: false
         }
     },
     computed: {
@@ -53,6 +54,9 @@ Vue.component('post-template',{
         },
         containerCssClass: function () {
             return this.cutContent ? "d-flex flex-column p-2 post post-cut-height" : "d-flex flex-column p-2 mt-3 post"
+        },
+        rootContainerCss: function () {
+            return this.editable || this.deleteDialog ? "background-color: #f8f9fa; padding:0.2rem" : "";
         }
     },
     watch: {
@@ -156,12 +160,29 @@ Vue.component('post-template',{
             this.renderPost = feedPost.postData;
             this.renderTheme = feedPost.theme;
             this.editable = false;
+        },
+        deletePost: function () {
+            const that = this;
+            fetch("/api/Posting/Delete", {
+                method: "POST",
+                headers: this.customHeaders,
+                body: JSON.stringify({
+                    id: this.renderPost.id
+                })
+            }).then(function () {
+                globalEventEmmiter.$emit("postDeleted", that.renderPost.id);
+            });
         }
     },
     template: `
-      <div class="w-100 mt-2" v-if="renderPost !== undefined && renderTheme !== undefined">
-      <section v-if="editable" class="d-flex justify-content-end">
+      <div class="w-100 mt-2" v-if="renderPost !== undefined && renderTheme !== undefined" :style="rootContainerCss">
+      <section v-if="editable" class="d-flex justify-content-end p-1">
         <button @click="editable=false" class="btn btn-danger btn-sm">Cancelar edición</button>
+      </section>
+      <section v-if="deleteDialog" class="w-100 mt-2 d-flex justify-content-end align-items-center p-1">
+        <span class="mr-auto">¿Eliminar esta discusión?</span>
+        <button class="btn btn-light mr-1" @click="deleteDialog=false">No</button>
+        <button class="btn btn-primary" @click="deletePost">Sí</button>
       </section>
       <article class="d-flex flex-column w-100" v-if="!editable">
         <div :class="containerCssClass" :style="getPostStyle(renderTheme)">
@@ -195,7 +216,7 @@ Vue.component('post-template',{
                 <a href="#modal-share-post" v-on:click="$emit('input',openThreadLink)" class="dropdown-item"
                    data-toggle="modal">Compartir</a>
                 <a href="#" class="dropdown-item" v-if="renderPost.userId===this.userData.id"
-                   v-on:click="$emit('delete',1)">Eliminar</a>
+                   v-on:click="deleteDialog=true">Eliminar</a>
                 <a :href="reportLink" class="dropdown-item" target="_blank" v-if="userData.id!==-1">Reportar</a>
               </div>
             </div>

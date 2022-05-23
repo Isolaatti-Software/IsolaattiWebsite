@@ -18,17 +18,14 @@ Vue.component("comments-viewer", {
             default: function () {
                 return []
             }
-        },
-        numberOfComments: {
-            type: Number,
-            default: 0
         }
     },
     data: function () {
         return {
             customHeaders: customHttpHeaders,
             comments: [],
-            loading: false
+            loading: false,
+            numberOfComments: 0
         }
     },
     computed: {
@@ -45,7 +42,7 @@ Vue.component("comments-viewer", {
             if (event !== undefined) {
                 event.target.disabled = true;
             }
-            fetch(`/api/Fetch/Post/${this.postId}/Comments/4/${this.comments.length < 1 ? "" : this.comments[this.comments.length - 1].id}`, {headers: this.customHeaders}).then(result => {
+            fetch(`/api/Fetch/Post/${this.postId}/Comments/10/${this.comments.length < 1 ? "" : this.comments[this.comments.length - 1].id}`, {headers: this.customHeaders}).then(result => {
                 result.json().then(res => {
                     this.comments = this.comments.concat(res);
                     this.loading = false;
@@ -55,10 +52,33 @@ Vue.component("comments-viewer", {
                     this.lastId = res.lastId;
                 })
             })
+        },
+        fetchNumberOfComments: function () {
+            const that = this;
+            fetch(`/api/Posting/Post/${this.postId}/CommentsNumber`, {
+                method: "GET",
+                headers: this.customHeaders
+            }).then(res => res.json()).then(function (parsedRes) {
+                that.numberOfComments = parsedRes;
+            });
         }
     },
     mounted: function () {
+        const that = this;
         this.fetchComments();
+        this.fetchNumberOfComments();
+        globalEventEmmiter.$on("commentEdited", function (comment) {
+            const index = that.comments.findIndex(c => c.id === comment.id);
+            if (index === -1) return;
+
+            that.comments.splice(index, 1, comment);
+        });
+        globalEventEmmiter.$on("commentDeleted", function (id) {
+            const index = that.comments.findIndex(c => c.id === id);
+            if (index === -1) return;
+
+            that.comments.splice(index, 1);
+        });
     },
     template: `
       <div :class="mixedComments.length > 0 ? 'd-flex flex-column comments-section pt-2' : 'd-flex flex-column'">

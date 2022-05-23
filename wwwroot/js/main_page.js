@@ -81,18 +81,30 @@ let vueContainer = new Vue({
         },
         concatPost: function (post) {
             this.posts = [post].concat(this.posts);
+        },
+        removePost: function (postId) {
+            const index = this.posts.findIndex(p => p.postData.id === postId);
+            if (index === -1) {
+                return;
+            }
+            this.posts.splice(index, 1);
         }
-
 
     },
     mounted: function() {
-        this.$nextTick(function() {
+        this.$nextTick(function () {
             this.fetchFeed();
             let globalThis = this;
             this.audioPlayer.onended = function () {
                 globalThis.audioUrl = "";
             };
-            globalEventEmmiter.$on("posted", this.concatPost)
+            globalEventEmmiter.$on("posted", this.concatPost);
+            globalEventEmmiter.$on("postDeleted", this.removePost);
         });
     }
+});
+
+
+new Vue({
+    el: "#rightbar"
 });

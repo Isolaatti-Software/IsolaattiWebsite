@@ -162,7 +162,7 @@ Vue.component('audio-recorder', {
 
             request.onload = function () {
                 const response = JSON.parse(request.response);
-                globalEventEmmiter.$emit("audio-posted", response.id);
+                that.$emit("audio-posted", response.id);
                 that.uploading = false;
             }
 

@@ -11,6 +11,7 @@ namespace isolaatti_API.Models
         public int TargetUser { get; set; }
         public int Privacy { get; set; }
         public string AudioUrl { get; set; }
+        public Guid? AudioId { get; set; }
         public DateTime Date { get; set; }
     }
 }

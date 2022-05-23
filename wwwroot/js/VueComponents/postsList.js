@@ -51,13 +51,26 @@ Vue.component("posts-list", {
         reloadPosts: function (event) {
             this.posts = [];
             this.fetchPosts(-1, event);
+        },
+        concatPost: function (post) {
+            this.posts = [post].concat(this.posts);
+        },
+        removePost: function (postId) {
+            const index = this.posts.findIndex(p => p.postData.id === postId);
+            if (index === -1) {
+                return;
+            }
+            this.posts.splice(index, 1);
         }
     },
     mounted: function () {
         this.fetchPosts(-1);
+        globalEventEmmiter.$on("posted", this.concatPost);
+        globalEventEmmiter.$on("postDeleted", this.removePost);
     },
     template: `
       <section class="d-flex flex-column pt-1 mt-2 mb-3 align-items-center w-100">
+      <h5>Discusiones</h5>
       <div class="d-flex justify-content-end w-100">
         <div class="btn-group">
           <button type="button" class="btn btn-secondary" title="Filtrar"
@@ -70,11 +83,11 @@ Vue.component("posts-list", {
           </button>
         </div>
       </div>
-      <h5 class="m-2 text-center" v-if="posts.length === 0"> no tiene ninguna publicación</h5>
+      <h5 class="m-2 text-center" v-if="posts.length === 0 && !loading"> No hay contenido que mostrar :(</h5>
       <post-template v-for="post in posts" :post="post.postData"
                      v-bind:theme="post.theme"
                      v-bind:preview="false"
-                     v-bind:key="post.postData.id">
+                     v-bind:key="post.postData.id" v-on:delete="">
       </post-template>
       <div v-if="loading" class="d-flex justify-content-center mt-2">
         <div class="spinner-border" role="status">

@@ -13,6 +13,8 @@
     data: function () {
         return {
             name: "",
+            userName: "",
+            userId: -1,
             playbackStatus: {
                 url: "",
                 playing: false,
@@ -32,17 +34,24 @@
             audioPlayer.stop();
         }
     },
+    computed: {
+        profileRelativeUrl: function () {
+            return `/perfil/${this.userId}`;
+        }
+    },
     mounted: function () {
         const that = this;
 
         this.playbackStatus.url = `/api/Audios/${this.audioId}/Play`;
         this.$nextTick(function () {
-            fetch(`api/Audios/${that.audioId}`, {
+            fetch(`/api/Audios/${that.audioId}`, {
                 method: "GET",
                 headers: customHttpHeaders
             }).then(res => res.json())
                 .then(audioMetadata => {
-                    that.name = audioMetadata.name
+                    that.name = audioMetadata.name;
+                    that.userName = audioMetadata.userName;
+                    that.userId = audioMetadata.userId;
                 });
         })
 
@@ -73,20 +82,25 @@
         });
     },
     template: `
-        <div class="audio-attachment-component">
-        <div class="btn-group-sm" v-if="playbackStatus.url !== null">
-          <button type="button" class="btn btn-light btn-sm" v-on:click="play" v-if="playbackStatus.paused || playbackStatus.stopped">
-            <i class="fas fa-play"></i>
-          </button>
-          <button type="button" class="btn btn-light btn-sm" v-on:click="pause" v-if="playbackStatus.playing">
-            <i class="fas fa-pause"></i>
-          </button>
-          <button type="button" class="btn btn-light btn-sm" v-on:click="stop" v-if="playbackStatus.paused || playbackStatus.playing">
-            <i class="fas fa-stop"></i>
-          </button>
+      <div class="audio-attachment-component" v-on:click="$emit('click')">
+      <div class="btn-group-sm" v-if="playbackStatus.url !== null">
+        <button type="button" class="btn btn-light btn-sm" v-on:click="play"
+                v-if="playbackStatus.paused || playbackStatus.stopped">
+          <i class="fas fa-play"></i>
+        </button>
+        <button type="button" class="btn btn-light btn-sm" v-on:click="pause" v-if="playbackStatus.playing">
+          <i class="fas fa-pause"></i>
+        </button>
+        <button type="button" class="btn btn-light btn-sm" v-on:click="stop"
+                v-if="playbackStatus.paused || playbackStatus.playing">
+          <i class="fas fa-stop"></i>
+        </button>
         </div>
-          <span class="text-black-50">{{name}}</span>
-          <button type="button" class="close ml-auto" v-if="canRemove" v-on:click="$emit('remove')">&times;</button>
-        </div>
+      <div class="d-flex flex-column">
+        <p class="text-black-50 m-0">{{name}}</p>
+        <p class="text-black-50 m-0"><a :href="profileRelativeUrl">{{userName}}</a></p>
+      </div>
+      <button type="button" class="close ml-auto" v-if="canRemove" v-on:click="$emit('remove')">&times;</button>
+      </div>
     `
 })

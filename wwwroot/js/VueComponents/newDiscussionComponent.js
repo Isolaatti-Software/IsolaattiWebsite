@@ -105,9 +105,6 @@
             this.discussion.audioId = id;
             this.audioMode = "none";
         },
-        attachAudio: function (event) {
-            this.discussion.attachAudio = !this.discussion.attachAudio;
-        },
         addColor: function () {
             this.theme.background.colors.push("#FFFFFF");
         },
@@ -139,7 +136,7 @@
                 .then(data => this.defaultThemes = data.themes);
 
             if (this.mode === "modify") {
-                fetch(`api/Fetch/Post/${this.postToModifyId}`, {
+                fetch(`/api/Fetch/Post/${this.postToModifyId}`, {
                     method: "GET",
                     headers: this.customHeaders
                 }).then(response => response.json())
@@ -164,7 +161,8 @@
       </div>
 
       <div class="btn-group btn-group-sm mb-1">
-        <button class="btn btn-light" :data-target="'#' + uniqueDomIdForThemeModal" data-toggle="modal">
+        <button class="btn btn-light" :data-target="'#' + uniqueDomIdForThemeModal" data-toggle="modal"
+                v-if="mode!=='comment'">
           <i class="fa-solid fa-palette"></i> Tema
         </button>
         <button class="btn btn-light" :data-target="'#' + uniqueDomIdForPreviewModal" data-toggle="modal">
@@ -193,7 +191,7 @@
                         v-if="discussion.audioId!==null"
                         v-on:remove="removeAudio"></audio-attachment>
 
-      <textarea class="form-control mt-2" v-model="discussion.content"
+      <textarea class="mt-2 isolaatti-discussion-text" v-model="discussion.content"
                 placeholder="Escribe aqui el contenido para iniciar la discusión. Markdown es compatible."></textarea>
 
       <div class="d-flex justify-content-end mt-2">

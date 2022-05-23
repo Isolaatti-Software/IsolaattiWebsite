@@ -2,7 +2,7 @@
     template: `
       <div class="card max-640 mt-2">
       <div class="card-body">
-        <h5 class="card-title">Nuevo</h5>
+        <h5 class="card-title"><i class="fa-solid fa-plus"></i> Nuevo</h5>
         <ul class="nav nav-tabs mt-2 max-640" id="new-post-tab">
           <li class="nav-item">
             <a class="nav-link active" id="new-post-discussion-tab" href="#new-post-discussion-pane" data-toggle="tab">

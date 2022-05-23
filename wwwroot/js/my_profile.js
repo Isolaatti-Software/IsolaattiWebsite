@@ -411,7 +411,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 this.recorder.audioData = [];
                 this.recorder.timeInSeconds = 0;
                 this.recorder.recorded = false;
-            },
+            }
 
         },
         mounted: function () {

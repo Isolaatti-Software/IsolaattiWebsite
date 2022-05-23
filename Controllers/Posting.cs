@@ -6,7 +6,6 @@ using isolaatti_API.Classes.ApiEndpointsRequestDataModels;
 using isolaatti_API.Classes.ApiEndpointsResponseDataModels;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
-using isolaatti_API.Utils;
 using Microsoft.AspNetCore.Mvc;
 
 namespace isolaatti_API.Controllers
@@ -175,7 +174,7 @@ namespace isolaatti_API.Controllers
                 SimpleTextPostId = post.Id,
                 TargetUser = post.UserId,
                 Privacy = commentModel.Privacy,
-                AudioUrl = commentModel.AudioUrl,
+                AudioId = commentModel.AudioId,
                 Date = DateTime.Now
             };
 
@@ -187,7 +186,7 @@ namespace isolaatti_API.Controllers
 
             return Ok(new FeedComment
             {
-                AudioUrl = commentToMake.AudioUrl,
+                AudioId = commentToMake.AudioId,
                 AuthorId = commentToMake.WhoWrote,
                 AuthorName = (await _db.Users.FindAsync(commentToMake.WhoWrote)).Name,
                 Content = commentToMake.TextContent,
@@ -199,45 +198,18 @@ namespace isolaatti_API.Controllers
             });
         }
 
-        [Route("Comment/Delete")]
-        [HttpPost]
-        public async Task<IActionResult> Delete([FromHeader(Name = "sessionToken")] string sessionToken,
-            SingleIdentification identification)
+        [HttpGet]
+        [Route("Post/{postId:long}/CommentsNumber")]
+        public async Task<IActionResult> GetNumberOfCommentsOfPost(
+            [FromHeader(Name = "sessionToken")] string sessionToken, long postId)
         {
             var accountsManager = new Accounts(_db);
             var user = await accountsManager.ValidateToken(sessionToken);
-            if (user == null)
-            {
-                return Unauthorized("Token is not valid");
-            }
+            if (user == null) return Unauthorized("Token is not valid");
 
-            var comment = _db.Comments.Find(identification.Id);
-            if (comment == null) return NotFound("Comment not found");
-
-            if (comment.WhoWrote != user.Id)
-            {
-                return Unauthorized("Access denied, cannot delete this comment, it is not yours");
-            }
-
-            // remove audio if there is any
-            if (comment.AudioUrl != null)
-            {
-                var storage = GoogleCloudBucket.GetInstance();
-                storage.DeleteFile(GoogleCloudStorageUrlUtils.GetFileRefFromUrl(comment.AudioUrl));
-            }
-
-            _db.Comments.Remove(comment);
-            await _db.SaveChangesAsync();
-            // updates comments count of the post this comment belongs
-            var post = await _db.SimpleTextPosts.FindAsync(comment.SimpleTextPostId);
-            if (post != null)
-            {
-                post.NumberOfComments = _db.Comments.Count(c => c.SimpleTextPostId.Equals(post.Id));
-                _db.SimpleTextPosts.Update(post);
-                await _db.SaveChangesAsync();
-            }
-
-            return Ok("Comment delete successfully");
+            var post = await _db.SimpleTextPosts.FindAsync(postId);
+            if (post == null) return Unauthorized("Post does not exist");
+            return Ok(post.NumberOfComments);
         }
     }
 }
