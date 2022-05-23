@@ -1,65 +1,37 @@
 using System.Linq;
+using System.Threading.Tasks;
+using isolaatti_API.Classes.ApiEndpointsRequestDataModels;
+using isolaatti_API.Classes.ApiEndpointsResponseDataModels;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
-using isolaatti_API.Utils;
 using Microsoft.AspNetCore.Mvc;
 
 namespace isolaatti_API.Controllers
 {
-    [Route("/api/[controller]")]
-    public class EditComment : ControllerBase
+    [ApiController]
+    [Route("/api/Comment")]
+    public class CommentsController : ControllerBase
     {
-        private readonly DbContextApp Db;
+        private readonly DbContextApp _db;
 
-        public EditComment(DbContextApp dbContextApp)
+        public CommentsController(DbContextApp dbContextApp)
         {
-            Db = dbContextApp;
-        }
-
-        [Route("TextContent")]
-        [HttpPost]
-        public IActionResult TextContent(
-            [FromForm] string sessionToken, [FromForm] long commentId, [FromForm] string newContent)
-        {
-            var accountsManager = new Accounts(Db);
-            var user = accountsManager.ValidateToken(sessionToken);
-            if (user == null)
-            {
-                return Unauthorized("Token is not valid");
-            }
-
-            var comment = Db.Comments.Find(commentId);
-            if (comment == null) return NotFound("Comment not found");
-
-            if (comment.WhoWrote != user.Id)
-            {
-                return Unauthorized("Access denied, cannot edit this comment, it is not yours");
-            }
-
-            if (string.IsNullOrEmpty(newContent) || string.IsNullOrWhiteSpace(newContent))
-            {
-                return Unauthorized("Cannot update comment as empty");
-            }
-
-            comment.TextContent = newContent;
-            Db.Comments.Update(comment);
-
-            Db.SaveChanges();
-            return Ok("Comment updated successfully");
+            _db = dbContextApp;
         }
 
         [Route("Delete")]
         [HttpPost]
-        public IActionResult Delete([FromForm] string sessionToken, [FromForm] long commentId)
+        public async Task<IActionResult> Delete([FromHeader(Name = "sessionToken")] string sessionToken,
+            SingleIdentification identification)
         {
-            var accountsManager = new Accounts(Db);
-            var user = accountsManager.ValidateToken(sessionToken);
+            var accountsManager = new Accounts(_db);
+            var user = await accountsManager.ValidateToken(sessionToken);
             if (user == null)
             {
                 return Unauthorized("Token is not valid");
             }
 
-            var comment = Db.Comments.Find(commentId);
+            var comment = await _db.Comments.FindAsync(identification.Id);
             if (comment == null) return NotFound("Comment not found");
 
             if (comment.WhoWrote != user.Id)
@@ -67,96 +39,56 @@ namespace isolaatti_API.Controllers
                 return Unauthorized("Access denied, cannot delete this comment, it is not yours");
             }
 
-            // remove audio if there is any
-            if (comment.AudioUrl != null)
-            {
-                var storage = GoogleCloudBucket.GetInstance();
-                storage.DeleteFile(GoogleCloudStorageUrlUtils.GetFileRefFromUrl(comment.AudioUrl));
-            }
 
-            Db.Comments.Remove(comment);
-            Db.SaveChanges();
+            _db.Comments.Remove(comment);
+            await _db.SaveChangesAsync();
             // updates comments count of the post this comment belongs
-            var post = Db.SimpleTextPosts.Find(comment.SimpleTextPostId);
+            var post = await _db.SimpleTextPosts.FindAsync(comment.SimpleTextPostId);
             if (post != null)
             {
-                post.NumberOfComments = Db.Comments.Count(c => c.SimpleTextPostId.Equals(post.Id));
-                Db.SimpleTextPosts.Update(post);
-                Db.SaveChangesAsync();
+                post.NumberOfComments = _db.Comments.Count(c => c.SimpleTextPostId.Equals(post.Id));
+                _db.SimpleTextPosts.Update(post);
+                await _db.SaveChangesAsync();
             }
 
             return Ok("Comment delete successfully");
         }
 
-        [Route("ReplaceAudio")]
         [HttpPost]
-        public IActionResult ReplaceAudio(
-            [FromForm] string sessionToken, [FromForm] long commentId, [FromForm] string newUrl)
+        [Route("{commentId:long}/Edit")]
+        public async Task<IActionResult> EditComment([FromHeader(Name = "sessionToken")] string sessionToken,
+            long commentId, MakeCommentModel updatedComment)
         {
-            var accountsManager = new Accounts(Db);
-            var user = accountsManager.ValidateToken(sessionToken);
+            var accountsManager = new Accounts(_db);
+            var user = await accountsManager.ValidateToken(sessionToken);
             if (user == null)
             {
                 return Unauthorized("Token is not valid");
             }
 
-            var comment = Db.Comments.Find(commentId);
-            if (comment == null) return NotFound("Comment not found");
+            var commentToEdit = await _db.Comments.FindAsync(commentId);
+            if (commentToEdit == null) return NotFound();
 
-            if (comment.WhoWrote != user.Id)
+            commentToEdit.Privacy = updatedComment.Privacy;
+            commentToEdit.AudioId = updatedComment.AudioId;
+            commentToEdit.TextContent = updatedComment.Content;
+
+            _db.Comments.Update(commentToEdit);
+            await _db.SaveChangesAsync();
+
+
+            return Ok(new FeedComment
             {
-                return Unauthorized("Access denied, cannot replace audio of this comment, it is not yours");
-            }
-
-            // remove audio if there is any
-            if (comment.AudioUrl != null)
-            {
-                var storage = GoogleCloudBucket.GetInstance();
-                storage.DeleteFile(GoogleCloudStorageUrlUtils.GetFileRefFromUrl(comment.AudioUrl));
-            }
-
-            if (string.IsNullOrEmpty(newUrl) || string.IsNullOrWhiteSpace(newUrl))
-            {
-                return Unauthorized("Url cannot be empty");
-            }
-
-            comment.AudioUrl = newUrl;
-            Db.Comments.Update(comment);
-
-            Db.SaveChanges();
-            return Ok("Audio replaced");
-        }
-
-        [Route("RemoveAudio")]
-        [HttpPatch]
-        public IActionResult RemoveAudio([FromForm] string sessionToken, [FromForm] long commentId)
-        {
-            var accountsManager = new Accounts(Db);
-            var user = accountsManager.ValidateToken(sessionToken);
-            if (user == null)
-            {
-                return Unauthorized("Token is not valid");
-            }
-
-            var comment = Db.Comments.Find(commentId);
-            if (comment == null) return NotFound("Comment not found");
-
-            if (comment.WhoWrote != user.Id)
-            {
-                return Unauthorized("Access denied, cannot replace audio of this comment, it is not yours");
-            }
-
-            // remove audio if there is any
-            if (comment.AudioUrl != null)
-            {
-                var storage = GoogleCloudBucket.GetInstance();
-                storage.DeleteFile(GoogleCloudStorageUrlUtils.GetFileRefFromUrl(comment.AudioUrl));
-            }
-
-            Db.Comments.Remove(comment);
-
-            Db.SaveChanges();
-            return Ok("Audio replaced");
+                AudioId = commentToEdit.AudioId,
+                AuthorId = commentToEdit.WhoWrote,
+                AuthorName = (await _db.Users.FindAsync(commentToEdit.WhoWrote)).Name,
+                Content = commentToEdit.TextContent,
+                Id = commentToEdit.Id,
+                PostId = commentToEdit.SimpleTextPostId,
+                Privacy = commentToEdit.Privacy,
+                TargetUserId = commentToEdit.TargetUser,
+                TimeStamp = commentToEdit.Date
+            });
         }
     }
 }

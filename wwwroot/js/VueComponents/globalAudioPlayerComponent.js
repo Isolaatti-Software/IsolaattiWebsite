@@ -32,7 +32,7 @@
             if (id === that.audioId)
                 return;
 
-            fetch(`api/Audios/${id}`, {
+            fetch(`/api/Audios/${id}`, {
                 method: "GET",
                 headers: customHttpHeaders
             }).then(res => res.json())
@@ -40,7 +40,6 @@
                     that.name = audioMetadata.name
                 });
 
-            console.log("Recibo play");
             that.audioId = id;
             that.playbackStatus.url = url;
             that.playbackStatus.playing = true;

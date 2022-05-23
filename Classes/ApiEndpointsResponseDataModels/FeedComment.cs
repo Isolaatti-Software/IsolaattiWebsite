@@ -11,7 +11,7 @@ namespace isolaatti_API.Classes.ApiEndpointsResponseDataModels
         public long PostId { get; set; }
         public int TargetUserId { get; set; }
         public int Privacy { get; set; }
-        public string AudioUrl { get; set; }
+        public Guid? AudioId { get; set; }
         public DateTime TimeStamp { get; set; }
     }
 }

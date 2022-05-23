@@ -46,6 +46,10 @@
     <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>const threadToReadId = @Model.ThisPost.Id;</script>
+    <script src="~/js/VueComponents/audiosList.js"></script>
+    <script src="~/js/VueComponents/newCommentComponent.js"></script>
+    <script src="~/js/VueComponents/newQuickPost.js"></script>
+    <script src="~/js/VueComponents/newDiscussionComponent.js"></script>
     <script src="~/js/VueComponents/commentsViewer.js"></script>
     <script src="~/js/VueComponents/postComponent.js"></script>
     <script src="~/js/VueComponents/commentComponent.js"></script>
@@ -69,21 +73,9 @@
                 <div class="d-flex flex-column ml-4 comments-container">
                     <section class="d-flex flex-column justify-content-between p-2 ml-auto mr-auto bg-light w-100 mb-2">
                         <h5><i class="fab fa-markdown"></i> Comentar</h5>
-                        <div class="d-flex  flex-fill">
-                            <textarea id="comment-textarea" class="form-control" v-model="commentTextarea" ref="commentTextareaRef" rows="8" v-bind:selection-start.prop="selectionStart" v-bind:selection-end.prop="selectionEnd" placeholder="Escribe tu comentario usando Markdown. Puedes agregar un audio con el botón de abajo."></textarea>
-                        </div>
-                        <audio-recorder class="mt-2"></audio-recorder>
-                        <div class="d-flex justify-content-between">
-                            <button class="btn btn-light mt-1 mb-1">
-                                <i class="fas fa-microphone"></i> {{addAudioButtonText}}
-                            </button>
-                            <button class="btn btn-primary mt-1 mb-1" v-on:click="makeComment"
-                                    v-bind:disabled="makeCommentButtonDisabled">
-                                <i class="fas fa-paper-plane"></i> Comentar
-                            </button>
-                        </div>
+                        <new-comment :post-to-comment="threadId" v-on:commented="addAComment"></new-comment>
                     </section>
-                    <comments-viewer :post-id="threadId" :just-added-comments="comments" :number-of-comments="post.postData.numberOfComments"></comments-viewer>
+                    <comments-viewer :post-id="threadId" :just-added-comments="comments" :is-under-post="false"></comments-viewer>
                 </div>
             </div>
         </div>
@@ -108,176 +100,5 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="add-audio-modal">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="fas fa-microphone"></i> Añadir audio</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times</span>
-                    </button>
-                </div>
-                <div class="modal-body d-flex flex-column">
-                    <div class="progress">
-                        <div class="progress-bar progress-bar-striped" role="progressbar" :style="progressStyle" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                    <span>{{clockFormatTime}} / 2:00</span>
-                </div>
-                <div class="modal-footer d-flex flex-column">
-                    <div class="d-flex">
-                        @* This group shows to allow user to start recording *@
-                        <div class="btn-group" v-if="!audio.recording && !audio.recorded">
-                            <button class="btn btn-danger" v-on:click="startRecording()" v-bind:disabled="audio.recorder.mediaStream == null">
-                                Comenzar a grabar
-                            </button>
-                        </div>
 
-                        @* This group is shown when an audio is being recorded*@
-                        <div class="btn btn-group" v-if="audio.recording">
-                            <button class="btn btn-primary" v-on:click="stopRecording()">
-                                Detener
-                            </button>
-                        </div>
-
-                        @* This group shows when an audio has been recorded *@
-                        <div class="btn-group" v-if="audio.recorded">
-                            <button class="btn btn-info" v-on:click="playRecord()">
-                                <i class="fas fa-play"></i>
-                            </button>
-                            <button class="btn btn-dark" v-on:click="resetRecording()">
-                                Descartar
-                            </button>
-                            <button class="btn btn-primary" v-on:click="consolidate()">
-                                Continuar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="help-modal">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Help</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <h5>Privacidad</h5>
-                <ul>
-                    <li>Privado: solo tú puedes ver la publicación.</li>
-                    <li>Usuarios de Isolaatti: todos los usuarios que tengan cuenta en Isolaatti pueden ver la publicación</li>
-                    <li>Everyone: your post can be seen even without an account.</li>
-                </ul>
-                <hr/>
-                <h5>Publicaciones con audio</h5>
-                <p>
-                    Puedes grabar un audio de hasta 2 minutos y agregarlo a tu publicación. Para grabar un audio,
-                    usa el <strong>Editor pro</strong>
-                </p>
-                <hr/>
-                <h5>Editor pro</h5>
-                <p>
-                    El Editor Pro es la mejor manera de escribir publicaciones largas (y cuando necesitas agregar
-                    audios). En él cuentas con facilitadores de markdown y vista previa de la publicación
-                </p>
-                <hr/>
-                <h5><i class="fab fa-markdown"></i> What is Markdown</h5>
-                <p>Markdown es una sintáxis especial que permite formatear texto de menera sencilla.</p>
-                <h5 class="mt-2">Básico</h5>
-                <h6>Párrafos</h6>
-                <p>
-                    Separa cada párrafo con un salto de línea entre ellos, es decir, salta de linea dos veces al
-                    terminar de escribir el párrafo.
-                </p>
-                <h6>Encabezados</h6>
-                <p>Hay 6 niveles de encabezamiento. Son:</p>
-                <code>
-                    <pre>
-    # Encabezado 1
-    ## Encabezado 2
-    ### Encabezado 3
-    #### Encabezado 4
-    ##### Encabezado 5
-    ###### Encabezado 6
-    </pre>
-                </code>
-                <p>Lo cual quedaría así</p>
-                <h1>Encabezado 1</h1>
-                <h2>Encabezado 2</h2>
-                <h3>Encabezado 3</h3>
-                <h4>Encabezado 4</h4>
-                <h5>Encabezado 5</h5>
-                <h6>Encabezado 6</h6>
-                <hr/>
-
-                <h6>Negritas e itálicas</h6>
-                <p>Puedes colocar negristas y/o itálicas. Para hacerlo escribe:</p>
-                <code>
-                    <pre>
-    **Esto está en negritas** *Esto está en itálicas* ***Esto está en negritas e itálicas***
-    </pre>
-                </code>
-                <p>Lo cual quedaría así:</p>
-                <p>
-                    <b>Esto está en negritas</b> <i>Esto está en itálicas</i>
-                    <b>
-                        <i>Esto está en negritas e itálicas</i>
-                    </b>
-                </p>
-                <hr/>
-
-                <h6>Enlaces</h6>
-                <p>Hay 3 maneras de definir enlaces.</p>
-                <p>Si solo usarás en enlace solo una vez, puedes escribir:</p>
-                <code>
-                    <pre>
-    [Visita Isolaatti](https://isolaatti.com/)
-    </pre>
-                </code>
-                <p>Lo cual quedaría:</p>
-                <p>
-                    <a href="https://isolaatti.com/">Visita Isolaatti</a>
-                </p>
-                <hr/>
-
-                <p>Pero si quieres utilizar un enlace más de una vez, puedes declararlo y utilizarlo así:</p>
-                <code>
-                    <pre>
-    Atención, este es mi [sitio web]. Y sí, solo para confirmar, este es mi [sitio web]
-    
-    [sitio web]: https://erik-swdev.isolaatti.com/
-    </pre>
-                </code>
-                <p>Lo cual quedaría así:</p>
-                <p>
-                    Atención, este es mi <a href="https://erik-swdev.isolaatti.com/">sitio web</a> . Y sí, solo para confirmar, este es mi <a href="https://erik-swdev.isolaatti.com/">sitio web</a>
-                </p>
-                <hr/>
-
-                <p>Si solo quieres colocar el enlace tal cual, mostrando la URL completa, entonces escribe simplemente:</p>
-                <code>
-                    <pre>
-    &lt;https://erik-swdev.isolaatti.com&gt;
-    </pre>
-                </code>
-                <p>Lo cual quedaría simplemente:</p>
-                <p>
-                    <a href="https://erik-swdev.isolaatti.com">https://erik-swdev.isolaatti.com</a>
-                </p>
-                <hr/>
-
-                <h5>Lee más acerca de Markdown</h5>
-                <p>
-                    Este texto no es todo, puedes hacer más cosas, como tablas, citas, colocar código, etc.
-                    Para obtener más información, puedes leer <a href="https://www.markdownguide.org/basic-syntax/" target="_blank">esta guía</a> (sitio externo).
-                </p>
-            </div>
-        </div>
-    </div>
 </div>

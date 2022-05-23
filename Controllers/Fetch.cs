@@ -290,10 +290,36 @@ namespace isolaatti_API.Controllers
                     PostId = com.SimpleTextPostId,
                     TargetUserId = com.TargetUser,
                     Privacy = com.Privacy,
-                    AudioUrl = com.AudioUrl,
+                    AudioId = com.AudioId,
                     TimeStamp = com.Date
                 });
             return Ok(comments);
+        }
+
+        [HttpGet]
+        [Route("Comments/{commentId:long}")]
+        public async Task<IActionResult> GetComment([FromHeader(Name = "sessionToken")] string sessionToken,
+            long commentId)
+        {
+            var accountsManager = new Accounts(_db);
+            var user = await accountsManager.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
+
+            var comment = await _db.Comments.FindAsync(commentId);
+            if (comment == null) return NotFound();
+
+            return Ok(new FeedComment()
+            {
+                Content = comment.TextContent,
+                Id = comment.Id,
+                Privacy = comment.Privacy,
+                AudioId = comment.AudioId,
+                AuthorId = comment.WhoWrote,
+                AuthorName = _db.Users.Find(comment.WhoWrote).Name,
+                PostId = comment.SimpleTextPostId,
+                TimeStamp = comment.Date,
+                TargetUserId = comment.TargetUser
+            });
         }
 
         [HttpGet]
@@ -316,7 +342,7 @@ namespace isolaatti_API.Controllers
                         PostId = com.SimpleTextPostId,
                         TargetUserId = com.TargetUser,
                         Privacy = com.Privacy,
-                        AudioUrl = com.AudioUrl,
+                        AudioId = com.AudioId,
                         TimeStamp = com.Date
                     }),
                 post = new FeedPost

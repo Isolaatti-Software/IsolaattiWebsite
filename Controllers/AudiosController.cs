@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Storage.V1;
 using isolaatti_API.Classes.ApiEndpointsRequestDataModels;
+using isolaatti_API.Classes.ApiEndpointsResponseDataModels;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Http;
@@ -111,8 +112,17 @@ public class AudiosController : ControllerBase
         var audio = await _db.Audios.FindAsync(audioId);
         if (audio == null) return NotFound();
 
+        var feedAudio = new FeedAudio(audio);
+        if (audio.UserId == user.Id)
+        {
+            feedAudio.UserName = user.Name;
+        }
+        else
+        {
+            feedAudio.UserName = (await _db.Users.FindAsync(feedAudio.UserId))?.Name ?? "Unknown";
+        }
 
-        return Ok(audio);
+        return Ok(feedAudio);
     }
 
     [HttpGet]
