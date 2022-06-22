@@ -150,7 +150,12 @@ namespace isolaatti_API.Controllers
 
             await _db.SaveChangesAsync();
 
-            return Ok("Post deleted");
+            return Ok(new DeletePostOperationResult()
+            {
+                PostId = post.Id,
+                Success = true,
+                OperationTime = DateTime.Now
+            });
         }
 
         [HttpPost]
