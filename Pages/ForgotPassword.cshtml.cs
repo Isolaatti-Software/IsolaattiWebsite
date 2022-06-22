@@ -62,20 +62,20 @@ namespace isolaatti_API.Pages
             await Db.SaveChangesAsync();
 
             // send email with link
-            await SendEmail(userToken.Token);
+            await SendEmail(userToken.Token, Account.Name);
 
             return Page();
         }
 
-        private async Task SendEmail(string token)
+        private async Task SendEmail(string token, string username)
         {
             var link = $"https://{Request.HttpContext.Request.Host.Value}/RecoverPassword?token_s={token}";
             var from = new EmailAddress("no-reply@isolaatti.com", "Isolaatti");
             var to = new EmailAddress(Account.Email, Account.Name);
-            var subject = "Cambia tu contraseña de Isolaatti";
+            var subject = "Restablecimiento de contraseña de Isolaatti";
             var htmlBody = MailHelper.CreateSingleEmail(from, to, subject,
                 $"Abre el enlace para restablecer tu contraseña. {link}",
-                string.Format(EmailTemplates.PasswordRecoveryEmail, link));
+                string.Format(EmailTemplates.PasswordRecoveryEmail, link, username));
             await _sendGridClient.SendEmailAsync(htmlBody);
         }
     }

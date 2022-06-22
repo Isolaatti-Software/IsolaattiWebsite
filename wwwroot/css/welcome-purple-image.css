@@ -16,6 +16,7 @@ body {
     /*background-color: #330669;*/
     background-blend-mode: soft-light;
     scroll-behavior: smooth;
+    background-image: ;
 }
 h1{
     text-decoration-style: unset;
@@ -30,8 +31,11 @@ h1{
 }
 
 .sign-in-up-form-container {
-    /*min-height: 100vh;*/
     max-width: 400px;
+    box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
+    padding: 1em 0.5em;
+    margin-top: 1.2em;
+    border-radius: 30px;
 }
 #isolaatti-icon {
     display: flex;
@@ -39,22 +43,21 @@ h1{
     justify-content: center;
     border-radius: 10px;
     text-decoration: none;
-
 }
 
 #isolaatti-icon:before {
     content: "Is";
     font-family: 'Zen Dots', serif;
-    color: white;
+    color: #eddff6;
     font-size: 40px;
-    text-shadow: -3px 4px #11022b;
+    text-shadow: -3px 4px #6529a4;
     text-decoration: none;
     filter: drop-shadow(-10px 16px 50px rgb(62, 0, 99));
 }
 
 .external-content-bar {
-    background-color: black;
-    border-bottom: #9800f5 solid 3px;
+    /*box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;*/
+    /*background-color: #ffffff;*/
 }
 
 article.isolaatti-feature {
@@ -101,11 +104,11 @@ nav.welcome-page-navbar a {
 }
 
 .footer-font-color {
-    color: white;
+    /*color: white;*/
 }
 
 .footer-font-color a.link {
-    color: rgba(255, 255, 255, 0.5);
+    color: rgb(3, 3, 3);
     font-weight: lighter;
     margin: 0 0.5rem;
 }
@@ -113,7 +116,7 @@ nav.welcome-page-navbar a {
 footer {
     padding-top: 30px;
     padding-bottom: 40px;
-    background-color: black;
+    /*background-color: black;*/
 }
 
 footer a {
