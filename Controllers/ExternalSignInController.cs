@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace isolaatti_API.Controllers
 {
+    [ApiController]
     [Route("/api/[controller]")]
     public class ExternalSignInController : ControllerBase
     {
@@ -44,6 +45,30 @@ namespace isolaatti_API.Controllers
             }
 
             return RedirectToPage("/Index");
+        }
+
+        [HttpGet]
+        [Route("ValidateGoogleIdToken")]
+        public async Task<IActionResult> ValidateGoogleIdToken([FromHeader] string googleIdToken)
+        {
+            var accountManager = new Accounts(_db);
+            accountManager.DefineHttpRequestObject(Request);
+
+            // this call won't create an account if one already exists
+            await accountManager.MakeAccountFromGoogleAccount(googleIdToken);
+
+            var sessionToken = await accountManager.CreateTokenForGoogleUser(googleIdToken);
+
+            // let's save this token
+            _db.SessionTokens.Add(sessionToken);
+            await _db.SaveChangesAsync();
+
+            return Ok(new Classes.ApiEndpointsResponseDataModels.SessionToken
+            {
+                Created = DateTime.Now,
+                Expires = DateTime.Now.AddMonths(12),
+                Token = sessionToken.Token
+            });
         }
     }
 }
