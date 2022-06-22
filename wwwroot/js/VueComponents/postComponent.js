@@ -64,7 +64,6 @@ Vue.component('post-template',{
             immediate: true,
             deep: true,
             handler: function (value, old) {
-                console.log(this);
                 this.renderPost = value;
             }
         },

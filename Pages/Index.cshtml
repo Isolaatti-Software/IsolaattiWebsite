@@ -17,37 +17,20 @@
              id="feed-and-thread-reader-container"
              ref="feedAndThreadReaderContainer">
             <new-post class="w-100"></new-post>
-            <div class="sticky-top bg-white w-100">
-                <h5 class="ml-2 mt-2 text-center"><i class="far fa-newspaper"></i> Actividad de las personas que sigues</h5>
-            </div>
-            <section id="posts-deposit" class="d-flex flex-column pt-1 mt-2 mb-3 align-items-center posts-deposit">
-                <post-template v-for="post in posts" :post="post.postData"
-                               v-on:like="likePost(post.postData, $event)"
-                               v-bind:theme="post.theme"
-                               v-on:un-like="unLikePost(post.postData, $event)"
-                               v-model="postLinkToShare"
-                               v-on:delete="deletePost(post.postData.id)"
-                               v-on:play-audio="playAudio(post.postData.audioUrl)"
-                               :paused="paused"
-                               v-on:view-thread="viewComments(post.postData)"
-                               v-bind:audio-url="audioUrl"
-                               v-bind:key="post.postData.id">
-                </post-template>
-                <div v-if="loading" class="d-flex justify-content-center mt-2">
-                    <div class="spinner-border" role="status">
-                        <span class="sr-only">Cargando más contenido...</span>
-                    </div>
-                </div>
-                <div v-if="noMoreContent" class="d-flex flex-column align-items-center mt-2">
-                    <p>Ya viste toda la actividad por ahora, refresca en un momento...</p>
-                    <button class="btn btn-primary" v-on:click="refresh()">
-                        <i class="fas fa-redo"></i>
+            <div class="sticky-top bg-white w-100 d-flex justify-content-center pt-1 mt-3">
+                <div class="btn-group">
+                    <button class="btn btn-light" :disabled="currentFeed==='following'"
+                            v-on:click="currentFeed='following'">
+                        <i class="far fa-newspaper"></i> Actividad de las personas que sigues
+                    </button>
+                    <button class="btn btn-light" :disabled="currentFeed==='listen'"
+                            v-on:click="currentFeed='listen'">
+                        <i class="fa-solid fa-ear-listen"></i> Escucha al mundo
                     </button>
                 </div>
-                <div v-else>
-                    <button class="btn btn-primary" v-on:click="fetchFeed()">Cargar más</button>
-                </div>
-            </section>
+            </div>
+            <feed v-if="currentFeed==='following'"></feed>
+            <last-audios v-else></last-audios>
         </div>
 
 
@@ -55,7 +38,7 @@
 </div>
 <div class="col-lg-3 col-md-4">
     <div class="sticky-top" id="rightbar">
-        <last-audios></last-audios>
+
         <footer class="mt-4">
             <p class="text-center text-black-50 isolaatti-name-footer">
                 Isolaatti
@@ -92,5 +75,6 @@
     <script src="~/js/VueComponents/newQuickPost.js"></script>
     <script src="~/js/VueComponents/audiosList.js"></script>
     <script src="~/js/VueComponents/lastAudiosComponent.js"></script>
+    <script src="~/js/VueComponents/newsFeedComponent.js"></script>
     <script src="~/js/main_page.js"></script>
 }

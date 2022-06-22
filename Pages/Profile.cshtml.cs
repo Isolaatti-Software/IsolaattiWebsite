@@ -26,7 +26,7 @@ namespace isolaatti_API.Pages
             _db = dbContextApp;
         }
 
-        public async Task<IActionResult> OnGet(int id)
+        public async Task<IActionResult> OnGet(int id, [FromQuery] bool noRedirect = false)
         {
             var token = Request.Cookies["isolaatti_user_session_token"];
             var accountsManager = new Accounts(_db);
@@ -47,14 +47,14 @@ namespace isolaatti_API.Pages
             ViewData["email"] = user.Email;
             ViewData["userId"] = user.Id;
 
+            ViewData["no-redirect"] = noRedirect;
             // get profile with id
             var profile = _db.Users.Find(id);
             if (profile == null) return NotFound();
-            if (profile.Id == user.Id) return RedirectToPage("MyProfile");
+            if (profile.Id == user.Id && !noRedirect) return RedirectToPage("MyProfile");
             ViewData["profile_name"] = profile.Name;
             ViewData["profile_email"] = profile.Email;
             ViewData["profile_id"] = profile.Id;
-            if (user.Id == profile.Id) return RedirectToPage("MyProfile");
             ViewData["profilePicUrl"] = user.ProfileImageId == null
                 ? null
                 : UrlGenerators.GenerateProfilePictureUrl(user.Id, Request.Cookies["isolaatti_user_session_token"]);

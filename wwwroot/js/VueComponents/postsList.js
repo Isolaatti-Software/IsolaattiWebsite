@@ -70,7 +70,7 @@ Vue.component("posts-list", {
     },
     template: `
       <section class="d-flex flex-column pt-1 mt-2 mb-3 align-items-center w-100">
-      <h5>Discusiones</h5>
+      <h5><i class="far fa-newspaper"></i> Discusiones</h5>
       <div class="d-flex justify-content-end w-100">
         <div class="btn-group">
           <button type="button" class="btn btn-secondary" title="Filtrar"
@@ -83,7 +83,8 @@ Vue.component("posts-list", {
           </button>
         </div>
       </div>
-      <h5 class="m-2 text-center" v-if="posts.length === 0 && !loading"> No hay contenido que mostrar :(</h5>
+      <p class="m-2 text-center" v-if="posts.length === 0 && !loading"> No hay contenido que mostrar <i
+          class="fa-solid fa-face-sad-cry"></i></p>
       <post-template v-for="post in posts" :post="post.postData"
                      v-bind:theme="post.theme"
                      v-bind:preview="false"

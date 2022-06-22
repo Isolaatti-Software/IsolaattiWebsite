@@ -43,7 +43,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                <button type="submit" class="btn btn-primary" id="save-edited-profile" form="edit-profile-form">Guardar</button>
+                <button type="submit" class="btn btn-light" id="save-edited-profile" form="edit-profile-form">Guardar</button>
             </div>
         </div>
     </div>
@@ -127,10 +127,10 @@
             </div>
             <div class="modal-body">
                 <div class="d-flex p-3 justify-content-center">
-                    <button type="button" class="btn btn-primary mr-1" data-toggle="modal" data-target="#modal-change-photo">
+                    <button type="button" class="btn btn-light mr-1" data-toggle="modal" data-target="#modal-change-photo">
                         <i class="fas fa-camera"></i> Cambiar foto de perfil
                     </button>
-                    <button type="button" class="btn btn-primary ml-1" data-toggle="modal" data-target="#modal-audio-description">
+                    <button type="button" class="btn btn-light ml-1" data-toggle="modal" data-target="#modal-audio-description">
                         <i class="fas fa-headphones"></i> Cambiar audio de perfil
                     </button>
                 </div>
@@ -162,7 +162,7 @@
                 <button class="btn btn-sm btn-secondary" data-dismiss="modal" aria-label="Close">
                     Cancelar
                 </button>
-                <button class="btn btn-sm btn-primary" id="uploadProfilePhoto" disabled>
+                <button class="btn btn-sm btn-light" id="uploadProfilePhoto" disabled>
                     Aceptar
                 </button>
             </div>
@@ -187,7 +187,7 @@
                 <button class="btn btn-sm btn-secondary" data-dismiss="modal" aria-label="Close">
                     Cancelar
                 </button>
-                <button class="btn btn-sm btn-primary" id="setColorBtn">
+                <button class="btn btn-sm btn-light" id="setColorBtn">
                     Aceptar
                 </button>
             </div>
@@ -225,7 +225,7 @@
 
                         @* This group is shown when an audio is being recorded*@
                         <div class="btn btn-group" v-if="recorder.recording">
-                            <button class="btn btn-primary" v-on:click="stopRecording()">
+                            <button class="btn btn-light" v-on:click="stopRecording()">
                                 Detener
                             </button>
                         </div>
@@ -238,7 +238,7 @@
                             <button class="btn btn-dark" v-on:click="resetRecording">
                                 Descartar
                             </button>
-                            <button class="btn btn-primary" v-on:click="uploadAudioDescriptionAudio" v-bind:disabled="isUploadingAudio">
+                            <button class="btn btn-light" v-on:click="uploadAudioDescriptionAudio" v-bind:disabled="isUploadingAudio">
                                 Continuar
                             </button>
                         </div>
@@ -264,17 +264,20 @@
             <p class="text-break text-center">@ViewData["description"]</p>
 
             <nav class="d-flex justify-content-center">
-                <button class="btn btn-primary btn-sm" id="edit-profile-button"
+                <button class="btn btn-light btn-sm" id="edit-profile-button"
                         data-target="#modal-edit-profile" data-toggle="modal">
                     Editar perfil
                 </button>
-                <button class="btn btn-primary btn-sm ml-1" data-target="#modal-set-profile-color" data-toggle="modal">
+                <button class="btn btn-light btn-sm ml-1" data-target="#modal-set-profile-color" data-toggle="modal">
                     <i class="fas fa-palette"></i>
                 </button>
-                <button class="btn btn-primary btn-sm ml-1" data-target="#modal-custom-user-link"
+                <button class="btn btn-light btn-sm ml-1" data-target="#modal-custom-user-link"
                         data-toggle="modal" title="Enlace personalizado">
                     <i class="fa-solid fa-link"></i>
                 </button>
+                <a class="btn btn-light btn-sm ml-1" title="Ver desde fuera" asp-page="/Profile" asp-route-id="@ViewData["id"]" asp-route-noRedirect="True">
+                    <i class="fa-solid fa-eye"></i>
+                </a>
             </nav>
 
             <div class="d-flex flex-wrap mt-2">
@@ -346,7 +349,7 @@
                     <button class="btn btn-sm btn-secondary" data-dismiss="modal" aria-label="Close">
                         Cancelar
                     </button>
-                    <button class="btn btn-sm btn-primary" v-on:click="modifyCustomLink" :disabled="!userLink.isValid">
+                    <button class="btn btn-sm btn-light" v-on:click="modifyCustomLink" :disabled="!userLink.isValid">
                         Aceptar
                     </button>
                 </div>
@@ -370,66 +373,25 @@
         v-on:new-discussion=""
         v-on:new-audio="">
     </new-post>
-
-    <ul class="nav nav-tabs mt-3 sticky-top bg-white max-640" id="main-tab">
-        <li class="nav-item">
-            <a class="nav-link active" id="posts-tab" href="#posts" data-toggle="tab"><i class="far fa-newspaper"></i> Tus discusiones</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#audios" data-toggle="tab">Audios</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#cards" data-toggle="tab">Tarjetas</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#profile-photos" data-toggle="tab">Fotos de perfil</a>
-        </li>
-    </ul>
-    <div class="tab-content max-640" id="main-tab-content">
-        <div class="tab-pane show active" id="posts" role="tabpanel">
-            <section id="your-posts-deposit" class="d-flex flex-column mt-3 align-items-center">
-                <div class="w-100 d-flex align-items-center flex-column">
-                    <posts-list :user-id="userData.id"></posts-list>
-                    <div class="modal fade" id="modal-share-post">
-                        <div class="modal-dialog-centered modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">
-                                        Compartir publicación
-                                    </h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    <p>
-                                        Usa este enlace para compartir publicación
-                                    </p>
-                                    <button class="btn btn-primary" v-on:click="copyToClipboard(postLinkToShare)">Copiar al portapapeles</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-
-            </section>
-        </div>
-        <div class="tab-pane" id="audios" role="tabpanel">
-            <audios-list :user-id="userData.id"></audios-list>
-        </div>
-        <div class="tab-pane" id="cards" role="tabpanel">...</div>
-        <div class="tab-pane" id="profile-photos" role="tabpanel">
-            <div class="grid-3-columns mt-2">
-                @foreach (var profileImage in Model.ProfileImagesList)
-                {
-                    <div class="d-flex justify-content-center w-100 hover-image-container" onclick="window.location='@Url.PageLink("ImageViewer", null, new { imageId = profileImage.Id })'">
-                        <img src="@Url.Action("GetProfileImage", "Fetch", new { id = profileImage.Id })" class="w-100"/>
-                    </div>
-                }
-            </div>
+    <div class="sticky-top bg-white w-100 d-flex justify-content-center pt-1 mt-3 max-640">
+        <div class="btn-group">
+            <button class="btn btn-light" :disabled="currentSection==='discussions'"
+                    v-on:click="currentSection='discussions'">
+                <i class="far fa-newspaper"></i> Discusiones
+            </button>
+            <button class="btn btn-light" :disabled="currentSection==='audios'"
+                    v-on:click="currentSection='audios'">
+                <i class="fa-solid fa-ear-listen"></i> Audios
+            </button>
+            <button class="btn btn-light" :disabled="currentSection==='profile-pictures'"
+                    v-on:click="currentSection='profile-pictures'">
+                <i class="fa-solid fa-image"></i> Fotos de perfil
+            </button>
         </div>
     </div>
+    <posts-list :user-id="userData.id" v-if="currentSection==='discussions'" class="max-640"></posts-list>
+    <audios-list :user-id="userData.id" v-if="currentSection==='audios'" class="max-640"></audios-list>
+    <profile-images :user-id="userData.id" v-if="currentSection==='profile-pictures'" class="max-640"></profile-images>
 
 </div>
 <div class="col-xl-2 col-lg-2 col-md-2">
@@ -505,6 +467,7 @@ else if (ViewData["profile_open"].Equals("links"))
     <script src="~/js/VueComponents/commentsViewer.js"></script>
     <script src="~/js/VueComponents/postsList.js"></script>
     <script src="~/js/VueComponents/audiosList.js"></script>
+    <script src="~/js/VueComponents/profileImagesComponent.js"></script>
     <script src="~/js/utils.js"></script>
     <script src="~/js/my_profile.js"></script>
 }

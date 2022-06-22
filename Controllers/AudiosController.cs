@@ -39,7 +39,7 @@ public class AudiosController : ControllerBase
         if (user == null) return Unauthorized("Token is not valid");
 
         var audios = _db.Audios
-            .Where(audio => audio.UserId == user.Id && audio.CreatedAt > lastAudioTimestamp).Take(30);
+            .Where(audio => audio.UserId == userId && audio.CreatedAt > lastAudioTimestamp).Take(30);
         return Ok(audios.ToList());
     }
 

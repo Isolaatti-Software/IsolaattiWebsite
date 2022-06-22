@@ -195,7 +195,7 @@
                 placeholder="Escribe aqui el contenido para iniciar la discusión. Markdown es compatible."></textarea>
 
       <div class="d-flex justify-content-end mt-2">
-        <button class="btn btn-primary" :disabled="!ableToPostDiscussion" v-on:click="postDiscussion" v-if="!posting">
+        <button class="btn btn-success" :disabled="!ableToPostDiscussion" v-on:click="postDiscussion" v-if="!posting">
           {{ mode === "modify" ? "Guardar" : "Publicar" }}
         </button>
         <div v-else class="d-flex align-items-center mt-1">

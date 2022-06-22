@@ -38,6 +38,7 @@
         data: {
             customHeaders: customHttpHeaders,
             accountData: accountData,
+            currentSection: "discussions" // other are "audios", and "profile-pictures"
         },
     });
 
