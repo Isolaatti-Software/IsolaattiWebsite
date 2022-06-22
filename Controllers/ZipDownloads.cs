@@ -21,6 +21,7 @@ namespace isolaatti_API.Controllers
             _db = dbContextApp;
         }
 
+        [HttpGet]
         [Route("{guid:Guid}.zip")]
         public async Task<IActionResult> GetMyPostsAndCommentsZip(Guid guid)
         {
