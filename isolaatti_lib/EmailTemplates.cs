@@ -28,7 +28,8 @@ namespace isolaatti_API.isolaatti_lib
         </body></html>";
 
         public const string PasswordRecoveryEmail = @"<html><body>
-            <h1>Hola. Restablezcamos tu contraseña.</h1>
+            <h1>Hola {1}. Restablezcamos tu contraseña.</h1>
+            <p>Recibimos una solicitud para restablecer la contraseña de tu cuenta de Isolaatti</p>
             <p>Para que puedas restablecer tu contraseña, solo necesitas hacer clic en el enlace. Solo es válido una vez.</p>
             <p><a href='{0}'>{0}</a></p>";
 
