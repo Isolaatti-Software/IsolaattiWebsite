@@ -13,5 +13,6 @@ namespace isolaatti_API.Classes.ApiEndpointsResponseDataModels
         public int Privacy { get; set; }
         public Guid? AudioId { get; set; }
         public DateTime TimeStamp { get; set; }
+        public bool UserIsOwner { get; set; }
     }
 }

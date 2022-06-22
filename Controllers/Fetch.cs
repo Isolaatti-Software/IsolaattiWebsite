@@ -202,7 +202,8 @@ namespace isolaatti_API.Controllers
                         NumberOfComments = post.NumberOfComments,
                         Privacy = post.Privacy,
                         AudioId = post.AudioId,
-                        TimeStamp = post.Date
+                        TimeStamp = post.Date,
+                        UserIsOwner = post.UserId == user.Id
                         // the other attributes are null, but they can be useful in the future
                     },
                     theme = post.ThemeJson == null
@@ -253,7 +254,8 @@ namespace isolaatti_API.Controllers
                     NumberOfComments = post.NumberOfComments,
                     Privacy = post.Privacy,
                     AudioId = post.AudioId,
-                    TimeStamp = post.Date
+                    TimeStamp = post.Date,
+                    UserIsOwner = post.UserId == user.Id
                     // the other attributes are null, but they can be useful in the future
                 },
                 theme = post.ThemeJson == null
@@ -291,7 +293,8 @@ namespace isolaatti_API.Controllers
                     TargetUserId = com.TargetUser,
                     Privacy = com.Privacy,
                     AudioId = com.AudioId,
-                    TimeStamp = com.Date
+                    TimeStamp = com.Date,
+                    UserIsOwner = com.WhoWrote == user.Id
                 });
             return Ok(comments);
         }
@@ -318,7 +321,8 @@ namespace isolaatti_API.Controllers
                 AuthorName = _db.Users.Find(comment.WhoWrote).Name,
                 PostId = comment.SimpleTextPostId,
                 TimeStamp = comment.Date,
-                TargetUserId = comment.TargetUser
+                TargetUserId = comment.TargetUser,
+                UserIsOwner = comment.WhoWrote == user.Id
             });
         }
 
@@ -386,6 +390,25 @@ namespace isolaatti_API.Controllers
             if (image == null) return NotFound();
             if (image.ImageData == null) return NotFound();
             return new FileContentResult(image.ImageData, "image/png");
+        }
+
+        [HttpGet]
+        [Route("ProfileImages/OfUser/{userId:int}")]
+        public async Task<IActionResult> GetProfilePhotosOfUser([FromHeader(Name = "sessionToken")] string sessionToken,
+            int userId)
+        {
+            var accountsManager = new Accounts(_db);
+            var user = await accountsManager.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
+
+            var images = _db.ProfileImages.Where(image => image.UserId == userId).Select(i => new
+            {
+                imageId = i.Id,
+                relativeUrl = $"/api/Fetch/ProfileImages/{i.Id}.png",
+                webEndPoint = $"/imagen/{i.Id}"
+            }).ToList();
+
+            return Ok(images);
         }
     }
 }
