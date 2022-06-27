@@ -3,7 +3,7 @@
 
 @{
     Layout = "Shared/_LayoutWebApp";
-    ViewData["Title"] = "Publicación | Comunidad";
+    ViewData["Title"] = "Discusión";
 }
 
 @section CSS
@@ -71,10 +71,6 @@
             </div>
             <div class="col-md-6">
                 <div class="d-flex flex-column ml-4 comments-container">
-                    <section class="d-flex flex-column justify-content-between p-2 ml-auto mr-auto bg-light w-100 mb-2">
-                        <h5><i class="fab fa-markdown"></i> Comentar</h5>
-                        <new-comment :post-to-comment="threadId" v-on:commented="addAComment"></new-comment>
-                    </section>
                     <comments-viewer :post-id="threadId" :just-added-comments="comments" :is-under-post="false"></comments-viewer>
                 </div>
             </div>

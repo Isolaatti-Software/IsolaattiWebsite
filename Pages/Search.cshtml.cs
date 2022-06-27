@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using isolaatti_API.Classes;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
+using isolaatti_API.Services;
 using isolaatti_API.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -13,19 +14,21 @@ namespace isolaatti_API.Pages
     public class Search : PageModel
     {
         private readonly DbContextApp _db;
+        private readonly IAccounts _accounts;
+
         public List<PublicProfile> PublicProfiles = new List<PublicProfile>();
         public string sessionToken;
 
-        public Search(DbContextApp dbContextApp)
+        public Search(DbContextApp dbContextApp, IAccounts accounts)
         {
             _db = dbContextApp;
+            _accounts = accounts;
         }
 
         public async Task<IActionResult> OnGet([FromQuery] string q = "")
         {
             q ??= "";
-            var accountsManager = new Accounts(_db);
-            var user = await accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
+            var user = await _accounts.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
             if (user == null) return RedirectToPage("LogIn");
             // here it's know that account is correct. Data binding!
             sessionToken = Request.Cookies["isolaatti_user_session_token"];

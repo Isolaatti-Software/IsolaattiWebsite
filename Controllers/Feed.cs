@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 using isolaatti_API.Classes;
 using isolaatti_API.Classes.ApiEndpointsRequestDataModels;
 using isolaatti_API.Classes.ApiEndpointsResponseDataModels;
-using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
+using isolaatti_API.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace isolaatti_API.Controllers
@@ -18,10 +18,12 @@ namespace isolaatti_API.Controllers
     public class Feed : ControllerBase
     {
         private readonly DbContextApp Db;
+        private readonly IAccounts _accounts;
 
-        public Feed(DbContextApp dbContextApp)
+        public Feed(DbContextApp dbContextApp, IAccounts accounts)
         {
             Db = dbContextApp;
+            _accounts = accounts;
         }
 
         [HttpGet]
@@ -29,8 +31,7 @@ namespace isolaatti_API.Controllers
         public async Task<IActionResult> Index([FromHeader(Name = "sessionToken")] string sessionToken, long lastId = 0,
             int length = 10)
         {
-            var accountsManager = new Accounts(Db);
-            var user = await accountsManager.ValidateToken(sessionToken);
+            var user = await _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
             var likes = Db.Likes.Where(like => like.UserId == user.Id);

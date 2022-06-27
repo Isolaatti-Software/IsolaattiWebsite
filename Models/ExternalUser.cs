@@ -2,7 +2,7 @@ using System;
 
 namespace isolaatti_API.Models
 {
-    public class GoogleUser
+    public class ExternalUser
     {
         public Guid Id { get; set; }
         public int UserId { get; set; }

@@ -47,7 +47,7 @@ Vue.component('comment', {
                 })
             }).then(_ => {
                 this.deleteMode = false;
-                globalEventEmmiter.$emit("commentDeleted", that.comment.id);
+                that.$emit("commentDeleted", that.comment.id);
             });
         }
     },

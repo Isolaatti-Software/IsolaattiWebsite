@@ -512,14 +512,14 @@ footer#footer>a, footer#footer>span {
     align-items: center;
 }
 
-.comments-start-line {
-    height: 2px;
-    width: 1rem;
-    background-color: rgba(27, 10, 185, 0.32);
-}
+/*.comments-start-line {*/
+/*    height: 2px;*/
+/*    width: 1rem;*/
+/*    background-color: rgba(27, 10, 185, 0.32);*/
+/*}*/
 
 .comments-section {
-    border-left: solid rgba(27, 10, 185, 0.32) 2px;
+    /*border-left: solid rgba(27, 10, 185, 0.32) 2px;*/
     margin-left: 15px;
 }
 

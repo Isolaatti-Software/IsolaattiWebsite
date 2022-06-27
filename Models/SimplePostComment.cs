@@ -13,5 +13,10 @@ namespace isolaatti_API.Models
         public string AudioUrl { get; set; }
         public Guid? AudioId { get; set; }
         public DateTime Date { get; set; }
+
+        public Comment()
+        {
+            Date = DateTime.Now.ToUniversalTime();
+        }
     }
 }

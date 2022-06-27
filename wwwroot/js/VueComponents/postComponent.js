@@ -36,7 +36,8 @@ Vue.component('post-template',{
             editable: false,
             renderPost: undefined,
             renderTheme: undefined,
-            deleteDialog: false
+            deleteDialog: false,
+            viewCommenter: false
         }
     },
     computed: {
@@ -230,8 +231,10 @@ Vue.component('post-template',{
             <a class="btn btn-light mr-auto btn-sm" :href="openThreadLink"><i class="fas fa-external-link-alt"></i> </a>
             <div class="btn-group btn-group-sm" v-if="userData.id!==-1">
 
-              <a class="btn btn-light" :href="openThreadLink"><i class="fas fa-comments"></i>
-                {{ renderPost.numberOfComments }}</a>
+              <button class="btn btn-light" @click="viewCommenter = !viewCommenter" :disabled="viewCommenter">
+                <i class="fas fa-comments"></i>
+                {{ renderPost.numberOfComments }}
+              </button>
               <button v-if="!renderPost.liked" v-on:click="like($event)" class="btn btn-light btn-sm" type="button">
                 <i class="fas fa-thumbs-up" aria-hidden="true"></i> {{ renderPost.numberOfLikes }}
               </button>
@@ -242,8 +245,14 @@ Vue.component('post-template',{
             </div>
           </div>
         </div>
-        <comments-viewer :post-id="post.id" :is-under-post="true" v-if="!isFullPage && !preview"
-                         :number-of-comments="post.numberOfComments"></comments-viewer>
+        <div v-if="!isFullPage && !preview && viewCommenter" class="d-flex flex-column">
+          <div class="d-flex justify-content-end mt-1">
+            <button class="btn btn-light btn-sm close" @click="viewCommenter = !viewCommenter">&times;</button>
+          </div>
+          <comments-viewer :post-id="post.id" :is-under-post="true"
+                           :number-of-comments="post.numberOfComments"></comments-viewer>
+        </div>
+
       </article>
       <new-discussion v-else :mode="'modify'" :post-to-modify-id="post.id"
                       @modified="updateFromModified"></new-discussion>

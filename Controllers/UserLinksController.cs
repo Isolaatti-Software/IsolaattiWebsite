@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using isolaatti_API.Classes.ApiEndpointsRequestDataModels;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
+using isolaatti_API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,18 +15,19 @@ namespace isolaatti_API.Controllers;
 public class UserLinksController : ControllerBase
 {
     private readonly DbContextApp _db;
+    private readonly IAccounts _accounts;
 
-    public UserLinksController(DbContextApp dbContextApp)
+    public UserLinksController(DbContextApp dbContextApp, IAccounts accounts)
     {
         _db = dbContextApp;
+        _accounts = accounts;
     }
 
     [HttpPost]
     [Route("/api/UserLinks/Create")]
     public async Task<IActionResult> CreateLink([FromHeader(Name = "sessionToken")] string sessionToken)
     {
-        var accountsManager = new Accounts(_db);
-        var user = await accountsManager.ValidateToken(sessionToken);
+        var user = await _accounts.ValidateToken(sessionToken);
         if (user == null) return Unauthorized("Token is not valid");
 
         var userProfileLink = new UserProfileLink
@@ -43,8 +45,7 @@ public class UserLinksController : ControllerBase
     [Route("/api/UserLinks/Delete")]
     public async Task<IActionResult> DeleteLink([FromHeader(Name = "sessionToken")] string sessionToken)
     {
-        var accountsManager = new Accounts(_db);
-        var user = await accountsManager.ValidateToken(sessionToken);
+        var user = await _accounts.ValidateToken(sessionToken);
         if (user == null) return Unauthorized("Token is not valid");
 
         var userProfileLink = _db.UserProfileLinks.Single(upl => upl.UserId == user.Id);
@@ -58,8 +59,7 @@ public class UserLinksController : ControllerBase
     [Route("/api/UserLinks/Get/{userId:int}")]
     public async Task<IActionResult> GetUserLink([FromHeader(Name = "sessionToken")] string sessionToken, int userId)
     {
-        var accountsManager = new Accounts(_db);
-        var user = await accountsManager.ValidateToken(sessionToken);
+        var user = await _accounts.ValidateToken(sessionToken);
         if (user == null) return Unauthorized("Token is not valid");
 
         var requestedUser = await _db.Users.FindAsync(userId);
@@ -89,8 +89,7 @@ public class UserLinksController : ControllerBase
     public async Task<IActionResult> ChangeUserLink([FromHeader(Name = "sessionToken")] string sessionToken,
         SimpleStringData newId)
     {
-        var accountsManager = new Accounts(_db);
-        var user = await accountsManager.ValidateToken(sessionToken);
+        var user = await _accounts.ValidateToken(sessionToken);
         if (user == null) return Unauthorized("Token is not valid");
 
         if (!_db.UserProfileLinks.Any(upl => upl.UserId == user.Id))

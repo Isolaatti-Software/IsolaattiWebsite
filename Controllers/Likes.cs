@@ -3,8 +3,8 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using isolaatti_API.Classes.ApiEndpointsRequestDataModels;
 using isolaatti_API.Classes.ApiEndpointsResponseDataModels;
-using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
+using isolaatti_API.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace isolaatti_API.Controllers
@@ -14,10 +14,12 @@ namespace isolaatti_API.Controllers
     public class Likes : Controller
     {
         private readonly DbContextApp Db;
+        private readonly IAccounts _accounts;
 
-        public Likes(DbContextApp dbContextApp)
+        public Likes(DbContextApp dbContextApp, IAccounts accounts)
         {
             Db = dbContextApp;
+            _accounts = accounts;
         }
 
         [HttpPost]
@@ -25,8 +27,7 @@ namespace isolaatti_API.Controllers
         public async Task<IActionResult> LikePost([FromHeader(Name = "sessionToken")] string sessionToken,
             SingleIdentification identification)
         {
-            var accountsManager = new Accounts(Db);
-            var user = await accountsManager.ValidateToken(sessionToken);
+            var user = await _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
             var post = await Db.SimpleTextPosts.FindAsync(identification.Id);
@@ -77,8 +78,7 @@ namespace isolaatti_API.Controllers
         public async Task<IActionResult> UnLikePost([FromHeader(Name = "sessionToken")] string sessionToken,
             SingleIdentification identification)
         {
-            var accountsManager = new Accounts(Db);
-            var user = await accountsManager.ValidateToken(sessionToken);
+            var user = await _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
             var post = await Db.SimpleTextPosts.FindAsync(identification.Id);

@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
-using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
+using isolaatti_API.Services;
 using isolaatti_API.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -10,10 +10,12 @@ namespace isolaatti_API.Pages
     public class ChangePassword : PageModel
     {
         private readonly DbContextApp _db;
+        private readonly IAccounts _accounts;
 
-        public ChangePassword(DbContextApp dbContextApp)
+        public ChangePassword(DbContextApp dbContextApp, IAccounts accounts)
         {
             _db = dbContextApp;
+            _accounts = accounts;
         }
 
         [BindProperty] public string CurrentPassword { get; set; }
@@ -22,8 +24,7 @@ namespace isolaatti_API.Pages
 
         public async Task<IActionResult> OnGet()
         {
-            var accountsManager = new Accounts(_db);
-            var user = await accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
+            var user = await _accounts.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
             if (user == null) return RedirectToPage("LogIn");
 
             // here it's know that account is correct. Data binding!
@@ -47,9 +48,8 @@ namespace isolaatti_API.Pages
                 });
             }
 
-            var accountsManager = new Accounts(_db);
 
-            var user = await accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
+            var user = await _accounts.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
             if (user == null) return RedirectToPage("LogIn");
 
             // here it's know that account is correct. Data binding!
@@ -61,7 +61,7 @@ namespace isolaatti_API.Pages
                 ? null
                 : UrlGenerators.GenerateProfilePictureUrl(user.Id, Request.Cookies["isolaatti_user_session_token"]);
 
-            if (!await accountsManager.ChangeAPassword(user.Id, CurrentPassword, NewPassword))
+            if (!await _accounts.ChangeAPassword(user.Id, CurrentPassword, NewPassword))
             {
                 return RedirectToPage("MyProfile", new
                 {
@@ -69,7 +69,7 @@ namespace isolaatti_API.Pages
                 });
             }
 
-            await accountsManager.RemoveAllUsersTokens(user.Id);
+            await _accounts.RemoveAllUsersTokens(user.Id);
             return Redirect("/WebLogOut");
         }
     }

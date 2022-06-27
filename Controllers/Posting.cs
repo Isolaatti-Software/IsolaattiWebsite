@@ -4,8 +4,8 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using isolaatti_API.Classes.ApiEndpointsRequestDataModels;
 using isolaatti_API.Classes.ApiEndpointsResponseDataModels;
-using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
+using isolaatti_API.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace isolaatti_API.Controllers
@@ -22,10 +22,12 @@ namespace isolaatti_API.Controllers
     public class MakePost : ControllerBase
     {
         private readonly DbContextApp _db;
+        private readonly IAccounts _accounts;
 
-        public MakePost(DbContextApp dbContextApp)
+        public MakePost(DbContextApp dbContextApp, IAccounts accounts)
         {
             _db = dbContextApp;
+            _accounts = accounts;
         }
 
         [HttpPost]
@@ -33,8 +35,7 @@ namespace isolaatti_API.Controllers
         public async Task<IActionResult> Index([FromHeader(Name = "sessionToken")] string sessionToken,
             MakePostModel post)
         {
-            var accountsManager = new Accounts(_db);
-            var user = await accountsManager.ValidateToken(sessionToken);
+            var user = await _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
 
@@ -46,8 +47,7 @@ namespace isolaatti_API.Controllers
                 Privacy = post.Privacy,
                 AudioId = post.AudioId,
                 ThemeJson = JsonSerializer.Serialize(post.Theme,
-                    new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }),
-                Date = DateTime.Now
+                    new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase })
             };
 
             _db.SimpleTextPosts.Add(newPost);
@@ -81,8 +81,7 @@ namespace isolaatti_API.Controllers
         public async Task<IActionResult> EditPost([FromHeader(Name = "sessionToken")] string sessionToken,
             EditPostModel editedPost)
         {
-            var accountsManager = new Accounts(_db);
-            var user = await accountsManager.ValidateToken(sessionToken);
+            var user = await _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
             var existingPost = await _db.SimpleTextPosts.FindAsync(editedPost.PostId);
@@ -133,8 +132,7 @@ namespace isolaatti_API.Controllers
         public async Task<IActionResult> DeletePost([FromHeader(Name = "sessionToken")] string sessionToken,
             SingleIdentification identification)
         {
-            var accountsManager = new Accounts(_db);
-            var user = await accountsManager.ValidateToken(sessionToken);
+            var user = await _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
             var post = _db.SimpleTextPosts.Find(identification.Id);
@@ -163,8 +161,7 @@ namespace isolaatti_API.Controllers
         public async Task<IActionResult> MakeComment([FromHeader(Name = "sessionToken")] string sessionToken,
             long postId, MakeCommentModel commentModel)
         {
-            var accountsManager = new Accounts(_db);
-            var user = await accountsManager.ValidateToken(sessionToken);
+            var user = await _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
             var post = await _db.SimpleTextPosts.FindAsync(postId);
@@ -179,8 +176,7 @@ namespace isolaatti_API.Controllers
                 SimpleTextPostId = post.Id,
                 TargetUser = post.UserId,
                 Privacy = commentModel.Privacy,
-                AudioId = commentModel.AudioId,
-                Date = DateTime.Now
+                AudioId = commentModel.AudioId
             };
 
             _db.Comments.Add(commentToMake);
@@ -199,7 +195,8 @@ namespace isolaatti_API.Controllers
                 PostId = commentToMake.SimpleTextPostId,
                 Privacy = commentToMake.Privacy,
                 TargetUserId = commentToMake.TargetUser,
-                TimeStamp = commentToMake.Date
+                TimeStamp = commentToMake.Date,
+                UserIsOwner = true
             });
         }
 
@@ -208,8 +205,7 @@ namespace isolaatti_API.Controllers
         public async Task<IActionResult> GetNumberOfCommentsOfPost(
             [FromHeader(Name = "sessionToken")] string sessionToken, long postId)
         {
-            var accountsManager = new Accounts(_db);
-            var user = await accountsManager.ValidateToken(sessionToken);
+            var user = await _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
             var post = await _db.SimpleTextPosts.FindAsync(postId);

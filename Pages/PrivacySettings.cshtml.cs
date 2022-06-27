@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
-using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
+using isolaatti_API.Services;
 using isolaatti_API.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -10,18 +10,19 @@ namespace isolaatti_API.Pages
     public class PrivacySettings : PageModel
     {
         private readonly DbContextApp _db;
+        private readonly IAccounts _accounts;
 
-        public PrivacySettings(DbContextApp dbContextApp)
+        public PrivacySettings(DbContextApp dbContextApp, IAccounts accounts)
         {
             _db = dbContextApp;
+            _accounts = accounts;
         }
 
         [BindProperty] public bool ShowEmail { get; set; }
 
         public async Task<IActionResult> OnGet()
         {
-            var accountsManager = new Accounts(_db);
-            var user = await accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
+            var user = await _accounts.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
             if (user == null) return RedirectToPage("LogIn");
 
             // here it's know that account is correct. Data binding!
@@ -43,8 +44,7 @@ namespace isolaatti_API.Pages
 
         public async Task<IActionResult> OnPostEmailPrivacy()
         {
-            var accountsManager = new Accounts(_db);
-            var user = await accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
+            var user = await _accounts.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
             if (user == null) return RedirectToPage("LogIn");
 
             user.ShowEmail = ShowEmail;

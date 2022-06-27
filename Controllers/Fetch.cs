@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using isolaatti_API.Classes;
 using isolaatti_API.Classes.ApiEndpointsRequestDataModels;
 using isolaatti_API.Classes.ApiEndpointsResponseDataModels;
-using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
+using isolaatti_API.Services;
 using isolaatti_API.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -19,18 +19,19 @@ namespace isolaatti_API.Controllers
     public class Fetch : ControllerBase
     {
         private readonly DbContextApp _db;
+        private readonly IAccounts _accounts;
 
-        public Fetch(DbContextApp dbContextApp)
+        public Fetch(DbContextApp dbContextApp, IAccounts accounts)
         {
             _db = dbContextApp;
+            _accounts = accounts;
         }
 
         [HttpGet]
         [Route("MyProfile")]
         public async Task<IActionResult> GetMyProfile([FromHeader(Name = "sessionToken")] string sessionToken)
         {
-            var accountsManager = new Accounts(_db);
-            var user = await accountsManager.ValidateToken(sessionToken);
+            var user = await _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
             UserPreferences userPreferences;
@@ -71,8 +72,7 @@ namespace isolaatti_API.Controllers
         public async Task<IActionResult> GetProfile([FromHeader(Name = "sessionToken")] string sessionToken,
             SingleIdentification identification)
         {
-            var accountsManager = new Accounts(_db);
-            var user = await accountsManager.ValidateToken(sessionToken);
+            var user = await _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
             var account = await _db.Users.FindAsync(Convert.ToInt32(identification.Id));
@@ -113,8 +113,7 @@ namespace isolaatti_API.Controllers
         public async Task<IActionResult> GetPosts([FromHeader(Name = "sessionToken")] string sessionToken, int userId,
             int length = 10, long lastId = -1, bool olderFirst = false)
         {
-            var accountsManager = new Accounts(_db);
-            var user = await accountsManager.ValidateToken(sessionToken);
+            var user = await _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
             User requestedAuthor = null;
 
@@ -235,8 +234,7 @@ namespace isolaatti_API.Controllers
         [Route("Post/{postId:long}")]
         public async Task<IActionResult> GetPost([FromHeader(Name = "sessionToken")] string sessionToken, long postId)
         {
-            var accountsManager = new Accounts(_db);
-            var user = await accountsManager.ValidateToken(sessionToken);
+            var user = await _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
             var post = await _db.SimpleTextPosts.FindAsync(postId);
@@ -270,8 +268,7 @@ namespace isolaatti_API.Controllers
         public async Task<IActionResult> GetComments([FromHeader(Name = "sessionToken")] string sessionToken,
             long postId, long lastId = long.MaxValue, int take = 10)
         {
-            var accountsManager = new Accounts(_db);
-            var user = await accountsManager.ValidateToken(sessionToken);
+            var user = await _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
             var post = await _db.SimpleTextPosts.FindAsync(postId);
@@ -304,8 +301,7 @@ namespace isolaatti_API.Controllers
         public async Task<IActionResult> GetComment([FromHeader(Name = "sessionToken")] string sessionToken,
             long commentId)
         {
-            var accountsManager = new Accounts(_db);
-            var user = await accountsManager.ValidateToken(sessionToken);
+            var user = await _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
             var comment = await _db.Comments.FindAsync(commentId);
@@ -397,8 +393,7 @@ namespace isolaatti_API.Controllers
         public async Task<IActionResult> GetProfilePhotosOfUser([FromHeader(Name = "sessionToken")] string sessionToken,
             int userId)
         {
-            var accountsManager = new Accounts(_db);
-            var user = await accountsManager.ValidateToken(sessionToken);
+            var user = await _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
             var images = _db.ProfileImages.Where(image => image.UserId == userId).Select(i => new

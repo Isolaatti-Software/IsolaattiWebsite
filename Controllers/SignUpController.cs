@@ -10,8 +10,8 @@
 using System.Threading.Tasks;
 using isolaatti_API.Classes.ApiEndpointsRequestDataModels;
 using isolaatti_API.Enums;
-using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
+using isolaatti_API.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace isolaatti_API.Controllers
@@ -20,18 +20,19 @@ namespace isolaatti_API.Controllers
     [ApiController]
     public class SignUpController : ControllerBase
     {
-        private readonly DbContextApp dbContextApp;
+        private readonly DbContextApp _db;
+        private readonly IAccounts _accounts;
 
-        public SignUpController(DbContextApp context)
+        public SignUpController(DbContextApp context, IAccounts accounts)
         {
-            dbContextApp = context;
+            _db = context;
+            _accounts = accounts;
         }
 
         [HttpPost]
         public async Task<IActionResult> Index(SignUpDataModel signUpData)
         {
-            var accounts = new Accounts(dbContextApp);
-            var result = await accounts.MakeAccountAsync(signUpData.Username, signUpData.Email, signUpData.Password);
+            var result = await _accounts.MakeAccountAsync(signUpData.Username, signUpData.Email, signUpData.Password);
             return result switch
             {
                 AccountMakingResult.Ok => Ok(),

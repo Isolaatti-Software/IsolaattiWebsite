@@ -8,4 +8,9 @@ public class Audio
     public string Name { get; set; }
     public int UserId { get; set; }
     public DateTime CreatedAt { get; set; }
+
+    public Audio()
+    {
+        CreatedAt = DateTime.Now.ToUniversalTime();
+    }
 }

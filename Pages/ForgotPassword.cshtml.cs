@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -39,37 +40,37 @@ namespace isolaatti_API.Pages
             catch (InvalidOperationException)
             {
                 EmailFound = false;
+                await Task.Delay(1500);
                 return Page();
             }
 
             EmailFound = true;
 
             // here create token
-            var userToken = new UserToken()
+            var userToken = new ChangePasswordToken()
             {
-                UserId = Account.Id,
-                Token = Guid.NewGuid().ToString(),
-                Expires = DateTime.Now.AddDays(1)
+                UserId = Account.Id
             };
 
-            if (Db.UserTokens.Any(tok => tok.UserId.Equals(Account.Id)))
+            if (Db.ChangePasswordTokens.Any(tok => tok.UserId.Equals(Account.Id)))
             {
-                var oldToken = Db.UserTokens.Single(token => token.UserId.Equals(Account.Id));
-                Db.UserTokens.Remove(oldToken);
+                var oldToken = Db.ChangePasswordTokens.Single(token => token.UserId.Equals(Account.Id));
+                Db.ChangePasswordTokens.Remove(oldToken);
             }
 
-            Db.UserTokens.Add(userToken);
+            Db.ChangePasswordTokens.Add(userToken);
             await Db.SaveChangesAsync();
 
             // send email with link
-            await SendEmail(userToken.Token, Account.Name);
+            await SendEmail(userToken.Id, userToken.Token, Account.Name);
 
             return Page();
         }
 
-        private async Task SendEmail(string token, string username)
+        private async Task SendEmail(Guid id, string token, string username)
         {
-            var link = $"https://{Request.HttpContext.Request.Host.Value}/RecoverPassword?token_s={token}";
+            var link =
+                $"https://{Request.HttpContext.Request.Host.Value}/RecoverPassword?id={id}&value={HttpUtility.UrlEncode(token)}";
             var from = new EmailAddress("no-reply@isolaatti.com", "Isolaatti");
             var to = new EmailAddress(Account.Email, Account.Name);
             var subject = "Restablecimiento de contraseña de Isolaatti";

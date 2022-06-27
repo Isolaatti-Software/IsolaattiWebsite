@@ -1,18 +1,11 @@
-/*
-* Isolaatti project
-* Erik Cavazos, 2020
-* This program is not allowed to be copied or reused without explicit permission.
-* erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
-*/
-
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using isolaatti_API.Classes;
-using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
+using isolaatti_API.Services;
 using isolaatti_API.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -23,6 +16,7 @@ namespace isolaatti_API.Pages
     public class MyProfile : PageModel
     {
         private readonly DbContextApp _db;
+        private readonly IAccounts _accounts;
 
         public bool PasswordIsWrong = false;
         public List<ShareLink> Shares = new List<ShareLink>();
@@ -32,13 +26,13 @@ namespace isolaatti_API.Pages
         public string ProfileColor;
         public List<ProfileImage> ProfileImagesList;
 
-        public MyProfile(DbContextApp dbContextApp)
+        public MyProfile(DbContextApp dbContextApp, IAccounts accounts)
         {
             _db = dbContextApp;
+            _accounts = accounts;
         }
 
         public async Task<IActionResult> OnGet(
-            string open = "",
             bool currentPasswordIsWrong = false,
             bool profileUpdate = false,
             bool nameAndEmailUsed = false,
@@ -46,8 +40,7 @@ namespace isolaatti_API.Pages
             bool emailNotAvailable = false,
             string statusData = "")
         {
-            var accountsManager = new Accounts(_db);
-            var user = await accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
+            var user = await _accounts.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
             if (user == null)
             {
                 var protocol = Request.IsHttps ? "https://" : "http://";
@@ -65,7 +58,6 @@ namespace isolaatti_API.Pages
             ViewData["userId"] = user.Id;
             ViewData["password"] = user.Password;
             ViewData["id"] = user.Id;
-            ViewData["profile_open"] = open;
             ViewData["profile_updated"] = profileUpdate;
             ViewData["emailNotAvailable"] = emailNotAvailable;
             ViewData["nameNotAvailable"] = nameNotAvailable;
@@ -124,9 +116,7 @@ namespace isolaatti_API.Pages
                 });
             }
 
-            var accountsManager = new Accounts(_db);
-
-            if (!await accountsManager.ChangeAPassword(userId, current_password, new_password))
+            if (!await _accounts.ChangeAPassword(userId, current_password, new_password))
             {
                 return RedirectToPage("MyProfile", new
                 {
@@ -134,7 +124,7 @@ namespace isolaatti_API.Pages
                 });
             }
 
-            await accountsManager.RemoveAllUsersTokens(userId);
+            await _accounts.RemoveAllUsersTokens(userId);
             return Redirect("WebLogOut");
         }
     }

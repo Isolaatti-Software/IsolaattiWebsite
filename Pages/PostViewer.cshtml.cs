@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
-using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
+using isolaatti_API.Services;
 using isolaatti_API.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -10,17 +10,19 @@ namespace isolaatti_API.Pages
     public class Threads : PageModel
     {
         private readonly DbContextApp _db;
+        private readonly IAccounts _accounts;
+
         public SimpleTextPost ThisPost;
 
-        public Threads(DbContextApp dbContextApp)
+        public Threads(DbContextApp dbContextApp, IAccounts accounts)
         {
             _db = dbContextApp;
+            _accounts = accounts;
         }
 
         public async Task<IActionResult> OnGet([FromRoute] long id)
         {
-            var accountsManager = new Accounts(_db);
-            var user = await accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
+            var user = await _accounts.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
             ThisPost = await _db.SimpleTextPosts.FindAsync(id);
 
             if (ThisPost == null) return NotFound();

@@ -1,18 +1,9 @@
-/*
-* Isolaatti project
-* Erik Cavazos, 2020
-* This program is not allowed to be copied or reused without explicit permission.
-* erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
-*/
-
-//Make objects of this class when tasks related to accounts will be performed.
-//These methods are normally used by controllers (for API) and Razor pages
-
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using FirebaseAdmin.Auth;
 using isolaatti_API.Enums;
+using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -21,16 +12,19 @@ using Microsoft.Net.Http.Headers;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 
-namespace isolaatti_API.isolaatti_lib
+namespace isolaatti_API.Services
 {
-    public class Accounts
+    public class Accounts : IAccounts
     {
         private readonly DbContextApp db;
-        private HttpRequest _request;
+        private readonly HttpContext _httpContext;
+        private readonly ISendGridClient _sendGridClient;
 
-        public Accounts(DbContextApp db)
+        public Accounts(DbContextApp db, ISendGridClient sendGridClient, ScopedHttpContext scopedHttpContext)
         {
             this.db = db;
+            _sendGridClient = sendGridClient;
+            _httpContext = scopedHttpContext.HttpContext;
         }
 
         public async Task<AccountMakingResult> MakeAccountAsync(string username, string email, string password)
@@ -66,6 +60,7 @@ namespace isolaatti_API.isolaatti_lib
             {
                 db.Users.Add(newUser);
                 await db.SaveChangesAsync();
+                await SendWelcomeEmail(newUser.Email, newUser.Name);
                 return AccountMakingResult.Ok;
             }
             catch (Exception)
@@ -96,11 +91,6 @@ namespace isolaatti_API.isolaatti_lib
             return true;
         }
 
-        public void DefineHttpRequestObject(HttpRequest request)
-        {
-            _request = request;
-        }
-
         public async Task<SessionToken> CreateNewToken(int userId, string plainTextPassword)
         {
             var user = await db.Users.FindAsync(userId);
@@ -110,13 +100,14 @@ namespace isolaatti_API.isolaatti_lib
                 passwordHasher.VerifyHashedPassword(user.Email, user.Password, plainTextPassword);
             if (passwordVerificationResult == PasswordVerificationResult.Failed) return null;
 
+
             var tokenObj = new SessionToken()
             {
                 UserId = user.Id,
-                IpAddress = _request.HttpContext.Connection.RemoteIpAddress.ToString(),
-                UserAgent = _request.Headers
+                IpAddress = _httpContext.Connection.RemoteIpAddress.ToString(),
+                UserAgent = _httpContext.Request.Headers
                     .ContainsKey(HeaderNames.UserAgent)
-                    ? _request.Headers[HeaderNames.UserAgent].ToString()
+                    ? _httpContext.Request.Headers[HeaderNames.UserAgent].ToString()
                     : "Not provided"
             };
             db.SessionTokens.Add(tokenObj);
@@ -169,21 +160,23 @@ namespace isolaatti_API.isolaatti_lib
 
             if (!db.Users.Any(u => u.Email.Equals(user.Email)))
             {
-                await MakeAccountAsync(user.DisplayName, user.Email, GenerateRandomAlphaNumericPassword(10));
+                var randomPassword = Utils.RandomData.GenerateRandomPassword();
+                await MakeAccountAsync(user.DisplayName, user.Email, randomPassword);
+                await SendWelcomeEmailForExternal(user.Email, user.DisplayName, randomPassword);
             }
 
             var isolaattiUser = db.Users.Single(u => u.Email.Equals(user.Email));
 
-            if (await db.GoogleUsers.AnyAsync(googleUser =>
+            if (await db.ExternalUsers.AnyAsync(googleUser =>
                     googleUser.GoogleUid.Equals(user.Uid) && googleUser.UserId.Equals(isolaattiUser.Id))) return;
 
             // Add relation between Isolaatti account and Google Account
-            var googleUser = new GoogleUser
+            var googleUser = new ExternalUser
             {
                 UserId = isolaattiUser.Id,
                 GoogleUid = user.Uid
             };
-            db.GoogleUsers.Add(googleUser);
+            db.ExternalUsers.Add(googleUser);
             await db.SaveChangesAsync();
         }
 
@@ -191,42 +184,52 @@ namespace isolaatti_API.isolaatti_lib
         {
             var decodedTokenTask = FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(accessToken);
             var uid = (await decodedTokenTask).Uid;
-            var relation = db.GoogleUsers.Single(u => u.GoogleUid.Equals(uid));
+            var relation = db.ExternalUsers.Single(u => u.GoogleUid.Equals(uid));
             var user = await db.Users.FindAsync(relation.UserId);
             var sessionToken = new SessionToken
             {
                 UserId = user.Id,
-                IpAddress = _request.HttpContext.Connection.RemoteIpAddress.ToString(),
-                UserAgent = _request.Headers
+                IpAddress = _httpContext.Connection.RemoteIpAddress.ToString(),
+                UserAgent = _httpContext.Request.Headers
                     .ContainsKey(HeaderNames.UserAgent)
-                    ? _request.Headers[HeaderNames.UserAgent].ToString()
+                    ? _httpContext.Request.Headers[HeaderNames.UserAgent].ToString()
                     : "Not provided"
             };
 
             return sessionToken;
         }
 
-        private static string GenerateRandomAlphaNumericPassword(int lenght)
+        private async Task SendWelcomeEmail(string email, string name)
         {
-            var password = "";
-            do
-            {
-                password += Guid.NewGuid()
-                    .ToString().Replace("-", string.Empty);
-            } while (password.Length < lenght);
-
-            return password.Remove(0, lenght - 1);
-        }
-
-        public static async Task SendWelcomeEmail(ISendGridClient sendGridClient, string email, string name)
-        {
-            var from = new EmailAddress("no-reply@isolaatti.com", "Isolaatti");
+            var from = new EmailAddress("cuentas@isolaatti.com", "Isolaatti");
             var to = new EmailAddress(email, name);
-            var subject = "Cambia tu contraseña de Isolaatti";
+            var subject = "Te damos la bienvenida a Isolaatti";
             var htmlBody = MailHelper.CreateSingleEmail(from, to, subject,
                 "Bienvenid@ a Isolaatti",
-                string.Format(EmailTemplates.PasswordRecoveryEmail, name));
-            await sendGridClient.SendEmailAsync(htmlBody);
+                string.Format(EmailTemplates.WelcomeEmail, name));
+            await _sendGridClient.SendEmailAsync(htmlBody);
+        }
+
+        private async Task SendWelcomeEmailForExternal(string email, string name, string generatedPassword)
+        {
+            var from = new EmailAddress("cuentas@isolaatti.com", "Isolaatti");
+            var to = new EmailAddress(email, name);
+            var subject = "Te damos la bienvenida a Isolaatti";
+            var htmlBody = MailHelper.CreateSingleEmail(from, to, subject,
+                "Bienvenid@ a Isolaatti",
+                string.Format(EmailTemplates.WelcomeEmailExternal, name, email, generatedPassword));
+            await _sendGridClient.SendEmailAsync(htmlBody);
+        }
+
+        public async Task SendJustLoginEmail(string email, string name, string ipAddress)
+        {
+            var from = new EmailAddress("cuentas@isolaatti.com", "Isolaatti");
+            var to = new EmailAddress(email, name);
+            var subject = "Iniciaste sesión en Isolaatti";
+            var htmlBody = MailHelper.CreateSingleEmail(from, to, subject,
+                "Iniciaste sesión en Isolaatti...",
+                string.Format(EmailTemplates.LoginEmail, name, ipAddress));
+            await _sendGridClient.SendEmailAsync(htmlBody);
         }
     }
 }

@@ -12,5 +12,10 @@ namespace isolaatti_API.Models
         public DateTime Date { get; set; }
 
         public User User { get; set; }
+
+        public Like()
+        {
+            Date = DateTime.Now.ToUniversalTime();
+        }
     }
 }

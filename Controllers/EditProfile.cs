@@ -6,8 +6,8 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using isolaatti_API.Classes;
 using isolaatti_API.Classes.ApiEndpointsRequestDataModels;
-using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
+using isolaatti_API.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,6 +18,7 @@ namespace isolaatti_API.Controllers
     public class EditProfile : Controller
     {
         private readonly DbContextApp Db;
+        private readonly IAccounts _accounts;
 
         public EditProfile(DbContextApp dbContextApp)
         {
@@ -29,8 +30,7 @@ namespace isolaatti_API.Controllers
             [FromForm] string newEmail,
             [FromForm] string newUsername)
         {
-            var accountsManager = new Accounts(Db);
-            var user = await accountsManager.ValidateToken(sessionToken);
+            var user = await _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
             // find if there is someone else with the same username or email
@@ -56,9 +56,8 @@ namespace isolaatti_API.Controllers
         public async Task<IActionResult> FromWeb([FromForm] string newUsername, [FromForm] string newEmail,
             [FromForm] string newDescription)
         {
-            var accountsManager = new Accounts(Db);
             var sessionToken = Request.Cookies["isolaatti_user_session_token"];
-            var user = await accountsManager.ValidateToken(sessionToken);
+            var user = await _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
             user.DescriptionText = newDescription;
@@ -102,8 +101,7 @@ namespace isolaatti_API.Controllers
         public async Task<IActionResult> UpdatePhoto([FromHeader(Name = "sessionToken")] string sessionToken,
             [FromForm] IFormFile file)
         {
-            var accountsManager = new Accounts(Db);
-            var user = await accountsManager.ValidateToken(sessionToken);
+            var user = await _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
             var stream = new MemoryStream();
@@ -134,8 +132,7 @@ namespace isolaatti_API.Controllers
         public async Task<IActionResult> UpdateAudioDescription([FromHeader(Name = "sessionToken")] string sessionToken,
             SimpleStringData payload)
         {
-            var accountsManager = new Accounts(Db);
-            var user = await accountsManager.ValidateToken(sessionToken);
+            var user = await _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
             user.DescriptionAudioUrl = payload.Data;
@@ -150,8 +147,7 @@ namespace isolaatti_API.Controllers
             SimpleStringData color)
         {
             var htmlColor = color.Data;
-            var accountsManager = new Accounts(Db);
-            var user = await accountsManager.ValidateToken(sessionToken);
+            var user = await _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
             if (htmlColor == null) return BadRequest(new { error = "error/color-null" });

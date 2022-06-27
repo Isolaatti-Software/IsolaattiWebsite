@@ -9,24 +9,6 @@ namespace isolaatti_API.isolaatti_lib
 {
     public class EmailTemplates
     {
-        public const string SongReady = @"<html><body>
-        <h1>Song {0} has been processed!</h1>
-        <p>Open this link <a href='{5}'>{5}</a></p>
-        <p>Thr 4 base tracks are now available on the app. Also, here you have direct links to the files:</p>
-        <ul>
-            <li>Bass: {1}</li>
-            <li>Drums: {2}</li>
-            <li>Vocals: {3}</li>
-            <li>Other: {4}</li>
-        </ul>
-        
-        </body></html>";
-
-        public const string SongStartedProcessing = @"<html><body>
-        <h1>Your song is being processing now</h1>
-        <p>Your song {0} is now processing. Please wait, you will receive a message when it's finished</p>
-        </body></html>";
-
         public const string PasswordRecoveryEmail = @"<html><body>
             <h1>Hola {1}. Restablezcamos tu contraseña.</h1>
             <p>Recibimos una solicitud para restablecer la contraseña de tu cuenta de Isolaatti</p>
@@ -35,8 +17,23 @@ namespace isolaatti_API.isolaatti_lib
 
         public const string WelcomeEmail = @"<html><body>
             <h1>¡Hola, {0}!</h1>
-            <p>Me complace darte la bienvenida a Isolaatti, gracias por crear una cuenta</p>
-            <p>Erik (erikswdev)</p>
+            <p>Me complace darte la bienvenida a Isolaatti, gracias por crear una cuenta.</p>
+            <p>Erik Cavazos, Isolaatti Software</p>
         </body></html>";
+
+        public const string WelcomeEmailExternal = @"<html><body>
+            <h1>¡Hola, {0}!</h1>
+            <p>Dado que creaste tu cuenta con un medio externo (Google, Facebook o Microsoft), también te hemos creado una contraseña aleatoria.</p>
+            <p>Puedes optar por siempre iniciar sesión con el medio que usaste, pero si lo deseas puedes usar las siguientes credenciales</p>
+            <p>Email: <strong>{1}</strong> Password: <strong>{2}</strong></p>
+            <p>Erik Cavazos, Isolaatti Software</p>
+        </body>";
+
+        public const string LoginEmail = @"<html><body>
+            <h1>¡Hola, {0}!</h1>
+            <p>Solo para informarte que acabas de iniciar sesión. Si no lo hiciste, entonces alguien conoce tu contraseña</p>
+            <p>Origen: {1}</p>
+            <p>Erik Cavazos, Isolaatti Software</p>
+        </body>";
     }
 }

@@ -3,21 +3,19 @@ using System.Security.Cryptography;
 
 namespace isolaatti_API.Models
 {
-    public class SessionToken
+    public class ChangePasswordToken
     {
         public Guid Id { get; set; }
-        public string Token { get; set; }
         public int UserId { get; set; }
-        public string IpAddress { get; set; }
-        public string UserAgent { get; set; }
-        public DateTime Date { get; set; }
+        public string Token { get; set; }
+        public DateTime Expires { get; set; }
 
-        public SessionToken()
+        public ChangePasswordToken()
         {
             byte[] randomData = new byte[256];
             RandomNumberGenerator.Create().GetBytes(randomData);
             Token = Convert.ToBase64String(randomData);
-            Date = DateTime.Now.ToUniversalTime();
+            Expires = DateTime.Now.AddDays(1).ToUniversalTime();
         }
     }
 }

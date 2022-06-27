@@ -12,12 +12,6 @@ Vue.component("comments-viewer", {
         isUnderPost: {
             type: Boolean,
             default: false
-        },
-        justAddedComments: {
-            type: Array,
-            default: function () {
-                return []
-            }
         }
     },
     data: function () {
@@ -29,9 +23,6 @@ Vue.component("comments-viewer", {
         }
     },
     computed: {
-        mixedComments: function () {
-            return this.justAddedComments.concat(this.comments);
-        },
         openThreadLink: function () {
             return this.preview ? "#" : `/pub/${this.postId}`;
         }
@@ -61,6 +52,15 @@ Vue.component("comments-viewer", {
             }).then(res => res.json()).then(function (parsedRes) {
                 that.numberOfComments = parsedRes;
             });
+        },
+        onCommented: function (comment) {
+            this.comments = [comment].concat(this.comments)
+        },
+        onCommentRemoved: function (id) {
+            const index = this.comments.findIndex(c => c.id === id);
+            if (index === -1) return;
+
+            this.comments.splice(index, 1);
         }
     },
     mounted: function () {
@@ -73,18 +73,15 @@ Vue.component("comments-viewer", {
 
             that.comments.splice(index, 1, comment);
         });
-        globalEventEmmiter.$on("commentDeleted", function (id) {
-            const index = that.comments.findIndex(c => c.id === id);
-            if (index === -1) return;
-
-            that.comments.splice(index, 1);
-        });
     },
     template: `
-      <div :class="mixedComments.length > 0 ? 'd-flex flex-column comments-section pt-2' : 'd-flex flex-column'">
-      <h5 v-if="mixedComments.length===0 && !isUnderPost" class="m-4 text-center"><i class="fas fa-sad-tear"></i> No hay
+      <div class="d-flex flex-column comments-section pt-2">
+      <h5>Comentarios</h5>
+      <new-comment :post-to-comment="postId" @commented="onCommented"></new-comment>
+      <h5 v-if="comments.length===0 && !isUnderPost" class="m-4 text-center"><i class="fas fa-sad-tear"></i> No hay
         comentarios que mostrar</h5>
-      <comment v-for="comment in mixedComments" :comment="comment" class="w-auto" :key="comments.id"></comment>
+      <comment v-for="comment in comments" :comment="comment" class="w-auto" :key="comments.id"
+               @commentDeleted="onCommentRemoved"></comment>
       <a :href="openThreadLink" v-if="comments.length < numberOfComments && isUnderPost" class="text-center">Ver
         discusión</a>
       <a href="#" v-on:click="fetchComments" class="text-center mt-2"

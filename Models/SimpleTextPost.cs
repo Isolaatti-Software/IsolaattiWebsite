@@ -20,5 +20,10 @@ namespace isolaatti_API.Models
         public Guid? AudioId { get; set; }
 
         [JsonIgnore] public User User { get; set; }
+
+        public SimpleTextPost()
+        {
+            Date = DateTime.Now.ToUniversalTime();
+        }
     }
 }
