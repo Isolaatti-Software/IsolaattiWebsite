@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore;
 namespace isolaatti_API.Controllers
 {
     [ApiController]
-    [Route("/api/[controller]")]
-    public class FollowingController : Controller
+    [Route("/api/Following")]
+    public class FollowingController : ControllerBase
     {
         private readonly DbContextApp Db;
         private readonly IAccounts _accounts;

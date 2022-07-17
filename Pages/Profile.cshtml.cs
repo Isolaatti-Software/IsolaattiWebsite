@@ -80,7 +80,6 @@ namespace isolaatti_API.Pages
 
             ProfilePhotoUrl = UrlGenerators.GenerateProfilePictureUrl(profile.Id, token, Request);
 
-            ViewData["audioDescription"] = profile.DescriptionAudioUrl;
             ViewData["showEmail"] = profile.ShowEmail;
 
             Followers = (

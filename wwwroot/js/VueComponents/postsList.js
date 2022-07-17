@@ -27,6 +27,10 @@ Vue.component("posts-list", {
             },
             sortingData: {
                 ascending: "0"
+            },
+            postDetails: {
+                post: undefined,
+                usersWhoLiked: []
             }
         }
     },
@@ -61,6 +65,24 @@ Vue.component("posts-list", {
                 return;
             }
             this.posts.splice(index, 1);
+        },
+        putPostDetails: async function (post) {
+            this.postDetails.post = post;
+
+
+            const response = await fetch(`/api/Fetch/Post/${post.id}/LikedBy`, {
+                headers: this.customHeaders
+            });
+            this.postDetails.usersWhoLiked = await response.json();
+        },
+        userProfileLink: function (userId) {
+            return `/perfil/${userId}`;
+        },
+        profilePictureUrl: function (imageId) {
+            if (imageId === null) {
+                return "/res/imgs/user-solid.png";
+            }
+            return `/api/Fetch/ProfileImages/${imageId}.png`;
         }
     },
     mounted: function () {
@@ -88,7 +110,7 @@ Vue.component("posts-list", {
       <post-template v-for="post in posts" :post="post.postData"
                      v-bind:theme="post.theme"
                      v-bind:preview="false"
-                     v-bind:key="post.postData.id" v-on:delete="">
+                     v-bind:key="post.postData.id" v-on:delete="" @details="putPostDetails">
       </post-template>
       <div v-if="loading" class="d-flex justify-content-center mt-2">
         <div class="spinner-border" role="status">
@@ -152,6 +174,28 @@ Vue.component("posts-list", {
                 <option value="0">Más nuevo primero</option>
                 <option value="1">Más viejo primero</option>
               </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal" id="modal-post-info">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Detalles</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <h6>Personas que dieron like</h6>
+              <div class="list-group list-group-flush">
+                <a class="list-group-item list-group-item-action" v-for="user in postDetails.usersWhoLiked" :href="userProfileLink(user.id)">
+                  <img class="user-avatar" :src="profilePictureUrl(user.profileImageId)">
+                  <span>{{user.name}}</span>
+                </a>
+              </div>
             </div>
           </div>
         </div>

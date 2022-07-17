@@ -96,8 +96,8 @@
           <i class="fas fa-stop"></i>
         </button>
         </div>
-      <div class="d-flex flex-column">
-        <p class="text-black-50 m-0">{{name}}</p>
+      <div class="d-flex flex-column overflow-hidden">
+        <p class="text-black-50 m-0 text-ellipsis">{{name}}</p>
         <p class="text-black-50 m-0"><a :href="profileRelativeUrl">{{userName}}</a></p>
       </div>
       <button type="button" class="close ml-auto" v-if="canRemove" v-on:click="$emit('remove')">&times;</button>

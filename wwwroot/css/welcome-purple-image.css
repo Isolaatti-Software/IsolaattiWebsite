@@ -16,7 +16,6 @@ body {
     /*background-color: #330669;*/
     background-blend-mode: soft-light;
     scroll-behavior: smooth;
-    background-image: ;
 }
 h1{
     text-decoration-style: unset;
@@ -126,4 +125,9 @@ footer a {
 
 .isolaatti-name-footer {
     font-family: 'Zen Dots', serif;
+}
+
+.isolaatti-card {
+    box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
+    border-radius: 30px;
 }

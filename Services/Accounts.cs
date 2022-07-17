@@ -50,10 +50,7 @@ namespace isolaatti_API.Services
                 Name = username,
                 Email = email,
                 Password = hashedPassword,
-                Uid = Guid.NewGuid().ToString(),
                 UserPreferencesJson = "{}",
-                FollowersIdsJson = "[]",
-                FollowingIdsJson = "[]",
                 EmailValidated = true
             };
             try

@@ -27,9 +27,18 @@ Vue.component("comments-viewer", {
             return this.preview ? "#" : `/pub/${this.postId}`;
         }
     },
+    watch: {
+        comments: function (old, newValue) {
+            const that = this;
+            setTimeout(function () {
+                that.scrollToBottom();
+            }, 200);
+        }
+    },
     methods: {
         fetchComments: function (event) {
             this.loading = true;
+            const that = this;
             if (event !== undefined) {
                 event.target.disabled = true;
             }
@@ -54,19 +63,26 @@ Vue.component("comments-viewer", {
             });
         },
         onCommented: function (comment) {
-            this.comments = [comment].concat(this.comments)
+            this.comments.push(comment)
         },
         onCommentRemoved: function (id) {
             const index = this.comments.findIndex(c => c.id === id);
             if (index === -1) return;
 
             this.comments.splice(index, 1);
+        },
+        scrollToBottom: function () {
+            let appDiv = document.getElementById("app-main");
+            let appHeight = appDiv.scrollHeight;
+            console.log(appHeight);
+            appDiv.scrollTo(0, appHeight);
         }
     },
-    mounted: function () {
+    mounted: async function () {
         const that = this;
         this.fetchComments();
         this.fetchNumberOfComments();
+
         globalEventEmmiter.$on("commentEdited", function (comment) {
             const index = that.comments.findIndex(c => c.id === comment.id);
             if (index === -1) return;
@@ -75,9 +91,7 @@ Vue.component("comments-viewer", {
         });
     },
     template: `
-      <div class="d-flex flex-column comments-section pt-2">
-      <h5>Comentarios</h5>
-      <new-comment :post-to-comment="postId" @commented="onCommented"></new-comment>
+      <div class="d-flex flex-column comments-section">
       <h5 v-if="comments.length===0 && !isUnderPost" class="m-4 text-center"><i class="fas fa-sad-tear"></i> No hay
         comentarios que mostrar</h5>
       <comment v-for="comment in comments" :comment="comment" class="w-auto" :key="comments.id"
@@ -86,6 +100,8 @@ Vue.component("comments-viewer", {
         discusión</a>
       <a href="#" v-on:click="fetchComments" class="text-center mt-2"
          v-if="!isUnderPost && comments.length < numberOfComments">Cargar más</a>
+      <new-comment :post-to-comment="postId" @commented="onCommented" class="mt-2"></new-comment>
       </div>
+      
     `
 })

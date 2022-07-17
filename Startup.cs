@@ -1,16 +1,12 @@
-/*
-* Isolaatti project
-* Erik Cavazos, 2020
-* This program is not allowed to be copied or reused without explicit permission.
-* erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
-*/
-
 using System;
 using System.IO;
+using System.Text.Json;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using isolaatti_API.Middleware;
 using isolaatti_API.Models;
+using isolaatti_API.Models.AudiosMongoDB;
+using isolaatti_API.Repositories;
 using isolaatti_API.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
@@ -102,6 +98,22 @@ namespace isolaatti_API
 
             services.AddDataProtection().PersistKeysToDbContext<MyKeysDbContext>();
 
+            if (_environment.IsProduction())
+            {
+                var mongoConfigEnvVar = Environment.GetEnvironmentVariable("mongodb_config");
+                services.Configure<MongoDatabaseConfiguration>(config =>
+                {
+                    var mongoConfig = JsonSerializer.Deserialize<MongoDatabaseConfiguration>(mongoConfigEnvVar!);
+                    config.ConnectionString = mongoConfig?.ConnectionString;
+                    config.DatabaseName = mongoConfig?.DatabaseName;
+                    config.AudiosCollectionName = mongoConfig?.AudiosCollectionName;
+                });
+            }
+
+            services.Configure<MongoDatabaseConfiguration>(Configuration.GetSection("AudiosMongoDb"));
+
+            services.AddScoped<AudiosRepository>();
+
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // No consent check needed here
@@ -129,6 +141,14 @@ namespace isolaatti_API
             services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = 1024 * 1024 * 2);
 
             services.AddSwaggerGen();
+
+            services.AddWebOptimizer(pipeline =>
+            {
+                pipeline.MinifyCssFiles();
+                pipeline.MinifyJsFiles();
+                pipeline.MinifyHtmlFiles();
+                pipeline.AddScssBundle("/css/main.css", "scss/isolaatti.scss");
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -148,9 +168,10 @@ namespace isolaatti_API
 
             app.UseForwardedHeaders();
             app.UseHsts();
+            app.UseStaticFiles();
             app.UseRouting();
             app.UseAuthorization();
-            app.UseStaticFiles();
+            app.UseWebOptimizer();
             app.UseHttpsRedirection();
             app.UseMiddleware<ScopedHttpContextMiddleware>();
             app.UseEndpoints(endpoints =>

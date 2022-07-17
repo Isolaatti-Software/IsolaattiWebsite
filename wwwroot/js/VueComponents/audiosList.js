@@ -78,7 +78,7 @@ Vue.component("audios-list", {
           class="fa-solid fa-face-sad-cry"></i></p>
       <div class="d-flex flex-column">
         <audio-attachment :audio-id="audio.id" v-for="audio in audios" v-on:click="$emit('audio-selected',audio.id)"
-                          data-dismiss="modal" class="mt-1"></audio-attachment>
+                          data-dismiss="modal" class="mt-1" :key="audio.id"></audio-attachment>
       </div>
       </div>
     `

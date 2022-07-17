@@ -8,7 +8,6 @@ using isolaatti_API.Classes.ApiEndpointsRequestDataModels;
 using isolaatti_API.Classes.ApiEndpointsResponseDataModels;
 using isolaatti_API.Models;
 using isolaatti_API.Services;
-using isolaatti_API.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -57,11 +56,11 @@ namespace isolaatti_API.Controllers
                 Email = user.Email,
                 Description = user.DescriptionText,
                 Color = userPreferences.ProfileHtmlColor ?? "#731D8C",
-                AudioUrl = user.DescriptionAudioUrl,
                 NumberOfPosts = await _db.SimpleTextPosts.CountAsync(post => post.UserId == user.Id),
-                ProfilePictureUrl = UrlGenerators.GenerateProfilePictureUrl(user.Id, sessionToken, Request),
                 NumberOfFollowers = user.NumberOfFollowers,
                 NumberOfFollowings = user.NumberOfFollowing,
+                ProfilePictureId = user.ProfileImageId,
+                ProfileAudioId = user.DescriptionAudioId,
                 NumberOfLikes = await _db.Likes.CountAsync(like => like.TargetUserId == user.Id)
             };
             return Ok(profile);
@@ -98,12 +97,18 @@ namespace isolaatti_API.Controllers
                 Email = account.ShowEmail ? account.Email : null,
                 Description = account.DescriptionText,
                 Color = userPreferences.ProfileHtmlColor ?? "#731D8C",
-                AudioUrl = account.DescriptionAudioUrl,
+                ProfileAudioId = account.DescriptionAudioId,
                 NumberOfPosts = _db.SimpleTextPosts.Count(post => post.UserId == account.Id),
-                ProfilePictureUrl = UrlGenerators.GenerateProfilePictureUrl(account.Id, sessionToken, Request),
+                ProfilePictureId = account.ProfileImageId,
                 NumberOfFollowers = account.NumberOfFollowers,
                 NumberOfFollowings = account.NumberOfFollowing,
-                NumberOfLikes = _db.Likes.Count(like => like.TargetUserId == account.Id)
+                NumberOfLikes = _db.Likes.Count(like => like.TargetUserId == account.Id),
+                NumberOfLikesGiven = _db.Likes.Count(like => like.UserId == account.Id),
+                IsUserItself = account.Id == user.Id,
+                FollowingThisUser =
+                    _db.FollowerRelations.Any(fr => fr.UserId == user.Id && fr.TargetUserId == account.Id),
+                ThisUserIsFollowingMe =
+                    _db.FollowerRelations.Any(fr => fr.UserId == account.Id && fr.TargetUserId == user.Id)
             };
             return Ok(profile);
         }
@@ -323,6 +328,32 @@ namespace isolaatti_API.Controllers
         }
 
         [HttpGet]
+        [Route("Post/{postId:long}/LikedBy")]
+        public async Task<IActionResult> GetPostLikedBy([FromHeader(Name = "sessionToken")] string sessionToken,
+            long postId)
+        {
+            var user = await _accounts.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
+
+            var post = await _db.SimpleTextPosts.FindAsync(postId);
+            if (post == null || (post.Privacy == 1 && post.UserId != user.Id)) return NotFound("post not found");
+
+            var likedBy =
+                from like in _db.Likes
+                from account in _db.Users
+                where like.UserId == account.Id && like.PostId == post.Id
+                select new
+                {
+                    Id = account.Id,
+                    Name = account.Name,
+                    ProfileImageId = account.ProfileImageId
+                };
+
+            return Ok(likedBy.ToList());
+        }
+
+
+        [HttpGet]
         [Route("PublicThread/{id:long}")]
         public async Task<IActionResult> PublicThread(long id)
         {
@@ -375,7 +406,7 @@ namespace isolaatti_API.Controllers
             if (otherUser.ProfileImageId == null) return Redirect("/res/imgs/user-solid.svg");
             var profileImage = await _db.ProfileImages.FindAsync(otherUser.ProfileImageId);
             if (profileImage == null) return Redirect("/res/imgs/user-solid.svg");
-            return new FileContentResult(profileImage.ImageData, "image/png");
+            return new FileContentResult(Convert.FromBase64String(profileImage.ImageData), "image/png");
         }
 
         [HttpGet]
@@ -385,7 +416,7 @@ namespace isolaatti_API.Controllers
             var image = await _db.ProfileImages.FindAsync(id);
             if (image == null) return NotFound();
             if (image.ImageData == null) return NotFound();
-            return new FileContentResult(image.ImageData, "image/png");
+            return new FileContentResult(Convert.FromBase64String(image.ImageData), "image/png");
         }
 
         [HttpGet]

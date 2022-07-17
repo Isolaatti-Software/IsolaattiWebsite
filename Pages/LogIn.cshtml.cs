@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace isolaatti_API.Pages
 {
-    [IgnoreAntiforgeryToken]
     public class LogIn : PageModel
 
     {

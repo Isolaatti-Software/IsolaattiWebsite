@@ -1,4 +1,4 @@
-﻿using isolaatti_API.Models;
+﻿using isolaatti_API.Models.AudiosMongoDB;
 
 namespace isolaatti_API.Classes.ApiEndpointsResponseDataModels;
 
@@ -8,7 +8,7 @@ public class FeedAudio : Audio
     {
         Id = audio.Id;
         Name = audio.Name;
-        CreatedAt = audio.CreatedAt;
+        CreationTime = audio.CreationTime;
         UserId = audio.UserId;
     }
 

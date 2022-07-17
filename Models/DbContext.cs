@@ -34,9 +34,6 @@ namespace isolaatti_API.Models
         public DbSet<Like> Likes { get; set; }
         public DbSet<FollowerRelation> FollowerRelations { get; set; }
 
-        // These models will be dropped from this app and moved to the service "Audios"
-        public DbSet<Audio> Audios { get; set; }
-
         // These models will be dropped from this app and moved to the service "Images"
         public DbSet<ProfileImage> ProfileImages { get; set; }
 

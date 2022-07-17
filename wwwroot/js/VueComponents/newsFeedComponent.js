@@ -7,6 +7,10 @@
             posts: [],
             loading: true,
             noMoreContent: false,
+            postDetails: {
+                post: undefined,
+                usersWhoLiked: []
+            }
         }
     },
     methods: {
@@ -39,6 +43,24 @@
                 return;
             }
             this.posts.splice(index, 1);
+        },
+        putPostDetails: async function (post) {
+            this.postDetails.post = post;
+
+
+            const response = await fetch(`/api/Fetch/Post/${post.id}/LikedBy`, {
+                headers: this.customHeaders
+            });
+            this.postDetails.usersWhoLiked = await response.json();
+        },
+        userProfileLink: function (userId) {
+            return `/perfil/${userId}`;
+        },
+        profilePictureUrl: function (imageId) {
+            if (imageId === null) {
+                return "/res/imgs/user-solid.png";
+            }
+            return `/api/Fetch/ProfileImages/${imageId}.png`;
         }
     },
     mounted: async function () {
@@ -51,7 +73,7 @@
       <h5 class="mt-2"><i class="far fa-newspaper"></i> Actividad de las personas que sigues</h5>
       <post-template v-for="post in posts" :post="post.postData"
                      v-bind:theme="post.theme"
-                     v-bind:key="post.postData.id">
+                     v-bind:key="post.postData.id" @details="putPostDetails">
       </post-template>
       <div v-if="loading" class="d-flex justify-content-center mt-2">
         <div class="spinner-border" role="status">
@@ -66,6 +88,27 @@
       </div>
       <div v-else>
         <button class="btn btn-light" v-on:click="fetchFeed()">Cargar más</button>
+      </div>
+      <div class="modal" id="modal-post-info">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Detalles</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <h6>Personas que dieron like</h6>
+              <div class="list-group list-group-flush">
+                <a class="list-group-item list-group-item-action" v-for="user in postDetails.usersWhoLiked" :href="userProfileLink(user.id)">
+                  <img class="user-avatar" :src="profilePictureUrl(user.profileImageId)">
+                  <span>{{user.name}}</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       </section>
     `

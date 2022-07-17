@@ -5,6 +5,8 @@
 * erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
 */
 
+using System;
+
 namespace isolaatti_API.Classes
 {
     public class Profile
@@ -13,11 +15,15 @@ namespace isolaatti_API.Classes
         public string Email { get; set; }
         public string Description { get; set; }
         public string Color { get; set; }
-        public string AudioUrl { get; set; }
         public int NumberOfPosts { get; set; }
-        public string ProfilePictureUrl { get; set; }
+        public string ProfileAudioId { get; set; }
+        public Guid? ProfilePictureId { get; set; }
         public int NumberOfFollowers { get; set; }
         public int NumberOfFollowings { get; set; }
         public int NumberOfLikes { get; set; }
+        public int NumberOfLikesGiven { get; set; }
+        public bool IsUserItself { get; set; }
+        public bool FollowingThisUser { get; set; }
+        public bool ThisUserIsFollowingMe { get; set; }
     }
 }

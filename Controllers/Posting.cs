@@ -10,13 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace isolaatti_API.Controllers
 {
-    /*
-     * This Controller receives a parameter called "privacy". It is an integer that means:
-     * 1: Private
-     * 2: Only available for Isolaatti users
-     * 3: Available for everyone
-     */
-
     [ApiController]
     [Route("/api/Posting")]
     public class MakePost : ControllerBase

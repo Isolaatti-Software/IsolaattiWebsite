@@ -1,4 +1,4 @@
-@page
+@page "/terminos_de_uso"
 @model isolaatti_API.Pages.s.Legal.TermsOfUse
 
 @section metadata
@@ -8,45 +8,46 @@
 
 @{
     Layout = "Shared/_LayoutWebAppOutside";
-    ViewData["Title"] = "Terms of Use for early adopters";
+    ViewData["Title"] = "Términos de uso de Isolaatti Software";
 }
 <div class="d-flex flex-column p-3 mt-4">
-    <h1>Isolaatti service conditions for early adopters</h1>
-    <p>
-        Isolaatti appreciate your participation as early adopter. As early adopter, you will become an important source of
-        feedback for Isolaatti's software development. That said, let us continue towards what we (you and Isolaatti) are comitting to (not legally but morally).
+    <p class="display-1" style="font-family: 'Zen Dots', serif;
+                                             color: #eddff6;
+                                             font-size: 40px;
+                                             text-shadow: -3px 4px #6529a4;
+                                             text-decoration: none;
+                                             text-align: center;
+                                             filter: drop-shadow(-10px 16px 50px rgb(62, 0, 99));">
+        Isolaatti
     </p>
-    <h2>Reliability of the software</h2>
+    <h1>Términos de uso del software de Isolaatti</h1>
+    <p>Isolaatti Software le agradece cortesmente que utilice nuestros servicios. Estudie bien los siguiente términos de uso.</p>
+    <h2>Política de privacidad</h2>
+    <p>Antes de utilizar cualquiera de los productos de Isolaatti Software, es obligatorio leer y aceptar la política de privacidad vigente correspondiente al producto que desee utilizar.</p>
+    <h2>Confiabilidad del software</h2>
     <p>
-        Isolaatti is offered to you without any kind of warranty from us. That means that the web application and all related software products (mobiles apps)
-        can go down for a undefined time. In addtion, data loss can occur very often, as databases are being constantly changed according to new features being added.
-        Bugs, security holes and many other software disgraces can be present as well.
+        Todo el software desarrollado por Isolaatti Software, y que directa o indirectamente se ponga a su disposición,
+        está contruido con la intención de que sea útil y de buena calidad, pero no se ofrece garantía, ni de ausencia
+        total de errores ni disponibilidad total del servicio.
+    </p>
+    <h2>Disponibilidad del código fuente</h2>
+    <p>
+        Algunos de los productos se publican como código abierto. Si es el caso del producto que desee utilizar,
+        se le proporcionará un enlace al repositorio de código, generalmente mediante un enlace en la interfaz
+        gráfica.
     </p>
     <p>
-        We encourage users to not trust their confidential information to any Isolaatti software application, because of the reasons stated above. We will not help you
-        to recover any post, comment, account or whatever that gets lost. Still we would be grateful if you report any bug and data loss you experience on the platform.
-    </p>
-    <h2>Feedback reception</h2>
-    <p>
-        Of course, you do not have to give us any advice or new feature recomendation. It is in you giving us any idea or reporting any error on the platform. However, we
-        might or not implement it.
+        El hecho de que sea código abierto hace que el código fuente se riga por la licencia definida en el repositorio.
+        Si es una licencia restrictiva, no está permitido la privatización del código fuente.
     </p>
     <p>
-        Regarding the autorithy of your ideas, if it is implemented, it will become part of the already implemented features and you will be added to the list of lovely
-        people that have helped as early adopters.
+        Además, dado que la disponibilidad del código fuente permite a todo el mundo "levantar" sus propias versiones
+        de la aplicación, se le recomienda enfáticamente que revise bien quien le ofrece la implementación. Los
+        productos distribuidos oficialmente estarán en un subdominio de isolaatti.com, o si no serán ofertados como
+        oficiales desde un sitio web de isolaatti.com o un correo del mismo dominio.
     </p>
-    <h2>Source code</h2>
     <p>
-        Source code is not publicly available yet, and we do not know whether it will be. However, javascript code included in pages can still be viewed easily. By making
-        your account, you are stating that you will not analyze or copy the code.
+        NO se ofrece soporte a usuarios finales que utilicen productos derivados del código fuente publicado. Póngase en
+        contacto con el encargado del proyecto derivado.
     </p>
-    <h2>Fair use of server resources</h2>
-    <p>
-        You are commiting to not commit abuse against backend services. Among others, it includes:
-    </p>
-    <ul>
-        <li>Intentional bad API requests</li>
-        <li>Excesive number of requests being sent</li>
-        <li>Fraudulent account making (fake accounts that are not for testing. Users can have up to two accounts)</li>
-    </ul>
 </div>
