@@ -1,5 +1,5 @@
 # Isolaatti-BackendWebApp
-Backend y frontend de Isolaatti
+Sitio web de Isolaatti
 
 Bienvenid@
 
@@ -9,40 +9,23 @@ El proyecto puede funcionar en Windows, Linux o Mac.
 ## Cosas a instalar
 * Microsoft .NET 6 https://dotnet.microsoft.com/en-us/download/dotnet/6.0
 * PostgreSQL
-* (Opcional pero recomendado) Instalar un IDE compatible con .NET. Puede ser Visual Studio 2022, JetBrains Rider o
-  cualquier editor de código compatible, como VS Code.
-* (Opcional) Si quieres hacer queries directamente a tu base de datos, puedes instalar Azure Data Studio o alguno de tu preferencia.
+* MongoDB
 
 ## Cosas que debes tener disponibles
 * Una cuenta de SendGrid. Esto se usa para enviar correos. https://sendgrid.com/free/
 * Cuenta de Google Firebase (puede ser la gratuita). Esto crea una cuenta de Google Cloud también.
 
 ## appsettings.Development.json
-Una vez que tengas tu cuenta y api key, deberías sustituir lo siguiente del 
-archivo [appsettings.Development.json](appsettings.Development.json)
-```json
-{
-  "Logging": {
-    "LogLevel": {
-      "Default": "Information",
-      "Microsoft": "Warning",
-      "Microsoft.Hosting.Lifetime": "Information"
-    }
-  },
-  "AllowedHosts": "*",
-  "ConnectionStrings": {
-    "Database": "**aqui va el connection string de la base de datos de desarrollo"
-  },
-  "ApiKeys": {
-    "SendGrid": "**aqui va el apikey de sendgrid**"
-  }
-}
-```
+Este archivo debe encontrarse en tu entorno local, pero no se incluye en el repositorio. Revisa el archivo y crealo. Cuida de no hacer commit a repositorios publicos,
+ya que podrías exponer secretos.
+https://gist.github.com/erik-everardo/9adcee90e7fbbb5094d380201e1ee907
 
 ## isolaatti-firebase-adminsdk.json
 Este archivo no existe en el repositorio, pero deberás utilizar el proporcionado por Google Cloud. 
 Tienes que crear una clave de acceso administrador. Esto se usa para poder, desde el servidor, validar las sesiones de cuentas
 de Google, Microsoft y Facebook. También se necesita para acceder al Bucket de storage.
+
+Debes usar este mismo nombre, o de lo contrario tendrías que modificar el código donde se use el archivo, y cambiar el nombre del archivo.
 
 Lee lo siguiente:
 * Admin: https://firebase.google.com/docs/admin/setup?authuser=0&%3Bhl=es&hl=es
