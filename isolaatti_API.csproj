@@ -12,6 +12,8 @@
         <PackageReference Include="FirebaseAdmin" Version="1.6.0"/>
         <PackageReference Include="Flurl.Http" Version="3.2.2"/>
         <PackageReference Include="Google.Cloud.Storage.V1" Version="3.7.0"/>
+        <PackageReference Include="LigerShark.WebOptimizer.Core" Version="3.0.365"/>
+        <PackageReference Include="LigerShark.WebOptimizer.Sass" Version="3.0.84"/>
         <PackageReference Include="Mailkit" Version="3.2.0"/>
         <PackageReference Include="Microsoft.AspNet.SignalR.JS" Version="2.4.3"/>
         <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7"/>
@@ -27,6 +29,8 @@
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="6.0.0"/>
         <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.2"/>
         <PackageReference Include="FirebaseAdmin" Version="1.6.0"/>
+        <PackageReference Include="MongoDB.Driver" Version="2.16.1"/>
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.3"/>
         <PackageReference Include="SendGrid" Version="9.27.0"/>
         <PackageReference Include="SendGrid.Extensions.DependencyInjection" Version="1.0.1"/>
         <PackageReference Include="SixLabors.ImageSharp" Version="2.1.0"/>
@@ -34,9 +38,8 @@
     </ItemGroup>
 
   <ItemGroup>
-      <Folder Include="Hubs"/>
     <Folder Include="Migrations" />
-    <Folder Include="wwwroot\appsJS\demixer" />
+      <Folder Include="wwwroot\scss"/>
   </ItemGroup>
 
     <ItemGroup>
@@ -55,6 +58,8 @@
         <_ContentIncludedByDefault Remove="Pages\admin\LogOut.cshtml"/>
         <_ContentIncludedByDefault Remove="Pages\admin\Reports.cshtml"/>
         <_ContentIncludedByDefault Remove="Pages\admin\Tools\ViewContent.cshtml"/>
+        <_ContentIncludedByDefault Remove="Pages\Reports\ReportPostOrComment.cshtml"/>
+        <_ContentIncludedByDefault Remove="Pages\Reports\ThankYou.cshtml"/>
     </ItemGroup>
 
 </Project>

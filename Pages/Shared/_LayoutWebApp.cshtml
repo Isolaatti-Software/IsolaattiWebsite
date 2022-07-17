@@ -5,11 +5,8 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>@ViewData["Title"] | Isolaatti</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
-          integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-    <link rel="stylesheet" href="~/css/webapp_main.css"/>
-    <link rel="stylesheet" href="~/css/custom_bootstrap.css"/>
-    <link rel="stylesheet" href="~/css/notifications-container-style.css">
+    <link rel="stylesheet" href="/css/main.css"/>
+    <link rel="stylesheet" href="~/css/audios-feed-bottom-sheet.css">
 
     <link rel="shortcut icon" href="~/favicon.ico">
     <link rel="icon" type="image/png" sizes="196x196" href="~/favicon-192.png">
@@ -32,81 +29,52 @@
     </script>
 </head>
 <body>
-<div id="app" class="position-relative">
+
+
+@* All the content of this div with id app can host Vue.js components. Do not create new instances of Vue.js inside *@
+<div id="app" class="position-relative overflow-hidden">
+    <div class="modal fade" id="search-modal">
+        <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+            <div class="modal-content bg-transparent p-2 border-0">
+                <quick-search></quick-search>
+            </div>
+        </div>
+    </div>
     <section class="notifications-stack" id="notifications">
 
     </section>
-    <nav class="d-flex custom-nav sticky-top pr-2 pl-2" id="isolaatti-top-bar">
-        <a href="/" class="nav-link custom-nav-link mr-md-auto" id="isolaatti_brand"></a>
-        <div class="container-md container-fluid" id="top-bar-content">
-            <div class="d-flex w-100 align-items-center">
+    <div class="container">
+        <nav class="d-flex custom-nav sticky-top pr-2 pl-2" id="isolaatti-top-bar">
+            <a href="/" class="nav-link custom-nav-link mr-md-auto" id="isolaatti_brand"></a>
+            <div class="container-md container-fluid" id="top-bar-content">
 
-                <div class="d-flex flex-grow-1" id="search-bar-fixed-top">
-                    <button type="button"
-                            class="btn btn-dark btn-sm mr-1 nav-link custom-nav-link"
-                            id="search-bar-mobile-button-close">
-                        <i class="far fa-window-close"></i>
+                <div class="d-flex w-100 align-items-center">
+
+                    @* <audio-player class="ml-auto"></audio-player> *@
+                    <button class="btn btn-transparent nav-link custom-nav-link mr-1 ml-auto" data-toggle="modal" data-target="#search-modal">
+                        <i class="fa-solid fa-magnifying-glass"></i>
                     </button>
-                    <input type="text"
-                           class="search-bar-on-top flex-grow-1"
-                           form="form-search"
-                           name="q"
-                           placeholder="Busca personas, hilos, etc."/>
-                    <button class="btn btn-sm ml-1 nav-link custom-nav-link"
-                            type="submit"
-                            form="form-search">
-                        <i class="fas fa-search"></i>
-                    </button>
-                </div>
-
-                <audio-player class="ml-auto"></audio-player>
-
-
-                @* <a asp-page="/Squads" *@
-                @*    class="btn nav-link custom-nav-link" *@
-                @*    title="Squads"> *@
-                @*     <i class="fas fa-users"></i> *@
-                @* </a> *@
-                @* <a asp-page="/Lists" *@
-                @*    class="btn nav-link custom-nav-link mr-2" title="Listas"> *@
-                @*     <i class="fas fa-list"></i> *@
-                @* </a> *@
-
-                <a class="nav-link custom-nav-link mr-1 ml-auto"
-                   href="#"
-                   role="button"
-                   id="dropdownNotificationsMenuLink"
-                   aria-haspopup="true" aria-expanded="false"
-                   onclick="vueInstanceForNotifications.toggleNotificationsSlider()">
-                    <i class="fas fa-bell"></i>
-                    <span class="badge badge-light" id="unread-count"></span>
-                </a>
-
-                <div class="dropdown ">
-                    <a class="nav-link custom-nav-link nav-link mr-1 dropdown-toggle"
+                    <a class="nav-link custom-nav-link mr-1" href="#" v-on:click="toggleAudiosFeed">
+                        <i class="fa-solid fa-ear-listen"></i>
+                    </a>
+                    <a class="nav-link custom-nav-link mr-1"
                        href="#"
                        role="button"
-                       id="dropdownMenuLink"
-                       data-toggle="dropdown"
-                       aria-haspopup="true"
-                       aria-expanded="false">
-                        @if (ViewData["profilePicUrl"] == null)
-                        {
-                            <i class="fas fa-user-circle"></i>
-                        }
-                        else
-                        {
-                            <img width="40" height="40" src="@ViewData["profilePicUrl"]" class="user-avatar"/>
-                        }
+                       id="dropdownNotificationsMenuLink"
+                       aria-haspopup="true" aria-expanded="false"
+                       onclick="vueInstanceForNotifications.toggleNotificationsSlider()">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge badge-light" id="unread-count"></span>
                     </a>
-                    <div class="dropdown-menu dropdown-menu-right"
-                         aria-labelledby="dropdownMenuLink">
-                        <div class="dropdown-header">
-                            @ViewData["name"]
-                        </div>
-                        <div class="dropdown-divider"></div>
-                        <a asp-page="/MyProfile"
-                           class="dropdown-item">
+
+                    <div class="dropdown">
+                        <a class="nav-link custom-nav-link nav-link mr-1 dropdown-toggle"
+                           href="#"
+                           role="button"
+                           id="dropdownMenuLink"
+                           data-toggle="dropdown"
+                           aria-haspopup="true"
+                           aria-expanded="false">
                             @if (ViewData["profilePicUrl"] == null)
                             {
                                 <i class="fas fa-user-circle"></i>
@@ -115,167 +83,74 @@
                             {
                                 <img width="40" height="40" src="@ViewData["profilePicUrl"]" class="user-avatar"/>
                             }
-                            Mi perfil
                         </a>
-                        <a class="dropdown-item"
-                           asp-page="/Settings">
-                            <i class="fas fa-cog"></i>Ajustes
-                        </a>
-                        <a class="dropdown-item"
-                           asp-page="/About"
-                           target="_blank">
-                            <i class="fas fa-info"></i>Acerca de
-                        </a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item"
-                           href="/WebLogOut">
-                            <i class="fas fa-sign-out-alt"></i>@Languages.Spanish[Languages.SignOut]
-                        </a>
+                        <div class="dropdown-menu dropdown-menu-right"
+                             aria-labelledby="dropdownMenuLink">
+                            <div class="dropdown-header">
+                                @ViewData["name"]
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <a asp-page="/MyProfile"
+                               class="dropdown-item">
+                                @if (ViewData["profilePicUrl"] == null)
+                                {
+                                    <i class="fas fa-user-circle"></i>
+                                }
+                                else
+                                {
+                                    <img width="40" height="40" src="@ViewData["profilePicUrl"]" class="user-avatar"/>
+                                }
+                                Mi perfil
+                            </a>
+                            <a class="dropdown-item"
+                               asp-page="/Settings">
+                                <i class="fas fa-cog"></i>Ajustes
+                            </a>
+                            <a class="dropdown-item"
+                               asp-page="/About"
+                               target="_blank">
+                                <i class="fas fa-info"></i>Acerca de
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item"
+                               href="/WebLogOut">
+                                <i class="fas fa-sign-out-alt"></i>@Languages.Spanish[Languages.SignOut]
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </nav>
-    <main id="main-container">
-
-
-        <div class="fluid-container p-0">
-            <div class="row m-0">
-                @RenderBody()
-            </div>
-
-        </div>
-
-
-        <div class="modal" id="modal-view-image">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Imagen</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            &times;
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <img class="w-100" id="image-modal-image-el"/>
-                    </div>
-                    <div class="modal-footer">
-                        <a href="#" id="image-modal-all-images-a-el">Ver imágenes</a>
-                    </div>
-                </div>
-            </div>
-        </div>
+        </nav>
+    </div>
+    <main style="height: calc(100vh - 77px); overflow: auto;" id="app-main">
+        <div class="container p-0" v-on:click="showAudiosFeedState='hide'">@RenderBody()</div>
+        <bottom-sheet-audio-feed :state="showAudiosFeedState"></bottom-sheet-audio-feed>
     </main>
-    <nav id="bottom-mobile-navbar">
-        <a class="bottom-mobile-bar-item" asp-page="/Index">
-            <div class="text-center">
-                <i class="fas fa-home"></i>
-            </div>
-            <div class="text-center bottom-mobile-bar-item">
-                Inicio
-            </div>
-        </a>
-        <a class="bottom-mobile-bar-item" asp-page="/Search">
-            <div class="text-center">
-                <i class="fas fa-search"></i>
-            </div>
-            <div class="text-center bottom-mobile-bar-item">
-                Buscar
-            </div>
-        </a>
-        <a class="bottom-mobile-bar-item" asp-page="/PostEditor">
-            <div class="text-center">
-                <i class="fas fa-feather"></i>
-            </div>
-            <div class="text-center bottom-mobile-bar-item">
-                Publicar
-            </div>
-        </a>
-
-        <a class="bottom-mobile-bar-item" asp-page="MyProfile">
-            <div class="text-center">
-                @if (ViewData["profilePicUrl"] == null)
-                {
-                    <i class="fas fa-user-circle"></i>
-                }
-                else
-                {
-                    <img width="40" height="40" src="@ViewData["profilePicUrl"]" class="user-avatar"/>
-                }
-            </div>
-            <div class="text-center bottom-mobile-bar-item">
-                Perfil
-            </div>
-        </a>
-        <a class="bottom-mobile-bar-item" asp-page="Settings">
-            <div class="text-center">
-                <i class="fas fa-cog"></i>
-            </div>
-            <div class="text-center bottom-mobile-bar-item">
-                Ajustes
-            </div>
-        </a>
-
-
-    </nav>
 </div>
 
 <form id="form-search" asp-page="/Search" method="get"></form>
 
-<div id="vue-container-for-notifications" class="sticky-top" ref="notificationsSlider">
-    <div id="notifications-container">
-        <div class="d-flex m-2 align-items-center">
-            <button class="btn btn-primary" v-on:click="toggleNotificationsSlider">
-                &times
-            </button>
-            <h3 class="ml-2 m-0">Notificaciones</h3>
-
-        </div>
-        <notification v-for="notification in notifications"
-                      :notification-obj="notification">
-
-        </notification>
-    </div>
-</div>
-
-<div id="audio-player"></div>
-
-
-<!-- JS, Popper.js, and jQuery -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
-<script src="~/js/VueGlobal.js"></script>
-@* Add here vue.js components files *@
-<script src="~/js/VueComponents/globalAudioPlayerComponent.js"></script>
+
+@* Add here global Vue.js components files. Components used in pages should not be added here *@
 <script src="~/js/VueComponents/audioAttachmentComponent.js"></script>
+<script src="~/js/VueComponents/audiosFeedBottomSheet.js"></script>
+<script src="~/js/VueComponents/quickSearchComponent.js"></script>
 
-<script src="~/js/VueComponents/notificationComponent.js"></script>
-<script src="~/js/VueComponents/globalAudioPlayerComponent.js"></script>
-
-
-<script src="~/js/topbar.js"></script>
 @* This scripts are added only for specific pages *@
 @await RenderSectionAsync("Scripts", required: false)
 
+<script src="~/js/VueComponents/page/global.js"></script>
 
-<script>
-$('#modal-view-image').on("show.bs.modal", function(event) {
-     const image = $(event.relatedTarget);
-     const imageUrl = image.data("url");
-     const userId = image.data("userid");
-     $(this).find('#image-modal-image-el').attr("src", imageUrl);
-     $(this).find('#image-modal-all-images-a-el').attr("href", `/perfil/${userId}/imagenes_perfil`);
-});
-</script>
 <script>
 document.getElementById("app").style.height = `${window.innerHeight}px`;
 window.onresize = function() {
     document.getElementById("app").style.height = `${window.innerHeight}px`;
 }
-
 </script>
 </body>
 </html>

@@ -1,5 +1,15 @@
 Vue.component('comment', {
-    props: ['comment'],
+    props: {
+        comment: {
+            type: Object,
+            required: true
+        },
+        inPreview: {
+            type: Boolean,
+            required: false,
+            default: false
+        }
+    },
     data: function () {
         return {
             userData: userData,
@@ -17,7 +27,7 @@ Vue.component('comment', {
             return `/Reports/ReportPostOrComment?commentId=${this.comment.id}`;
         },
         containerCssClass: function () {
-            return this.cutContent ? "post d-flex mt-2 flex-column p-2 post-cut-height" : "post d-flex mt-2 flex-column p-2"
+            return this.cutContent ? "post d-flex flex-column p-2 post-cut-height" : "post d-flex flex-column p-2"
         },
         titleAtr: function () {
             return `id del comentario: ${this.comment.id}`
@@ -47,12 +57,15 @@ Vue.component('comment', {
                 })
             }).then(_ => {
                 this.deleteMode = false;
-                globalEventEmmiter.$emit("commentDeleted", that.comment.id);
+                that.$emit("commentDeleted", that.comment.id);
             });
         }
     },
     template: `
       <div :style="rootContainerCss" class="mt-1">
+      <div class="d-flex justify-content-center" v-if="!inPreview">
+        <div style="background-color: #22034f; width: 2px; height: 20px;"></div>
+      </div>
       <section v-if="edit" class="d-flex justify-content-end p-1">
         <button @click="edit=false" class="btn btn-danger btn-sm">Cancelar edición</button>
       </section>
@@ -73,7 +86,7 @@ Vue.component('comment', {
               </div>
             </div>
             <div class="dropdown dropleft" v-if="userData.id!==-1">
-              <button class="btn btn-light btn-sm" data-toggle="dropdown" aria-haspopup="true">
+              <button class="btn btn-transparent btn-sm" data-toggle="dropdown" aria-haspopup="true">
                 <i class="fas fa-ellipsis-h"></i>
               </button>
               <div class="dropdown-menu">

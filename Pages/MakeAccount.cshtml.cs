@@ -1,19 +1,11 @@
-/*
-* Isolaatti project
-* Erik Cavazos, 2020
-* This program is not allowed to be copied or reused without explicit permission.
-* erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
-*/
-
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using isolaatti_API.Enums;
-using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
+using isolaatti_API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using SendGrid;
 
 namespace isolaatti_API.Pages
 {
@@ -25,12 +17,12 @@ namespace isolaatti_API.Pages
         public bool nameUsed = false;
         public bool LimitOfAccountsReached = false;
         public bool AccountNotMade = false;
-        private readonly ISendGridClient _sendGridClient;
+        private readonly IAccounts _accounts;
 
-        public MakeAccount(DbContextApp dbContextApp, ISendGridClient sendGrid)
+        public MakeAccount(DbContextApp dbContextApp, IAccounts accounts)
         {
             _db = dbContextApp;
-            _sendGridClient = sendGrid;
+            _accounts = accounts;
         }
 
         public async Task<IActionResult> OnGet(string user = "", string email = "", string error = "",
@@ -68,13 +60,10 @@ namespace isolaatti_API.Pages
                 return Page();
             }
 
-            var accountManager = new Accounts(_db);
-            accountManager.DefineHttpRequestObject(Request);
-            var result = await accountManager.MakeAccountAsync(username, email, password);
+            var result = await _accounts.MakeAccountAsync(username, email, password);
             switch (result)
             {
                 case AccountMakingResult.Ok:
-                    await Accounts.SendWelcomeEmail(_sendGridClient, email, username);
                     if (!then.Equals(""))
                     {
                         return Redirect(then);

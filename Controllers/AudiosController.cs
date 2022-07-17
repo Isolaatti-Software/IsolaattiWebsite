@@ -1,13 +1,13 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Storage.V1;
 using isolaatti_API.Classes.ApiEndpointsRequestDataModels;
 using isolaatti_API.Classes.ApiEndpointsResponseDataModels;
-using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
+using isolaatti_API.Repositories;
+using isolaatti_API.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,28 +19,29 @@ public class AudiosController : ControllerBase
 {
     private readonly DbContextApp _db;
     private readonly StorageClient _storage;
+    private readonly IAccounts _accounts;
+    private readonly AudiosRepository _audios;
 
-    public AudiosController(DbContextApp dbContextApp)
+    public AudiosController(DbContextApp dbContextApp, IAccounts accounts, AudiosRepository audios)
     {
         _db = dbContextApp;
         var file = System.IO.File.Open("isolaatti-firebase-adminsdk.json", FileMode.Open, FileAccess.Read,
             FileShare.Read);
         var credential = GoogleCredential.FromStream(file);
         _storage = StorageClient.Create(credential);
+        _accounts = accounts;
+        _audios = audios;
     }
 
     [HttpGet]
-    [Route("OfUser/{userId:int}/{lastAudioTimestamp:datetime?}")]
+    [Route("OfUser/{userId:int}")]
     public async Task<IActionResult> GetAudiosOfUser([FromHeader(Name = "sessionToken")] string sessionToken,
-        int userId, DateTime lastAudioTimestamp)
+        int userId, [FromQuery] string lastAudioId)
     {
-        var accountsManager = new Accounts(_db);
-        var user = await accountsManager.ValidateToken(sessionToken);
+        var user = await _accounts.ValidateToken(sessionToken);
         if (user == null) return Unauthorized("Token is not valid");
 
-        var audios = _db.Audios
-            .Where(audio => audio.UserId == user.Id && audio.CreatedAt > lastAudioTimestamp).Take(30);
-        return Ok(audios.ToList());
+        return Ok(await _audios.GetAudiosOfUser(userId, lastAudioId));
     }
 
     [HttpPost]
@@ -48,68 +49,86 @@ public class AudiosController : ControllerBase
     public async Task<IActionResult> PostAudio([FromHeader(Name = "sessionToken")] string sessionToken,
         [FromForm] IFormFile audioFile, [FromForm] string name)
     {
-        var accountsManager = new Accounts(_db);
-        var user = await accountsManager.ValidateToken(sessionToken);
+        var user = await _accounts.ValidateToken(sessionToken);
         if (user == null) return Unauthorized("Token is not valid");
 
-        var newAudio = new Audio()
-        {
-            CreatedAt = DateTime.Now,
-            UserId = user.Id
-        };
+        var objectName = $"audios/{Guid.NewGuid()}";
 
-        newAudio.Name = name.Trim().Length < 1 ? "Unknown" : name;
-
-        _db.Audios.Add(newAudio);
-
-        await _db.SaveChangesAsync();
-
-        var newAudioFileObject = await _storage.UploadObjectAsync("isolaatti-b6641.appspot.com",
-            $"audios/{newAudio.Id}",
+        await _storage.UploadObjectAsync("isolaatti-b6641.appspot.com", objectName,
             audioFile.ContentType, audioFile.OpenReadStream());
+        var createdDoc = await _audios.InsertAudio(user.Id, name, objectName);
 
-        return Ok(newAudio);
+        return Ok(createdDoc);
     }
 
     [HttpPost]
-    [Route("{audioId:guid}/Delete")]
-    public async Task<IActionResult> DeleteAudio([FromHeader(Name = "sessionToken")] string sessionToken, Guid audioId)
+    [Route("{audioId}/Delete")]
+    public async Task<IActionResult> DeleteAudio([FromHeader(Name = "sessionToken")] string sessionToken,
+        string audioId)
     {
-        var accountsManager = new Accounts(_db);
-        var user = await accountsManager.ValidateToken(sessionToken);
-        if (user == null) return Unauthorized("Token is not valid");
+        var user = await _accounts.ValidateToken(sessionToken);
+        if (user == null)
+            return Unauthorized("Token is not valid");
+
+        var audio = await _audios.GetAudio(audioId);
+        if (audio == null)
+            return BadRequest(new { error = "Audio does not exist" });
+        if (audio.UserId != user.Id)
+            return BadRequest(new { error = "Audio cannot be deleted, it is not owned by this user" });
+
+        await _storage.DeleteObjectAsync("isolaatti-b6641.appspot.com", audio.FirestoreObjectPath);
+
+        await _audios.RemoveAudio(audioId);
         return Ok();
     }
 
     [HttpPost]
     [Route("{audioId:guid}/Rename")]
-    public async Task<IActionResult> Rename([FromHeader(Name = "sessionToken")] string sessionToken, Guid audioId,
+    public async Task<IActionResult> Rename([FromHeader(Name = "sessionToken")] string sessionToken, string audioId,
         SimpleStringData payload)
     {
-        var accountsManager = new Accounts(_db);
-        var user = await accountsManager.ValidateToken(sessionToken);
-        if (user == null) return Unauthorized("Token is not valid");
+        var user = await _accounts.ValidateToken(sessionToken);
+        if (user == null)
+        {
+            return Unauthorized("Token is not valid");
+        }
 
-        var audio = await _db.Audios.FindAsync(audioId);
-        if (audio == null) return NotFound();
+        var audio = await _audios.GetAudio(audioId);
+        if (audio == null)
+        {
+            return NotFound(new { error = "Audio does not exist" });
+        }
 
-        audio.Name = payload.Data.Trim().Length < 1 ? "Unknown" : payload.Data.Trim();
-        _db.Audios.Update(audio);
-        await _db.SaveChangesAsync();
+        if (audio.UserId != user.Id)
+        {
+            return Unauthorized(new { error = "This audio is not owned by the specified user" });
+        }
 
-        return Ok(audio);
+        if (payload?.Data == null)
+        {
+            return BadRequest(new { error = "Name must not be null" });
+        }
+
+        if (payload.Data.Length > 30)
+        {
+            return BadRequest(new { error = "Name must not be more than 30 characters long" });
+        }
+
+        await _audios.RenameAudio(audioId, payload.Data);
+
+
+        return Ok();
     }
 
     [HttpGet]
-    [Route("{audioId:guid}")]
+    [Route("{audioId}")]
     public async Task<IActionResult> GetAudioInformation([FromHeader(Name = "sessionToken")] string sessionToken,
-        Guid audioId)
+        string audioId)
     {
-        var accountsManager = new Accounts(_db);
-        var user = await accountsManager.ValidateToken(sessionToken);
+        var user = await _accounts.ValidateToken(sessionToken);
         if (user == null) return Unauthorized("Token is not valid");
 
-        var audio = await _db.Audios.FindAsync(audioId);
+        var audio = await _audios.GetAudio(audioId);
         if (audio == null) return NotFound();
 
         var feedAudio = new FeedAudio(audio);
@@ -126,25 +145,27 @@ public class AudiosController : ControllerBase
     }
 
     [HttpGet]
-    [Route("{audioId:guid}/Play")]
-    public async Task<IActionResult> PlayAudio(Guid audioId)
+    [Route("{audioId}.webm")]
+    public async Task<IActionResult> PlayAudio(string audioId)
     {
-        var audioObject = await _storage.GetObjectAsync("isolaatti-b6641.appspot.com", $"audios/{audioId}");
+        var audio = await _audios.GetAudio(audioId);
+        if (audio == null) return NotFound();
+
+        var audioObject = await _storage.GetObjectAsync("isolaatti-b6641.appspot.com", audio.FirestoreObjectPath);
         var memoryStream = new MemoryStream();
         await _storage.DownloadObjectAsync(audioObject, memoryStream);
         return new FileContentResult(memoryStream.ToArray(), audioObject.ContentType);
     }
 
     [HttpGet]
-    [Route("Newest")]
-    public async Task<IActionResult> GetNewestAudios([FromHeader(Name = "sessionToken")] string sessionToken)
+    [Route("Feed")]
+    public async Task<IActionResult> GetNewestAudios([FromHeader(Name = "sessionToken")] string sessionToken,
+        [FromQuery] string lastId)
     {
-        var accountsManager = new Accounts(_db);
-        var user = await accountsManager.ValidateToken(sessionToken);
+        var user = await _accounts.ValidateToken(sessionToken);
         if (user == null) return Unauthorized("Token is not valid");
+        var numberOfAudios = await _audios.NumberOfAudios();
 
-        var lastAudios = _db.Audios.OrderByDescending(audio => audio.CreatedAt).Take(10).ToList();
-
-        return Ok(lastAudios);
+        return Ok(await _audios.GetGlobalFeed(lastId));
     }
 }

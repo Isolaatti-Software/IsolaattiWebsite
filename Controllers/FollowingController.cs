@@ -2,22 +2,24 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using isolaatti_API.Classes.ApiEndpointsRequestDataModels;
-using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
+using isolaatti_API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace isolaatti_API.Controllers
 {
     [ApiController]
-    [Route("/api/[controller]")]
-    public class FollowingController : Controller
+    [Route("/api/Following")]
+    public class FollowingController : ControllerBase
     {
         private readonly DbContextApp Db;
+        private readonly IAccounts _accounts;
 
-        public FollowingController(DbContextApp dbContextApp)
+        public FollowingController(DbContextApp dbContextApp, IAccounts accounts)
         {
             Db = dbContextApp;
+            _accounts = accounts;
         }
 
         [HttpPost]
@@ -25,8 +27,7 @@ namespace isolaatti_API.Controllers
         public async Task<IActionResult> Index([FromHeader(Name = "sessionToken")] string sessionToken,
             SingleIdentification identification)
         {
-            var accountsManager = new Accounts(Db);
-            var user = await accountsManager.ValidateToken(sessionToken);
+            var user = await _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
             var userToFollow = await Db.Users.FindAsync(Convert.ToInt32(identification.Id));
@@ -65,8 +66,7 @@ namespace isolaatti_API.Controllers
         public async Task<IActionResult> Unfollow([FromHeader(Name = "sessionToken")] string sessionToken,
             SingleIdentification identification)
         {
-            var accountsManager = new Accounts(Db);
-            var user = await accountsManager.ValidateToken(sessionToken);
+            var user = await _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
             var userToUnfollow = await Db.Users.FindAsync(Convert.ToInt32(identification.Id));
@@ -100,8 +100,7 @@ namespace isolaatti_API.Controllers
         [HttpGet]
         public async Task<IActionResult> Following([FromHeader(Name = "sessionToken")] string sessionToken, int userId)
         {
-            var accountsManager = new Accounts(Db);
-            var user = await accountsManager.ValidateToken(sessionToken);
+            var user = await _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
             var listOfFollowing =
@@ -123,8 +122,7 @@ namespace isolaatti_API.Controllers
         [HttpGet]
         public async Task<IActionResult> Followers([FromHeader(Name = "sessionToken")] string sessionToken, int userId)
         {
-            var accountsManager = new Accounts(Db);
-            var user = await accountsManager.ValidateToken(sessionToken);
+            var user = await _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
             var listOfFollowers =

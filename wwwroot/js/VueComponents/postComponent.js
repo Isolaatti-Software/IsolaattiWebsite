@@ -36,7 +36,8 @@ Vue.component('post-template',{
             editable: false,
             renderPost: undefined,
             renderTheme: undefined,
-            deleteDialog: false
+            deleteDialog: false,
+            viewCommenter: false
         }
     },
     computed: {
@@ -64,7 +65,6 @@ Vue.component('post-template',{
             immediate: true,
             deep: true,
             handler: function (value, old) {
-                console.log(this);
                 this.renderPost = value;
             }
         },
@@ -172,6 +172,9 @@ Vue.component('post-template',{
             }).then(function () {
                 globalEventEmmiter.$emit("postDeleted", that.renderPost.id);
             });
+        },
+        openDiscussion: function () {
+            window.location = this.openThreadLink;
         }
     },
     template: `
@@ -185,30 +188,20 @@ Vue.component('post-template',{
         <button class="btn btn-primary" @click="deletePost">Sí</button>
       </section>
       <article class="d-flex flex-column w-100" v-if="!editable">
-        <div :class="containerCssClass" :style="getPostStyle(renderTheme)">
+        <div :class="containerCssClass">
           <div class="d-flex justify-content-between align-items-center">
             <div class="d-flex">
               <img class="user-avatar" :src="getUserImageUrl(renderPost.userId)">
               <div class="d-flex flex-column ml-2">
                 <span class="user-name"><a :href="profileLink">{{ renderPost.username }}</a> </span>
                 <div class="d-flex privacy-icon-container">
-                  <div v-if="renderPost.privacy === 1">
-                    <i class="fas fa-user" title="Private" aria-hidden="true"></i><span class="sr-only">Privado</span>
-                  </div>
-                  <div v-if="renderPost.privacy === 2">
-                    <i class="fas fa-user-friends" title="People on Isolaatti" aria-hidden="true"></i><span
-                      class="sr-only">Usuarios de Isolaatti</span>
-                  </div>
-                  <div v-if="renderPost.privacy === 3">
-                    <i class="fas fa-globe" title="All the world" aria-hidden="true"></i><span
-                      class="sr-only">Todos</span>
-                  </div>
+                  
                   <span>{{ new Date(renderPost.timeStamp).toUTCString() }}</span>
                 </div>
               </div>
             </div>
             <div class="dropdown dropleft" v-if="!preview">
-              <button class="btn btn-light btn-sm" data-toggle="dropdown" aria-haspopup="true">
+              <button class="btn btn-transparent btn-sm" data-toggle="dropdown" aria-haspopup="true">
                 <i class="fas fa-ellipsis-h"></i>
               </button>
               <div class="dropdown-menu">
@@ -223,28 +216,34 @@ Vue.component('post-template',{
           </div>
 
           <audio-attachment :audio-id="renderPost.audioId" v-if="renderPost.audioId!==null"></audio-attachment>
-          <div class="mt-2 post-content" v-html="compileMarkdown(renderPost.content)" ref="postContentContainer"></div>
+          <div class="mt-2 post-content" v-html="compileMarkdown(renderPost.content)" ref="postContentContainer" @click="openDiscussion"></div>
           <div class="d-flex justify-content-center">
             <button class="btn btn-primary btn-sm" v-on:click="showFullPost" v-if="cutContent">Mostrar todo</button>
           </div>
           <div class="d-flex justify-content-end">
-            <a class="btn btn-light mr-auto btn-sm" :href="openThreadLink"><i class="fas fa-external-link-alt"></i> </a>
+            <button class="btn btn-transparent mr-auto btn-sm" data-toggle="modal" data-target="#modal-post-info" 
+                    @click="$emit('details', post)"><i class="fa-solid fa-info"></i> </button>
             <div class="btn-group btn-group-sm" v-if="userData.id!==-1">
 
-              <a class="btn btn-light" :href="openThreadLink"><i class="fas fa-comments"></i>
-                {{ renderPost.numberOfComments }}</a>
-              <button v-if="!renderPost.liked" v-on:click="like($event)" class="btn btn-light btn-sm" type="button">
+              <button class="btn btn-transparent" @click="viewCommenter = !viewCommenter" :class="{'text-primary-lighter':viewCommenter}">
+                <i class="fas fa-comments"></i>
+                {{ renderPost.numberOfComments }}
+              </button>
+              <button v-if="!renderPost.liked" v-on:click="like($event)" class="btn btn-transparent btn-sm" type="button">
                 <i class="fas fa-thumbs-up" aria-hidden="true"></i> {{ renderPost.numberOfLikes }}
               </button>
-              <button v-if="renderPost.liked" v-on:click="unlike($event)" class="btn btn-light btn-sm btn-liked"
+              <button v-if="renderPost.liked" v-on:click="unlike($event)" class="text-primary-lighter btn btn-transparent  btn-sm"
                       type="button">
                 <i class="fas fa-thumbs-up" aria-hidden="true"></i> {{ renderPost.numberOfLikes }}
               </button>
             </div>
           </div>
         </div>
-        <comments-viewer :post-id="post.id" :is-under-post="true" v-if="!isFullPage && !preview"
-                         :number-of-comments="post.numberOfComments"></comments-viewer>
+        <div v-if="!isFullPage && !preview && viewCommenter" class="d-flex flex-column">
+          <comments-viewer :post-id="post.id" :is-under-post="true"
+                           :number-of-comments="post.numberOfComments"></comments-viewer>
+        </div>
+
       </article>
       <new-discussion v-else :mode="'modify'" :post-to-modify-id="post.id"
                       @modified="updateFromModified"></new-discussion>
@@ -252,6 +251,7 @@ Vue.component('post-template',{
     `,
     mounted: function () {
         const that = this;
+
         this.$nextTick(function () {
             this.cutContent = this.$refs.postContentContainer.scrollHeight > this.$refs.postContentContainer.clientHeight;
         });

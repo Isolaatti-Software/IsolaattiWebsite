@@ -17,7 +17,7 @@ namespace isolaatti_API.Models
             byte[] randomData = new byte[256];
             RandomNumberGenerator.Create().GetBytes(randomData);
             Token = Convert.ToBase64String(randomData);
-            Date = DateTime.Now;
+            Date = DateTime.Now.ToUniversalTime();
         }
     }
 }

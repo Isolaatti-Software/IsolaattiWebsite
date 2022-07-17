@@ -5,8 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
+using isolaatti_API.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace isolaatti_API.Controllers
@@ -15,17 +15,19 @@ namespace isolaatti_API.Controllers
     public class ZipDownloads : ControllerBase
     {
         private readonly DbContextApp _db;
+        private readonly IAccounts _accounts;
 
-        public ZipDownloads(DbContextApp dbContextApp)
+        public ZipDownloads(DbContextApp dbContextApp, IAccounts accounts)
         {
             _db = dbContextApp;
+            _accounts = accounts;
         }
 
+        [HttpGet]
         [Route("{guid:Guid}.zip")]
         public async Task<IActionResult> GetMyPostsAndCommentsZip(Guid guid)
         {
-            var accountsManager = new Accounts(_db);
-            var user = await accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
+            var user = await _accounts.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
             if (user == null) return RedirectToPage("LogIn");
 
             var posts = _db.SimpleTextPosts.Where(post => post.UserId.Equals(user.Id)).AsEnumerable()

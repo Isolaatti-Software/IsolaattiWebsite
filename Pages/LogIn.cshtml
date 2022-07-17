@@ -1,10 +1,19 @@
-@page "/IniciaSesion"
+@page "/inicia_sesion"
 @using isolaatti_API.isolaatti_lib
 @model isolaatti_API.Pages.LogIn
 
 @{
     Layout = "Shared/_LayoutWebAppOutside";
     ViewData["Title"] = "Inicia sesión";
+}
+
+@section Scripts
+{
+    @if (ViewData["username_field"] != null)
+    {
+        <script>const username="@ViewData["username_field"]"</script>
+    }
+    <script src="~/js/sign_in_page.js"></script>
 }
 
 @section scripts_google
@@ -37,9 +46,9 @@
                 // tosUrl and privacyPolicyUrl accept either url string or a callback
                 // function.
                 // Terms of service url/callback.
-                tosUrl: '/s/Legal/TermsOfUse',
+                tosUrl: '/terminos_de_uso',
                 // Privacy policy url/callback.
-                privacyPolicyUrl: '/estatico/politica_de_privacidad'
+                privacyPolicyUrl: '/politica_de_privacidad'
               };
         
               // Initialize the FirebaseUI Widget using Firebase.
@@ -85,47 +94,52 @@
 }
 
 <div class="d-flex col-lg-7 col-md-6 flex-column">
-    <h1 class="display-4 font-weight-lighter">
-        @isolaatti_API.Utils.Greetings.GetRandomGreeting()
-    </h1>
+
 </div>
 <div class="col-lg-5 col-md-6 justify-content-end align-items-center">
-    <form method="POST" class="sign-in-up-form mt-3" asp-antiforgery="false">
-        <h2>@Languages.Spanish[Languages.SignIn]</h2>
-        <p>
-            <a asp-page="MakeAccount">Regístrate</a>
-        </p>
-        @if (Model.WrongCredential)
-        {
-            <div class="alert alert-danger">
-                Ingresaste mal tu nombre de usuario o contraseña
+    <div class="sign-in-up-form-container" id="sign-in">
+        <form method="POST" class="sign-in-up-form mt-3">
+            <h2>@Languages.Spanish[Languages.SignIn]</h2>
+
+            <p>
+                <a asp-page="MakeAccount">Regístrate</a>
+            </p>
+            @if (Model.WrongCredential)
+            {
+                <div class="alert alert-danger">
+                    Ingresaste mal tu nombre de usuario o contraseña
+                </div>
+            }
+            @if (Model.NotVerifiedEmail)
+            {
+                <div class="alert alert-danger">
+                    Por favor, verifica tu correo electrónico. Hemos enviado un correo.
+                </div>
+            }
+            <div class="form-group">
+                <label for="email_form_control">Correo electrónico</label>
+                <input type="email" name="email" id="email_form_control" class="form-control" :class="{'is-invalid': !emailIsValid && email.length > 0}"
+                       required v-model="email">
+                <div class="invalid-feedback">
+                    La dirección de correo no tiene la forma correcta
+                </div>
             </div>
-        }
-        @if (Model.NotVerifiedEmail)
-        {
-            <div class="alert alert-danger">
-                Por favor, verifica tu correo electrónico. Hemos enviado un correo.
+            <div class="form-group">
+                <label for="password_form_control">Contraseña</label>
+                <input type="password" name="password"
+                       id="password_form_control" class="form-control" :class="{'is-invalid': !passwordIsValid && password.length > 0}"
+                       required v-model="password">
             </div>
-        }
-        <div class="form-group">
-            <label for="email_form_control">Correo electrónico</label>
-            <input type="email" name="email" id="email_form_control" class="form-control"
-                   value='@ViewData["username_field"]' required>
+            <div class="form-group">
+                <a asp-page="ForgotPassword">Olvidé mi contraseña</a>
+            </div>
+            <div class="d-flex justify-content-center">
+                <button class="btn btn-primary" type="submit" :disabled="!canSignIn">Iniciar sesión</button>
+            </div>
+        </form>
+        <hr/>
+        <div class="sign-in-up-form">
+            <div id="firebaseui-auth-container"></div>
         </div>
-        <div class="form-group">
-            <label for="password_form_control">Contraseña</label>
-            <input type="password" name="password"
-                   id="password_form_control" class="form-control" required>
-        </div>
-        <div class="form-group">
-            <a asp-page="ForgotPassword">Olvidé mi contraseña</a>
-        </div>
-        <div class="d-flex justify-content-center">
-            <button class="btn btn-primary" type="submit">Iniciar sesión</button>
-        </div>
-    </form>
-    <hr/>
-    <div class="sign-in-up-form">
-        <div id="firebaseui-auth-container"></div>
     </div>
 </div>

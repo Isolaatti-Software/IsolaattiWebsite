@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
+using isolaatti_API.Services;
 using isolaatti_API.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -12,10 +12,12 @@ namespace isolaatti_API.Pages;
 public class ProfileImages : PageModel
 {
     private readonly DbContextApp _db;
+    private readonly IAccounts _accounts;
 
-    public ProfileImages(DbContextApp dbContextApp)
+    public ProfileImages(DbContextApp dbContextApp, IAccounts accounts)
     {
         _db = dbContextApp;
+        _accounts = accounts;
     }
 
     public List<ProfileImage> ProfileImagesList;
@@ -24,8 +26,7 @@ public class ProfileImages : PageModel
     public async Task<IActionResult> OnGet(int id)
     {
         var token = Request.Cookies["isolaatti_user_session_token"];
-        var accountsManager = new Accounts(_db);
-        var user = await accountsManager.ValidateToken(token);
+        var user = await _accounts.ValidateToken(token);
         if (user == null)
         {
             var protocol = Request.IsHttps ? "https://" : "http://";

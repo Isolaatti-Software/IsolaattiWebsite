@@ -11,5 +11,12 @@ namespace isolaatti_API.Utils
             RandomNumberGenerator.Fill(randomBytes);
             return Convert.ToBase64String(randomBytes);
         }
+
+        public static string GenerateRandomPassword()
+        {
+            var randomData = new byte[10];
+            RandomNumberGenerator.Create().GetBytes(randomData);
+            return Convert.ToBase64String(randomData);
+        }
     }
 }

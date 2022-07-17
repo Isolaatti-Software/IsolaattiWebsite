@@ -1,6 +1,6 @@
 ﻿Vue.component('new-post', {
     template: `
-      <div class="card max-640 mt-2">
+      <div class="max-640 mt-4 p-3 isolaatti-card" style="">
       <div class="card-body">
         <h5 class="card-title"><i class="fa-solid fa-plus"></i> Nuevo</h5>
         <ul class="nav nav-tabs mt-2 max-640" id="new-post-tab">

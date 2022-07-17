@@ -1,4 +1,4 @@
-@page "/AcercaDe"
+@page "/acerca_de_isolaatti"
 @model isolaatti_API.Pages.GetStarted
 
 @{
@@ -22,29 +22,39 @@
 }
 
 
-<div class="d-flex flex-column ml-1 mr-1">
-    <h2 class="display-1" style="font-family: 'Dancing Script', cursive;">
-        Escucha la voz del mundo
-    </h2>
-    <p>Lee más en la <a href="https://isolaattisoftware.com.mx">pagina del producto <i class="fa-solid fa-arrow-up-right-from-square"></i></a></p>
-    <h3 class="m-3 w-100 text-center">Acerca de</h3>
-    <h5 class="ml-0">Fundación</h5>
-    <p>
-        Isolaatti empezó como un proyecto escolar, cuyo único propósito era proveer de una interfaz gráfica a demucs.
-        Ahora sus metas cambiaron, siguiendo el mismo camino del audio.
+<div class="d-flex flex-column ml-1 mr-1 col-12 align-items-center">
+    <p class="display-1" style="font-family: 'Zen Dots', serif;
+                                     color: #eddff6;
+                                     font-size: 40px;
+                                     text-shadow: -3px 4px #6529a4;
+                                     text-decoration: none;
+                                     filter: drop-shadow(-10px 16px 50px rgb(62, 0, 99));">
+        Isolaatti
     </p>
-    <h5 class="ml-0">Misión</h5>
+    <h3 class="text-center mt-5" style="font-size: xxx-large">
+        La plataforma social de código abierto, donde la música y la voz dominan.
+    </h3>
+
+    <h5 class="mt-5">Personas detrás del proyecto</h5>
     <p>
-        Dar al mundo una red social simple donde puedan compartir su voz, sin importar su apariencia.
+        El desarrollo de software es llevado por <a href="https://github.com/erik-everardo">Erik Cavazos <i class="fa-solid fa-arrow-up-right-from-square"></i></a>.
     </p>
-    <h5>Personas detrás del proyecto</h5>
+    <h5>Código abierto</h5>
     <p>
-        El desarrollo de software es llevado por <a href="https://github.com/erik-everardo">Erik Cavazos <i class="fa-solid fa-arrow-up-right-from-square"></i></a>, el fundador.
+        Este proyecto es código abierto. <a href="https://github.com/Isolaatti-Software/Isolaatti-BackendWebApp">github.com/Isolaatti-Software/Isolaatti-BackendWebApp</a>
     </p>
     <h5>El origen del nombre</h5>
     <p>
         <em>Isolaatti</em> viene del finés, que quiere decir "aislar" o "separar".
     </p>
+    <h5>Detalles técnicos</h5>
+    <p>Corriendo gracias a C#, ASP.NET 6, Vue.js, Bootstrap, PostgreSQL, MongoDB, Google Cloud Storage y Heroku</p>
+    <hr>
+    <div>
+        <a href='https://play.google.com/store/apps/details?id=com.erik.isolaatti&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'>
+            <img alt='Disponible en Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/es-419_badge_web_generic.png' width="300px"/>
+        </a>
+    </div>
 </div>
 
 @section Scripts

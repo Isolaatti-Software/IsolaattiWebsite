@@ -1,4 +1,4 @@
-@page "/Registrate"
+@page "/registrate"
 @model isolaatti_API.Pages.MakeAccount
 
 @{
@@ -37,9 +37,9 @@
                 // tosUrl and privacyPolicyUrl accept either url string or a callback
                 // function.
                 // Terms of service url/callback.
-                tosUrl: '/s/Legal/TermsOfUse',
+                tosUrl: '/terminos_de_uso',
                 // Privacy policy url/callback.
-                privacyPolicyUrl: '/estatico/politica_de_privacidad'
+                privacyPolicyUrl: '/politica_de_privacidad'
               };
         
               // Initialize the FirebaseUI Widget using Firebase.
@@ -59,12 +59,12 @@
 }
 
 <div class="d-flex col-lg-7 col-md-6 flex-column p-3">
-    <h2 class="display-4" style="font-family: 'Rubik Glitch', cursive;">
-        Escucha la voz del mundo
-    </h2>
-    <h1 class="display-6 font-weight-lighter">
-        ¡Seguramente te encantará!
-    </h1>
+    @* <h2 class="display-4" style="font-family: 'Rubik Glitch', cursive;"> *@
+    @*     Escucha la voz del mundo *@
+    @* </h2> *@
+    @* <h1 class="display-6 font-weight-lighter"> *@
+    @*     ¡Seguramente te encantará! *@
+    @* </h1> *@
 </div>
 
 @if (Model.LimitOfAccountsReached)
@@ -75,80 +75,61 @@
     </div>
 }
 <div class="col-lg-5 col-md-6 justify-content-end align-items-center">
-    <form method="POST" id="make_account_form" class="sign-in-up-form mt-3">
-        <h2>Registrate</h2>
-        <p>
-            <a asp-page="LogIn">Inicia sesión</a>
-        </p>
-        <div class="form-group">
-            <label for="username_form_control">Nombre de usuario</label>
-            <input type="text" name="username" id="username_form_control" class="form-control"
-                   value='@ViewData["user_field"]'>
-        </div>
-        <div class="form-group">
-            <label for="email_form_control">Dirección de correo electrónico</label>
-            <input type="email" name="email" id="email_form_control" class="form-control"
-                   value='@ViewData["email_field"]'>
-        </div>
-        <div class="form-group">
-            <label for="password_form_control">Contraseña</label>
-            <input type="password" name="password" id="password_form_control" class="form-control">
-        </div>
-        <div class="form-group">
-            <label for="confirm_password_form_control">Confirma contraseña</label>
-            <input type="password" name="password" id="confirm_password_form_control" class="form-control">
-        </div>
-        <p>
-
-        <div class="d-flex justify-content-center">
-            <button class="btn btn-primary" type="submit">Regístrate</button>
-        </div>
-    </form>
-    <hr/>
-    <div class="sign-in-up-form">
-        <div id="firebaseui-auth-container"></div>
-        <div class="mt-auto p-3">
+    <div class="sign-in-up-form-container" id="sign-up">
+        <form method="POST" id="make_account_form" class="sign-in-up-form mt-3">
+            <h2>Regístrate</h2>
             <p>
-                Debes aceptar los
-                <a
-                    asp-page="/s/Legal/TermsOfUse"
-                    target="_blank">
-                    terms and conditions
-                </a>
-                y la
-                <a
-                    asp-page="/s/Legal/PrivacyPolicy"
-                    target="_blank">
-                    política de privacidad
-                </a>.
-                Al registrate, estás aceptando ambos.
+                Si ya tienes una cuenta <br><a asp-page="LogIn">Inicia sesión</a>
             </p>
-
+            <div class="form-group">
+                <label for="username_form_control">Nombre de usuario</label>
+                <input type="text" name="username" id="username_form_control" class="form-control"
+                       value='@ViewData["user_field"]' v-model="name" :class="{ 'is-invalid': !nameIsValid}">
+                <div class="invalid-feedback">
+                    El nombre no es válido. Debe tener al menos un caracter y máximo 20.
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="email_form_control">Dirección de correo electrónico</label>
+                <input type="email" name="email" id="email_form_control" class="form-control"
+                       value='@ViewData["email_field"]' v-model="email" :class="{'is-invalid': !emailIsValid}">
+                <div class="invalid-feedback">
+                    La dirección de correo no tiene la forma correcta
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="password_form_control">Contraseña</label>
+                <input type="password" name="password" id="password_form_control" class="form-control"
+                       v-model="password" :class="{'is-invalid': !passwordIsValid}">
+                <div class="invalid-feedback">
+                    La contraseña debe ser de al menos 8 caracteres.
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="confirm_password_form_control">Confirma contraseña</label>
+                <input type="password" name="password" id="confirm_password_form_control" class="form-control"
+                       v-model="passwordConfirmation" :class="{'is-invalid': passwordUnMatches}">
+                <div class="invalid-feedback">
+                    La contraseña no coincide. Debes escribir la misma contraseña
+                </div>
+            </div>
             <p>
-                Te enviaremos un correo electrónico para confirmar tu dirección de correo.
-            </p>
+            <div class="mt-auto p-3">
+                <p>Te enviaremos un correo electrónico para confirmar tu dirección de correo.</p>
+            </div>
+            <div class="d-flex justify-content-center">
+                <button class="btn btn-primary" type="submit" :disabled="!canSignUp">Regístrate</button>
+            </div>
+        </form>
+        <hr/>
+        <div class="sign-in-up-form">
+            <div id="firebaseui-auth-container"></div>
+
         </div>
     </div>
 </div>
 
 @section Scripts
 {
-    <script>
-    let form = document.getElementById("make_account_form");
-    form.onsubmit = function (){
-        if (document.getElementById("username_form_control").value === "" 
-        || 
-        document.getElementById("email_form_control").value === ""
-        ||
-        document.getElementById("password_form_control").value === ""){
-            alert("Fill all fields");
-            return false;
-        }
-        if (document.getElementById("password_form_control").value !== document.getElementById("confirm_password_form_control").value){
-            alert("Please confirm password");
-            return false;
-        } 
-        return true;
-    };
-    </script>
+    <script src="~/js/sign_up_page.js"></script>
 }

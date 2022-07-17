@@ -1,26 +1,20 @@
-/*
-* Isolaatti project
-* Erik Cavazos, 2020
-* This program is not allowed to be copied or reused without explicit permission.
-* erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
-*/
-
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
+using isolaatti_API.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace isolaatti_API.Pages
 {
-    [IgnoreAntiforgeryToken]
     public class LogIn : PageModel
 
     {
         private DbContextApp _db;
+        private readonly IAccounts _accounts;
+
         public bool WrongCredential = false;
         public bool NotVerifiedEmail = false;
         public bool NewUser = false;
@@ -28,9 +22,10 @@ namespace isolaatti_API.Pages
         public bool ExistingSession = false;
         public bool ChangedPassword = false;
 
-        public LogIn(DbContextApp dbContextApp)
+        public LogIn(DbContextApp dbContextApp, IAccounts accounts)
         {
             _db = dbContextApp;
+            _accounts = accounts;
         }
 
 
@@ -43,8 +38,7 @@ namespace isolaatti_API.Pages
             bool changedPassword = false,
             string then = "")
         {
-            var accountsManager = new Accounts(_db);
-            var user = await accountsManager.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
+            var user = await _accounts.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
             if (user != null)
             {
                 return RedirectToPage("/Index");
@@ -73,11 +67,10 @@ namespace isolaatti_API.Pages
             if (email == null || password == null)
                 return Page();
 
-            var accountsManager = new Accounts(_db);
             try
             {
                 var user = _db.Users.Single(u => u.Email.Equals(email));
-                if (!await accountsManager.IsUserEmailVerified(user.Id))
+                if (!await _accounts.IsUserEmailVerified(user.Id))
                 {
                     return RedirectToPage(new
                     {
@@ -86,8 +79,7 @@ namespace isolaatti_API.Pages
                     });
                 }
 
-                accountsManager.DefineHttpRequestObject(Request);
-                var sessionToken = await accountsManager.CreateNewToken(user.Id, password);
+                var sessionToken = await _accounts.CreateNewToken(user.Id, password);
                 if (sessionToken == null)
                 {
                     return RedirectToPage("LogIn", new
@@ -106,6 +98,17 @@ namespace isolaatti_API.Pages
                     return Redirect(then);
                 }
 
+                // var ipAddress = "Unavailable";
+                // try
+                // {
+                //     ipAddress = HttpContext.Request.Headers["X-Forwarded-For"].Last();
+                // }
+                // catch (InvalidOperationException)
+                // {
+                // }
+
+                await _accounts.SendJustLoginEmail(user.Email, user.Name,
+                    HttpContext.Connection.RemoteIpAddress?.ToString());
                 return RedirectToPage("Index");
             }
             catch (InvalidOperationException)

@@ -6,5 +6,5 @@ public class ProfileImage
 {
     public Guid Id { get; set; }
     public int UserId { get; set; }
-    public byte[] ImageData { get; set; }
+    public string ImageData { get; set; }
 }

@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 using isolaatti_API.Classes;
 using isolaatti_API.Classes.ApiEndpointsRequestDataModels;
 using isolaatti_API.Classes.ApiEndpointsResponseDataModels;
-using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
-using isolaatti_API.Utils;
+using isolaatti_API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,18 +18,19 @@ namespace isolaatti_API.Controllers
     public class Fetch : ControllerBase
     {
         private readonly DbContextApp _db;
+        private readonly IAccounts _accounts;
 
-        public Fetch(DbContextApp dbContextApp)
+        public Fetch(DbContextApp dbContextApp, IAccounts accounts)
         {
             _db = dbContextApp;
+            _accounts = accounts;
         }
 
         [HttpGet]
         [Route("MyProfile")]
         public async Task<IActionResult> GetMyProfile([FromHeader(Name = "sessionToken")] string sessionToken)
         {
-            var accountsManager = new Accounts(_db);
-            var user = await accountsManager.ValidateToken(sessionToken);
+            var user = await _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
             UserPreferences userPreferences;
@@ -56,11 +56,11 @@ namespace isolaatti_API.Controllers
                 Email = user.Email,
                 Description = user.DescriptionText,
                 Color = userPreferences.ProfileHtmlColor ?? "#731D8C",
-                AudioUrl = user.DescriptionAudioUrl,
                 NumberOfPosts = await _db.SimpleTextPosts.CountAsync(post => post.UserId == user.Id),
-                ProfilePictureUrl = UrlGenerators.GenerateProfilePictureUrl(user.Id, sessionToken, Request),
                 NumberOfFollowers = user.NumberOfFollowers,
                 NumberOfFollowings = user.NumberOfFollowing,
+                ProfilePictureId = user.ProfileImageId,
+                ProfileAudioId = user.DescriptionAudioId,
                 NumberOfLikes = await _db.Likes.CountAsync(like => like.TargetUserId == user.Id)
             };
             return Ok(profile);
@@ -71,8 +71,7 @@ namespace isolaatti_API.Controllers
         public async Task<IActionResult> GetProfile([FromHeader(Name = "sessionToken")] string sessionToken,
             SingleIdentification identification)
         {
-            var accountsManager = new Accounts(_db);
-            var user = await accountsManager.ValidateToken(sessionToken);
+            var user = await _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
             var account = await _db.Users.FindAsync(Convert.ToInt32(identification.Id));
@@ -98,12 +97,18 @@ namespace isolaatti_API.Controllers
                 Email = account.ShowEmail ? account.Email : null,
                 Description = account.DescriptionText,
                 Color = userPreferences.ProfileHtmlColor ?? "#731D8C",
-                AudioUrl = account.DescriptionAudioUrl,
+                ProfileAudioId = account.DescriptionAudioId,
                 NumberOfPosts = _db.SimpleTextPosts.Count(post => post.UserId == account.Id),
-                ProfilePictureUrl = UrlGenerators.GenerateProfilePictureUrl(account.Id, sessionToken, Request),
+                ProfilePictureId = account.ProfileImageId,
                 NumberOfFollowers = account.NumberOfFollowers,
                 NumberOfFollowings = account.NumberOfFollowing,
-                NumberOfLikes = _db.Likes.Count(like => like.TargetUserId == account.Id)
+                NumberOfLikes = _db.Likes.Count(like => like.TargetUserId == account.Id),
+                NumberOfLikesGiven = _db.Likes.Count(like => like.UserId == account.Id),
+                IsUserItself = account.Id == user.Id,
+                FollowingThisUser =
+                    _db.FollowerRelations.Any(fr => fr.UserId == user.Id && fr.TargetUserId == account.Id),
+                ThisUserIsFollowingMe =
+                    _db.FollowerRelations.Any(fr => fr.UserId == account.Id && fr.TargetUserId == user.Id)
             };
             return Ok(profile);
         }
@@ -113,8 +118,7 @@ namespace isolaatti_API.Controllers
         public async Task<IActionResult> GetPosts([FromHeader(Name = "sessionToken")] string sessionToken, int userId,
             int length = 10, long lastId = -1, bool olderFirst = false)
         {
-            var accountsManager = new Accounts(_db);
-            var user = await accountsManager.ValidateToken(sessionToken);
+            var user = await _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
             User requestedAuthor = null;
 
@@ -202,7 +206,8 @@ namespace isolaatti_API.Controllers
                         NumberOfComments = post.NumberOfComments,
                         Privacy = post.Privacy,
                         AudioId = post.AudioId,
-                        TimeStamp = post.Date
+                        TimeStamp = post.Date,
+                        UserIsOwner = post.UserId == user.Id
                         // the other attributes are null, but they can be useful in the future
                     },
                     theme = post.ThemeJson == null
@@ -234,8 +239,7 @@ namespace isolaatti_API.Controllers
         [Route("Post/{postId:long}")]
         public async Task<IActionResult> GetPost([FromHeader(Name = "sessionToken")] string sessionToken, long postId)
         {
-            var accountsManager = new Accounts(_db);
-            var user = await accountsManager.ValidateToken(sessionToken);
+            var user = await _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
             var post = await _db.SimpleTextPosts.FindAsync(postId);
@@ -253,7 +257,8 @@ namespace isolaatti_API.Controllers
                     NumberOfComments = post.NumberOfComments,
                     Privacy = post.Privacy,
                     AudioId = post.AudioId,
-                    TimeStamp = post.Date
+                    TimeStamp = post.Date,
+                    UserIsOwner = post.UserId == user.Id
                     // the other attributes are null, but they can be useful in the future
                 },
                 theme = post.ThemeJson == null
@@ -268,8 +273,7 @@ namespace isolaatti_API.Controllers
         public async Task<IActionResult> GetComments([FromHeader(Name = "sessionToken")] string sessionToken,
             long postId, long lastId = long.MaxValue, int take = 10)
         {
-            var accountsManager = new Accounts(_db);
-            var user = await accountsManager.ValidateToken(sessionToken);
+            var user = await _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
             var post = await _db.SimpleTextPosts.FindAsync(postId);
@@ -291,7 +295,8 @@ namespace isolaatti_API.Controllers
                     TargetUserId = com.TargetUser,
                     Privacy = com.Privacy,
                     AudioId = com.AudioId,
-                    TimeStamp = com.Date
+                    TimeStamp = com.Date,
+                    UserIsOwner = com.WhoWrote == user.Id
                 });
             return Ok(comments);
         }
@@ -301,8 +306,7 @@ namespace isolaatti_API.Controllers
         public async Task<IActionResult> GetComment([FromHeader(Name = "sessionToken")] string sessionToken,
             long commentId)
         {
-            var accountsManager = new Accounts(_db);
-            var user = await accountsManager.ValidateToken(sessionToken);
+            var user = await _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
             var comment = await _db.Comments.FindAsync(commentId);
@@ -318,9 +322,36 @@ namespace isolaatti_API.Controllers
                 AuthorName = _db.Users.Find(comment.WhoWrote).Name,
                 PostId = comment.SimpleTextPostId,
                 TimeStamp = comment.Date,
-                TargetUserId = comment.TargetUser
+                TargetUserId = comment.TargetUser,
+                UserIsOwner = comment.WhoWrote == user.Id
             });
         }
+
+        [HttpGet]
+        [Route("Post/{postId:long}/LikedBy")]
+        public async Task<IActionResult> GetPostLikedBy([FromHeader(Name = "sessionToken")] string sessionToken,
+            long postId)
+        {
+            var user = await _accounts.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
+
+            var post = await _db.SimpleTextPosts.FindAsync(postId);
+            if (post == null || (post.Privacy == 1 && post.UserId != user.Id)) return NotFound("post not found");
+
+            var likedBy =
+                from like in _db.Likes
+                from account in _db.Users
+                where like.UserId == account.Id && like.PostId == post.Id
+                select new
+                {
+                    Id = account.Id,
+                    Name = account.Name,
+                    ProfileImageId = account.ProfileImageId
+                };
+
+            return Ok(likedBy.ToList());
+        }
+
 
         [HttpGet]
         [Route("PublicThread/{id:long}")]
@@ -375,7 +406,7 @@ namespace isolaatti_API.Controllers
             if (otherUser.ProfileImageId == null) return Redirect("/res/imgs/user-solid.svg");
             var profileImage = await _db.ProfileImages.FindAsync(otherUser.ProfileImageId);
             if (profileImage == null) return Redirect("/res/imgs/user-solid.svg");
-            return new FileContentResult(profileImage.ImageData, "image/png");
+            return new FileContentResult(Convert.FromBase64String(profileImage.ImageData), "image/png");
         }
 
         [HttpGet]
@@ -385,7 +416,25 @@ namespace isolaatti_API.Controllers
             var image = await _db.ProfileImages.FindAsync(id);
             if (image == null) return NotFound();
             if (image.ImageData == null) return NotFound();
-            return new FileContentResult(image.ImageData, "image/png");
+            return new FileContentResult(Convert.FromBase64String(image.ImageData), "image/png");
+        }
+
+        [HttpGet]
+        [Route("ProfileImages/OfUser/{userId:int}")]
+        public async Task<IActionResult> GetProfilePhotosOfUser([FromHeader(Name = "sessionToken")] string sessionToken,
+            int userId)
+        {
+            var user = await _accounts.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
+
+            var images = _db.ProfileImages.Where(image => image.UserId == userId).Select(i => new
+            {
+                imageId = i.Id,
+                relativeUrl = $"/api/Fetch/ProfileImages/{i.Id}.png",
+                webEndPoint = $"/imagen/{i.Id}"
+            }).ToList();
+
+            return Ok(images);
         }
     }
 }

@@ -2,7 +2,7 @@
 {
     public class EditProfileDataModel
     {
-        public string NewEmail { get; set; }
+        public string NewDescription { get; set; }
         public string NewUsername { get; set; }
     }
 }

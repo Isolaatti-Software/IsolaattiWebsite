@@ -1,13 +1,13 @@
 using System;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using isolaatti_API.Classes;
 using isolaatti_API.Classes.ApiEndpointsRequestDataModels;
-using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
+using isolaatti_API.Repositories;
+using isolaatti_API.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,84 +17,50 @@ namespace isolaatti_API.Controllers
     [ApiController]
     public class EditProfile : Controller
     {
-        private readonly DbContextApp Db;
+        private readonly DbContextApp _db;
+        private readonly IAccounts _accounts;
+        private readonly AudiosRepository _audios;
 
-        public EditProfile(DbContextApp dbContextApp)
+        public EditProfile(DbContextApp dbContextApp, IAccounts accounts, AudiosRepository audios)
         {
-            Db = dbContextApp;
+            _db = dbContextApp;
+            _accounts = accounts;
+            _audios = audios;
         }
 
         [HttpPost]
-        public async Task<IActionResult> Index([FromHeader(Name = "sessionToken")] string sessionToken,
-            [FromForm] string newEmail,
-            [FromForm] string newUsername)
+        [Route("UpdateProfile")]
+        public async Task<IActionResult> EditProfileInfo([FromHeader(Name = "sessionToken")] string sessionToken,
+            EditProfileDataModel payload)
         {
-            var accountsManager = new Accounts(Db);
-            var user = await accountsManager.ValidateToken(sessionToken);
+            var user = await _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
-            // find if there is someone else with the same username or email
-            var foundRepeatedName = Db.Users
-                .Any(account => account.Name.Equals(newUsername) && !account.Id.Equals(user.Id));
-            var foundRepeatedEmail = Db.Users
-                .Any(account => account.Email.Equals(newEmail) && !account.Id.Equals(user.Id));
+            if (payload.NewUsername.Trim().Length is < 1 or > 20)
+                return BadRequest(new
+                {
+                    error = "Name must be between 1 and 20 characters. String is trimmed."
+                });
 
-            if (foundRepeatedEmail && foundRepeatedName) return Unauthorized("isolaatti_status:1");
-            if (foundRepeatedEmail) return Unauthorized("isolaatti_status:2");
-            if (foundRepeatedName) return Unauthorized("isolaatti_status:3");
+            user.Name = payload.NewUsername.Trim();
+            user.DescriptionText = payload.NewDescription.Trim();
 
-            // no repeated profile info was found, then edit profile
-            user.Name = newUsername;
-            user.Email = newEmail;
-            Db.Users.Update(user);
-            await Db.SaveChangesAsync();
-            return Ok("profile updated");
+            _db.Users.Update(user);
+
+            await _db.SaveChangesAsync();
+
+            return Ok(new EditProfileDataModel
+            {
+                NewUsername = user.Name,
+                NewDescription = user.DescriptionText
+            });
         }
 
         [HttpPost]
-        [Route("FromWeb")]
-        public async Task<IActionResult> FromWeb([FromForm] string newUsername, [FromForm] string newEmail,
-            [FromForm] string newDescription)
+        [Route("RequestEmailChange")]
+        public async Task<IActionResult> RequestEmailChange()
         {
-            var accountsManager = new Accounts(Db);
-            var sessionToken = Request.Cookies["isolaatti_user_session_token"];
-            var user = await accountsManager.ValidateToken(sessionToken);
-            if (user == null) return Unauthorized("Token is not valid");
-
-            user.DescriptionText = newDescription;
-
-            // verify if name or email is used by someone else
-            var nameRepeated = Db.Users.Any(_ => _.Name.Equals(newUsername) && !_.Id.Equals(user.Id));
-            var emailRepeated = Db.Users.Any(_ => _.Email.Equals(newEmail) && !_.Id.Equals(user.Id));
-
-            if (!nameRepeated && !emailRepeated)
-            {
-                user.Name = newUsername;
-                user.Email = newEmail;
-                Db.Users.Update(user);
-                await Db.SaveChangesAsync();
-                Response.Cookies.Append("isolaatti_user_name", newEmail);
-                return RedirectToPage("/MyProfile", new { profileUpdate = true });
-            }
-
-            if (nameRepeated && emailRepeated)
-            {
-                return RedirectToPage("/MyProfile", new { nameAndEmailUsed = true });
-            }
-
-            // as the name is used by someone else, just change the email
-            if (nameRepeated)
-            {
-                user.Email = newEmail;
-                Db.Users.Update(user);
-                await Db.SaveChangesAsync();
-                return RedirectToPage("/MyProfile", new { nameNotAvailable = true, statusData = newUsername });
-            }
-
-            user.Name = newUsername;
-            Db.Users.Update(user);
-            await Db.SaveChangesAsync();
-            return RedirectToPage("/MyProfile", new { emailNotAvailable = true, statusData = newEmail });
+            return Ok();
         }
 
         [HttpPost]
@@ -102,8 +68,7 @@ namespace isolaatti_API.Controllers
         public async Task<IActionResult> UpdatePhoto([FromHeader(Name = "sessionToken")] string sessionToken,
             [FromForm] IFormFile file)
         {
-            var accountsManager = new Accounts(Db);
-            var user = await accountsManager.ValidateToken(sessionToken);
+            var user = await _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
             var stream = new MemoryStream();
@@ -111,22 +76,20 @@ namespace isolaatti_API.Controllers
 
             var array = stream.ToArray();
 
-            // user.ProfileImageData = array;
-
             // add the image
             var profileImage = new ProfileImage
             {
-                ImageData = array,
+                ImageData = Convert.ToBase64String(array),
                 UserId = user.Id
             };
-            Db.ProfileImages.Add(profileImage);
-            await Db.SaveChangesAsync();
+            _db.ProfileImages.Add(profileImage);
+            await _db.SaveChangesAsync();
 
             user.ProfileImageId = profileImage.Id;
-            Db.Users.Update(user);
-            await Db.SaveChangesAsync();
+            _db.Users.Update(user);
+            await _db.SaveChangesAsync();
 
-            return Ok("Imagen cargada");
+            return Ok(profileImage.Id);
         }
 
         [HttpPost]
@@ -134,13 +97,18 @@ namespace isolaatti_API.Controllers
         public async Task<IActionResult> UpdateAudioDescription([FromHeader(Name = "sessionToken")] string sessionToken,
             SimpleStringData payload)
         {
-            var accountsManager = new Accounts(Db);
-            var user = await accountsManager.ValidateToken(sessionToken);
+            var user = await _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
-            user.DescriptionAudioUrl = payload.Data;
-            Db.Users.Update(user);
-            await Db.SaveChangesAsync();
+            if (await _audios.GetAudio(payload.Data) == null)
+            {
+                return BadRequest("Audio specified by id does not exist");
+            }
+
+            user.DescriptionAudioId = payload.Data;
+
+            _db.Users.Update(user);
+            await _db.SaveChangesAsync();
             return Ok();
         }
 
@@ -150,8 +118,7 @@ namespace isolaatti_API.Controllers
             SimpleStringData color)
         {
             var htmlColor = color.Data;
-            var accountsManager = new Accounts(Db);
-            var user = await accountsManager.ValidateToken(sessionToken);
+            var user = await _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
             if (htmlColor == null) return BadRequest(new { error = "error/color-null" });
@@ -179,8 +146,8 @@ namespace isolaatti_API.Controllers
 
             user.UserPreferencesJson = JsonSerializer.Serialize(userPreferences);
 
-            Db.Users.Update(user);
-            await Db.SaveChangesAsync();
+            _db.Users.Update(user);
+            await _db.SaveChangesAsync();
 
             return Ok();
         }

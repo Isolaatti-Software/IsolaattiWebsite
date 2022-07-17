@@ -6,84 +6,47 @@
     ViewData["Title"] = "Inicio";
 }
 
-@section CSS
-{
-    <script>const pageTitle = "Inicio"</script>
-}
+<div class="row m-0">
+    <div class="col-lg-9 col-md-8">
+        <home-page></home-page>
+    </div>
+    <div class="col-lg-3 col-md-4">
+        <div class="sticky-top" id="rightbar">
 
-<div class="col-lg-9 col-md-8">
-    <main class="mt-4" id="vue-container">
-        <div class="d-flex align-items-center flex-column"
-             id="feed-and-thread-reader-container"
-             ref="feedAndThreadReaderContainer">
-            <new-post class="w-100"></new-post>
-            <div class="sticky-top bg-white w-100">
-                <h5 class="ml-2 mt-2 text-center"><i class="far fa-newspaper"></i> Actividad de las personas que sigues</h5>
-            </div>
-            <section id="posts-deposit" class="d-flex flex-column pt-1 mt-2 mb-3 align-items-center posts-deposit">
-                <post-template v-for="post in posts" :post="post.postData"
-                               v-on:like="likePost(post.postData, $event)"
-                               v-bind:theme="post.theme"
-                               v-on:un-like="unLikePost(post.postData, $event)"
-                               v-model="postLinkToShare"
-                               v-on:delete="deletePost(post.postData.id)"
-                               v-on:play-audio="playAudio(post.postData.audioUrl)"
-                               :paused="paused"
-                               v-on:view-thread="viewComments(post.postData)"
-                               v-bind:audio-url="audioUrl"
-                               v-bind:key="post.postData.id">
-                </post-template>
-                <div v-if="loading" class="d-flex justify-content-center mt-2">
-                    <div class="spinner-border" role="status">
-                        <span class="sr-only">Cargando más contenido...</span>
-                    </div>
-                </div>
-                <div v-if="noMoreContent" class="d-flex flex-column align-items-center mt-2">
-                    <p>Ya viste toda la actividad por ahora, refresca en un momento...</p>
-                    <button class="btn btn-primary" v-on:click="refresh()">
-                        <i class="fas fa-redo"></i>
-                    </button>
-                </div>
-                <div v-else>
-                    <button class="btn btn-primary" v-on:click="fetchFeed()">Cargar más</button>
-                </div>
-            </section>
+            @* The footer is not a Vue.js component, but server rendered by Razor *@
+            <footer class="mt-4">
+                <p class="text-center text-black-50 isolaatti-name-footer">
+                    Isolaatti
+                </p>
+                <p class="text-center font-weight-lighter">
+                    <a href="https://github.com/erik-everardo/Isolaatti-BackendWebApp" class="link">Código fuente</a>
+                    <a href="https://play.google.com/store/apps/details?id=com.erik.isolaatti" class="link">App</a>
+                    <a asp-page="/About" class="link">Acerca de</a>
+                    <a asp-page="/s/Legal/PrivacyPolicy" class="link">Política de privacidad y cookies</a>
+                    <a asp-page="/s/Legal/TermsOfUse" class="link">Términos de uso</a>
+                    <a href="https://ayuda.isolaatti.com/" class="link">Ayuda</a>
+                    <a href="https://blog.isolaattisoftware.com.mx/" target="_blank" class="link">Blog</a>
+                </p>
+                <p class="text-center text-black-50">
+                    hecho con <i class="fas fa-heart" style="color: red"></i> por <em>Erik Cavazos</em>, 2020 - 2022
+                </p>
+            </footer>
         </div>
-
-
-    </main>
-</div>
-<div class="col-lg-3 col-md-4">
-    <div class="sticky-top" id="rightbar">
-        <last-audios></last-audios>
-        <footer class="mt-4">
-            <p class="text-center text-black-50 isolaatti-name-footer">
-                Isolaatti
-            </p>
-            <p class="text-center font-weight-lighter">
-                <a href="https://github.com/erik-everardo/Isolaatti-BackendWebApp" class="link">Código fuente</a>
-                <a href="https://play.google.com/store/apps/details?id=com.erik.isolaatti" class="link">App</a>
-                <a asp-page="/About" class="link">Acerca de</a>
-                <a asp-page="/s/Legal/PrivacyPolicy" class="link">Política de privacidad y cookies</a>
-                <a asp-page="/s/Legal/TermsOfUse" class="link">Términos de uso</a>
-                <a href="https://ayuda.isolaatti.com/" class="link">Ayuda</a>
-                <a href="https://blog.isolaattisoftware.com.mx/" target="_blank" class="link">Blog</a>
-            </p>
-            <p class="text-center text-black-50">
-                hecho con <i class="fas fa-heart" style="color: red"></i> por <em>Erik Cavazos</em>, 2020 - 2022
-            </p>
-        </footer>
     </div>
 </div>
 
+@* 
+Load first libraries used by components inside this page, then the components used 
+inside this page and last the page component 
+*@
 
 @section Scripts
 {
+    @* Libraries *@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="~/js/lib/purify.min.js"></script>
-    <script src="~/js/play.js"></script>
+    @* Vue.js components *@
     <script src="~/js/VueComponents/newCommentComponent.js"></script>
-    <script src="~/js/VueComponents/audioAttachmentComponent.js"></script>
     <script src="~/js/VueComponents/newDiscussionComponent.js"></script>
     <script src="~/js/VueComponents/commentsViewer.js"></script>
     <script src="~/js/VueComponents/postComponent.js"></script>
@@ -92,5 +55,8 @@
     <script src="~/js/VueComponents/newQuickPost.js"></script>
     <script src="~/js/VueComponents/audiosList.js"></script>
     <script src="~/js/VueComponents/lastAudiosComponent.js"></script>
-    <script src="~/js/main_page.js"></script>
+
+    <script src="~/js/VueComponents/newsFeedComponent.js"></script>
+    @* Page component *@
+    <script src="~/js/VueComponents/page/homeComponent.js"></script>
 }

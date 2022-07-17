@@ -3,12 +3,11 @@
 
 @{
     Layout = "Shared/_LayoutWebApp";
-    ViewData["Title"] = "Publicación | Comunidad";
+    ViewData["Title"] = "Discusión";
 }
 
 @section CSS
 {
-    <link href="~/css/threads.css" rel="stylesheet">
     <script>const pageTitle = "Discusión"</script>
 
     <style>
@@ -23,29 +22,13 @@
     </style>
 }
 
+<discussion-page :post-id="@Model.ThisPost.Id"></discussion-page>
+
 @section Scripts
 {
-    <script src="https://www.gstatic.com/firebasejs/7.23.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/7.23.0/firebase-storage.js"></script>
-    <script>
-    var firebaseConfig = {
-        apiKey: "AIzaSyDZHVXLR_1imwVb2mCArnYpdbNx6XUPZBQ",
-        authDomain: "isolaatti-b6641.firebaseapp.com",
-        databaseURL: "https://isolaatti-b6641.firebaseio.com",
-        projectId: "isolaatti-b6641",
-        storageBucket: "isolaatti-b6641.appspot.com",
-        messagingSenderId: "556033448926",
-        appId: "1:556033448926:web:35759afc37d6a1585b1b4f",
-        measurementId: "G-JQV4WX75RK"
-    };
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    var storage = firebase.storage();
-    </script>
     <script src="~/js/lib/purify.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script>const threadToReadId = @Model.ThisPost.Id;</script>
     <script src="~/js/VueComponents/audiosList.js"></script>
     <script src="~/js/VueComponents/newCommentComponent.js"></script>
     <script src="~/js/VueComponents/newQuickPost.js"></script>
@@ -54,51 +37,5 @@
     <script src="~/js/VueComponents/postComponent.js"></script>
     <script src="~/js/VueComponents/commentComponent.js"></script>
     <script src="~/js/VueComponents/audioRecorder.js"></script>
-    <script src="~/js/threads.js"></script>
+    <script src="~/js/VueComponents/page/discussionComponent.js"></script>
 }
-
-<div id="vue-container" class="mt-2 w-100">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-6 post-container">
-                <post-template v-if="post!==undefined"
-                               :post="post.postData"
-                               :theme="post.theme"
-                               :key="threadId"
-                               :is-full-page="true">
-                </post-template>
-
-            </div>
-            <div class="col-md-6">
-                <div class="d-flex flex-column ml-4 comments-container">
-                    <section class="d-flex flex-column justify-content-between p-2 ml-auto mr-auto bg-light w-100 mb-2">
-                        <h5><i class="fab fa-markdown"></i> Comentar</h5>
-                        <new-comment :post-to-comment="threadId" v-on:commented="addAComment"></new-comment>
-                    </section>
-                    <comments-viewer :post-id="threadId" :just-added-comments="comments" :is-under-post="false"></comments-viewer>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="modal fade" id="modal-share-post">
-        <div class="modal-dialog-centered modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">
-                        Compartir publicación
-                    </h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p>
-                        Usa este enlace para compartir la publicación
-                    </p>
-                    <button class="btn btn-primary" v-on:click="copyToClipboard(postLinkToShare)">Copiar al portapapeles</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-</div>

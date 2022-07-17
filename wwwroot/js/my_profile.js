@@ -204,7 +204,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 available: true,
                 error: false,
                 isValid: true
-            }
+            },
+            currentSection: "discussions" // other are "audios", and "profile-pictures"
         },
         methods: {
             loadProfileLink: loadProfileLink,

@@ -2,8 +2,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using isolaatti_API.Classes.ApiEndpointsRequestDataModels;
 using isolaatti_API.Classes.ApiEndpointsResponseDataModels;
-using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
+using isolaatti_API.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace isolaatti_API.Controllers
@@ -13,10 +13,12 @@ namespace isolaatti_API.Controllers
     public class CommentsController : ControllerBase
     {
         private readonly DbContextApp _db;
+        private readonly IAccounts _accounts;
 
-        public CommentsController(DbContextApp dbContextApp)
+        public CommentsController(DbContextApp dbContextApp, IAccounts accounts)
         {
             _db = dbContextApp;
+            _accounts = accounts;
         }
 
         [Route("Delete")]
@@ -24,8 +26,7 @@ namespace isolaatti_API.Controllers
         public async Task<IActionResult> Delete([FromHeader(Name = "sessionToken")] string sessionToken,
             SingleIdentification identification)
         {
-            var accountsManager = new Accounts(_db);
-            var user = await accountsManager.ValidateToken(sessionToken);
+            var user = await _accounts.ValidateToken(sessionToken);
             if (user == null)
             {
                 return Unauthorized("Token is not valid");
@@ -59,8 +60,7 @@ namespace isolaatti_API.Controllers
         public async Task<IActionResult> EditComment([FromHeader(Name = "sessionToken")] string sessionToken,
             long commentId, MakeCommentModel updatedComment)
         {
-            var accountsManager = new Accounts(_db);
-            var user = await accountsManager.ValidateToken(sessionToken);
+            var user = await _accounts.ValidateToken(sessionToken);
             if (user == null)
             {
                 return Unauthorized("Token is not valid");

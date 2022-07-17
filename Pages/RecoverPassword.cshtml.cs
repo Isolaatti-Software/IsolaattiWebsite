@@ -1,59 +1,57 @@
 using System;
-using System.Linq;
+using System.Threading.Tasks;
 using isolaatti_API.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Identity;
 
 namespace isolaatti_API.Pages
 {
     public class RecoverPassword : PageModel
     {
         private readonly DbContextApp Db;
-        public bool TokenExists = false;
-        public bool ExpiredToken = false;
 
         public RecoverPassword(DbContextApp dbContextApp)
         {
             Db = dbContextApp;
         }
-        
-        public IActionResult OnGet([FromQuery] string token_s)
+
+        public async Task<IActionResult> OnGet([FromQuery] Guid id, [FromQuery] string value)
         {
-            UserToken token;
-            try
+            var changePasswordToken = await Db.ChangePasswordTokens.FindAsync(id);
+            if (changePasswordToken == null)
             {
-                token = Db.UserTokens.Single(userToken => userToken.Token.Equals(token_s));
+                return NotFound();
             }
-            catch (InvalidOperationException)
+
+            if (changePasswordToken.Token != value) return Unauthorized();
+
+            if (changePasswordToken.Expires < DateTime.Now.ToUniversalTime())
             {
-                return Page();
+                Db.ChangePasswordTokens.Remove(changePasswordToken);
+                await Db.SaveChangesAsync();
+                return NotFound();
             }
-            TokenExists = true;
-            ExpiredToken = DateTime.Compare(token.Expires, DateTime.Now) == -1;
-            ViewData["token"] = token.Token;
+
+            ViewData["id"] = changePasswordToken.Id;
+            ViewData["token"] = changePasswordToken.Token;
             return Page();
-            
         }
 
-        public IActionResult OnPost([FromForm] string token_s, [FromForm] string newPassword)
+        public IActionResult OnPost([FromForm] Guid id, [FromForm] string tokenStr, [FromForm] string newPassword)
         {
-            try
-            {
-                var token = Db.UserTokens.Single(userToken => userToken.Token.Equals(token_s));
-                var user = Db.Users.Find(token.UserId);
-                var passwordHasher = new PasswordHasher<String>();
-                user.Password = passwordHasher.HashPassword(user.Email,newPassword);
-                Db.Users.Update(user);
-                Db.UserTokens.Remove(token);
-                Db.SaveChanges();
-                return RedirectToPage("LogIn");
-            }
-            catch (InvalidOperationException)
-            {
-                return RedirectToPage("ForgotPassword");
-            }
+            var token = Db.ChangePasswordTokens.Find(id);
+            if (token == null) return NotFound();
 
+            if (token.Token != tokenStr) return Unauthorized();
+
+            var user = Db.Users.Find(token.UserId);
+            var passwordHasher = new PasswordHasher<string>();
+            user.Password = passwordHasher.HashPassword(user.Email, newPassword);
+            Db.Users.Update(user);
+            Db.ChangePasswordTokens.Remove(token);
+            Db.SaveChanges();
+            return RedirectToPage("LogIn");
         }
     }
 }

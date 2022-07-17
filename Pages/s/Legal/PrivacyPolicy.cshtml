@@ -1,4 +1,4 @@
-@page "/estatico/politica_de_privacidad"
+@page "/politica_de_privacidad"
 @model isolaatti_API.Pages.s.Legal.PrivacyPolicy
 
 @section metadata
@@ -12,68 +12,76 @@
 }
 
 <div class="d-flex flex-column mt-4 p-3">
+    <p class="display-1" style="font-family: 'Zen Dots', serif;
+                                         color: #eddff6;
+                                         font-size: 40px;
+                                         text-shadow: -3px 4px #6529a4;
+                                         text-decoration: none;
+                                         text-align: center;
+                                         filter: drop-shadow(-10px 16px 50px rgb(62, 0, 99));">
+        Isolaatti
+    </p>
     <h1>Política de privacidad</h1>
+    <h2>Introducción</h2>
+    <p>Esta política de privacidad aplica para el sitio web disponible en https://isolaatti.com así como la aplicación Isolaatti en Google Play Store. Si no está conforme con los términos, entonces queda prohibido completamente que utilice cualquier servicio de isolaatti.com.</p>
+    <h2>Definiciones</h2>
+    <p>Antes de comenzar con los términos de esta política de privacidad, es importante que conozca algunos términos, que se utilizarán después.</p>
+    <h3>Cookies</h3>
+    <p>Las cookies son fragmentos del tipo clave valor (como un diccionario), que se utilizan para guardar información en el navegador web.</p>
+    <h3>Paso por función de hash y encriptación</h3>
+    <p>Son técnicas de criptografía, que se utilizan en pro de la seguridad de los datos. El “hasheo” comúnmente se aplica a las contraseñas, ya que este no puede ser leído de vuelta. La encriptación se utiliza para guardar datos de manera segura, y solo pueden ser leídos si se tiene la “llave”.</p>
+    <h3>HTTPS</h3>
+    <p>Es la versión segura del protocolo HTTP, que es el que se utiliza para transferir los datos entre el servidor y su navegador. Proporciona una transferencia encriptada, que impide que los datos sean interceptados.</p>
+    <h3>Servidor</h3>
+    <p>Una computadora que cumple la función de proporcionar servicio a otras computadoras llamadas clientes. En este caso, el cliente es su navegador web.</p>
+    <h3>Servidor de base de datos</h3>
+    <p>Es el software de servidor que funge de banco de datos en un sistema. Aquí sus datos son almacenados de manera segura, aplicando la encriptación y el canal cifrado de transferencia.</p>
+    <h2>Datos recolectados</h2>
+    <p>Isolaatti (isolaatti.com) recolecta solo la información mínima para que la plataforma pueda funcionar correctamente. A continuación, cada dato recolectado y porqué se recolecta.</p>
+    <h3>Dirección de correo electrónico</h3>
+    <p>Recolectamos su dirección de correo al usted crear su cuenta en isolaatti.com. </p>
+    <p>Esta dirección de correo no es utilizada con fines publicitarios ni cualquier otro que no sea informar el estado de su cuenta (cuando cambie su contraseña, haya algún cambio en la dirección de correo o inicie sesión de nuevo) o iniciar sesión.</p>
+    <h3>Contraseña</h3>
+    <p>Usted proporciona una contraseña, que isolaatti.com almacena después de pasarla por una función de hash (cumpliendo los requisitos de seguridad). Usted debe estar consciente que esa contraseña debe ser única.</p>
+    <h3>Contenido generado por usted</h3>
+    <p>Todo el contenido generado por usted, como fotos de perfil, audios, likes, discusiones y comentarios. Esta información es almacenada y transferida de manera segura, sin embargo, ninguna forma de encriptación que sea reversible es 100% segura, por lo que no garantizamos que esta información no pueda ser leída por atacantes.</p>
+    <p>Nos comprometemos, en la medida de lo posible, a no dar acceso a ninguno de esos datos a terceros. Note que el personal interno de isolaatti.com si puede acceder a estos datos, en ocasiones especiales, tales como revisar reportes de usuarios respecto a contenido perjudicial.</p>
+    <p>Es imperativo que NO almacene información sensible en isolaatti.com. Esto incluye discusiones, comentarios, audios o fotos con información que usted no quisiera exponer (como contraseñas, números de teléfono, direcciones, tokens de acceso, etc.)</p>
+    <h3>Dirección IP, UserAgent y otros datos del navegador web y dispositivo</h3>
+    <p>Estos datos son almacenados para relacionarlos con la sesión, y así poder mantener un registro de sus inicios de sesión. Así, usted puede saber que dirección IP y dispositivo se utilizó para iniciar sesión.</p>
+    <p>Esta característica no es posible deshabilitarla.</p>
+    <h3>Hora y fecha de inicio de sesión</h3>
+    <p>Este dato se recolecta cuando inicia sesión. Al igual que la dirección IP y el UserAgent, son de referencia para usted.</p>
+    <h3>Logs en Isolaatti para Android</h3>
+    <p>Si utiliza la aplicación de Android de Isolaatti, entonces esto aplica explícitamente a usted.</p>
+    <p>Isolaatti para Android envía a Google Crashlytics (un servicio de Google para recoger mensajes de error) los logs de la aplicación al ocurrir un error. Esto es, todos los mensajes internamente generados por la aplicación, que incluyen información útil para resolver el problema. Sin embargo, es importante aclarar que puede incluir información del dispositivo, incluso información sin cifrar (por ejemplo, si la aplicación sufre de un error justo cuando ingresaba su contraseña para iniciar sesión, es posible que el mensaje de error incluya la contraseña)</p>
+    <p>Esta característica no es posible deshabilitarla.</p>
+    <h2>Acceso a datos de su entorno</h2>
+    <p>Con esto nos referimos al acceso al micrófono y la cámara. Por un lado, isolatti.com accede al micrófono cuando usted se dispone a grabar un audio. Puede dar o revocar acceso desde la opción correspondiente en los ajustes de su navegador. </p>
+    <p>Sin embargo, en la aplicación Isolaatti para Android, las cosas pueden resultar un poco más confusas. En la aplicación de Android, se utiliza el micrófono únicamente para grabar un audio, y nunca a escondidas. La aplicación solicitara acceso al micrófono y usted es libre de aceptar o no. Puede revocar el permiso en cualquier momento, desde los ajustes de su dispositivo.</p>
+    <p>La cámara no es accedida directamente, sino que se le solicita una foto a la aplicación de cámara de su dispositivo. Únicamente cuando desea actualizar su foto de perfil se le pedirá esto.</p>
+    <h2>Acceso a información para identificarle</h2>
+    <p>No le solicitamos información personal como país de origen, país de residencia, idioma, etnia, preferencias sexuales, entre muchos otros. SOLAMENTE obtenemos de usted su correo electrónico y un nombre para mostrar (no tiene que ser único ni el suyo real).</p>
+    <h2>Seguridad de sus datos</h2>
+    <p>Isolaatti trabaja para mejorar la seguridad de la plataforma, sin embargo, el servicio se ofrece sin garantía. Aunque el transito está encriptado, y los datos encriptados, si se llega a sufrir de un ataque que sobrepase nuestras capacidades de seguridad informática, no respondemos por información filtrada que pueda afectarle. Reiteramos que decida cuidadosamente que información introducir en la plataforma.</p>
+    <h3>Token de sesión</h3>
+    <p>Con el fin de que no tenga que ingresar sus credenciales cada vez que desee hacer cualquier operación, sus credenciales son intercambiadas por un token. Puede verlo como otra contraseña, pero temporal y que solo la aplicación envía en todas las peticiones para autenticarle.</p>
+    <p>El token es almacenado es las cookies o en el espacio reservado de la aplicación en el caso de Android.</p>
+    <h3>Cookies y rastreo</h3>
+    <p>Isolaatti.com utiliza cookies solamente con fines técnicos, no de rastreo ni publicitarios. La plataforma únicamente almacena dos cookies, que se enumeran y explican a continuación. Cabe destacar que las cookies solo los utilizamos en el navegador web, en Android utilizamos otra técnica, que se describe más adelante.</p>
+    <div class="ml-4">
+        <ol>
+            <li>“isolaatti_user_session_token”: se utiliza para mantener su sesión iniciada. Se mantiene incluso si cierra la ventana del navegador. Puede eliminarlo, pero si lo hace perderá su sesión activa y tendrá que iniciar sesión de nuevo. Además, la sesión seguirá apareciendo en configuraciones, tendrá que pasar un tiempo para que desaparezca. <br> Es configurada justo después de que inicia sesión correctamente desde la pagina /IniciaSesion, y tiene una duración máxima de 30 días.</li>
+            <li>“.AspNetCore.Antiforgery.*****”: se utiliza para ayudar a prevenir que los bots utilicen los formularios.</li>
+        </ol>
+    </div>
+    <h3>Almacenamiento de token de sesión en Android</h3>
+    <p>El token de sesión se almacena en un espacio exclusivo de la aplicación, reservado en el almacenamiento interno. Está cifrado.</p>
+    <h2>Métodos alternativos de inicio de sesión</h2>
+    <p>Permitimos a los usuarios iniciar sesión utilizando su cuenta de Google, Facebook o Microsoft. Recibimos sus datos básicos y procedemos ya sea utilizándolos para crear una cuenta nueva, o si ya existe iniciar la sesión. Cabe destacar que además de los datos básicos, tenemos un identificador de usuario de Google, Facebook o Microsoft, que utilizamos para relacionar la cuenta de Isolaatti con la cuenta de Google, Facebook o Microsoft.</p>
+    <h2>Método de contacto con el encargado</h2>
+    <p>Si le queda alguna duda respecto al manejo y privacidad de sus datos, entonces no continue creando una cuenta y contácteme.</p>
     <p>
-        Es importante que usted conozca quien es quien. <strong>Isolaatti Software</strong> se refiere a la persona
-        <strong>Erik Everardo Cavazos Hernández</strong>, quien mantiene la plataforma. <strong>Isolaatti Sofware</strong>
-        se compromete a informar cualquier cambio a esta política, así como cambios de entidad legal representativa.
-    </p>
-    <p>
-        A partir de aquí, y hasta el final del documento, al usar las palabras “nos”, “nosotros”, el sufijo
-        “nos” o cualquier referencia a la primera persona del plural, se hace referencia a <strong>Isolaatti Software</strong>.
-    </p>
-    <p>
-        A continuación, se pone a su disposición los temas de la política de privacidad. Lea todo antes de crear su cuenta.
-    </p>
-    <h2>Cookies</h2>
-    <p>
-        La plataforma Isolaatti en la web, hace uso de las cookies, con el objetivo de mantener la sesión iniciada y no
-        para rastrear su actividad a través de otros sitios. Es obligatorio, para el correcto funcionamiento de la
-        plataforma, mantener las cookies. No las desactive.
-    </p>
-    <h2>Sus datos personales</h2>
-    <p>
-        Usted debe estar perfectamente consciente de que voluntariamente ha proporcionado un nombre de usuario, una
-        dirección de correo, una imagen de perfil (si es que la cargó garantiza que tiene derechos sobre la imagen),
-        una grabación de audio (si es que la cargó garantiza que es de su autoría y que no viola ningún derecho),
-        así como todo el contenido de sus discusiones y comentarios y su descripción del perfil. Nos comprometemos
-        a no utilizar su información para otro fin que no sea intrínseco de la plataforma, es decir, no se pondrá
-        a disposición de nadie externo a la plataforma su información.
-    </p>
-    <p>
-        Además, es su responsabilidad la información que pueda difundir en la plataforma. No nos hacemos responsables
-        si difunde datos personales, contraseñas, números de tarjeta, etc. Le recomendamos encarecidamente que no
-        comparta información confidencial.
-    </p>
-    <h2>Acceso a los datos por nuestra parte</h2>
-    <p>
-        Nuestro personal interno autorizado puede visualizar el contenido de todas las discusiones, perfiles y en
-        general todos los datos no encriptados sin importar el ajuste de privacidad. Nos comprometemos a no violar
-        su intención marcada por el ajuste de privacidad.
-    </p>
-    <h2>Su contraseña</h2>
-    <p>
-        La contraseña que usted ingrese a la plataforma es hasheada (encriptación que no se puede revertir) para
-        almacenarla, por lo que no es posible recuperarla si la olvida. La plataforma no mantiene su contraseña
-        almacenada en texto plano, y nos comprometemos a borrar constantemente cualquier log de los servidores que
-        pueda quedar.
-    </p>
-    <h2>Información proveída por otros servicios</h2>
-    <p>
-        Si usted decide iniciar sesión con Google, Facebook o Microsoft, es importante que sepa que sus credenciales
-        de esas plataformas no pasan a nuestras manos, se envían directamente a los respectivos servicios para realizar
-        la autenticación. La única información que obtenemos de esos servicios es su nombre y dirección de correo.
-        Aunque es posible obtener su foto de perfil, no lo hacemos.
-    </p>
-    <h2>Discusiones públicas</h2>
-    <p>
-        Si el parámetro de privacidad de una discusión se asigna como “Todos” o “Público”, debe saber que será
-        indizado por los motores de búsqueda. Todos los comentarios heredan la privacidad de la discusión.
-    </p>
-    <h2>Inquietudes</h2>
-    <p>
-        Si detecta alguna ambigüedad en esta política de privacidad, le ponemos a su disposición la siguiente
-        dirección de correo:<br/>
-        software@isolaatti.com
+        erik10cavazos@gmail.com <br> +52 81 1742 0129
     </p>
 </div>

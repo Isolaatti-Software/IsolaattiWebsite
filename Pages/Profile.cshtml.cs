@@ -3,8 +3,8 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using isolaatti_API.Classes;
-using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
+using isolaatti_API.Services;
 using isolaatti_API.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -15,22 +15,24 @@ namespace isolaatti_API.Pages
     public class Profile : PageModel
     {
         private readonly DbContextApp _db;
+        private readonly IAccounts _accounts;
+
         public string ProfilePhotoUrl = null;
         public string SessionToken;
         public string ProfileColor;
         public List<User> Followers = new List<User>();
         public List<User> Following = new List<User>();
 
-        public Profile(DbContextApp dbContextApp)
+        public Profile(DbContextApp dbContextApp, IAccounts accounts)
         {
             _db = dbContextApp;
+            _accounts = accounts;
         }
 
-        public async Task<IActionResult> OnGet(int id)
+        public async Task<IActionResult> OnGet(int id, [FromQuery] bool noRedirect = false)
         {
             var token = Request.Cookies["isolaatti_user_session_token"];
-            var accountsManager = new Accounts(_db);
-            var user = await accountsManager.ValidateToken(token);
+            var user = await _accounts.ValidateToken(token);
             if (user == null)
             {
                 var protocol = Request.IsHttps ? "https://" : "http://";
@@ -47,14 +49,14 @@ namespace isolaatti_API.Pages
             ViewData["email"] = user.Email;
             ViewData["userId"] = user.Id;
 
+            ViewData["no-redirect"] = noRedirect;
             // get profile with id
             var profile = _db.Users.Find(id);
             if (profile == null) return NotFound();
-            if (profile.Id == user.Id) return RedirectToPage("MyProfile");
+            if (profile.Id == user.Id && !noRedirect) return RedirectToPage("MyProfile");
             ViewData["profile_name"] = profile.Name;
             ViewData["profile_email"] = profile.Email;
             ViewData["profile_id"] = profile.Id;
-            if (user.Id == profile.Id) return RedirectToPage("MyProfile");
             ViewData["profilePicUrl"] = user.ProfileImageId == null
                 ? null
                 : UrlGenerators.GenerateProfilePictureUrl(user.Id, Request.Cookies["isolaatti_user_session_token"]);
@@ -78,7 +80,6 @@ namespace isolaatti_API.Pages
 
             ProfilePhotoUrl = UrlGenerators.GenerateProfilePictureUrl(profile.Id, token, Request);
 
-            ViewData["audioDescription"] = profile.DescriptionAudioUrl;
             ViewData["showEmail"] = profile.ShowEmail;
 
             Followers = (

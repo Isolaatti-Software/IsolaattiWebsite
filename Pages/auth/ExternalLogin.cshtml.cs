@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web;
-using isolaatti_API.isolaatti_lib;
 using isolaatti_API.Models;
+using isolaatti_API.Services;
 using isolaatti_API.Utils;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
@@ -13,21 +13,23 @@ namespace isolaatti_API.Pages.auth
     public class ExternalLogin : PageModel
     {
         private readonly DbContextApp _db;
+        private readonly IAccounts _accounts;
+
         public string HostToLink;
         public bool MalformedUrl;
         public bool IsNotSecure;
         public bool IncorrectPassword;
 
-        public ExternalLogin(DbContextApp db)
+        public ExternalLogin(DbContextApp db, IAccounts accounts)
         {
             _db = db;
+            _accounts = accounts;
         }
 
         public async Task<IActionResult> OnGet(string canonicalUrl = "", string tokenParamName = "")
         {
-            var accountsManager = new Accounts(_db);
             var token = Request.Cookies["isolaatti_user_session_token"];
-            var user = await accountsManager.ValidateToken(token);
+            var user = await _accounts.ValidateToken(token);
             if (user == null) return RedirectToPage("/LogIn", new { then = Request.GetEncodedUrl() });
 
             // here it's know that account is correct. Data binding!
@@ -56,9 +58,8 @@ namespace isolaatti_API.Pages.auth
         public async Task<IActionResult> OnPost([FromQuery] string canonicalUrl = "",
             [FromQuery] string tokenParamName = "")
         {
-            var accountsManager = new Accounts(_db);
             var token = Request.Cookies["isolaatti_user_session_token"];
-            var user = await accountsManager.ValidateToken(token);
+            var user = await _accounts.ValidateToken(token);
             if (user == null) return RedirectToPage("/LogIn", new { then = Request.GetEncodedUrl() });
 
             try
