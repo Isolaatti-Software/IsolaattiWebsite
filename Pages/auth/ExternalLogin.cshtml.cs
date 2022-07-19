@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web;
-using isolaatti_API.Models;
-using isolaatti_API.Services;
-using isolaatti_API.Utils;
+using Isolaatti.Models;
+using Isolaatti.Services;
+using Isolaatti.Utils;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace isolaatti_API.Pages.auth
+namespace Isolaatti.Pages.auth
 {
     public class ExternalLogin : PageModel
     {

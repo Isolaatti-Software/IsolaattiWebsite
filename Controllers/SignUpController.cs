@@ -1,11 +1,11 @@
 ﻿using System.Threading.Tasks;
-using isolaatti_API.Classes.ApiEndpointsRequestDataModels;
-using isolaatti_API.Enums;
-using isolaatti_API.Models;
-using isolaatti_API.Services;
+using Isolaatti.Classes.ApiEndpointsRequestDataModels;
+using Isolaatti.Enums;
+using Isolaatti.Models;
+using Isolaatti.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace isolaatti_API.Controllers
+namespace Isolaatti.Controllers
 {
     [Route("/api/[controller]")]
     [ApiController]

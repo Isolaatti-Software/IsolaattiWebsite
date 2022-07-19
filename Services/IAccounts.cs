@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
-using isolaatti_API.Enums;
-using isolaatti_API.Models;
+using Isolaatti.Enums;
+using Isolaatti.Models;
 
-namespace isolaatti_API.Services;
+namespace Isolaatti.Services;
 
 public interface IAccounts
 {

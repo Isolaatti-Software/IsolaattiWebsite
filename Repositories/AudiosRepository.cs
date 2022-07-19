@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using isolaatti_API.Models.AudiosMongoDB;
+using Isolaatti.Models.AudiosMongoDB;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
-namespace isolaatti_API.Repositories;
+namespace Isolaatti.Repositories;
 
 public class AudiosRepository
 {

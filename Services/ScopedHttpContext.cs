@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-namespace isolaatti_API.Services;
+namespace Isolaatti.Services;
 
 public class ScopedHttpContext
 {

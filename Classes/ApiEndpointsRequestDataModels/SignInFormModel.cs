@@ -1,4 +1,4 @@
-﻿namespace isolaatti_API.Classes.ApiEndpointsRequestDataModels
+﻿namespace Isolaatti.Classes.ApiEndpointsRequestDataModels
 {
     public class SignInFormModel
     {

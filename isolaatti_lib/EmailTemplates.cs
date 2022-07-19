@@ -5,7 +5,7 @@
 * erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
 */
 
-namespace isolaatti_API.isolaatti_lib
+namespace Isolaatti.isolaatti_lib
 {
     public class EmailTemplates
     {

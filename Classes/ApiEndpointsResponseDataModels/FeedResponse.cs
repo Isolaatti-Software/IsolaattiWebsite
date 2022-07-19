@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace isolaatti_API.Classes.ApiEndpointsResponseDataModels
+namespace Isolaatti.Classes.ApiEndpointsResponseDataModels
 {
     public class FeedResponse
     {

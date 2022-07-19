@@ -1,9 +1,9 @@
 using System.Linq;
-using isolaatti_API.Models;
-using isolaatti_API.Services;
+using Isolaatti.Models;
+using Isolaatti.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace isolaatti_API.Controllers
+namespace Isolaatti.Controllers
 {
     [Route("/api/[controller]")]
     [ApiController]
@@ -25,11 +25,10 @@ namespace isolaatti_API.Controllers
             var user = _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
-            var notifications =
-                _db.SocialNotifications.Where(notification => notification.UserId == user.Id);
+            
 
 
-            return Ok(notifications.OrderByDescending(notification => notification.TimeSpan).ToList());
+            return Ok();
         }
 
         [HttpPost]
@@ -39,14 +38,9 @@ namespace isolaatti_API.Controllers
             var user = _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
-            var notification = _db.SocialNotifications.Find(id);
-            if (notification == null) return NotFound("Notification not found");
-            if (notification.UserId != user.Id) return Unauthorized("This notification is not yours");
-            _db.SocialNotifications.Remove(notification);
 
-            _db.SaveChanges();
 
-            return Ok("Notification deleted successfully");
+            return Ok();
         }
 
         [Route("Delete/All")]
@@ -56,11 +50,7 @@ namespace isolaatti_API.Controllers
             var user = _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
-            var notifications = _db.SocialNotifications
-                .Where(notification => notification.UserId.Equals(user.Id));
-            if (!notifications.Any()) return NotFound("No notifications were found, ok");
-            _db.SocialNotifications.RemoveRange(notifications);
-            _db.SaveChanges();
+            
             return Ok();
         }
 
@@ -70,17 +60,7 @@ namespace isolaatti_API.Controllers
         {
             var user = _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
-
-            var notifications = _db.SocialNotifications.Where(notification =>
-                notification.UserId.Equals(user.Id) && !notification.Read);
-
-            foreach (var notification in notifications)
-            {
-                notification.Read = true;
-            }
-
-            _db.SocialNotifications.UpdateRange(notifications);
-            _db.SaveChanges();
+            
             return Ok();
         }
     }

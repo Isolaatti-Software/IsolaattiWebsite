@@ -2,9 +2,9 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using FirebaseAdmin.Auth;
-using isolaatti_API.Enums;
-using isolaatti_API.isolaatti_lib;
-using isolaatti_API.Models;
+using Isolaatti.Enums;
+using Isolaatti.isolaatti_lib;
+using Isolaatti.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +12,7 @@ using Microsoft.Net.Http.Headers;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 
-namespace isolaatti_API.Services
+namespace Isolaatti.Services
 {
     public class Accounts : IAccounts
     {

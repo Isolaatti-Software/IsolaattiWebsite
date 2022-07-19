@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace isolaatti_API.Migrations
+namespace Isolaatti.Migrations
 {
     public partial class change_profile_audio_primary_key_to_string : Migration
     {

@@ -1,7 +1,7 @@
 using System;
 using System.Text.Json.Serialization;
 
-namespace isolaatti_API.Models
+namespace Isolaatti.Models
 {
     public class SimpleTextPost
     {

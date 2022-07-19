@@ -2,14 +2,14 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using isolaatti_API.Classes.ApiEndpointsRequestDataModels;
-using isolaatti_API.isolaatti_lib;
-using isolaatti_API.Models;
-using isolaatti_API.Services;
+using Isolaatti.Classes.ApiEndpointsRequestDataModels;
+using Isolaatti.isolaatti_lib;
+using Isolaatti.Models;
+using Isolaatti.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace isolaatti_API.Controllers;
+namespace Isolaatti.Controllers;
 
 [ApiController]
 public class UserLinksController : ControllerBase

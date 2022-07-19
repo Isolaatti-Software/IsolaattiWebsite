@@ -3,11 +3,11 @@ using System.IO;
 using System.Text.Json;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
-using isolaatti_API.Middleware;
-using isolaatti_API.Models;
-using isolaatti_API.Models.AudiosMongoDB;
-using isolaatti_API.Repositories;
-using isolaatti_API.Services;
+using Isolaatti.Middleware;
+using Isolaatti.Models;
+using Isolaatti.Models.AudiosMongoDB;
+using Isolaatti.Repositories;
+using Isolaatti.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
@@ -21,7 +21,7 @@ using Microsoft.Extensions.Hosting;
 using Npgsql;
 using SendGrid.Extensions.DependencyInjection;
 
-namespace isolaatti_API
+namespace Isolaatti
 {
     public class Startup
     {
@@ -109,8 +109,12 @@ namespace isolaatti_API
                     config.AudiosCollectionName = mongoConfig?.AudiosCollectionName;
                 });
             }
+            else
+            {
+                services.Configure<MongoDatabaseConfiguration>(Configuration.GetSection("AudiosMongoDb"));
+            }
 
-            services.Configure<MongoDatabaseConfiguration>(Configuration.GetSection("AudiosMongoDb"));
+            
 
             services.AddScoped<AudiosRepository>();
 

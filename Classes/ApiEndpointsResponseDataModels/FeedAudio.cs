@@ -1,6 +1,6 @@
-﻿using isolaatti_API.Models.AudiosMongoDB;
+﻿using Isolaatti.Models.AudiosMongoDB;
 
-namespace isolaatti_API.Classes.ApiEndpointsResponseDataModels;
+namespace Isolaatti.Classes.ApiEndpointsResponseDataModels;
 
 public class FeedAudio : Audio
 {

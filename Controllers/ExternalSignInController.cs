@@ -1,11 +1,11 @@
 using System;
 using System.Threading.Tasks;
-using isolaatti_API.Models;
-using isolaatti_API.Services;
+using Isolaatti.Models;
+using Isolaatti.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace isolaatti_API.Controllers
+namespace Isolaatti.Controllers
 {
     [ApiController]
     [Route("/api/[controller]")]

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Http;
 
-namespace isolaatti_API.Utils
+namespace Isolaatti.Utils
 {
     public class UrlGenerators
     {

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace isolaatti_API.Migrations
+namespace Isolaatti.Migrations
 {
     public partial class second : Migration
     {

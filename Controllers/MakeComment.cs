@@ -1,7 +1,7 @@
-using isolaatti_API.Models;
+using Isolaatti.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace isolaatti_API.Controllers
+namespace Isolaatti.Controllers
 {
     [ApiController]
     [Route("/api/[controller]")]

@@ -3,15 +3,15 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
-using isolaatti_API.Classes;
-using isolaatti_API.Classes.ApiEndpointsRequestDataModels;
-using isolaatti_API.Classes.ApiEndpointsResponseDataModels;
-using isolaatti_API.Models;
-using isolaatti_API.Services;
+using Isolaatti.Classes;
+using Isolaatti.Classes.ApiEndpointsRequestDataModels;
+using Isolaatti.Classes.ApiEndpointsResponseDataModels;
+using Isolaatti.Models;
+using Isolaatti.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace isolaatti_API.Controllers
+namespace Isolaatti.Controllers
 {
     [ApiController]
     [Route("/api/[controller]")]

@@ -1,4 +1,4 @@
-﻿namespace isolaatti_API.Models;
+﻿namespace Isolaatti.Models;
 
 public class UserProfileLink
 {

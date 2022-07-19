@@ -175,31 +175,9 @@ button.isolaatti-btn:hover {
   background-color: black;
 }
 
-@keyframes appear-search-bar {
-  0% {
-    margin-top: -50px;
-    margin-left: 50vw;
-    margin-right: 50vw;
-  }
-  100% {
-    margin-top: 0;
-    margin-left: 0;
-    margin-right: 0;
-  }
-}
 
-@keyframes disappear-search-bar {
-  0% {
-    margin-top: 0;
-    margin-left: 0;
-    margin-right: 0;
-  }
-  100% {
-    margin-top: -50px;
-    margin-left: 50vw;
-    margin-right: 50vw;
-  }
-}
+
+
 
 .text-ellipsis {
   text-overflow: ellipsis;

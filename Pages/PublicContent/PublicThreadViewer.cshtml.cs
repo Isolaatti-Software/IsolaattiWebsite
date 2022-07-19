@@ -1,8 +1,8 @@
-using isolaatti_API.Models;
+using Isolaatti.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace isolaatti_API.Pages.PublicContent
+namespace Isolaatti.Pages.PublicContent
 {
     public class PublicThreadViewer : PageModel
     {

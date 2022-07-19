@@ -1,6 +1,6 @@
-﻿using isolaatti_API.Enums;
+﻿using Isolaatti.Enums;
 
-namespace isolaatti_API.Classes.ApiEndpointsResponseDataModels;
+namespace Isolaatti.Classes.ApiEndpointsResponseDataModels;
 
 public class SearchResult
 {

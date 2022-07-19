@@ -1,4 +1,4 @@
-@using isolaatti_API.isolaatti_lib
+@using Isolaatti.isolaatti_lib
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -54,18 +54,27 @@
                     <button class="btn btn-transparent nav-link custom-nav-link mr-1 ml-auto" data-toggle="modal" data-target="#search-modal">
                         <i class="fa-solid fa-magnifying-glass"></i>
                     </button>
-                    <a class="nav-link custom-nav-link mr-1" href="#" v-on:click="toggleAudiosFeed">
-                        <i class="fa-solid fa-ear-listen"></i>
-                    </a>
-                    <a class="nav-link custom-nav-link mr-1"
-                       href="#"
-                       role="button"
-                       id="dropdownNotificationsMenuLink"
-                       aria-haspopup="true" aria-expanded="false"
-                       onclick="vueInstanceForNotifications.toggleNotificationsSlider()">
-                        <i class="fas fa-bell"></i>
-                        <span class="badge badge-light" id="unread-count"></span>
-                    </a>
+                    
+                    <div class="dropdown">
+                        <a class="nav-link custom-nav-link mr-1 dropdown-toggle"
+                           href="#"
+                           role="button"
+                           id="dropdownNotificationsMenuLink"
+                           aria-haspopup="true" aria-expanded="false"
+                           data-toggle="dropdown">
+                            <i class="fas fa-bell"></i>
+                            <span class="badge badge-light" id="unread-count"></span>
+                        </a>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-header">
+                                Notificaciones
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item">
+                                Ver todo
+                            </a>
+                        </div>
+                    </div>
 
                     <div class="dropdown">
                         <a class="nav-link custom-nav-link nav-link mr-1 dropdown-toggle"
@@ -124,7 +133,6 @@
     </div>
     <main style="height: calc(100vh - 77px); overflow: auto;" id="app-main">
         <div class="container p-0" v-on:click="showAudiosFeedState='hide'">@RenderBody()</div>
-        <bottom-sheet-audio-feed :state="showAudiosFeedState"></bottom-sheet-audio-feed>
     </main>
 </div>
 

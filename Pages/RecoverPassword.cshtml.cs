@@ -1,11 +1,11 @@
 using System;
 using System.Threading.Tasks;
-using isolaatti_API.Models;
+using Isolaatti.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace isolaatti_API.Pages
+namespace Isolaatti.Pages
 {
     public class RecoverPassword : PageModel
     {

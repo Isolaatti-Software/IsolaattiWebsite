@@ -131,3 +131,10 @@ footer a {
     box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
     border-radius: 30px;
 }
+.isolaatti-logo-no-filter {
+    font-family: 'Zen Dots', serif;
+    font-size: 40px;
+    text-decoration: none;
+    text-align: center;
+    text-shadow: -3px 4px #c9c9c9;
+}

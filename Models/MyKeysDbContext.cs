@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace isolaatti_API.Models;
+namespace Isolaatti.Models;
 
 public class MyKeysDbContext : DbContext, IDataProtectionKeyContext
 {

@@ -2,14 +2,14 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
-using isolaatti_API.isolaatti_lib;
-using isolaatti_API.Models;
+using Isolaatti.isolaatti_lib;
+using Isolaatti.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 
-namespace isolaatti_API.Pages
+namespace Isolaatti.Pages
 {
     public class ForgotPassword : PageModel
     {

@@ -1,13 +1,13 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using isolaatti_API.Classes.ApiEndpointsRequestDataModels;
-using isolaatti_API.Models;
-using isolaatti_API.Services;
+using Isolaatti.Classes.ApiEndpointsRequestDataModels;
+using Isolaatti.Models;
+using Isolaatti.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace isolaatti_API.Controllers
+namespace Isolaatti.Controllers
 {
     [ApiController]
     [Route("/api/Following")]

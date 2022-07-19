@@ -5,7 +5,7 @@
 * erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
 */
 
-namespace isolaatti_API.Classes
+namespace Isolaatti.Classes
 {
     public class UserData
     {

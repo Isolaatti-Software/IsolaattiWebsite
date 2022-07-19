@@ -7,7 +7,7 @@
 
 using Microsoft.EntityFrameworkCore;
 
-namespace isolaatti_API.Models
+namespace Isolaatti.Models
 {
     public class DbContextApp : DbContext
     {
@@ -19,7 +19,7 @@ namespace isolaatti_API.Models
         public DbSet<ChangePasswordToken> ChangePasswordTokens { get; set; }
         public DbSet<SessionToken> SessionTokens { get; set; }
         public DbSet<ExternalUser> ExternalUsers { get; set; }
-        public DbSet<SocialNotification> SocialNotifications { get; set; }
+        // public DbSet<SocialNotification> SocialNotifications { get; set; }
         public DbSet<UserProfileLink> UserProfileLinks { get; set; }
 
         public DbSet<UserSeenPostHistory> UserSeenPostHistories { get; set; }

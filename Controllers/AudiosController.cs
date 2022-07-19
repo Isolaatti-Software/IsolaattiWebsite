@@ -3,15 +3,15 @@ using System.IO;
 using System.Threading.Tasks;
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Storage.V1;
-using isolaatti_API.Classes.ApiEndpointsRequestDataModels;
-using isolaatti_API.Classes.ApiEndpointsResponseDataModels;
-using isolaatti_API.Models;
-using isolaatti_API.Repositories;
-using isolaatti_API.Services;
+using Isolaatti.Classes.ApiEndpointsRequestDataModels;
+using Isolaatti.Classes.ApiEndpointsResponseDataModels;
+using Isolaatti.Models;
+using Isolaatti.Repositories;
+using Isolaatti.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace isolaatti_API.Controllers;
+namespace Isolaatti.Controllers;
 
 [ApiController]
 [Route("/api/Audios")]

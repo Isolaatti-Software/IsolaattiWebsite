@@ -1,65 +1,176 @@
 @page "/acerca_de_isolaatti"
-@model isolaatti_API.Pages.GetStarted
+@model Isolaatti.Pages.GetStarted
 
 @{
-    Layout = "Shared/_LayoutWebAppOutside";
     ViewData["Title"] = "Acerca de Isolaatti";
 }
 
-@section css
-{
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Acerca de Isolaatti</title>
     <meta proerty="og-title" content="Acerca de Isolaatti"/>
+    <link rel="stylesheet" href="/css/main.css"/>
     <link rel="stylesheet" href="~/stylesheets/isolaatti.css">
     <link rel="stylesheet" href="~/css/welcome-purple-image.css"/>
-}
-
-@section metadata
-{
-    <meta property="og:url" content="https://isolaatti.com/About"/>
+    <link rel="stylesheet" href="~/css/about.css"/>
+    <meta property="og:url" content="https://isolaatti.com/acerca_de"/>
     <meta property="og:type" content="article"/>
-    <meta property="og:description" content="Isolaatti is una red social basada en publicaciones de audio y texto."/>
-    <meta property="og:image" content="https://isolaatti.com/res/imgs/metadata-image-isolaatti.png"/>
-}
-
-
-<div class="d-flex flex-column ml-1 mr-1 col-12 align-items-center">
-    <p class="display-1" style="font-family: 'Zen Dots', serif;
-                                     color: #eddff6;
-                                     font-size: 40px;
-                                     text-shadow: -3px 4px #6529a4;
-                                     text-decoration: none;
-                                     filter: drop-shadow(-10px 16px 50px rgb(62, 0, 99));">
-        Isolaatti
-    </p>
-    <h3 class="text-center mt-5" style="font-size: xxx-large">
-        La plataforma social de código abierto, donde la música y la voz dominan.
-    </h3>
-
-    <h5 class="mt-5">Personas detrás del proyecto</h5>
-    <p>
-        El desarrollo de software es llevado por <a href="https://github.com/erik-everardo">Erik Cavazos <i class="fa-solid fa-arrow-up-right-from-square"></i></a>.
-    </p>
-    <h5>Código abierto</h5>
-    <p>
-        Este proyecto es código abierto. <a href="https://github.com/Isolaatti-Software/Isolaatti-BackendWebApp">github.com/Isolaatti-Software/Isolaatti-BackendWebApp</a>
-    </p>
-    <h5>El origen del nombre</h5>
-    <p>
-        <em>Isolaatti</em> viene del finés, que quiere decir "aislar" o "separar".
-    </p>
-    <h5>Detalles técnicos</h5>
-    <p>Corriendo gracias a C#, ASP.NET 6, Vue.js, Bootstrap, PostgreSQL, MongoDB, Google Cloud Storage y Heroku</p>
-    <hr>
-    <div>
-        <a href='https://play.google.com/store/apps/details?id=com.erik.isolaatti&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'>
-            <img alt='Disponible en Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/es-419_badge_web_generic.png' width="300px"/>
-        </a>
+    <meta property="og:description" content="Isolaatti es una plataforma social de código abierto basada en texto y audio"/>
+    <meta property="og:image" content="https://isolaatti.com/res/imgs/isolaatti_banner.png"/>
+<script src="https://kit.fontawesome.com/fde197fc03.js" crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="container-fluid p-0">
+    <div class="row m-0">
+        <div class="col-12 p-3">
+            <nav class="d-flex justify-content-end align-items-center">
+                <a href="/" class="nav-link custom-nav-link" id="isolaatti_brand"></a>
+                <button class="btn btn-transparent" id="mobile-button">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <section id="links" class="mr-auto d-flex">
+                    <a href="https://isolaattisoftware.com.mx" class="mr-1 nav-link">Organización <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                    <a href="https://blog.isolaattisoftware.com.mx" class="ml-1 nav-link">Blog <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                    <a href="https://ayuda.isolaatti.com/allposts" class=" ml-1 nav-link">Novedades <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                </section>
+                <a asp-page="/Index" class="btn btn-primary">Ir a Isolaatti <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+            </nav>
+        </div>
     </div>
-</div>
+    <div class="row d-none" id="mobile-menu">
+        <div class="col-12">
+            <section class="list-group list-group-flush">
+                <a href="https://isolaattisoftware.com.mx" class="list-group-item list-group-item-action">Organización <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                <a href="https://blog.isolaattisoftware.com.mx" class="list-group-item list-group-item-action">Blog <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                <a href="https://ayuda.isolaatti.com/allposts" class="list-group-item list-group-item-action">Novedades <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+            </section>
+        </div>
+    </div>
+    <div class="row m-0 colored-row">
+        <div class="col-md-6 d-flex p-5">
+            <div class="isolaatti-full-logo">
+                Isolaatti
+            </div>
+        </div>
+        <div class="col-md-6 p-sm-1 p-md-3 p-lg-5">
+            <div class="pl-5 topic">
+                <span class="display-3 font-weight-light">ellos</span><br/>
+                <span class="display-3 font-weight-light">te</span><br/>
+                <span class="display-3 font-weight-light">escuchan</span><br/>
+                <span class="display-3 font-weight-light">fuerte</span><br/>
+            </div>
+        </div>
+    </div>
+    <div class="row m-0">
+        <div class="col-12 p-5">
+            <div class="d-flex flex-column align-items-center justify-content-center pt-4">
+                <span class="display-2"><i class="fa-solid fa-face-laugh-beam"></i></span>
+                <span class="display-1 font-weight-lighter mt-5 topic2">Solo talk, no show up...</span>
+                <p class="font-weight-light mt-2">
+                    Rompe tus dedos y revienta tu garganta antes de usar la cámara <i class="fa-solid fa-skull-crossbones"></i>
+                </p>
+            </div>
+            <div class="container">
+                <div class="row mt-5">
+                    <div class="col-md-4">
+                        <div class="d-flex flex-column">
+                            <div class="font-weight-light display-4 text-center"><i class="fa-brands fa-markdown"></i></div>
+                            <p class="text-center">Texto con el poder <i>formateador</i> de Markdown</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex flex-column">
+                            <div class="font-weight-light display-4 text-center"><i class="fa-solid fa-microphone"></i></div>
+                            <p class="text-center">Tu voz presente siempre que quieras</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex flex-column">
+                            <div class="font-weight-light display-4 text-center"><i class="fa-solid fa-palette"></i></div>
+                            <p class="text-center">Temas visuales muy personales</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row m-3">
+        <div class="col-12">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-4 p-3">
+                        <div class="rounded-feature-card rounded-feature-card-pink">
+                            <h3 class="topic">Código abierto</h3>
+                            <span class="display-1 text-light text-center w-100"><i class="fa-solid fa-code-pull-request"></i></span>
+                            <p>Sí Código abierto = transparencia...</p>
+                            <p class="text-center mt-auto"><a href="https://github.com/Isolaatti-Software/IsolaattiWebsite" class="btn btn-primary">Código fuente</a></p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 p-3">
+                        <div class="rounded-feature-card rounded-feature-card-orange">
+                            <h3 class="topic">Intenciones</h3>
+                            <span class="display-1 text-light text-center w-100"><i class="fa-solid fa-face-flushed"></i></span>
+                                            
+                            <p>Definitivamente no convertirte en producto, sino empoderarte...</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 p-3">
+                        <div class="rounded-feature-card rounded-feature-card-blue">
+                            <h3 class="topic">Evolución</h3>
+                            <span class="display-1 text-light text-center w-100"><i class="fa-solid fa-angles-up"></i></span>
+                                            
+                            <p>Nosotros y ellos podemos hacer de esto lo que todos queremos que sea</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-@section Scripts
-{
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-}
+</div>
+    <footer class="mt-auto ml-2 mr-2">
+        <p class="text-center">
+            <span class="isolaatti-name-footer">Isolaatti</span>
+            hecho con <i class="fas fa-heart" style="color: red"></i> por <em>Erik Cavazos</em>, 2020 - 2022
+        </p>
+        <p class="text-center footer-font-color font-weight-lighter">
+            <a href="https://github.com/Isolaatti-Software/IsolaattiWebsite" class="link">Código fuente</a>
+            <a href="https://play.google.com/store/apps/details?id=com.erik.isolaatti" class="link">App</a>
+            <a asp-page="/About" class="link">Acerca de</a>
+            <a asp-page="/s/Legal/PrivacyPolicy" class="link">Política de privacidad y cookies</a>
+            <a asp-page="/s/Legal/TermsOfUse" class="link">Términos de uso</a>
+            <a href="https://ayuda.isolaatti.com/" class="link">Ayuda</a>
+            <a href="https://blog.isolaattisoftware.com.mx/" target="_blank" class="link">Blog</a>
+        </p>
+        <p class="text-center text-white-50">
+
+        </p>
+    </footer>
+
+@* <div> *@
+@*     <a href='https://play.google.com/store/apps/details?id=com.erik.isolaatti&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'> *@
+@*         <img alt='Disponible en Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/es-419_badge_web_generic.png' width="300px"/> *@
+@*     </a> *@
+@* </div> *@
+<script>
+document.getElementById("mobile-button").addEventListener("click", function (){
+    const mobileMenu = document.getElementById("mobile-menu");
+    if (mobileMenu.classList.contains("d-none")) {
+        mobileMenu.classList.remove("d-none");
+    } else {
+        mobileMenu.classList.add("d-none");
+    }
+});
+</script>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</body>
+</html>
+
+

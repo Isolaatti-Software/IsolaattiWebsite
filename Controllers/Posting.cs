@@ -2,13 +2,13 @@ using System;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
-using isolaatti_API.Classes.ApiEndpointsRequestDataModels;
-using isolaatti_API.Classes.ApiEndpointsResponseDataModels;
-using isolaatti_API.Models;
-using isolaatti_API.Services;
+using Isolaatti.Classes.ApiEndpointsRequestDataModels;
+using Isolaatti.Classes.ApiEndpointsResponseDataModels;
+using Isolaatti.Models;
+using Isolaatti.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace isolaatti_API.Controllers
+namespace Isolaatti.Controllers
 {
     [ApiController]
     [Route("/api/Posting")]

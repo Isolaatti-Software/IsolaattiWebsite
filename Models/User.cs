@@ -8,7 +8,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace isolaatti_API.Models
+namespace Isolaatti.Models
 {
     public class User
     {

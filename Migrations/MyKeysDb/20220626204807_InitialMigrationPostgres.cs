@@ -3,7 +3,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace isolaatti_API.Migrations.MyKeysDb
+namespace Isolaatti.Migrations.MyKeysDb
 {
     public partial class InitialMigrationPostgres : Migration
     {

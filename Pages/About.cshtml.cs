@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace isolaatti_API.Pages
+namespace Isolaatti.Pages
 {
     public class GetStarted : PageModel
     {

@@ -1,10 +1,10 @@
 ﻿using System.Threading.Tasks;
-using isolaatti_API.Models;
-using isolaatti_API.Services;
+using Isolaatti.Models;
+using Isolaatti.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace isolaatti_API.Pages.Likes;
+namespace Isolaatti.Pages.Likes;
 
 public class ReceivedLikes : PageModel
 {

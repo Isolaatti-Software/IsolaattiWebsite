@@ -1,4 +1,4 @@
-﻿namespace isolaatti_API.Models.AudiosMongoDB;
+﻿namespace Isolaatti.Models.AudiosMongoDB;
 
 public class MongoDatabaseConfiguration
 {

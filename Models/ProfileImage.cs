@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace isolaatti_API.Models;
+namespace Isolaatti.Models;
 
 public class ProfileImage
 {

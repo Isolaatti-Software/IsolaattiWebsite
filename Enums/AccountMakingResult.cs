@@ -1,4 +1,4 @@
-﻿namespace isolaatti_API.Enums;
+﻿namespace Isolaatti.Enums;
 
 public enum AccountMakingResult
 {

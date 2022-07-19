@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using isolaatti_API.Models;
-using isolaatti_API.Services;
+using Isolaatti.Models;
+using Isolaatti.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace isolaatti_API.Controllers
+namespace Isolaatti.Controllers
 {
     [Route("/api/ZipDownloads")]
     public class ZipDownloads : ControllerBase

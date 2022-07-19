@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace isolaatti_API.Classes.ApiEndpointsRequestDataModels
+namespace Isolaatti.Classes.ApiEndpointsRequestDataModels
 {
     public class MakeCommentModel
     {

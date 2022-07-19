@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using isolaatti_API.Classes.ApiEndpointsResponseDataModels;
-using isolaatti_API.Enums;
-using isolaatti_API.Models;
-using isolaatti_API.Repositories;
-using isolaatti_API.Services;
+using Isolaatti.Classes.ApiEndpointsResponseDataModels;
+using Isolaatti.Enums;
+using Isolaatti.Models;
+using Isolaatti.Repositories;
+using Isolaatti.Services;
 using Microsoft.AspNetCore.Mvc;
 using NUglify.Helpers;
 
-namespace isolaatti_API.Controllers;
+namespace Isolaatti.Controllers;
 
 [ApiController]
 [Route("/api/Search")]

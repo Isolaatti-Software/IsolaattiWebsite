@@ -1,4 +1,4 @@
-namespace isolaatti_API.Classes
+namespace Isolaatti.Classes
 {
     public class IdToUser
     {

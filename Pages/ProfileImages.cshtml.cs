@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using isolaatti_API.Models;
-using isolaatti_API.Services;
-using isolaatti_API.Utils;
+using Isolaatti.Models;
+using Isolaatti.Services;
+using Isolaatti.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace isolaatti_API.Pages;
+namespace Isolaatti.Pages;
 
 public class ProfileImages : PageModel
 {

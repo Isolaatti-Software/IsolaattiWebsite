@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace isolaatti_API.Migrations
+namespace Isolaatti.Migrations
 {
     public partial class InitialMigrationPostgres : Migration
     {

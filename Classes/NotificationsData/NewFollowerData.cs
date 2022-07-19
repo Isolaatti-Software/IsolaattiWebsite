@@ -1,4 +1,4 @@
-namespace isolaatti_API.Classes.NotificationsData
+namespace Isolaatti.Classes.NotificationsData
 {
     public class NewFollowerData
     {

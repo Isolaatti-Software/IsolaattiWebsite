@@ -1,4 +1,4 @@
-namespace isolaatti_API.isolaatti_lib
+namespace Isolaatti.isolaatti_lib
 {
     public class QueryNormalization
     {

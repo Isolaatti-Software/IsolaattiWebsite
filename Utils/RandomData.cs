@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Security.Cryptography;
 
-namespace isolaatti_API.Utils
+namespace Isolaatti.Utils
 {
     public static class RandomData
     {

@@ -1,6 +1,6 @@
-using isolaatti_API.Models;
+using Isolaatti.Models;
 
-namespace isolaatti_API.Classes
+namespace Isolaatti.Classes
 {
     public class ReturningPostsComposedResponse : SimpleTextPost
     {

@@ -1,6 +1,6 @@
 using System;
 
-namespace isolaatti_API.Utils
+namespace Isolaatti.Utils
 {
     public class GoogleCloudStorageUrlUtils
     {

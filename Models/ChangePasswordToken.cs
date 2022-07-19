@@ -1,7 +1,7 @@
 using System;
 using System.Security.Cryptography;
 
-namespace isolaatti_API.Models
+namespace Isolaatti.Models
 {
     public class ChangePasswordToken
     {

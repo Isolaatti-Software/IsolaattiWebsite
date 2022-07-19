@@ -1,13 +1,13 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using isolaatti_API.Models;
-using isolaatti_API.Services;
+using Isolaatti.Models;
+using Isolaatti.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace isolaatti_API.Pages
+namespace Isolaatti.Pages
 {
     public class LogIn : PageModel
 

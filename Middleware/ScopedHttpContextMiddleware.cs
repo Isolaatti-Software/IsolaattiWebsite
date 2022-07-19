@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
-using isolaatti_API.Services;
+using Isolaatti.Services;
 using Microsoft.AspNetCore.Http;
 
-namespace isolaatti_API.Middleware;
+namespace Isolaatti.Middleware;
 
 public class ScopedHttpContextMiddleware
 {
