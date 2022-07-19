@@ -1,6 +1,6 @@
 ﻿@import url('https://fonts.googleapis.com/css2?family=Edu+VIC+WA+NT+Beginner&family=Roboto:wght@300&display=swap');
 .colored-row {
-    background-color: #22034f;
+    background-color: #000000;
     color: white;
 }
 .colored-row-2 {
@@ -80,6 +80,17 @@ p {
 .rounded-feature-card-pink {
     background-color: #af4eb4;
     color: white;
+}
+.font-blue {
+    color: #31409b;
+}
+
+.font-pink {
+    color: #af4eb4;
+}
+
+.font-orange {
+    color: #b47d2d;
 }
 
 .isolaatti-bug-btn {
