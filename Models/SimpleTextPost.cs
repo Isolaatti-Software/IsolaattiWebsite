@@ -18,6 +18,7 @@ namespace Isolaatti.Models
         public string Description { get; set; }
         public string Language { get; set; }
         public Guid? AudioId { get; set; }
+        public Guid? SquadId { get; set; }
 
         [JsonIgnore] public User User { get; set; }
 

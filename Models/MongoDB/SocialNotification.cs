@@ -1,11 +1,11 @@
 using System;
 
-namespace Isolaatti.Models
+namespace Isolaatti.Models.MongoDB
 {
     public class SocialNotification
     {
-        public long Id { get; set; }
-        public DateTime TimeSpan { get; set; }
+        public string Id { get; set; }
+        public DateTime TimeStamp { get; set; }
         public int UserId { get; set; }
         public int Type { get; set; }
         public long PostRelated { get; set; }

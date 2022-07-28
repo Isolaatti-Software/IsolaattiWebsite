@@ -1,4 +1,4 @@
-﻿using Isolaatti.Models.AudiosMongoDB;
+﻿using Isolaatti.Models.MongoDB;
 
 namespace Isolaatti.Classes.ApiEndpointsResponseDataModels;
 

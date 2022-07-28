@@ -1,8 +1,8 @@
-﻿Vue.component('discussion-page', {
+﻿const discussionComponent = {
     props: {
         postId: {
             type: Number,
-            required: true
+                required: true
         }
     },
     data: function () {
@@ -44,4 +44,5 @@
       </div>
       </div>
     `
-})
+}
+Vue.component('discussion-page', discussionComponent)

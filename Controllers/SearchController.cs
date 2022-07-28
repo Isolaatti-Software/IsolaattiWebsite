@@ -29,7 +29,7 @@ public class SearchController : ControllerBase
     [Route("Quick")]
     [HttpGet]
     public async Task<IActionResult> QuickSearch([FromHeader(Name = "sessionToken")] string sessionToken,
-        [FromQuery] string q)
+        [FromQuery] string q, [FromQuery] bool onlyProfile = false)
     {
         var user = await _accounts.ValidateToken(sessionToken);
         if (user == null) return Unauthorized("Token is not valid");
@@ -53,7 +53,11 @@ public class SearchController : ControllerBase
                 ContentPreview = u.Name
             };
 
-        results.AddRange(profilesResults);
+        results.AddRange(profilesResults.Take(20));
+        if (onlyProfile)
+        {
+            return Ok(results);
+        }
 
         // Perform basic search on posts
         var postsResults = from post in _db.SimpleTextPosts
@@ -65,7 +69,7 @@ public class SearchController : ControllerBase
                 ContentPreview = post.TextContent.Substring(0, 30)
             };
 
-        results.AddRange(postsResults);
+        results.AddRange(postsResults.Take(20));
 
 
         return Ok(results);

@@ -15,6 +15,7 @@
     <link rel="icon" type="image/png" sizes="64x64" href="~/favicon-64.png">
     <link rel="icon" type="image/png" sizes="32x32" href="~/favicon-32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="~/favicon-16.png">
+    
 
     @RenderSection("CSS", required: false)
 
@@ -54,6 +55,9 @@
                     <button class="btn btn-transparent nav-link custom-nav-link mr-1 ml-auto" data-toggle="modal" data-target="#search-modal">
                         <i class="fa-solid fa-magnifying-glass"></i>
                     </button>
+                    <a class="btn btn-transparent custom-nav-link mr-1 ml-1" type="button" asp-page="/Squads">
+                        <i class="fa-solid fa-people-group"></i>
+                    </a>
                     
                     <div class="dropdown">
                         <a class="nav-link custom-nav-link mr-1 dropdown-toggle"
@@ -143,6 +147,7 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+<script src="https://unpkg.com/vue-router@2.0.0/dist/vue-router.js"></script>
 
 @* Add here global Vue.js components files. Components used in pages should not be added here *@
 <script src="~/js/VueComponents/audioAttachmentComponent.js"></script>
@@ -152,6 +157,9 @@
 @* This scripts are added only for specific pages *@
 @await RenderSectionAsync("Scripts", required: false)
 
+<script>
+const renderRouter = "@((bool?)ViewData["squadsRouter"] ?? false)" === "True";
+</script>
 <script src="~/js/VueComponents/page/global.js"></script>
 
 <script>

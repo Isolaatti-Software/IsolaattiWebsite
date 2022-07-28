@@ -41,5 +41,8 @@ namespace Isolaatti.Models
         // These models will be dropped from this app and moved to the service "User reports"
         // public DbSet<PostReport> PostReports { get; set; }
         // public DbSet<CommentReport> CommentReports { get; set; }
+        
+        public DbSet<Squad> Squads { get; set; }
+        public DbSet<SquadUser> SquadUsers { get; set; }
     }
 }

@@ -5,7 +5,7 @@ using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Isolaatti.Middleware;
 using Isolaatti.Models;
-using Isolaatti.Models.AudiosMongoDB;
+using Isolaatti.Models.MongoDB;
 using Isolaatti.Repositories;
 using Isolaatti.Services;
 using Microsoft.AspNetCore.Builder;
@@ -46,8 +46,6 @@ namespace Isolaatti
             services.AddMvcCore().AddApiExplorer();
             services.AddRazorPages().AddRazorRuntimeCompilation();
             services.AddSignalR();
-
-
             services.AddDbContext<DbContextApp>(options =>
             {
                 if (_environment.IsProduction())
@@ -71,7 +69,6 @@ namespace Isolaatti
                     options.UseNpgsql(Configuration.GetConnectionString("Database"));
                 }
             });
-
             services.AddDbContext<MyKeysDbContext>(options =>
             {
                 if (_environment.IsProduction())
@@ -95,9 +92,7 @@ namespace Isolaatti
                     options.UseNpgsql(Configuration.GetConnectionString("KeysDatabase"));
                 }
             });
-
             services.AddDataProtection().PersistKeysToDbContext<MyKeysDbContext>();
-
             if (_environment.IsProduction())
             {
                 var mongoConfigEnvVar = Environment.GetEnvironmentVariable("mongodb_config");
@@ -107,17 +102,19 @@ namespace Isolaatti
                     config.ConnectionString = mongoConfig?.ConnectionString;
                     config.DatabaseName = mongoConfig?.DatabaseName;
                     config.AudiosCollectionName = mongoConfig?.AudiosCollectionName;
+                    config.NotificationsCollectionName = mongoConfig?.NotificationsCollectionName;
+                    config.SquadsInvitationsCollectionName = mongoConfig?.SquadsInvitationsCollectionName;
+                    config.SquadsJoinRequestsCollectionName = mongoConfig?.SquadsJoinRequestsCollectionName;
                 });
             }
             else
             {
-                services.Configure<MongoDatabaseConfiguration>(Configuration.GetSection("AudiosMongoDb"));
+                services.Configure<MongoDatabaseConfiguration>(Configuration.GetSection("MongoDb"));
             }
-
-            
-
             services.AddScoped<AudiosRepository>();
-
+            services.AddScoped<SquadInvitationsRepository>();
+            services.AddScoped<SquadsRepository>();
+            services.AddScoped<SquadJoinRequestsRepository>();
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // No consent check needed here
@@ -129,7 +126,6 @@ namespace Isolaatti
                 options.ForwardedHeaders = ForwardedHeaders.XForwardedProto |
                                            ForwardedHeaders.XForwardedHost;
             });
-
             // send-grid-api-key env variable must be set on production
             services.AddSendGrid(options =>
             {
@@ -137,15 +133,11 @@ namespace Isolaatti
                     ? Configuration.GetSection("ApiKeys")["SendGrid"]
                     : Environment.GetEnvironmentVariable("send_grid_api_key");
             });
-
             services.AddScoped<ScopedHttpContext>();
             services.AddScoped<IAccounts, Accounts>();
-
             // don't allow uploading files larger than 2 MB, for security reasons
             services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = 1024 * 1024 * 2);
-
             services.AddSwaggerGen();
-
             services.AddWebOptimizer(pipeline =>
             {
                 pipeline.MinifyCssFiles();
@@ -163,13 +155,10 @@ namespace Isolaatti
             {
                 app.UseDeveloperExceptionPage();
             }
-
             dbContext.Database.Migrate();
             keysDb.Database.Migrate();
-
             app.UseSwagger();
             app.UseSwaggerUI();
-
             app.UseForwardedHeaders();
             app.UseHsts();
             app.UseStaticFiles();
