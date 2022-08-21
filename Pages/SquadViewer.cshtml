@@ -1,0 +1,37 @@
+﻿@page "/squads/{squadId:guid}"
+@model Isolaatti.Pages.SquadViewer
+
+@{
+    Layout = "Shared/_LayoutWebApp";
+    ViewData["squadsRouter"] = true;
+}
+
+<div class="row m-0">
+    <div class="col-12">
+        <squad-view squad-id="@Model.SquadId"></squad-view>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script>
+        function getRoutesForPage() { 
+            return [
+                { path: "/", component: squadActivityComponent },
+                { path: "/contenido", component: squadContentComponent },
+                { path: "/miembros", component: squadMembersComponent },
+                { path: "/wiki", component: squadWikiComponent },
+                { path: "/ajustes", component: squadSettingsComponent }
+        ]}
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="~/js/lib/purify.min.js"></script>
+    <script src="~/js/VueComponents/usersGridComponent.js"></script>
+    <script src="~/js/VueComponents/page/squadViewerPages/squadActivityComponent.js"></script>
+    <script src="~/js/VueComponents/page/squadViewerPages/squadContentComponent.js"></script>
+    <script src="~/js/VueComponents/page/squadViewerPages/squadHeaderComponent.js"></script>
+    <script src="~/js/VueComponents/page/squadViewerPages/squadMembersComponent.js"></script>
+    <script src="~/js/VueComponents/page/squadViewerPages/squadSettingsComponent.js"></script>
+    <script src="~/js/VueComponents/page/squadViewerPages/squadWikiComponent.js"></script>
+    <script src="~/js/VueComponents/page/squadViewerComponent.js"></script>
+}

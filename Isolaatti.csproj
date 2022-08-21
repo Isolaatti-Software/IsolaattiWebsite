@@ -13,6 +13,7 @@
         <PackageReference Include="FirebaseAdmin" Version="1.6.0" />
         <PackageReference Include="Flurl.Http" Version="3.2.2" />
         <PackageReference Include="Google.Cloud.Storage.V1" Version="3.7.0" />
+        <PackageReference Include="HtmlAgilityPack" Version="1.11.43" />
         <PackageReference Include="LigerShark.WebOptimizer.Core" Version="3.0.365" />
         <PackageReference Include="LigerShark.WebOptimizer.Sass" Version="3.0.84" />
         <PackageReference Include="Mailkit" Version="3.2.0" />

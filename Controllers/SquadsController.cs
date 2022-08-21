@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Isolaatti.Classes.ApiEndpointsRequestDataModels;
 using Isolaatti.Models;
@@ -48,7 +47,6 @@ public class SquadsController : ControllerBase
         return Ok(creationResult);
     }
     
-    
     [HttpGet]
     [Route("{squadId:guid}")]
     public async Task<IActionResult> GetSquad(
@@ -62,8 +60,6 @@ public class SquadsController : ControllerBase
         return Ok(await _squadsRepository.GetSquad(squadId));
     }
     
-    
-
     [HttpDelete]
     [Route("{squadId:guid}")]
     public async Task<IActionResult> RemoveSquad(
@@ -195,7 +191,10 @@ public class SquadsController : ControllerBase
     
     [HttpGet]
     [Route("MySquads")]
-    public async Task<IActionResult> GetSquadOfUserAdmins([FromHeader(Name = "sessionToken")] string sessionToken, Guid lastId)
+    public async Task<IActionResult> GetSquadOfUserAdmins(
+        [FromHeader(Name = "sessionToken")] 
+        string sessionToken, 
+        Guid lastId)
     {
         var user = await _accounts.ValidateToken(sessionToken);
         if(user == null) return Unauthorized("Token is not valid");
@@ -205,11 +204,53 @@ public class SquadsController : ControllerBase
 
     [HttpGet]
     [Route("SquadsBelong")]
-    public async Task<IActionResult> GetSquadsOfUser([FromHeader(Name = "sessionToken")] string sessionToken, Guid lastId)
+    public async Task<IActionResult> GetSquadsOfUser(
+        [FromHeader(Name = "sessionToken")] string sessionToken, 
+        Guid lastId)
     {
         var user = await _accounts.ValidateToken(sessionToken);
         if(user == null) return Unauthorized("Token is not valid");
 
         return Ok(_squadsRepository.GetSquadUserBelongs(user.Id, lastId));
+    }
+
+    [HttpGet]
+    [Route("{squadId:guid}/Members")]
+    public async Task<IActionResult> GetMembersOfSquad(
+        [FromHeader(Name = "sessionToken")] string sessionToken, 
+        Guid squadId)
+    {
+        var user = await _accounts.ValidateToken(sessionToken);
+        if(user == null) return Unauthorized("Token is not valid");
+
+        return Ok(await _squadsRepository.GetMembersOfSquad(squadId));
+    }
+
+    [HttpPost]
+    [Route("{squadId:guid}/Update")]
+    public async Task<IActionResult> UpdateSquad(
+        [FromHeader(Name = "sessionToken")] string sessionToken, 
+        Guid squadId, 
+        SquadUpdateInfoRequest payload)
+    {
+        var user = await _accounts.ValidateToken(sessionToken);
+        if(user == null) return Unauthorized("Token is not valid");
+
+        var squad = await _squadsRepository.GetSquad(squadId);
+        if (squad == null)
+        {
+            return NotFound(new { error = "Squad does not exist" });
+        }
+
+        if (!squad.UserId.Equals(user.Id))
+        {
+            return Unauthorized(new { error = "Squad cannot be updated by this user" });
+        }
+
+        return Ok(new
+        {
+            result = (await _squadsRepository.UpdateSquad(squadId, payload.Name, payload.Description,
+                payload.ExtendedDescription)).ToString()
+        });
     }
 }

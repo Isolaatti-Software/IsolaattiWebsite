@@ -64,37 +64,8 @@
     <meta proerty="og-title" content="Inicia sesión en Isolaatti"/>
 }
 
-
-@* @if (Model.NewUser) *@
-@* { *@
-@*     <div class="alert alert-info"> *@
-@*         <h5>Welcome, before logging in the first time, verify your email</h5> *@
-@*         <p>We've sent you a message with a link!</p> *@
-@*     </div> *@
-@* } *@
-@* @if (Model.JustVerifiedEmail) *@
-@* { *@
-@*     <div class="alert alert-info"> *@
-@*         <h5>Your email was verified succesfully</h5> *@
-@*         <p>Now you can log in here or the Android application!</p> *@
-@*     </div> *@
-@* } *@
-@if (Model.ChangedPassword)
-{
-    <div class="alert alert-info">
-        Tu contraseña se cambió exitosamente. Ingresa tu contraseña para continuar.
-    </div>
-}
-
-@if (Model.ExistingSession)
-{
-    <div class="alert alert-info">
-        Parece que haz iniciado sesión como <strong>@ViewData["GuessedUsername"]</strong>. ¿Deseas continuar?<br><a asp-page="/Index">Continuar</a>
-    </div>
-}
-
 <div class="d-flex col-lg-7 col-md-6 flex-column">
-
+    
 </div>
 <div class="col-lg-5 col-md-6 justify-content-end align-items-center">
     <div class="sign-in-up-form-container" id="sign-in">

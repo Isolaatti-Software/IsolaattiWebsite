@@ -1,3 +1,8 @@
+/*!
+ * Isolaatti stylesheet
+ * Copyright 2020-2022 Erik Cavazos
+ * Copyright 2022 Isolaatti Software
+ */
 @import url('https://fonts.googleapis.com/css2?family=Zen+Dots&display=swap');
 
 $theme-colors: (
@@ -5,6 +10,7 @@ $theme-colors: (
         "dark": black,
         "primary-lighter": #7015ea
 );
+
 @import "bt/scss/bootstrap";
 
 body {
@@ -537,3 +543,4 @@ footer#footer > a, footer#footer > span {
   background-color: white;
   padding: 1rem;
 }
+

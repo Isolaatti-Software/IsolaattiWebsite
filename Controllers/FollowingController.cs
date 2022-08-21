@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Isolaatti.Classes.ApiEndpointsRequestDataModels;
+using Isolaatti.Classes.ApiEndpointsResponseDataModels;
 using Isolaatti.Models;
 using Isolaatti.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -107,12 +108,11 @@ namespace Isolaatti.Controllers
                 (from _user in Db.Users
                     from _relation in Db.FollowerRelations
                     where _relation.UserId == userId && _user.Id == _relation.TargetUserId
-                    select new
+                    select new UserFeed
                     {
-                        Id = _relation.TargetUserId,
+                        Id = _relation.TargetUserId, 
                         Name = _user.Name,
-                        ImageUrl = Utils.UrlGenerators.GenerateProfilePictureUrl(_relation.TargetUserId, sessionToken,
-                            Request)
+                        ImageId = _user.ProfileImageId
                     }).ToList();
 
             return Ok(listOfFollowing);
@@ -129,12 +129,11 @@ namespace Isolaatti.Controllers
                 (from _user in Db.Users
                     from _relation in Db.FollowerRelations
                     where _relation.TargetUserId == userId && _relation.UserId == _user.Id
-                    select new
+                    select new UserFeed
                     {
                         Id = _relation.UserId,
                         Name = _user.Name,
-                        ImageUrl = Utils.UrlGenerators.GenerateProfilePictureUrl(_relation.UserId, sessionToken,
-                            Request)
+                        ImageId = _user.ProfileImageId
                     }).ToList();
             return Ok(listOfFollowers);
         }

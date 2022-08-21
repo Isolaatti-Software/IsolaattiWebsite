@@ -30,12 +30,9 @@ namespace Isolaatti.Pages
             switch (user)
             {
                 case null when ThisPost.Privacy != 3:
-                    var protocol = Request.IsHttps ? "https://" : "http://";
-                    var url = $"{protocol}{Request.HttpContext.Request.Host.Value}";
-                    url += Request.Path;
                     return RedirectToPage("LogIn", new
                     {
-                        then = url
+                        then = Request.Path
                     });
                 case null when ThisPost.Privacy == 3:
                     return RedirectToPage("/PublicContent/PublicThreadViewer", new

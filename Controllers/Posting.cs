@@ -4,7 +4,9 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Isolaatti.Classes.ApiEndpointsRequestDataModels;
 using Isolaatti.Classes.ApiEndpointsResponseDataModels;
+using Isolaatti.Enums;
 using Isolaatti.Models;
+using Isolaatti.Models.MongoDB;
 using Isolaatti.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,11 +18,13 @@ namespace Isolaatti.Controllers
     {
         private readonly DbContextApp _db;
         private readonly IAccounts _accounts;
+        private readonly NotificationSender _notificationSender;
 
-        public MakePost(DbContextApp dbContextApp, IAccounts accounts)
+        public MakePost(DbContextApp dbContextApp, IAccounts accounts, NotificationSender notificationSender)
         {
             _db = dbContextApp;
             _accounts = accounts;
+            _notificationSender = notificationSender;
         }
 
         [HttpPost]
@@ -178,7 +182,7 @@ namespace Isolaatti.Controllers
             _db.SimpleTextPosts.Update(post);
             await _db.SaveChangesAsync();
 
-            return Ok(new FeedComment
+            var comment = new FeedComment
             {
                 AudioId = commentToMake.AudioId,
                 AuthorId = commentToMake.WhoWrote,
@@ -190,7 +194,18 @@ namespace Isolaatti.Controllers
                 TargetUserId = commentToMake.TargetUser,
                 TimeStamp = commentToMake.Date,
                 UserIsOwner = true
-            });
+            };
+            if (post.UserId != user.Id)
+            {
+                await _notificationSender.NotifyUser(post.UserId, new SocialNotification
+                {
+                    UserId = user.Id,
+                    Type = NotificationType.NewComment
+                });
+                
+            }
+            await _notificationSender.SendUpdateEvent(comment);
+            return Ok(comment);
         }
 
         [HttpGet]

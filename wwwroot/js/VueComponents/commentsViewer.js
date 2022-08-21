@@ -63,7 +63,7 @@ Vue.component("comments-viewer", {
             });
         },
         onCommented: function (comment) {
-            this.comments.push(comment)
+            // this.comments.push(comment)
         },
         onCommentRemoved: function (id) {
             const index = this.comments.findIndex(c => c.id === id);
@@ -89,6 +89,12 @@ Vue.component("comments-viewer", {
 
             that.comments.splice(index, 1, comment);
         });
+        
+        socket.on("post-update", function(comingComment) {
+            that.comments.push(comingComment);
+        });
+        
+        socket.on("comment-removed", that.onCommentRemoved);
     },
     template: `
       <div class="d-flex flex-column comments-section">

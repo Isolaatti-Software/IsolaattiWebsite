@@ -29,12 +29,9 @@ public class ProfileImages : PageModel
         var user = await _accounts.ValidateToken(token);
         if (user == null)
         {
-            var protocol = Request.IsHttps ? "https://" : "http://";
-            var url = $"{protocol}{Request.HttpContext.Request.Host.Value}";
-            url += Request.Path;
             return RedirectToPage("LogIn", new
             {
-                then = url
+                then = Request.Path
             });
         }
 

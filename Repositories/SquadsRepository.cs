@@ -211,4 +211,28 @@ public class SquadsRepository
             .Where(squad => squad.UserId == userId)
             .AsEnumerable();
     }
+
+    public async Task<IEnumerable<UserFeed>> GetMembersOfSquad(Guid squadId)
+    {
+        // return _db.SquadUsers.Where(squadUser => squadUser.SquadId.Equals(squadId)).Select(u => new UserFeed
+        // {
+        //     Id = u.UserId,
+        //     Name = _db.Users.Find(u.UserId).Name,
+        //     ImageId = _db.Users.Find(u.UserId).ProfileImageId
+        // });
+
+        var users =
+            from squad in _db.Squads
+            from squadUser in _db.SquadUsers
+            from user in _db.Users
+            where squad.Id == squadUser.SquadId && user.Id == squadUser.UserId && squad.Id == squadId
+            select new UserFeed
+            {
+                Id = squadUser.UserId,
+                Name = user.Name,
+                ImageId = user.ProfileImageId
+            };
+        
+        return users;
+    }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Isolaatti.Models;
@@ -14,6 +15,7 @@ namespace Isolaatti.Pages
     {
         private DbContextApp _db;
         private readonly IAccounts _accounts;
+        private readonly ServerRenderedAlerts _renderedAlerts;
 
         public bool WrongCredential = false;
         public bool NotVerifiedEmail = false;
@@ -22,10 +24,11 @@ namespace Isolaatti.Pages
         public bool ExistingSession = false;
         public bool ChangedPassword = false;
 
-        public LogIn(DbContextApp dbContextApp, IAccounts accounts)
+        public LogIn(DbContextApp dbContextApp, IAccounts accounts, ServerRenderedAlerts serverRenderedAlerts)
         {
             _db = dbContextApp;
             _accounts = accounts;
+            _renderedAlerts = serverRenderedAlerts;
         }
 
 
@@ -57,7 +60,10 @@ namespace Isolaatti.Pages
                 ViewData["username_field"] = username;
 
             ViewData["then"] = then;
-
+            if (then != "")
+            {
+                _renderedAlerts.Alerts.Add("info","Debes iniciar sesión para acceder al recurso solicitado");
+            }
             return Page();
         }
 
@@ -95,7 +101,7 @@ namespace Isolaatti.Pages
                 });
                 if (then != null)
                 {
-                    return Redirect(then);
+                    return LocalRedirect(then);
                 }
 
                 // var ipAddress = "Unavailable";

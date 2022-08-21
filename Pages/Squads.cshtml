@@ -9,6 +9,14 @@
 }
 @section Scripts
 {
+    <script>
+    function getRoutesForPage() { 
+        return [
+            { path: "/", component: squadsFeed },
+            { path: "/crear", component: createSquadComponent },
+            { path: "/tuyos", component: yourSquadsComponent }
+        ]}
+    </script>
     <script src="~/js/VueComponents/page/squadsComponent.js"></script>
 }
 <squads-page></squads-page>

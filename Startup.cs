@@ -3,6 +3,7 @@ using System.IO;
 using System.Text.Json;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
+using Isolaatti.Config;
 using Isolaatti.Middleware;
 using Isolaatti.Models;
 using Isolaatti.Models.MongoDB;
@@ -45,7 +46,6 @@ namespace Isolaatti
             services.AddControllers();
             services.AddMvcCore().AddApiExplorer();
             services.AddRazorPages().AddRazorRuntimeCompilation();
-            services.AddSignalR();
             services.AddDbContext<DbContextApp>(options =>
             {
                 if (_environment.IsProduction())
@@ -105,16 +105,26 @@ namespace Isolaatti
                     config.NotificationsCollectionName = mongoConfig?.NotificationsCollectionName;
                     config.SquadsInvitationsCollectionName = mongoConfig?.SquadsInvitationsCollectionName;
                     config.SquadsJoinRequestsCollectionName = mongoConfig?.SquadsJoinRequestsCollectionName;
+                    config.RealtimeServiceKeysCollectionName = mongoConfig?.RealtimeServiceKeysCollectionName;
+                });
+                
+                var serversConfigEnvVar = Environment.GetEnvironmentVariable("servers");
+                services.Configure<Servers>(config =>
+                {
+                    var serversConfig = JsonSerializer.Deserialize<Servers>(serversConfigEnvVar!);
+                    config.RealtimeServerUrl= serversConfig?.RealtimeServerUrl;
                 });
             }
             else
             {
                 services.Configure<MongoDatabaseConfiguration>(Configuration.GetSection("MongoDb"));
+                services.Configure<Servers>(Configuration.GetSection("Servers"));
             }
             services.AddScoped<AudiosRepository>();
             services.AddScoped<SquadInvitationsRepository>();
             services.AddScoped<SquadsRepository>();
             services.AddScoped<SquadJoinRequestsRepository>();
+            services.AddScoped<SocketIoServiceKeysRepository>();
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // No consent check needed here
@@ -135,6 +145,8 @@ namespace Isolaatti
             });
             services.AddScoped<ScopedHttpContext>();
             services.AddScoped<IAccounts, Accounts>();
+            services.AddScoped<NotificationSender>();
+            services.AddScoped<ServerRenderedAlerts>();
             // don't allow uploading files larger than 2 MB, for security reasons
             services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = 1024 * 1024 * 2);
             services.AddSwaggerGen();

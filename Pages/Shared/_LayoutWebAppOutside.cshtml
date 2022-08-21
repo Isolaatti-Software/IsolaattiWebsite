@@ -1,3 +1,5 @@
+@using Isolaatti.Services
+@inject ServerRenderedAlerts _RenderedAlerts
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -48,18 +50,15 @@
     <div class="container mb-5">
 
         @* Server rendered alerts *@
-        @if (ViewData.ContainsKey("alerts"))
+        @foreach (var (key, value) in _RenderedAlerts.Alerts)
         {
-            @foreach (var (key, value) in ((Dictionary<string, string>)ViewData["alerts"])!)
-            {
-                <div class="row">
-                    <div class="col-12">
-                        <div class="alert alert-@key">
-                            @value
-                        </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="alert alert-@key">
+                        @value
                     </div>
                 </div>
-            }
+            </div>
         }
 
 

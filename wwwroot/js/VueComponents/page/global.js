@@ -26,14 +26,10 @@ if(!renderRouter) {
 } else {
     
     // this is a temporal workaround. Use these routes on squads page
-    const routes = [
-        { path: "/", component: squadsFeed },
-        { path: "/crear", component: createSquadComponent },
-        { path: "/tuyos", component: yourSquadsComponent }
-    ]
+    const routes = getRoutesForPage(); // This functions must be declared on the page
     
     const router = new VueRouter({
-        routes,
+        routes
     });
 
     const app = new Vue({

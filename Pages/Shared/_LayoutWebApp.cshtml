@@ -1,4 +1,9 @@
 @using Isolaatti.isolaatti_lib
+@using Isolaatti.Services
+@using Microsoft.AspNetCore.Hosting
+@using Microsoft.Extensions.Hosting
+@inject IWebHostEnvironment _environment
+@inject ServerRenderedAlerts _RenderedAlerts
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -45,6 +50,20 @@
 
     </section>
     <div class="container">
+        @* Server rendered alerts *@
+                @foreach (var (key, value) in _RenderedAlerts.Alerts)
+                {
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="alert alert-@key alert-dismissible">
+                                @value
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
         <nav class="d-flex custom-nav sticky-top pr-2 pl-2" id="isolaatti-top-bar">
             <a href="/" class="nav-link custom-nav-link mr-md-auto" id="isolaatti_brand"></a>
             <div class="container-md container-fluid" id="top-bar-content">
@@ -58,7 +77,7 @@
                     <a class="btn btn-transparent custom-nav-link mr-1 ml-1" type="button" asp-page="/Squads">
                         <i class="fa-solid fa-people-group"></i>
                     </a>
-                    
+
                     <div class="dropdown">
                         <a class="nav-link custom-nav-link mr-1 dropdown-toggle"
                            href="#"
@@ -141,13 +160,23 @@
 </div>
 
 <form id="form-search" asp-page="/Search" method="get"></form>
-
+<script src="https://cdn.socket.io/4.5.0/socket.io.min.js" integrity="sha384-7EyYLQZgWBi67fBtVxw60/OWl1kjsfrPFcaU0pp0nAh+i8FD068QogUvg85Ewy1k" crossorigin="anonymous"></script>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
-<script src="https://unpkg.com/vue-router@2.0.0/dist/vue-router.js"></script>
+@if (_environment.IsDevelopment())
+{
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.8/dist/vue.js"></script>
+    <script src="https://unpkg.com/vue-router@2.0.0/dist/vue-router.js"></script>
+}
+else
+{
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.8"></script>
+    <script src="https://unpkg.com/vue-router@2.0.0/dist/vue-router.min.js"></script>
+}
+@* This script exposes socket variable, which is globally accessible *@
+<script src="~/js/realtime-notifications.js"></script>
 
 @* Add here global Vue.js components files. Components used in pages should not be added here *@
 <script src="~/js/VueComponents/audioAttachmentComponent.js"></script>
@@ -161,7 +190,6 @@
 const renderRouter = "@((bool?)ViewData["squadsRouter"] ?? false)" === "True";
 </script>
 <script src="~/js/VueComponents/page/global.js"></script>
-
 <script>
 document.getElementById("app").style.height = `${window.innerHeight}px`;
 window.onresize = function() {

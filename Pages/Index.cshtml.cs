@@ -30,7 +30,6 @@ namespace Isolaatti.Pages
             ViewData["profilePicUrl"] = user.ProfileImageId == null
                 ? null
                 : UrlGenerators.GenerateProfilePictureUrl(user.Id, Request.Cookies["isolaatti_user_session_token"]);
-
             return Page();
         }
     }

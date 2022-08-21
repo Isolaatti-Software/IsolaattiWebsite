@@ -24,7 +24,8 @@
                         <div class="dropdown-divider"></div>
                         <button @click="$router.push('/')" class="btn btn-sm btn-light mb-2">Squads donde eres miembro</button>
                         <button @click="$router.push('/tuyos')" class="btn btn-sm btn-light mb-2">Tus Squads</button>
-                        <button class="btn btn-sm btn-light">Solicitudes</button>
+                        <button class="btn btn-sm btn-light mb-2">Solicitudes de unión</button>
+                        <button class="btn btn-sm btn-light">Invitaciones de unión</button>
                     </div>
                 </div>
             </aside>
@@ -172,16 +173,95 @@ const createSquadComponent = {
 </div>
     `
 }
+
 const squadsFeed = {
+    data: function() {
+        return {
+            customHeaders: customHttpHeaders,
+            loading: true,
+            mySquads: []
+        }
+    },
+    methods: {
+        fetchMySquads: async function() {
+            const response = await fetch("/api/Squads/SquadsBelong", {
+                headers: this.customHeaders
+            });
+            this.loading = false;
+            this.mySquads = await response.json();
+        },
+        squadUrl: function(squadId) {
+            return `/squads/${squadId}`;
+        }
+    },
+    mounted: async function() {
+        await this.fetchMySquads();
+    },
     template: `
-    <p>Squads feed component works!</p>
+    <section class="isolaatti-card">
+        <h5>Squads donde eres miembro</h5>
+        <p>Squads donde eres miembro, no administrador.</p>
+        <div class="alert alert-info" v-if="mySquads.length === 0 && !loading">No eres miembro de ningún squad.</div>
+        <div class="d-flex justify-content-center w-100">
+          <div class="spinner-border" v-if="loading"></div>
+        </div>
+        <div class="list-group list-group-flush">
+          <a :href="squadUrl(squad.id)" class="list-group-item list-group-item-action" v-for="squad in mySquads">
+            {{squad.name}}<br>
+            <small>id: {{squad.id}}</small>
+          </a>
+        </div>
+    </section>
     `
 }
 
 const yourSquadsComponent = {
+    data: function() {
+        return {
+            customHeaders: customHttpHeaders,
+            loading: true,
+            mySquads: []
+        }
+    },
+    methods: {
+        fetchMySquads: async function() {
+            const response = await fetch("/api/Squads/MySquads", {
+                headers: this.customHeaders
+            });
+            this.loading = false;
+            this.mySquads = await response.json();
+        },
+        squadUrl: function(squadId) {
+            return `/squads/${squadId}`;
+        }
+    },
+    mounted: async function() {
+        await this.fetchMySquads();
+    },
     template: `
-    <p>Your squads component works!</p>
+    <section class="isolaatti-card">
+      <h5>Tus Squads</h5>
+      <p>Squads donde tú eres el administrador.</p>
+      <div class="alert alert-info" v-if="mySquads.length === 0 && !loading">No eres administrador de ningún squad.</div>
+      <div class="d-flex justify-content-center w-100">
+        <div class="spinner-border" v-if="loading"></div>
+      </div>
+      <div class="list-group list-group-flush">
+        <a :href="squadUrl(squad.id)" class="list-group-item list-group-item-action" v-for="squad in mySquads">
+          {{squad.name}}<br>
+          <small>id: {{squad.id}}</small>
+        </a>
+      </div>
+    </section>
     `
+}
+
+const requestsComponent = {
+    
+}
+
+const invitationsComponent = {
+    
 }
 
 // This is "this page component"
@@ -191,5 +271,7 @@ Vue.component('squads-page', squadsComponent);
 Vue.component('create-squad', createSquadComponent);
 Vue.component('your-squads', yourSquadsComponent);
 Vue.component('squads-feed', squadsFeed);
+Vue.component('squads-requests', requestsComponent);
+Vue.component('squads-invitations', invitationsComponent);
 
 
