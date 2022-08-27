@@ -87,8 +87,8 @@ Vue.component("posts-list", {
     },
     mounted: function () {
         this.fetchPosts(-1);
-        globalEventEmmiter.$on("posted", this.concatPost);
-        globalEventEmmiter.$on("postDeleted", this.removePost);
+        events.$on("posted", this.concatPost);
+        events.$on("postDeleted", this.removePost);
     },
     template: `
       <section class="d-flex flex-column pt-1 mt-2 mb-3 align-items-center w-100">

@@ -1,30 +1,10 @@
 Vue.component('post-template',{
-    // ['post','paused','is-modal', 'theme', "audioUrl", "preview"]
     props: {
         post: Object,
         isFullPage: false,
         preview: {
             type: Boolean,
             default: false
-        },
-        theme: {
-            type: Object,
-            default: {
-                fontColor: "#000",
-                backgroundColor: "#FFFFFF",
-                gradient: false,
-                border: {
-                    color: "#FFFFFF",
-                    type: "solid",
-                    size: 0,
-                    radius: 5
-                },
-                background: {
-                    type: "linear",
-                    colors: ["#FFFFFF", "#30098EE5"],
-                    direction: 0
-                }
-            }
         }
     },
     data: function () {
@@ -35,7 +15,6 @@ Vue.component('post-template',{
             thisTime: Date.now(),
             editable: false,
             renderPost: undefined,
-            renderTheme: undefined,
             deleteDialog: false,
             viewCommenter: false
         }
@@ -67,52 +46,11 @@ Vue.component('post-template',{
             handler: function (value, old) {
                 this.renderPost = value;
             }
-        },
-        theme: {
-            immediate: true,
-            deep: true,
-            handler: function (value, old) {
-                this.renderTheme = value;
-            }
         }
     },
     methods: {
         compileMarkdown: function (raw) {
             return DOMPurify.sanitize(marked.parse(raw));
-        },
-        getPostStyle: function (theme) {
-            if (theme === null)
-                return "";
-
-            function returnColorsAsString(array) {
-                let res = "";
-
-                for (let i = 0; i < array.length - 1; i++) {
-                    res += array[i] + ", "
-                }
-
-                res += array[array.length - 1];
-
-                return res;
-            }
-
-            let backgroundProperty;
-
-            // if a gradient of any kind is selected it will generate the corresponding background,
-            // otherwise it will return the solid color
-            if (theme.gradient) {
-                backgroundProperty = theme.background.type ===
-                "linear" ?
-                    `linear-gradient(${theme.background.direction}deg, ${returnColorsAsString(theme.background.colors)})` :
-                    `radial-gradient(${returnColorsAsString(theme.background.colors)})`;
-            } else {
-                backgroundProperty = theme.backgroundColor;
-            }
-
-            return `color: ${theme.fontColor ?? "#000"};
-                background: ${backgroundProperty};
-                border: ${theme.border.size ?? ""}px ${theme.border.type ?? ""} ${theme.border.color ?? ""};
-                border-radius: ${theme.border.radius ?? ""}px;`;
         },
         getUserImageUrl: function (userId) {
             return `/api/Fetch/GetUserProfileImage?userId=${userId}`
@@ -158,7 +96,6 @@ Vue.component('post-template',{
         },
         updateFromModified: function (feedPost) {
             this.renderPost = feedPost.postData;
-            this.renderTheme = feedPost.theme;
             this.editable = false;
         },
         deletePost: function () {
@@ -170,7 +107,7 @@ Vue.component('post-template',{
                     id: this.renderPost.id
                 })
             }).then(function () {
-                globalEventEmmiter.$emit("postDeleted", that.renderPost.id);
+                events.$emit("postDeleted", that.renderPost.id);
             });
         },
         openDiscussion: function () {
@@ -178,7 +115,7 @@ Vue.component('post-template',{
         }
     },
     template: `
-      <div class="w-100 mt-2" v-if="renderPost !== undefined && renderTheme !== undefined" :style="rootContainerCss">
+      <div class="w-100 mt-2" v-if="renderPost !== undefined" :style="rootContainerCss">
       <section v-if="editable" class="d-flex justify-content-end p-1">
         <button @click="editable=false" class="btn btn-danger btn-sm">Cancelar edición</button>
       </section>

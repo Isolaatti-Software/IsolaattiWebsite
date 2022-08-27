@@ -72,7 +72,6 @@
       <section id="posts-deposit" class="d-flex flex-column pt-1 mt-2 mb-3 align-items-center posts-deposit">
       <h5 class="mt-2"><i class="far fa-newspaper"></i> Actividad de las personas que sigues</h5>
       <post-template v-for="post in posts" :post="post.postData"
-                     v-bind:theme="post.theme"
                      v-bind:key="post.postData.id" @details="putPostDetails">
       </post-template>
       <div v-if="loading" class="d-flex justify-content-center mt-2">

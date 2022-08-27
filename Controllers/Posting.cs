@@ -42,9 +42,7 @@ namespace Isolaatti.Controllers
                 UserId = user.Id,
                 TextContent = post.Content,
                 Privacy = post.Privacy,
-                AudioId = post.AudioId,
-                ThemeJson = JsonSerializer.Serialize(post.Theme,
-                    new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase })
+                AudioId = post.AudioId
             };
 
             _db.SimpleTextPosts.Add(newPost);
@@ -65,11 +63,7 @@ namespace Isolaatti.Controllers
                     AudioId = newPost.AudioId,
                     TimeStamp = newPost.Date
                     // the other attributes are null, but they can be useful in the future
-                },
-                theme = newPost.ThemeJson == null
-                    ? null
-                    : JsonSerializer.Deserialize<PostTheme>(newPost.ThemeJson,
-                        new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase })
+                }
             });
         }
 
@@ -89,8 +83,6 @@ namespace Isolaatti.Controllers
             existingPost.Privacy = editedPost.Privacy;
             existingPost.TextContent = editedPost.Content;
             existingPost.AudioId = editedPost.AudioId;
-            existingPost.ThemeJson = JsonSerializer.Serialize(editedPost.Theme,
-                new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
 
             _db.SimpleTextPosts.Update(existingPost);
 
@@ -116,11 +108,7 @@ namespace Isolaatti.Controllers
                     AudioId = existingPost.AudioId,
                     TimeStamp = existingPost.Date
                     // the other attributes are null, but they can be useful in the future
-                },
-                theme = existingPost.ThemeJson == null
-                    ? null
-                    : JsonSerializer.Deserialize<PostTheme>(existingPost.ThemeJson,
-                        new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase })
+                }
             });
         }
 
