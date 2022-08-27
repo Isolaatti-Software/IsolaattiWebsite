@@ -49,6 +49,7 @@
     <section class="notifications-stack" id="notifications">
 
     </section>
+    
     <div class="container">
         @* Server rendered alerts *@
                 @foreach (var (key, value) in _RenderedAlerts.Alerts)
@@ -154,9 +155,12 @@
             </div>
         </nav>
     </div>
-    <main style="height: calc(100vh - 77px); overflow: auto;" id="app-main">
+    <main style=" overflow: auto;" id="app-main">
         <div class="container p-0" v-on:click="showAudiosFeedState='hide'">@RenderBody()</div>
     </main>
+    <div class="d-flex justify-content-center">
+        <audio-player></audio-player>
+    </div>
 </div>
 
 <form id="form-search" asp-page="/Search" method="get"></form>
@@ -175,10 +179,13 @@ else
     <script src="https://cdn.jsdelivr.net/npm/vue@2.7.8"></script>
     <script src="https://unpkg.com/vue-router@2.0.0/dist/vue-router.min.js"></script>
 }
+<script>const events = new Vue();</script>
 @* This script exposes socket variable, which is globally accessible *@
 <script src="~/js/realtime-notifications.js"></script>
+<script src="~/js/audioService.js"></script>
 
 @* Add here global Vue.js components files. Components used in pages should not be added here *@
+<script src="~/js/VueComponents/audioPlayerComponent.js"></script>
 <script src="~/js/VueComponents/audioAttachmentComponent.js"></script>
 <script src="~/js/VueComponents/audiosFeedBottomSheet.js"></script>
 <script src="~/js/VueComponents/quickSearchComponent.js"></script>
