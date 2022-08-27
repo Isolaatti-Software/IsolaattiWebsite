@@ -97,7 +97,8 @@ namespace Isolaatti.Pages
 
                 Response.Cookies.Append("isolaatti_user_session_token", sessionToken.Token, new CookieOptions()
                 {
-                    Expires = new DateTimeOffset(DateTime.Today.AddMonths(1))
+                    Expires = new DateTimeOffset(DateTime.Today.AddMonths(1)),
+                    HttpOnly = true
                 });
                 if (then != null)
                 {
