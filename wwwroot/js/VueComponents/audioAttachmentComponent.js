@@ -16,22 +16,15 @@
             userName: "",
             userId: -1,
             playbackStatus: {
-                url: "",
+                selected: false,
                 playing: false,
-                paused: false,
-                stopped: true
+                paused: false
             }
         }
     },
     methods: {
-        play: function () {
-            audioPlayer.play(this.playbackStatus.url, "post", this.audioId);
-        },
-        pause: function () {
-            audioPlayer.pause();
-        },
-        stop: function () {
-            audioPlayer.stop();
+        play: async function () {
+            await audioService.playPause(this.audioId);
         }
     },
     computed: {
@@ -41,8 +34,7 @@
     },
     mounted: function () {
         const that = this;
-
-        this.playbackStatus.url = `/api/Audios/${this.audioId}/Play`;
+        
         this.$nextTick(function () {
             fetch(`/api/Audios/${that.audioId}`, {
                 method: "GET",
@@ -57,47 +49,51 @@
 
         // I need to listen to these events to update UI when another 
         // audio on the whole system starts playing
-        audioPlayer.$on("play", function (url) {
-            console.log("Recibo play");
-            if (url === that.playbackStatus.url) {
-                that.playbackStatus.playing = true;
-                that.playbackStatus.paused = false;
-                that.playbackStatus.stopped = false;
-            }
-        });
-        audioPlayer.$on("pause", function (url) {
-
-            if (url === that.playbackStatus.url) {
-                that.playbackStatus.stopped = false;
-                that.playbackStatus.playing = false;
-                that.playbackStatus.paused = true;
-            }
-        });
-        audioPlayer.$on("stop", function (url) {
-            if (url === that.playbackStatus.url) {
-                that.playbackStatus.stopped = true;
+        events.$on("audios.state", function (state, id) {
+            if(state === "ended" && id === that.audioId) {
                 that.playbackStatus.playing = false;
                 that.playbackStatus.paused = false;
+            }
+            
+            if(state === "playing") {
+                if(id === that.audioId) {
+                    that.playbackStatus.selected = true;
+                    that.playbackStatus.playing = true;
+                    that.playbackStatus.paused = false;
+                } else {
+                    that.playbackStatus.selected = false;
+                    that.playbackStatus.playing = false;
+                    that.playbackStatus.paused = false;
+                }
+            }
+            
+            if(state === "paused") {
+                if(id === that.audioId) {
+                    that.playbackStatus.selected = true;
+                    that.playbackStatus.playing = false;
+                    that.playbackStatus.paused = true;
+                } else {
+                    that.playbackStatus.selected = false;
+                    that.playbackStatus.playing = false;
+                    that.playbackStatus.paused = false;
+                }
             }
         });
     },
     template: `
       <div class="audio-attachment-component" v-on:click="$emit('click')">
       <div class="btn-group-sm" v-if="playbackStatus.url !== null">
-        <button type="button" class="btn btn-light btn-sm" v-on:click="play"
-                v-if="playbackStatus.paused || playbackStatus.stopped">
-          <i class="fas fa-play"></i>
-        </button>
-        <button type="button" class="btn btn-light btn-sm" v-on:click="pause" v-if="playbackStatus.playing">
+        
+        <button type="button" class="btn btn-light btn-sm" v-on:click="play" v-if="playbackStatus.playing">
           <i class="fas fa-pause"></i>
         </button>
-        <button type="button" class="btn btn-light btn-sm" v-on:click="stop"
-                v-if="playbackStatus.paused || playbackStatus.playing">
-          <i class="fas fa-stop"></i>
+        <button type="button" class="btn btn-light btn-sm" v-on:click="play"
+                v-else>
+          <i class="fas fa-play"></i>
         </button>
         </div>
       <div class="d-flex flex-column overflow-hidden">
-        <p class="text-black-50 m-0 text-ellipsis">{{name}}</p>
+        <p class="m-0 text-ellipsis" :class="{'text-primary font-weight-bolder':playbackStatus.selected, 'text-black-50':!playbackStatus.selected}">{{name}}</p>
         <p class="text-black-50 m-0"><a :href="profileRelativeUrl">{{userName}}</a></p>
       </div>
       <button type="button" class="close ml-auto" v-if="canRemove" v-on:click="$emit('remove')">&times;</button>

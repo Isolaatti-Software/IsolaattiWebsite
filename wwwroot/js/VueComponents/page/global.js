@@ -1,24 +1,16 @@
 ﻿// This is the only Vue.js instance to render all the components
-const globalEventEmmiter = new Vue();
 
+let app;
 const data = {
     showAudiosFeedState: 'hide'
 }
 
 const methods = {
-    toggleAudiosFeed: function () {
-        if (this.showAudiosFeedState === 'show') {
-            this.showAudiosFeedState = 'collapse'
-            return;
-        }
-
-        if (this.showAudiosFeedState === 'collapse' || this.showAudiosFeedState === 'hide')
-            this.showAudiosFeedState = 'show'
-    }
+    
 }
 
 if(!renderRouter) {
-    const app = new Vue({
+    app = new Vue({
         el: '#app',
         data,
         methods
@@ -32,7 +24,7 @@ if(!renderRouter) {
         routes
     });
 
-    const app = new Vue({
+    app = new Vue({
         el: '#app',
         data,
         methods,
