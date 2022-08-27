@@ -68,7 +68,7 @@ namespace Isolaatti.Pages.auth
                 IsNotSecure = !url.Scheme.Equals("https");
                 HostToLink = url.Host;
             }
-            catch (Exception ex) when (ex is ArgumentNullException || ex is UriFormatException)
+            catch (Exception ex) when (ex is ArgumentNullException or UriFormatException)
             {
                 MalformedUrl = true;
             }
