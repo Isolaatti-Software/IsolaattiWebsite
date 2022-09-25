@@ -11,6 +11,9 @@ El proyecto puede funcionar en Windows, Linux o Mac.
 * PostgreSQL
 * MongoDB
 
+## Bases de datos con docker compose
+Puedes utilizar docker compose para levantar MongoDB y PostgreSQL. Toma este archivo como muestra. https://gist.github.com/erik-everardo/2546d2db15cf4516cc8ccea03b08e873
+
 ## Cosas que debes tener disponibles
 * Una cuenta de SendGrid. Esto se usa para enviar correos. https://sendgrid.com/free/
 * Cuenta de Google Firebase (puede ser la gratuita). Esto crea una cuenta de Google Cloud también.
