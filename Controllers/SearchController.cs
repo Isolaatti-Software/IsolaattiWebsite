@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Isolaatti.Classes.ApiEndpointsResponseDataModels;
@@ -18,18 +19,26 @@ public class SearchController : ControllerBase
     private readonly DbContextApp _db;
     private readonly IAccounts _accounts;
     private readonly AudiosRepository _audios;
+    private readonly SquadInvitationsRepository _squadInvitationsRepository;
+    private readonly SquadsRepository _squadsRepository;
 
-    public SearchController(DbContextApp db, IAccounts accounts, AudiosRepository audios)
+    public SearchController(DbContextApp db, 
+        IAccounts accounts, 
+        AudiosRepository audios, 
+        SquadInvitationsRepository squadInvitationsRepository, 
+        SquadsRepository squadRepository)
     {
         _db = db;
         _audios = audios;
         _accounts = accounts;
+        _squadInvitationsRepository = squadInvitationsRepository;
+        _squadsRepository = squadRepository;
     }
 
     [Route("Quick")]
     [HttpGet]
     public async Task<IActionResult> QuickSearch([FromHeader(Name = "sessionToken")] string sessionToken,
-        [FromQuery] string q, [FromQuery] bool onlyProfile = false)
+        [FromQuery] string q, [FromQuery] string contextType = "global", string contextValue = null, [FromQuery] bool onlyProfile = false )
     {
         var user = await _accounts.ValidateToken(sessionToken);
         if (user == null) return Unauthorized("Token is not valid");
@@ -42,6 +51,7 @@ public class SearchController : ControllerBase
         }
 
         var lowerCaseQ = q.ToLower();
+        
 
         // Perform basic search on profiles
         var profilesResults = from u in _db.Users
@@ -49,11 +59,34 @@ public class SearchController : ControllerBase
             select new SearchResult
             {
                 ResultType = SearchResultType.Profile,
-                ResourceId = u.Id.ToString(),
+                ResourceId = u.Id,
                 ContentPreview = u.Name
             };
+        
+        // perform another filtering so that users already in the squad don't get listed as search result
+        if (contextType.Equals("squad") && contextValue != null)
+        {
+            try
+            {
+                var squadId = Guid.Parse(contextValue);
+                if (_db.SquadUsers.Any(squadUser => squadUser.SquadId.Equals(squadId)))
+                {
+                    profilesResults = from profileResult in profilesResults
+                        from squadUser in _db.SquadUsers
+                        where squadUser.SquadId.Equals(squadId) && !squadUser.UserId.Equals(profileResult.ResourceId)
+                        select profileResult;
+                }
+                
+                
+            }
+            catch (FormatException)
+            {
+                
+            }
 
+        }
         results.AddRange(profilesResults.Take(20));
+        
         if (onlyProfile)
         {
             return Ok(results);

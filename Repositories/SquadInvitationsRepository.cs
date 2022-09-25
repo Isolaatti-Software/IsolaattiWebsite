@@ -105,9 +105,11 @@ public class SquadInvitationsRepository
                 .ToListAsync();
         }
         
+        var paginationFilter = Builders<SquadInvitation>.Filter.Gt("id", lastId);
+        var userFilter = Builders<SquadInvitation>.Filter.Eq("RecipientUserId", userId);
+        
         return await _invitations
-            .Find(inv => 
-                inv.RecipientUserId.Equals(userId) && new ObjectId(inv.Id) > new ObjectId(lastId))
+            .Find(paginationFilter & userFilter)
             .Limit(20)
             .ToListAsync();
     }
@@ -121,10 +123,33 @@ public class SquadInvitationsRepository
                     inv.SenderUserId.Equals(userId))
                 .Limit(20)
                 .ToListAsync();
-        
+
+        var paginationFilter = Builders<SquadInvitation>.Filter.Gt("id", lastId);
+        var userFilter = Builders<SquadInvitation>.Filter.Eq("SenderUserId", userId);
         return await _invitations
-            .Find(inv => 
-                inv.SenderUserId.Equals(userId) && new ObjectId(inv.Id) > new ObjectId(lastId))
+            .Find(userFilter & paginationFilter)
+            .Limit(20)
+            .ToListAsync();
+    }
+    
+    // Return the invitation that matches the criteria
+    public SquadInvitation SearchInvitation(int userId, Guid squadId)
+    {
+        return _invitations.Find(inv => inv.SquadId.Equals(squadId) && inv.RecipientUserId.Equals(userId)).FirstOrDefault();
+    }
+
+    public async Task<IEnumerable<SquadInvitation>> GetInvitationsOfSquad(Guid squadId, string lastId = null)
+    {
+        if (lastId == null)
+        {
+            return await _invitations.Find(inv => inv.SquadId.Equals(squadId))
+                .Limit(20)
+                .ToListAsync();
+        }
+
+        var paginationFilter = Builders<SquadInvitation>.Filter.Gt("id", lastId);
+        var squadFilter = Builders<SquadInvitation>.Filter.Eq("SquadId", squadId);
+        return await _invitations.Find(paginationFilter & squadFilter)
             .Limit(20)
             .ToListAsync();
     }

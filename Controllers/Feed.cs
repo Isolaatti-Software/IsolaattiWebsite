@@ -36,6 +36,8 @@ namespace Isolaatti.Controllers
 
             var likes = Db.Likes.Where(like => like.UserId == user.Id);
             IQueryable<SimpleTextPost> postsQuery;
+            
+            // For now, I am only returning posts that are not from squads
             if (lastId <= 0)
             {
                 postsQuery =
@@ -44,6 +46,7 @@ namespace Isolaatti.Controllers
                     where following.UserId == user.Id
                           && post.UserId == following.TargetUserId
                           && post.Privacy != 1
+                          && post.SquadId == null
                     select post;
                 postsQuery = postsQuery.Take(length);
             }
@@ -56,6 +59,7 @@ namespace Isolaatti.Controllers
                           && post.UserId == following.TargetUserId
                           && post.Privacy != 1
                           && post.Id < lastId
+                          && post.SquadId == null
                     select post;
                 postsQuery = postsQuery.Take(length);
             }
@@ -73,16 +77,12 @@ namespace Isolaatti.Controllers
                     NumberOfComments = rawPost.NumberOfComments,
                     Privacy = rawPost.Privacy,
                     AudioId = rawPost.AudioId,
-                    TimeStamp = rawPost.Date
+                    TimeStamp = rawPost.Date,
+                    SquadId = rawPost.SquadId
                     // the other attributes are null, but they can be useful in the future
-                },
-                theme = rawPost.ThemeJson == null
-                    ? null
-                    : JsonSerializer.Deserialize<PostTheme>(
-                        new MemoryStream(System.Text.Encoding.UTF8.GetBytes(rawPost.ThemeJson)),
-                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true })
+                }
             }).ToList();
-
+            
             long lastPostId;
             try
             {

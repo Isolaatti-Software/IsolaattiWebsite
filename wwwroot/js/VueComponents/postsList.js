@@ -7,7 +7,11 @@ Vue.component("posts-list", {
     props: {
         userId: {
             type: Number,
-            required: true
+            required: false
+        },
+        squadId: {
+            type: String,
+            required: false
         }
     },
     data: function () {
@@ -40,17 +44,37 @@ Vue.component("posts-list", {
             if (event !== undefined) {
                 event.target.disabled = true;
             }
-            fetch(`/api/Fetch/PostsOfUser/${this.userId}/8/${lastId}?olderFirst=${this.sortingData.ascending === "1" ? "True" : "False"}`, {headers: this.customHeaders}).then(result => {
-                result.json().then(res => {
-                    this.posts = this.posts.concat(res.feed);
-                    this.moreContent = res.moreContent;
-                    this.loading = false;
-                    if (event !== undefined) {
-                        event.target.disabled = false;
-                    }
-                    this.lastId = res.lastId;
-                })
-            })
+            if(this.squadId !== undefined) {
+                fetch(`/api/Squads/${this.squadId}/Posting/Posts?lastId=${lastId}&length=10&olderFirst=${this.sortingData.ascending === "1" ? "True" : "False"}`, 
+                    {
+                        headers: this.customHeaders
+                    }).then(result => {
+                    result.json().then(res => {
+                        this.posts = this.posts.concat(res.feed);
+                        this.moreContent = res.moreContent;
+                        this.loading = false;
+                        if (event !== undefined) {
+                            event.target.disabled = false;
+                        }
+                        this.lastId = res.lastId;
+                    })
+                });
+                
+            } else {
+                fetch(`/api/Fetch/PostsOfUser/${this.userId}/8/${lastId}?olderFirst=${this.sortingData.ascending === "1" ? "True" : "False"}`, {headers: this.customHeaders}).then(result => {
+                    result.json().then(res => {
+                        this.posts = this.posts.concat(res.feed);
+                        this.moreContent = res.moreContent;
+                        this.loading = false;
+                        if (event !== undefined) {
+                            event.target.disabled = false;
+                        }
+                        this.lastId = res.lastId;
+                    })
+                });
+            }
+            
+            
         },
         reloadPosts: function (event) {
             this.posts = [];
@@ -95,11 +119,11 @@ Vue.component("posts-list", {
       <h5><i class="far fa-newspaper"></i> Discusiones</h5>
       <div class="d-flex justify-content-end w-100">
         <div class="btn-group">
-          <button type="button" class="btn btn-secondary" title="Filtrar"
+          <button type="button" class="btn btn-light" title="Filtrar"
                   data-target="#modal-filter-posts" data-toggle="modal">
             <i class="fas fa-filter"></i>
           </button>
-          <button type="button" class="btn btn-secondary" title="Ordenar"
+          <button type="button" class="btn btn-light" title="Ordenar"
                   data-target="#modal-sort-posts" data-toggle="modal">
             <i class="fas fa-sort"></i>
           </button>

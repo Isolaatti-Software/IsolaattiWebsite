@@ -22,4 +22,6 @@ public class Audio
 
     [Required(ErrorMessage = "Firestore path is required")]
     public string FirestoreObjectPath { get; set; }
+    
+    public string SquadId { get; set; }
 }

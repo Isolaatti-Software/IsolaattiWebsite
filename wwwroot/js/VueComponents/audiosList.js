@@ -7,7 +7,9 @@
 
 Vue.component("audios-list-select", {
     data: function () {
-        return {}
+        return {
+            userData: userData
+        }
     },
     methods: {
         audioSelected: function (audioId) {
@@ -35,7 +37,7 @@ Vue.component("audios-list-select", {
               </button>
             </div>
             <div class="modal-body">
-              <audios-list :user-id="1" v-on:audio-selected="audioSelected"></audios-list>
+              <audios-list :user-id="userData.id" v-on:audio-selected="audioSelected"></audios-list>
             </div>
           </div>
         </div>
@@ -54,16 +56,27 @@ Vue.component("audios-list", {
     data: function () {
         return {
             customHeaders: customHttpHeaders,
-            audios: []
+            audios: [],
+            loadMore: true
+        }
+    },
+    computed:  {
+        fetchUrl: function() {
+            if(this.audios.length < 1) {
+                return `/api/Audios/OfUser/${this.userId}`;
+            } else {
+                return `/api/Audios/OfUser/${this.userId}?lastAudioId=${this.audios[this.audios.length - 1].id}`;
+            }
         }
     },
     methods: {
         fetchAudios: function () {
-            fetch(`/api/Audios/OfUser/${this.userId}`, {
+            fetch(this.fetchUrl, {
                 method: "GET",
                 headers: this.customHeaders
             }).then(res => res.json()).then((audios) => {
                 this.audios = this.audios.concat(audios);
+                this.loadMore = audios.length >= 10;
             });
 
         }
@@ -79,6 +92,11 @@ Vue.component("audios-list", {
       <div class="d-flex flex-column">
         <audio-attachment :audio-id="audio.id" v-for="audio in audios" v-on:click="$emit('audio-selected',audio.id)"
                           data-dismiss="modal" class="mt-1" :key="audio.id"></audio-attachment>
+        <div class="d-flex mt-2 justify-content-center">
+          <button class="btn" v-if="loadMore" @click="fetchAudios">
+            Cargar más
+          </button>
+        </div>
       </div>
       </div>
     `

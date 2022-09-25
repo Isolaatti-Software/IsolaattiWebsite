@@ -46,8 +46,9 @@ public class SquadInvitationsController : ControllerBase
         return Ok(invitations.Select(inv => new InvitationInfoResponse
         {
             Invitation = inv,
-            SenderName = _db.Users.SingleOrDefault(u => u.Id == inv.SenderUserId)?.Name,
-            RecipientName = user.Name
+            SenderName = _accounts.GetUsernameFromId(inv.SenderUserId),
+            RecipientName = user.Name,
+            SquadName = _squadsRepository.GetSquadName(inv.SquadId)
         }));
     }
 
@@ -65,7 +66,8 @@ public class SquadInvitationsController : ControllerBase
         {
             Invitation = inv,
             RecipientName = _db.Users.SingleOrDefault(u => u.Id == inv.RecipientUserId)?.Name,
-            SenderName = user.Name
+            SenderName = user.Name,
+            SquadName = _squadsRepository.GetSquadName(inv.SquadId)
         }));
     }
     
@@ -127,17 +129,16 @@ public class SquadInvitationsController : ControllerBase
 
         if (squad == null)
         {
-            return Ok(new
-            {
-                error = "Invitation was accepted, but the squad it points does not exist, maybe it was deleted."
-            });
+            return Problem("Invitation was accepted, but the squad it points does not exist, maybe it was deleted.");
         }
 
+        invitation = _squadInvitationsRepository.GetInvitation(invitation.Id);
         return await _squadsRepository.AddUserToSquad(invitation.SquadId, user.Id) switch
         {
             AddUserToSquadResult.Success => Ok(new
             {
-                result = "Invitation accepted. User added to squad."
+                result = "Invitation accepted. User added to squad.",
+                invitation = invitation
             }),
             AddUserToSquadResult.AlreadyInSquad => Ok(new
             {
@@ -186,5 +187,42 @@ public class SquadInvitationsController : ControllerBase
             .UpdateInvitationStatus(invitationId, SquadInvitationStatus.Rejected, payload.Message);
         
         return Ok();
+    }
+
+    [HttpGet]
+    [Route("/api/Invitations/Search")]
+    public async Task<IActionResult> SearchInvitation([FromHeader(Name = "sessionToken")] string sessionToken, Guid squadId)
+    {
+        var user = await _accounts.ValidateToken(sessionToken);
+        if(user == null) return Unauthorized("Token is not valid");
+        var invitation = _squadInvitationsRepository.SearchInvitation(user.Id, squadId);
+        string sender = null;
+        if (invitation != null)
+        {
+            sender = (await _db.Users.FindAsync(invitation.SenderUserId))?.Name;
+        }
+        return Ok(new
+        {
+            invitation = invitation,
+            senderName = sender
+        });
+    }
+
+    [HttpGet]
+    [Route("/api/Squads/{squadId:guid}/Invitations")]
+    public async Task<IActionResult> GetInvitationsOfSquad([FromHeader(Name = "sessionToken")] string sessionToken, Guid squadId, string lastId)
+    {
+        var user = await _accounts.ValidateToken(sessionToken);
+        if(user == null) return Unauthorized("Token is not valid");
+        
+        return Ok(new
+        {
+            invitations = (await _squadInvitationsRepository.GetInvitationsOfSquad(squadId, lastId)).Select(inv => new
+            {
+                invitation = inv,
+                senderName = _db.Users.Find(inv.SenderUserId)?.Name,
+                recipientName = _db.Users.Find(inv.RecipientUserId)?.Name
+            })
+        });
     }
 }

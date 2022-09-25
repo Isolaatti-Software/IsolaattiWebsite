@@ -114,6 +114,10 @@ button.isolaatti-btn:hover {
   overflow: auto;
 }
 
+.mobile-only {
+  display: none;
+}
+
 @media screen and (max-width: 576px) {
   .navbar-item-text {
     display: none;
@@ -157,6 +161,14 @@ button.isolaatti-btn:hover {
     font-weight: 500;
     font-size: large;
     margin-left: 20px;
+  }
+
+  .desktop-only {
+    display: none;
+  }
+  
+  .mobile-only {
+    display: block;
   }
 }
 

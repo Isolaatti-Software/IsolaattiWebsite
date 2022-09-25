@@ -3,35 +3,58 @@
 
 @{
     Layout = "Shared/_LayoutWebApp";
-    ViewData["squadsRouter"] = true;
 }
 
 <div class="row m-0">
     <div class="col-12">
-        <squad-view squad-id="@Model.SquadId"></squad-view>
+        @if (Model.UserBelongs)
+        {
+            <squad-view squad-id="@Model.SquadId"></squad-view>     
+        }
+        else
+        {
+            <squad-preview squad-id="@Model.SquadId"></squad-preview>
+        }
+        
     </div>
 </div>
 
 @section Scripts
 {
-    <script>
-        function getRoutesForPage() { 
-            return [
-                { path: "/", component: squadActivityComponent },
-                { path: "/contenido", component: squadContentComponent },
-                { path: "/miembros", component: squadMembersComponent },
-                { path: "/wiki", component: squadWikiComponent },
-                { path: "/ajustes", component: squadSettingsComponent }
-        ]}
-    </script>
+    
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="~/js/lib/purify.min.js"></script>
-    <script src="~/js/VueComponents/usersGridComponent.js"></script>
-    <script src="~/js/VueComponents/page/squadViewerPages/squadActivityComponent.js"></script>
-    <script src="~/js/VueComponents/page/squadViewerPages/squadContentComponent.js"></script>
     <script src="~/js/VueComponents/page/squadViewerPages/squadHeaderComponent.js"></script>
-    <script src="~/js/VueComponents/page/squadViewerPages/squadMembersComponent.js"></script>
-    <script src="~/js/VueComponents/page/squadViewerPages/squadSettingsComponent.js"></script>
-    <script src="~/js/VueComponents/page/squadViewerPages/squadWikiComponent.js"></script>
-    <script src="~/js/VueComponents/page/squadViewerComponent.js"></script>
+    
+    @if (Model.UserBelongs)
+    {
+        ViewData["squadsRouter"] = true;
+        <script>
+        function getRoutesForPage() { 
+            return [
+                { path: "/", component: squadNewDiscussionComponent },
+                { path: "/miembros", component: squadPeopleComponent }
+        ]}
+        </script>
+        <script src="~/js/VueComponents/squadInvitationsList.js"></script>
+        <script src="~/js/VueComponents/squadRequestsList.js"></script>
+        <script src="~/js/VueComponents/usersGridComponent.js"></script>
+        <script src="~/js/VueComponents/postsList.js"></script>
+        <script src="~/js/VueComponents/postComponent.js"></script>
+        <script src="~/js/VueComponents/commentComponent.js"></script>
+        <script src="~/js/VueComponents/commentsViewer.js"></script>
+        <script src="~/js/VueComponents/newDiscussionComponent.js"></script>
+        <script src="~/js/VueComponents/squadInvitationUserSearcher.js"></script>
+        <script src="~/js/VueComponents/page/squadViewerPages/squadNewDiscussionComponent.js"></script>
+        <script src="~/js/VueComponents/page/squadViewerPages/squadContentComponent.js"></script>
+        <script src="~/js/VueComponents/page/squadViewerPages/squadMembersComponent.js"></script>
+        <script src="~/js/VueComponents/page/squadViewerPages/squadSettingsComponent.js"></script>
+        <script src="~/js/VueComponents/page/squadViewerPages/squadWikiComponent.js"></script>
+        <script src="~/js/VueComponents/page/squadViewerComponent.js"></script>
+    }
+    else
+    {
+        <script src="~/js/VueComponents/page/squadViewerPages/squadPreviewPage.js"></script>
+    }
+    
 }

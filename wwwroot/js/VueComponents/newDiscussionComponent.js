@@ -8,6 +8,11 @@
         postToModifyId: {
             type: Number,
             required: false
+        },
+        squadId: {
+            type: String,
+            required: false,
+            default: null
         }
     },
     data: function () {
@@ -53,7 +58,8 @@
             let requestBody = {
                 privacy: that.discussion.privacy,
                 content: that.discussion.content,
-                audioId: that.discussion.audioId
+                audioId: that.discussion.audioId,
+                squadId: that.squadId
             }
             if (this.mode === "modify") {
                 endpointUrl = "/api/Posting/Edit";

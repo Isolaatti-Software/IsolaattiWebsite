@@ -65,8 +65,8 @@
     },
     mounted: async function () {
         await this.fetchFeed();
-        globalEventEmmiter.$on("posted", this.concatPost);
-        globalEventEmmiter.$on("postDeleted", this.removePost);
+        events.$on("posted", this.concatPost);
+        events.$on("postDeleted", this.removePost);
     },
     template: `
       <section id="posts-deposit" class="d-flex flex-column pt-1 mt-2 mb-3 align-items-center posts-deposit">

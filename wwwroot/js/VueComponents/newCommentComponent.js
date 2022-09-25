@@ -74,7 +74,7 @@
                     timeStamp: new Date()
                 };
                 if (that.mode === "modify") {
-                    globalEventEmmiter.$emit("commentEdited", postedComment);
+                    events.$emit("commentEdited", postedComment);
                     that.$emit("commentEdited");
                 } else {
                     that.$emit("commented", postedComment);
@@ -151,7 +151,7 @@
                         v-on:remove="removeAudio"></audio-attachment>
 
       <textarea class="mt-2 form-control" v-model="comment.content"
-                placeholder="Escribe aqui el contenido para iniciar la discusión. Markdown es compatible."></textarea>
+                placeholder="Escribe aquí el contenido para el comentario. Markdown es compatible."></textarea>
 
       <div class="d-flex justify-content-end mt-2">
         <button class="btn btn-primary" :disabled="!ableToPostDiscussion" v-on:click="postComment" v-if="!posting">

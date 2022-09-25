@@ -31,7 +31,11 @@ public class NotificationSender
             data = notification
         });
 
-        await httpClient.PostAsync($"{_servers.RealtimeServerUrl}/send_notification", content);
+        try
+        {
+            await httpClient.PostAsync($"{_servers.RealtimeServerUrl}/send_notification", content);
+        }
+        catch (HttpRequestException) { }
     }
 
     public async Task SendUpdateEvent(FeedComment comment)
@@ -49,6 +53,10 @@ public class NotificationSender
             }
         });
 
-        await httpClient.PostAsync($"{_servers.RealtimeServerUrl}/update_event", content);
+        try
+        {
+            await httpClient.PostAsync($"{_servers.RealtimeServerUrl}/update_event", content);
+        }
+        catch(HttpRequestException){ }
     }
 }

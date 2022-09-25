@@ -12,11 +12,13 @@ namespace Isolaatti.Classes.ApiEndpointsResponseDataModels
         public int NumberOfLikes { get; set; }
         public int NumberOfComments { get; set; }
         public int Privacy { get; set; }
-        public Guid? AudioId { get; set; }
+        public string? AudioId { get; set; }
         public DateTime TimeStamp { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public string Language { get; set; }
         public bool UserIsOwner { get; set; }
+        public Guid? SquadId { get; set; }
+        public string SquadName { get; set; }
     }
 }

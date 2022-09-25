@@ -29,7 +29,8 @@ public class SquadJoinRequestsRepository
             SquadId = squadId,
             SenderUserId = senderUserId,
             Message = message,
-            JoinRequestStatus = SquadInvitationStatus.Requested
+            JoinRequestStatus = SquadInvitationStatus.Requested,
+            CreationDate = DateTime.Now.ToUniversalTime()
         });
     }
 
@@ -60,7 +61,13 @@ public class SquadJoinRequestsRepository
         return _joinRequests.Find(joinReq => joinReq.Id.Equals(id)).Limit(1).FirstOrDefault();
     }
 
-    // Join requests the user has sent
+    /// <summary>
+    /// Returns the join requests a given user has sent.
+    /// Returns a up to 20 item enumerable. To get the next page pass the last id.
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="lastId"></param>
+    /// <returns></returns>
     public async Task<IEnumerable<SquadJoinRequest>> GetJoinRequestsOfUser(int userId, string lastId = null)
     {
         if (lastId == null)
@@ -69,9 +76,42 @@ public class SquadJoinRequestsRepository
                 .Limit(20)
                 .ToListAsync();
         
+        var paginationFilter = Builders<SquadJoinRequest>.Filter.Gt("id", lastId);
+        var userFilter = Builders<SquadJoinRequest>.Filter.Eq("SenderUserId", userId);
+        
         return await _joinRequests
-            .Find(joinReq => joinReq.SenderUserId.Equals(userId) && new ObjectId(joinReq.Id) > new ObjectId(lastId))
+            .Find(userFilter & paginationFilter)
             .Limit(20)
             .ToListAsync();
+    }
+    
+    /// <summary>
+    /// Returns the join requests a squad has received
+    /// Returns a up to 20 item enumerable. To get the next page pass the last id.
+    /// </summary>
+    /// <param name="squadId">The squad id you want to get join requests from</param>
+    /// <param name="lastId">Last request of previous page served. This can be null.</param>
+    /// <returns></returns>
+    public async Task<IEnumerable<SquadJoinRequest>> GetJoinRequestsOfSquad(Guid squadId, string lastId = null)
+    {
+        if (lastId == null)
+            return await _joinRequests
+                .Find(joinReq => joinReq.SquadId.Equals(squadId))
+                .Limit(20)
+                .ToListAsync();
+        
+        var paginationFilter = Builders<SquadJoinRequest>.Filter.Gt("id", lastId);
+        var squadFilter = Builders<SquadJoinRequest>.Filter.Eq("SquadId", squadId);
+        
+        return await _joinRequests
+            .Find(squadFilter & paginationFilter)
+            .Limit(20)
+            .ToListAsync();
+    }
+
+    public async Task<SquadJoinRequest> SearchJoinRequest(Guid squadId, int senderUserId)
+    {
+        return await _joinRequests.Find(joinReq =>
+            joinReq.SenderUserId.Equals(senderUserId) && joinReq.SquadId.Equals(squadId)).FirstOrDefaultAsync();
     }
 }

@@ -2,11 +2,13 @@
 
 let app;
 const data = {
-    showAudiosFeedState: 'hide'
+    showTopBarMobileMenu: false
 }
 
 const methods = {
-    
+    toggleTopBarShowMenu: function() {
+        this.showTopBarMobileMenu = !this.showTopBarMobileMenu;
+    }
 }
 
 if(!renderRouter) {

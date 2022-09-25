@@ -7,6 +7,7 @@ using Isolaatti.Classes.ApiEndpointsResponseDataModels;
 using Isolaatti.Enums;
 using Isolaatti.Models;
 using Isolaatti.Models.MongoDB;
+using Isolaatti.Repositories;
 using Isolaatti.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,12 +20,14 @@ namespace Isolaatti.Controllers
         private readonly DbContextApp _db;
         private readonly IAccounts _accounts;
         private readonly NotificationSender _notificationSender;
+        private readonly SquadsRepository _squads;
 
-        public MakePost(DbContextApp dbContextApp, IAccounts accounts, NotificationSender notificationSender)
+        public MakePost(DbContextApp dbContextApp, IAccounts accounts, NotificationSender notificationSender, SquadsRepository squadsRepository)
         {
             _db = dbContextApp;
             _accounts = accounts;
             _notificationSender = notificationSender;
+            _squads = squadsRepository;
         }
 
         [HttpPost]
@@ -34,6 +37,27 @@ namespace Isolaatti.Controllers
         {
             var user = await _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
+            
+            // Let's verify if Squad exists and that user is authorized to post
+            if (post.SquadId.HasValue)
+            {
+                var squad = await _squads.GetSquad(post.SquadId.Value);
+                if (squad == null)
+                {
+                    return NotFound(new
+                    {
+                        error = "Squad does not exist"
+                    });
+                }
+
+                if (!await _squads.UserBelongsToSquad(user.Id, post.SquadId.Value))
+                {
+                    return NotFound(new
+                    {
+                        error = "User cannot post in this squad"
+                    });
+                }
+            }
 
 
             // Yep, here I can create the post
@@ -42,8 +66,11 @@ namespace Isolaatti.Controllers
                 UserId = user.Id,
                 TextContent = post.Content,
                 Privacy = post.Privacy,
-                AudioId = post.AudioId
+                AudioId = post.AudioId,
+                SquadId = post.SquadId
             };
+
+
 
             _db.SimpleTextPosts.Add(newPost);
             await _db.SaveChangesAsync();
@@ -53,7 +80,7 @@ namespace Isolaatti.Controllers
                 postData = new FeedPost
                 {
                     Id = newPost.Id,
-                    Username = (await _db.Users.FindAsync(newPost.UserId)).Name,
+                    Username = newPost.User.Name,
                     UserId = newPost.UserId,
                     Liked = _db.Likes.Any(element => element.PostId == newPost.Id && element.UserId == user.Id),
                     Content = newPost.TextContent,
@@ -61,7 +88,9 @@ namespace Isolaatti.Controllers
                     NumberOfComments = newPost.NumberOfComments,
                     Privacy = newPost.Privacy,
                     AudioId = newPost.AudioId,
-                    TimeStamp = newPost.Date
+                    TimeStamp = newPost.Date,
+                    SquadId = newPost.SquadId,
+                    SquadName = newPost.Squad?.Name
                     // the other attributes are null, but they can be useful in the future
                 }
             });
@@ -98,7 +127,7 @@ namespace Isolaatti.Controllers
                 postData = new FeedPost
                 {
                     Id = existingPost.Id,
-                    Username = (await _db.Users.FindAsync(existingPost.UserId)).Name,
+                    Username = existingPost.User.Name,
                     UserId = existingPost.UserId,
                     Liked = _db.Likes.Any(element => element.PostId == existingPost.Id && element.UserId == user.Id),
                     Content = existingPost.TextContent,
@@ -174,7 +203,7 @@ namespace Isolaatti.Controllers
             {
                 AudioId = commentToMake.AudioId,
                 AuthorId = commentToMake.WhoWrote,
-                AuthorName = (await _db.Users.FindAsync(commentToMake.WhoWrote)).Name,
+                AuthorName = commentToMake.User.Name,
                 Content = commentToMake.TextContent,
                 Id = commentToMake.Id,
                 PostId = commentToMake.SimpleTextPostId,

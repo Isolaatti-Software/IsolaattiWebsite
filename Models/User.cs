@@ -31,6 +31,6 @@ namespace Isolaatti.Models
         public string DescriptionText { get; set; }
         public string DescriptionAudioId { get; set; }
 
-        public List<SimpleTextPost> Posts { get; set; }
+        public virtual ICollection<SimpleTextPost> Posts { get; set; }
     }
 }

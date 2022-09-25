@@ -11,7 +11,7 @@ namespace Isolaatti.Classes.ApiEndpointsResponseDataModels
         public long PostId { get; set; }
         public int TargetUserId { get; set; }
         public int Privacy { get; set; }
-        public Guid? AudioId { get; set; }
+        public string? AudioId { get; set; }
         public DateTime TimeStamp { get; set; }
         public bool UserIsOwner { get; set; }
     }

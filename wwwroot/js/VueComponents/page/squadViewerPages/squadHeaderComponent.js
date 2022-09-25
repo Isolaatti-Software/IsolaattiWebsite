@@ -11,7 +11,7 @@
             userData: userData,
             squadInfo: undefined,
             squadHeaderEditMode: false, // this should only be toggled by squad admin
-
+            squadExtendedDescriptionCutContent: true,
             errorUpdating: false,
             submitting: false,
             squadInfoForEdit: {
@@ -30,6 +30,12 @@
             return this.squadInfoForEdit.name.length > 0
                 && this.squadInfoForEdit.extendedDescription.length > 0
                 && this.squadInfoForEdit.description.length > 0;
+        },
+        extendedDescriptionCssClasses: function() {
+            if(this.squadExtendedDescriptionCutContent) {
+                return "post-cut-height"
+            }
+            return "overflow-auto"
         }
     },
     methods: {
@@ -70,6 +76,8 @@
     },
     mounted: async function() {
         await this.fetchSquad();
+        this.squadExtendedDescriptionCutContent = 
+            this.$refs.extendedDescriptionContainer.scrollHeight > this.$refs.extendedDescriptionContainer.clientHeight;
     },
     template: `
     <section v-if="squadInfo!==undefined">
@@ -83,10 +91,18 @@
 
     <div class="row m-0" v-if="!squadHeaderEditMode">
       <div class="col-lg-4">
+        <img src="/api/Fetch/ProfileImages/20222e8f-e7d8-46ee-ab07-c558ca50e326.png" width="100" height="100" id="profile_photo" class="profile-pic">
         <h1>{{squadInfo.name}}</h1>
         <p>{{squadInfo.description}}</p>
+        
       </div>
-      <div class="col-lg-8" v-html="compileMarkdown(squadInfo.extendedDescription)"></div>
+      <div class="col-lg-8" ref="extendedDescriptionContainer" :class="extendedDescriptionCssClasses" v-html="compileMarkdown(squadInfo.extendedDescription)"></div>
+      <div class="d-flex justify-content-center w-100">
+        <button class="btn btn-link btn-sm" @click="squadExtendedDescriptionCutContent = !squadExtendedDescriptionCutContent">
+          <span v-if="squadExtendedDescriptionCutContent">Mostrar todo</span>
+          <span v-else>Contraer</span>
+        </button>
+      </div>
     </div>
     <div class="row m-0" v-else>
       <div class="d-flex flex-column w-100">

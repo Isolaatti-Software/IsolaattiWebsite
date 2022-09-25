@@ -83,7 +83,7 @@ Vue.component("comments-viewer", {
         this.fetchComments();
         this.fetchNumberOfComments();
 
-        globalEventEmmiter.$on("commentEdited", function (comment) {
+        events.$on("commentEdited", function (comment) {
             const index = that.comments.findIndex(c => c.id === comment.id);
             if (index === -1) return;
 

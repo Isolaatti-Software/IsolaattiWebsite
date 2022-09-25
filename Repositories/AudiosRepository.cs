@@ -34,11 +34,12 @@ public class AudiosRepository
     {
         if (lastAudioId == null)
         {
-            return await _audios.Find(a => a.UserId == userId).Limit(10).ToListAsync();
+            return await _audios.Find(a => a.UserId == userId).SortByDescending(a => a.Id).Limit(10).ToListAsync();
         }
 
-        return await _audios.Find(a =>
-            a.UserId == userId && new ObjectId(a.Id) > new ObjectId(lastAudioId)).Limit(10).ToListAsync();
+        var filterLt = Builders<Audio>.Filter.Lt(doc => doc.Id, lastAudioId);
+        var userFilter = Builders<Audio>.Filter.Eq(doc => doc.UserId, userId);
+        return await _audios.Find(userFilter & filterLt).SortByDescending(a => a.Id).Limit(10).ToListAsync();
     }
 
     public async Task<List<Audio>> GetGlobalFeed(string lastAudioId = null)

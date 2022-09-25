@@ -196,6 +196,11 @@ namespace Isolaatti.Services
             return sessionToken;
         }
 
+        public string GetUsernameFromId(int userId)
+        {
+            return db.Users.Where(u => u.Id == userId).Select(u => u.Name).FirstOrDefault();
+        }
+
         private async Task SendWelcomeEmail(string email, string name)
         {
             var from = new EmailAddress("cuentas@isolaatti.com", "Isolaatti");

@@ -37,6 +37,13 @@ Vue.component('post-template',{
         },
         rootContainerCss: function () {
             return this.editable || this.deleteDialog ? "background-color: #f8f9fa; padding:0.2rem" : "";
+        },
+        squadUrl: function() {
+            if(this.renderPost.squadId === undefined) {
+                return "";
+            }
+            
+            return `/squads/${this.renderPost.squadId}`;
         }
     },
     watch: {
@@ -131,6 +138,9 @@ Vue.component('post-template',{
               <img class="user-avatar" :src="getUserImageUrl(renderPost.userId)">
               <div class="d-flex flex-column ml-2">
                 <span class="user-name"><a :href="profileLink">{{ renderPost.username }}</a> </span>
+                <span class="small" v-if="renderPost.squadId!==undefined">
+                  <a :href="squadUrl">{{ renderPost.squadName }}</a>
+                </span>
                 <div class="d-flex privacy-icon-container">
                   
                   <span>{{ new Date(renderPost.timeStamp).toUTCString() }}</span>
@@ -188,7 +198,7 @@ Vue.component('post-template',{
     `,
     mounted: function () {
         const that = this;
-
+        Prism.highlightAllUnder(this.$el);
         this.$nextTick(function () {
             this.cutContent = this.$refs.postContentContainer.scrollHeight > this.$refs.postContentContainer.clientHeight;
         });

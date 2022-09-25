@@ -7,6 +7,7 @@ using Isolaatti.Classes;
 using Isolaatti.Classes.ApiEndpointsRequestDataModels;
 using Isolaatti.Classes.ApiEndpointsResponseDataModels;
 using Isolaatti.Models;
+using Isolaatti.Repositories;
 using Isolaatti.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -19,11 +20,13 @@ namespace Isolaatti.Controllers
     {
         private readonly DbContextApp _db;
         private readonly IAccounts _accounts;
+        private readonly SquadsRepository _squads;
 
-        public Fetch(DbContextApp dbContextApp, IAccounts accounts)
+        public Fetch(DbContextApp dbContextApp, IAccounts accounts, SquadsRepository squadsRepository)
         {
             _db = dbContextApp;
             _accounts = accounts;
+            _squads = squadsRepository;
         }
 
         [HttpGet]
@@ -165,12 +168,12 @@ namespace Isolaatti.Controllers
                     if (lastId < 0)
                     {
                         posts = _db.SimpleTextPosts
-                            .Where(post => post.UserId == requestedAuthor.Id && post.Privacy != 1).Take(length);
+                            .Where(post => post.UserId == requestedAuthor.Id && post.Privacy != 1 && post.SquadId == null).Take(length);
                     }
                     else
                     {
                         posts = _db.SimpleTextPosts
-                            .Where(post => post.UserId == requestedAuthor.Id && post.Privacy != 1 && post.Id > lastId)
+                            .Where(post => post.UserId == requestedAuthor.Id && post.Privacy != 1 && post.Id > lastId && post.SquadId == null)
                             .Take(length);
                     }
                 }
@@ -179,20 +182,20 @@ namespace Isolaatti.Controllers
                     if (lastId < 0)
                     {
                         posts = _db.SimpleTextPosts
-                            .Where(post => post.UserId == requestedAuthor.Id && post.Privacy != 1)
+                            .Where(post => post.UserId == requestedAuthor.Id && post.Privacy != 1 && post.SquadId == null)
                             .OrderByDescending(post => post.Id).Take(length);
                     }
                     else
                     {
                         posts = _db.SimpleTextPosts
-                            .Where(post => post.UserId == requestedAuthor.Id && post.Privacy != 1 && post.Id < lastId)
+                            .Where(post => post.UserId == requestedAuthor.Id && post.Privacy != 1 && post.Id < lastId && post.SquadId == null)
                             .OrderByDescending(post => post.Id).Take(length);
                     }
                 }
             }
 
 
-            var feed = posts
+            var feed = posts.ToList()
                 .Select(post => new
                 {
                     postData = new FeedPost
@@ -207,13 +210,11 @@ namespace Isolaatti.Controllers
                         Privacy = post.Privacy,
                         AudioId = post.AudioId,
                         TimeStamp = post.Date,
-                        UserIsOwner = post.UserId == user.Id
+                        UserIsOwner = post.UserId == user.Id,
+                        SquadId = post.SquadId,
+                        SquadName = _db.Squads.Find(post.SquadId) == null ? null : _db.Squads.Find(post.SquadId)?.Name
                         // the other attributes are null, but they can be useful in the future
-                    },
-                    theme = post.ThemeJson == null
-                        ? null
-                        : JsonSerializer.Deserialize<PostTheme>(post.ThemeJson,
-                            new JsonSerializerOptions { PropertyNameCaseInsensitive = true })
+                    }
                 }).ToList();
 
             long lastPostId;
@@ -244,12 +245,24 @@ namespace Isolaatti.Controllers
 
             var post = await _db.SimpleTextPosts.FindAsync(postId);
             if (post == null || (post.Privacy == 1 && post.UserId != user.Id)) return NotFound("post not found");
+
+            // This post seems to be from a Squad, let's verify user is authorized to see it
+            if (post.SquadId != null)
+            {
+                if (!await _squads.UserBelongsToSquad(user.Id, post.SquadId.Value))
+                {
+                    return Unauthorized(new
+                    {
+                        error = "User does has no access to that post"
+                    });
+                }
+            }
             return Ok(new
             {
                 postData = new FeedPost
                 {
                     Id = post.Id,
-                    Username = (await _db.Users.FindAsync(post.UserId)).Name,
+                    Username = (await _db.Users.FindAsync(post.UserId))?.Name,
                     UserId = post.UserId,
                     Liked = _db.Likes.Any(element => element.PostId == post.Id && element.UserId == user.Id),
                     Content = post.TextContent,
@@ -258,20 +271,18 @@ namespace Isolaatti.Controllers
                     Privacy = post.Privacy,
                     AudioId = post.AudioId,
                     TimeStamp = post.Date,
-                    UserIsOwner = post.UserId == user.Id
+                    UserIsOwner = post.UserId == user.Id,
+                    SquadId = post.SquadId,
+                    SquadName = _db.Squads.Find(post.SquadId) == null ? null : _db.Squads.Find(post.SquadId)?.Name
                     // the other attributes are null, but they can be useful in the future
-                },
-                theme = post.ThemeJson == null
-                    ? null
-                    : JsonSerializer.Deserialize<PostTheme>(post.ThemeJson,
-                        new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase })
+                }
             });
         }
 
         [HttpGet]
         [Route("Post/{postId:long}/Comments/{take:int?}/{lastId:long?}")]
         public async Task<IActionResult> GetComments([FromHeader(Name = "sessionToken")] string sessionToken,
-            long postId, long lastId = long.MaxValue, int take = 10)
+            long postId, long lastId = long.MinValue, int take = 10)
         {
             var user = await _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
@@ -281,8 +292,8 @@ namespace Isolaatti.Controllers
                 return Unauthorized("post does not exist or is private");
 
             var comments = _db.Comments
-                .Where(comment => comment.SimpleTextPostId.Equals(post.Id) && comment.Id < lastId)
-                .OrderByDescending(comment => comment.Id)
+                .Where(comment => comment.SimpleTextPostId.Equals(post.Id) && comment.Id > lastId)
+                .OrderBy(c => c.Id)
                 .Take(take)
                 .ToList()
                 .Select(com => new FeedComment
@@ -290,7 +301,7 @@ namespace Isolaatti.Controllers
                     Id = com.Id,
                     Content = com.TextContent,
                     AuthorId = com.WhoWrote,
-                    AuthorName = _db.Users.Find(com.WhoWrote).Name,
+                    AuthorName = _db.Users.Find(com.WhoWrote)?.Name,
                     PostId = com.SimpleTextPostId,
                     TargetUserId = com.TargetUser,
                     Privacy = com.Privacy,

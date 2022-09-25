@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Isolaatti.Classes.ApiEndpointsRequestDataModels;
 using Isolaatti.Models;
@@ -156,37 +157,37 @@ public class SquadsController : ControllerBase
         return Ok(new { result = "Invitations send. Fake ids or ids that had already been used, if any, were omitted."});
     }
 
-    [HttpPost]
-    [Route("{squadId:guid}/RequestJoin")]
-    public async Task<IActionResult> RequestJoin(
-        [FromHeader(Name = "sessionToken")] string sessionToken, 
-        Guid squadId,
-        SquadJoinRequestCreationRequest payload)
-    {
-        var user = await _accounts.ValidateToken(sessionToken);
-        if(user == null) return Unauthorized("Token is not valid");
-
-        var squad = await _squadsRepository.GetSquad(squadId);
-        if (squad == null)
-        {
-            return NotFound(new { error = "Squad does not exist." });
-        }
-
-        if (await _squadJoinRequestsRepository.SameJoinRequestExists(squadId, user.Id))
-        {
-            return Ok(new
-            {
-                error = "Cannot request joining again. Manually delete the previous request before sending a new one"
-            });
-        }
-
-        await _squadJoinRequestsRepository.CreateJoinRequest(squadId, user.Id, payload.Message);
-
-        return Ok(new
-        {
-            result = "Join request sent"
-        });
-    }
+    // [HttpPost]
+    // [Route("{squadId:guid}/RequestJoin")]
+    // public async Task<IActionResult> RequestJoin(
+    //     [FromHeader(Name = "sessionToken")] string sessionToken, 
+    //     Guid squadId,
+    //     SquadJoinRequestCreationRequest payload)
+    // {
+    //     var user = await _accounts.ValidateToken(sessionToken);
+    //     if(user == null) return Unauthorized("Token is not valid");
+    //
+    //     var squad = await _squadsRepository.GetSquad(squadId);
+    //     if (squad == null)
+    //     {
+    //         return NotFound(new { error = "Squad does not exist." });
+    //     }
+    //
+    //     if (await _squadJoinRequestsRepository.SameJoinRequestExists(squadId, user.Id))
+    //     {
+    //         return Ok(new
+    //         {
+    //             error = "Cannot request joining again. Manually delete the previous request before sending a new one"
+    //         });
+    //     }
+    //
+    //     await _squadJoinRequestsRepository.CreateJoinRequest(squadId, user.Id, payload.Message);
+    //
+    //     return Ok(new
+    //     {
+    //         result = "Join request sent"
+    //     });
+    // }
 
     
     [HttpGet]
@@ -222,8 +223,26 @@ public class SquadsController : ControllerBase
     {
         var user = await _accounts.ValidateToken(sessionToken);
         if(user == null) return Unauthorized("Token is not valid");
+        var squad = await _squadsRepository.GetSquad(squadId);
+        if (squad == null)
+        {
+            return NotFound();
+        }
 
-        return Ok(await _squadsRepository.GetMembersOfSquad(squadId));
+        var admin = (from u in _db.Users
+            where u.Id == squad.UserId
+            select new
+            {
+                Id = u.Id,
+                Name = u.Name,
+                ImageId = u.ProfileImageId
+            }).FirstOrDefault();
+
+        return Ok(new
+        {
+            members = await _squadsRepository.GetMembersOfSquad(squadId),
+            admin
+        });
     }
 
     [HttpPost]

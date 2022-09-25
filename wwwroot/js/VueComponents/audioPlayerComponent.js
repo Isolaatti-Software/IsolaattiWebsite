@@ -25,6 +25,15 @@ Vue.component('audio-player', {
         },
         seek: function(e) {
             audioService.seek(e.target.value);
+        },
+        getClockFormatTime: function(secs) {
+            let truncatedSecs = Math.round(secs);
+            let minutes = truncatedSecs / 60;
+            let seconds = truncatedSecs % 60;
+            if (seconds < 10) {
+                seconds = `0${seconds}`
+            }
+            return `${Math.trunc(minutes)}:${seconds}`;
         }
     },
     mounted: async function() {
@@ -86,12 +95,17 @@ Vue.component('audio-player', {
         <i v-if=" state==='ended' || state==='paused' " class="fa-solid fa-play"></i>
         <i v-if=" state==='playing'" class="fa-solid fa-pause"></i>
       </button>
-      <input type="range" class="form-control-range" 
-             style="max-width: 400px" 
-             min="0" 
-             :max="duration" 
-             :value="time" 
-             @input="seek">
+      <div class="d-flex w-100 justify-content-center">
+        <span>{{getClockFormatTime(time)}}</span>
+        <span class="mobile-only">/</span>
+        <input type="range" class="form-control-range desktop-only"
+               style="max-width: 400px"
+               min="0"
+               :max="duration"
+               :value="time"
+               @input="seek">
+        <span>{{getClockFormatTime(duration)}}</span>
+      </div>
     </div>
     <div>
       <button class="btn">

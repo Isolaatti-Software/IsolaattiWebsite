@@ -20,8 +20,8 @@
     <link rel="icon" type="image/png" sizes="64x64" href="~/favicon-64.png">
     <link rel="icon" type="image/png" sizes="32x32" href="~/favicon-32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="~/favicon-16.png">
-    
-
+    <link rel="stylesheet" href="~/css/prism.css">
+    <script src="~/js/lib/prism.js" data-manual></script>
     @RenderSection("CSS", required: false)
 
     <link rel="stylesheet" href="~/fontawesome/css/all.min.css">
@@ -39,6 +39,7 @@
 
 @* All the content of this div with id app can host Vue.js components. Do not create new instances of Vue.js inside *@
 <div id="app" class="position-relative overflow-hidden">
+    
     <div class="modal fade" id="search-modal">
         <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
             <div class="modal-content bg-transparent p-2 border-0">
@@ -49,33 +50,36 @@
     <section class="notifications-stack" id="notifications">
 
     </section>
-    
+
     <div class="container">
         @* Server rendered alerts *@
-                @foreach (var (key, value) in _RenderedAlerts.Alerts)
-                {
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="alert alert-@key alert-dismissible">
-                                @value
-                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                        </div>
+        @foreach (var (key, value) in _RenderedAlerts.Alerts)
+        {
+            <div class="row">
+                <div class="col-12">
+                    <div class="alert alert-@key alert-dismissible">
+                        @value
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
-                }
+                </div>
+            </div>
+        }
         <nav class="d-flex custom-nav sticky-top pr-2 pl-2" id="isolaatti-top-bar">
             <a href="/" class="nav-link custom-nav-link mr-md-auto" id="isolaatti_brand"></a>
             <div class="container-md container-fluid" id="top-bar-content">
 
                 <div class="d-flex w-100 align-items-center">
+                    <button class="btn nav-link custom-nav-link mr-auto ml-1 mobile-only" v-on:click="toggleTopBarShowMenu">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
 
                     @* <audio-player class="ml-auto"></audio-player> *@
-                    <button class="btn btn-transparent nav-link custom-nav-link mr-1 ml-auto" data-toggle="modal" data-target="#search-modal">
+                    <button class="btn nav-link custom-nav-link mr-1 ml-auto desktop-only" data-toggle="modal" data-target="#search-modal">
                         <i class="fa-solid fa-magnifying-glass"></i>
                     </button>
-                    <a class="btn btn-transparent custom-nav-link mr-1 ml-1" type="button" asp-page="/Squads">
+                    <a class="btn custom-nav-link mr-1 ml-1 desktop-only" type="button" asp-page="/Squads">
                         <i class="fa-solid fa-people-group"></i>
                     </a>
 
@@ -154,9 +158,39 @@
                 </div>
             </div>
         </nav>
+        <section class="mobile-only" v-if="showTopBarMobileMenu">
+            <div class="d-flex flex-column">
+                <button class="btn" data-toggle="modal" data-target="#search-modal">
+                    <i class="fa-solid fa-magnifying-glass"></i> Buscar
+                </button>
+                <a class="btn" type="button" asp-page="/Squads">
+                    <i class="fa-solid fa-people-group"></i> Squads
+                </a>
+            </div>
+        </section>
     </div>
     <main style=" overflow: auto;" id="app-main">
-        <div class="container p-0" v-on:click="showAudiosFeedState='hide'">@RenderBody()</div>
+        <noscript>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-2 col-lg-3"></div>
+                    <div class="col-md-8 col-lg-6">
+                        <div class="d-flex flex-column p-4">
+                            <h1 class="display-1"><i class="fa-brands fa-js"></i></h1>
+                            <h2>Esta aplicación necesita JavaScript. Por favor, habilítalo.</h2>
+                            <h3>¿Por qué deberías habilitarlo?</h3>
+                            <p>
+                                JavaScript es un lenguaje de programación que se ejecuta en tu navegador.
+                                En esta aplicación se utiliza para darte una experiencia mucho mejor que simples enlaces entre páginas.
+                                Permite esas operaciones asíncronas, por ejemplo, que des clic en el botón de like sin que la página refresque.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-lg-3"></div>
+                </div>
+            </div>
+        </noscript>
+        <div class="container p-0">@RenderBody()</div>
     </main>
     <div class="d-flex justify-content-center">
         <audio-player></audio-player>
@@ -187,7 +221,6 @@ else
 @* Add here global Vue.js components files. Components used in pages should not be added here *@
 <script src="~/js/VueComponents/audioPlayerComponent.js"></script>
 <script src="~/js/VueComponents/audioAttachmentComponent.js"></script>
-<script src="~/js/VueComponents/audiosFeedBottomSheet.js"></script>
 <script src="~/js/VueComponents/quickSearchComponent.js"></script>
 
 @* This scripts are added only for specific pages *@

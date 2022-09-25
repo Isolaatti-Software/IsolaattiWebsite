@@ -39,10 +39,7 @@
                        :key="postId"
                        :is-full-page="true">
         </post-template>
-        <div class="d-flex justify-content-center">
-          <h5 class="mt-2">Chat temporal de la publicación</h5>
-        </div>
-        <discussion-temp-chat></discussion-temp-chat>
+        
       </div>
       <div class="col-md-6">
         <div class="d-flex flex-column ml-4">

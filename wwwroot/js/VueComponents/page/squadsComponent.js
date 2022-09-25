@@ -5,10 +5,7 @@
         }
     },
     methods: {
-        navigate: function(path) {
-            window.location.hash = "#" + path;
-            this.path = path;
-        }
+
     },
     mounted: function() {
 
@@ -24,8 +21,8 @@
                         <div class="dropdown-divider"></div>
                         <button @click="$router.push('/')" class="btn btn-sm btn-light mb-2">Squads donde eres miembro</button>
                         <button @click="$router.push('/tuyos')" class="btn btn-sm btn-light mb-2">Tus Squads</button>
-                        <button class="btn btn-sm btn-light mb-2">Solicitudes de unión</button>
-                        <button class="btn btn-sm btn-light">Invitaciones de unión</button>
+                        <button @click="$router.push('/solicitudes_union')" class="btn btn-sm btn-light mb-2">Solicitudes</button>
+                        <button @click="$router.push('/invitaciones')" class="btn btn-sm btn-light">Invitaciones</button>
                     </div>
                 </div>
             </aside>
@@ -51,37 +48,13 @@ const createSquadComponent = {
             shortDescription: "",
             extendedDescription: "",
             privacy: 0, // or private
-            invitations: [], // user info objects
-            invitationMessage: "Hola, te invito a mi Squad",
-            userSearchResult: undefined,
-            userSearchQuery: ""
+            justCreatedSquadId: undefined
         }
     },
     computed: {
-        filteredSearchResult: function(){
-            if(this.userSearchResult === undefined)
-                return [];
-            return this.userSearchResult.filter(el => !this.invitationsUserIds.includes(Number(el.resourceId)));
-        },
-        invitationsUserIds: function(){
-            return this.invitations.map(el => Number(el.resourceId));
-        }
+        
     },
     methods: {
-        search: _.debounce(async function(){
-            const response = await fetch(`/api/Search/Quick?q=${encodeURIComponent(this.userSearchQuery)}&onlyProfile=True`, {
-                method: "get",
-                headers: this.customHeaders
-            });
-            this.userSearchResult = await response.json();
-        }, 300),
-        addToInvitations: function(invitation) {
-            this.invitations.push(invitation);
-        },
-        removeFromInvitations: function(invitation) {
-            const index = this.invitations.findIndex(el => el.resourceId === invitation.resourceId);
-            this.invitations.splice(index,1);
-        },
         createSquad: async function() {
             this.submitting = true;
             this.makingSquad = true;
@@ -98,18 +71,13 @@ const createSquadComponent = {
             this.makingSquad = false;
             const squadCreationParsedResponse = await squadCreationResponse.json();
             this.makingInvitations = true;
-            const squadInvitationsReponse = await fetch(`/api/Squads/${squadCreationParsedResponse.squad.id}/InviteMany`, {
-                method: "post",
-                headers: this.customHeaders,
-                body: JSON.stringify({
-                    message: this.invitationMessage,
-                    userIds: this.invitationsUserIds
-                })
-            });
-            const parsedSquadInvitationsResponse = await squadInvitationsReponse.json();
+            this.justCreatedSquadId = squadCreationParsedResponse.squad.id;
+
+        },
+        onInvitationsCreated: function() {
             this.makingInvitations = false;
             this.submitting = false;
-            window.location = `/squads/${squadCreationParsedResponse.squad.id}`;
+            window.location = `/squads/${this.justCreatedSquadId}`;
         }
     },
     template: `
@@ -137,25 +105,11 @@ const createSquadComponent = {
                     <option :value="0">Solo por invitación</option>
                 </select>
             </div>
-            <div class="form-group">
-                <h6>Invitar</h6>
-                <div class="d-flex flex-column m-2">
-                    <div class="form-group" v-if="invitations.length > 0">
-                        <label>Mensaje de invitación</label>
-                        <textarea class="form-control" v-model="invitationMessage"></textarea>
-                    </div>
-                    <div class="rounded p-2 bg-primary text-light pr-3 m-1" v-for="invitedUser in invitations"> 
-                        <button type="button" class="btn btn-sm btn-primary" @click="removeFromInvitations(invitedUser)">&times;</button> 
-                        <span>{{invitedUser.contentPreview}}</span>
-                    </div> 
-                </div>
-                <input type="text" class="form-control"  v-model="userSearchQuery" @input="search"
-                placeholder="Comienza a buscar por nombre..."/>
-                <div class="list-group-flush list-group mt-1" v-if="userSearchResult!==undefined">
-                    <button class="list-group-item list-group-item-action" v-for="result in filteredSearchResult" 
-                        @click="addToInvitations(result)">#{{result.resourceId}} {{result.contentPreview}}</button>
-                </div>
-            </div>
+            <squad-invitation-creator-user-searcher 
+                :auto-send="true" 
+                :squad-id="justCreatedSquadId"
+                @created="onInvitationsCreated"
+            ></squad-invitation-creator-user-searcher>
             <div class="alert alert-info" v-if="makingSquad">
                 Creando squad...
             </div>
@@ -257,11 +211,163 @@ const yourSquadsComponent = {
 }
 
 const requestsComponent = {
-    
+    data: function() {
+        return {
+            customHeaders: customHttpHeaders,
+            joinRequests: [],
+            loading: true,
+            error: false,
+            editionMode: false,
+            selectedInvitationId: undefined,
+            
+            overallMode: "forMe" //or fromMe
+        }
+    },
+    methods: {
+        fetchInvitations: async function() {
+            const response = await fetch(`/api/Users/Me/Squads/MyInvitations`, {
+                headers: this.customHeaders
+            });
+            try {
+                this.invitations = (await response.json());
+                this.loading = false;
+            } catch (e) {
+                this.error = true;
+            }
+        },
+        selectInvitation: function(id) {
+            if(this.selectedInvitationId === id) {
+                this.selectedInvitationId = undefined;
+            } else {
+                this.selectedInvitationId = id;
+            }
+
+        },
+        setEditionMode: function() {
+            this.editionMode = !this.editionMode;
+        },
+        profileLink: function(profileId) {
+            return `/perfil/${profileId}`;
+        },
+        profileImageLink: function(profileId) {
+            return `/api/Fetch/GetUserProfileImage?userId=${profileId}`
+        }
+    },
+    mounted: async function() {
+        await this.fetchInvitations();
+    },
+    template: `
+      <section class="isolaatti-card">
+      <h5>Solicitudes</h5>
+      <div class="btn-group w-100">
+        <button class="btn">
+          Para tí
+        </button>
+        <button class="btn">
+          De tí
+        </button>
+      </div>
+      
+      <template v-if="overallMode==='forMe'">
+        
+      </template>
+      <template v-else>
+        
+      </template>
+      <div v-if="loading" class="d-flex justify-content-center mt-2">
+        <div class="spinner-border" role="status">
+          <span class="sr-only">Cargando más contenido...</span>
+        </div>
+      </div>
+      
+      </section>
+    `
 }
 
+
 const invitationsComponent = {
-    
+    data: function() {
+        return {
+            customHeaders: customHttpHeaders,
+            invitations: [],
+            loading: true,
+            error: false,
+            editionMode: false,
+            selectedInvitationId: undefined,
+            overallMode: "forMe" //or fromMe
+        }
+    },
+    methods: {
+        fetchInvitationsForMe: async function() {
+            this.loading = true;
+            const response = await fetch(`/api/Users/Me/Squads/InvitationsForMe`, {
+                headers: this.customHeaders
+            });
+            try {
+                this.invitations = (await response.json());
+            } catch (e) {
+                this.error = true;
+            }
+            this.loading = false;
+        },
+        fetchInvitationsFromMe: async function() {
+            const response = await fetch(`/api/Users/Me/Squads/MyInvitations`, {
+                headers: this.customHeaders
+            });
+            try {
+                this.invitations = (await response.json());
+            } catch(e) {
+                this.error = true;
+            }
+            this.loading = false;
+        },
+        onInvitationUpdate: function(invitation) {
+            const index = this.invitations.findIndex(inv => inv.invitation.id === invitation.id);
+            const temp = this.invitations;
+            temp[index].invitation = invitation;
+            this.invitations = temp;
+        }
+    },
+    watch:{
+        overallMode: {
+            handler: async function(val, oldVal) {
+                if(val === oldVal) {
+                    return;
+                }
+                this.invitations = [];
+                switch(val) {
+                    case "forMe": await this.fetchInvitationsForMe();
+                    break;
+                    case "fromMe": await this.fetchInvitationsFromMe();
+                    break;
+                }
+            },
+            immediate: true
+        }
+    },
+    mounted: async function() {
+        
+    },
+    template: `
+    <section class="isolaatti-card">
+      <h5>Invitaciones</h5>
+      <div class="btn-group w-100">
+        <button class="btn" :class="{'btn-primary':overallMode==='forMe'}" @click="overallMode='forMe'">
+          Para tí
+        </button>
+        <button class="btn" :class="{'btn-primary':overallMode==='fromMe'}" @click="overallMode='fromMe'">
+          De tí
+        </button>
+      </div>
+      <squad-invitations-list :items="invitations" @invitation-update="onInvitationUpdate"></squad-invitations-list>
+      <div v-if="loading" class="d-flex justify-content-center mt-2">
+        <div class="spinner-border" role="status">
+          <span class="sr-only">Cargando más contenido...</span>
+        </div>
+      </div>
+      
+    </section>
+    `
 }
 
 // This is "this page component"

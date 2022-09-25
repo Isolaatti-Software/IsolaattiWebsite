@@ -174,6 +174,24 @@ public class SquadsRepository
 
     }
 
+    public async Task<bool> UserBelongsToSquad(int userId, Guid squadId)
+    {
+        var userExists = await _db.Users.AnyAsync(user => user.Id == userId);
+        if (!userExists)
+        {
+            return false;
+        }
+        
+        var squad = await GetSquad(squadId);
+        if (squad == null)
+        {
+            return false;
+        }
+
+        return await _db.SquadUsers
+            .AnyAsync(squadUser => squadUser.UserId.Equals(userId) && squadUser.SquadId.Equals(squadId)) || squad.UserId == userId;
+    }
+
     public async Task RemoveAUserFromASquad(Guid squadId, int userId)
     {
         var squadUser = await _db.SquadUsers
@@ -198,11 +216,10 @@ public class SquadsRepository
 
     public IEnumerable<Squad> GetSquadUserBelongs(int userId, Guid? lastId = null)
     {
-        return _db.SquadUsers
-            .Where(squ => squ.UserId == userId)
-            .AsEnumerable()
-            .Select(squ => _db.Squads.Find(squ.SquadId))
-            .ToList();
+        return from squadUser in _db.SquadUsers
+            from squad in _db.Squads
+            where squadUser.UserId == userId && squad.Id == squadUser.SquadId
+            select squad;
     }
 
     public async Task<IEnumerable<Squad>> GetSquadsUserAdmins(int userId, Guid? lastId = null)
@@ -234,5 +251,10 @@ public class SquadsRepository
             };
         
         return users;
+    }
+
+    public string GetSquadName(Guid squadId)
+    {
+        return _db.Squads.Where(s => s.Id.Equals(squadId)).Select(s => s.Name).FirstOrDefault();
     }
 }

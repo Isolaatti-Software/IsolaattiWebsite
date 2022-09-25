@@ -11,6 +11,7 @@ public interface IAccounts
     Task<bool> ChangeAPassword(int userId, string currentPassword, string newPassword);
     Task<SessionToken> CreateNewToken(int userId, string plainTextPassword);
     Task<User> ValidateToken(string token);
+    string GetUsernameFromId(int userId);
     Task RemoveAToken(string token);
     Task RemoveAllUsersTokens(int userId);
     Task MakeAccountFromGoogleAccount(string accessToken);
