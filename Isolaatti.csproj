@@ -5,11 +5,12 @@
     <Configurations>Debug;Release;release</Configurations>
     <Platforms>AnyCPU</Platforms>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <RootNamespace>isolaatti_API</RootNamespace>
+    <RootNamespace>Isolaatti</RootNamespace>
   </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="Azure.Extensions.AspNetCore.DataProtection.Blobs" Version="1.2.1" />
+        <PackageReference Include="EFCoreSecondLevelCacheInterceptor" Version="3.6.3" />
         <PackageReference Include="FirebaseAdmin" Version="1.6.0" />
         <PackageReference Include="Flurl.Http" Version="3.2.2" />
         <PackageReference Include="Google.Cloud.Storage.V1" Version="3.7.0" />
@@ -63,6 +64,7 @@
         <_ContentIncludedByDefault Remove="Pages\admin\Tools\ViewContent.cshtml" />
         <_ContentIncludedByDefault Remove="Pages\Reports\ReportPostOrComment.cshtml" />
         <_ContentIncludedByDefault Remove="Pages\Reports\ThankYou.cshtml" />
+        <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\behaviorComponents\globalAudioPlayer.js" />
     </ItemGroup>
 
 </Project>

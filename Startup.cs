@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text.Json;
+using EFCoreSecondLevelCacheInterceptor;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Isolaatti.Config;
@@ -48,8 +49,16 @@ namespace Isolaatti
             services.AddControllers();
             services.AddMvcCore().AddApiExplorer();
             services.AddRazorPages().AddRazorRuntimeCompilation();
-            services.AddDbContext<DbContextApp>(options =>
+            services.AddEFSecondLevelCache(options =>
             {
+                options.UseMemoryCacheProvider()
+                    .DisableLogging(true)
+                    .UseCacheKeyPrefix("EF_");
+                options.CacheAllQueries(CacheExpirationMode.Absolute, TimeSpan.FromMinutes(30));
+            });
+                services.AddDbContextPool<DbContextApp>((serviceProvider, options) =>
+            {
+         
                 if (_environment.IsProduction())
                 {
                     var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
@@ -64,11 +73,13 @@ namespace Isolaatti
                         Password = credentialInfo[1],
                         Database = databaseUri.LocalPath.TrimStart('/')
                     };
-                    options.UseNpgsql(connectionStringBuilder.ToString());
+                    options.UseNpgsql(connectionStringBuilder.ToString())
+                        .AddInterceptors(serviceProvider.GetRequiredService<SecondLevelCacheInterceptor>());
                 }
                 else
                 {
-                    options.UseNpgsql(Configuration.GetConnectionString("Database"));
+                    options.UseNpgsql(Configuration.GetConnectionString("Database"))
+                        .AddInterceptors(serviceProvider.GetRequiredService<SecondLevelCacheInterceptor>());;
                 }
             });
             services.AddDbContext<MyKeysDbContext>(options =>
