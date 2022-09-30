@@ -82,7 +82,7 @@ Vue.component('comment', {
               <img class="user-avatar" :src="getUserImageUrl(comment.authorId)">
               <div class="d-flex flex-column ml-2">
                 <span class="user-name"><a :href="profileLink">{{ comment.authorName }}</a> </span>
-                <span>{{ new Date(comment.timeStamp).toUTCString() }}</span>
+                <span>{{ new Date(comment.timeStamp).toLocaleString() }}</span>
               </div>
             </div>
             <div class="dropdown dropleft" v-if="userData.id!==-1">

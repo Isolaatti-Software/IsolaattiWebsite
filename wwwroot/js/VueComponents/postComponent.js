@@ -143,7 +143,7 @@ Vue.component('post-template',{
                 </span>
                 <div class="d-flex privacy-icon-container">
                   
-                  <span>{{ new Date(renderPost.timeStamp).toUTCString() }}</span>
+                  <span>{{ new Date(renderPost.timeStamp).toLocaleString() }}</span>
                 </div>
               </div>
             </div>
