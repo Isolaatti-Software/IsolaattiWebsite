@@ -138,6 +138,8 @@ namespace Isolaatti
             services.AddScoped<SquadsRepository>();
             services.AddScoped<SquadJoinRequestsRepository>();
             services.AddScoped<SocketIoServiceKeysRepository>();
+            services.AddScoped<KeyGenService>();
+            services.AddScoped<AuthTokensRepository>();
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // No consent check needed here

@@ -95,7 +95,7 @@ namespace Isolaatti.Pages
                     });
                 }
 
-                Response.Cookies.Append("isolaatti_user_session_token", sessionToken.Token, new CookieOptions()
+                Response.Cookies.Append("isolaatti_user_session_token", sessionToken.ToString(), new CookieOptions()
                 {
                     Expires = new DateTimeOffset(DateTime.Today.AddMonths(1)),
                     HttpOnly = true

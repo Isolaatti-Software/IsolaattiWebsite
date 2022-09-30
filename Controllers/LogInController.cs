@@ -30,11 +30,11 @@ namespace Isolaatti.Controllers
 
             var tokenObj = await _accounts.CreateNewToken(user.Id, data.Password);
             if (tokenObj == null) return Unauthorized("Could not get session. Password might be wrong");
-            return Ok(new Classes.ApiEndpointsResponseDataModels.SessionToken
+            return Ok(new SessionToken
             {
                 Created = DateTime.Now,
                 Expires = DateTime.Now.AddMonths(12),
-                Token = tokenObj.Token
+                Token = tokenObj.ToString()
             });
         }
 

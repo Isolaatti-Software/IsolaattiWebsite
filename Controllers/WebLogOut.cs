@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Isolaatti.Classes.Authentication;
 using Isolaatti.Models;
 using Isolaatti.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -8,19 +9,27 @@ namespace Isolaatti.Controllers
     [Route("[controller]")]
     public class WebLogOut : Controller
     {
-        private readonly DbContextApp _db;
         private readonly IAccounts _accounts;
 
-        public WebLogOut(DbContextApp dbContextApp, IAccounts accounts)
+        public WebLogOut(IAccounts accounts)
         {
-            _db = dbContextApp;
             _accounts = accounts;
         }
 
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            await _accounts.RemoveAToken(Request.Cookies["isolaatti_user_session_token"]);
+            var tokenCookie = Request.Cookies["isolaatti_user_session_token"];
+            if (tokenCookie == null)
+            {
+                return NotFound();
+            }
+            var user = await _accounts.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
+            if (user == null) return NotFound();
+            
+            
+            var decodedToken = AuthenticationTokenSerializable.FromString(tokenCookie);
+            await _accounts.RemoveAToken(user.Id, decodedToken.Id);
             Response.Cookies.Delete("isolaatti_user_session_token");
             return RedirectToPage("/Index");
         }

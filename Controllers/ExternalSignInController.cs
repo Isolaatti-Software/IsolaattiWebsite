@@ -28,13 +28,9 @@ namespace Isolaatti.Controllers
             await _accounts.MakeAccountFromGoogleAccount(accessToken);
 
             var sessionToken = await _accounts.CreateTokenForGoogleUser(accessToken);
-
-            // let's save this token
-            _db.SessionTokens.Add(sessionToken);
-            await _db.SaveChangesAsync();
-
+            
             // let's put this token on cookies
-            Response.Cookies.Append("isolaatti_user_session_token", sessionToken.Token, new CookieOptions()
+            Response.Cookies.Append("isolaatti_user_session_token", sessionToken.ToString(), new CookieOptions()
             {
                 Expires = DateTimeOffset.Now.AddMonths(1)
             });
@@ -55,15 +51,12 @@ namespace Isolaatti.Controllers
 
             var sessionToken = await _accounts.CreateTokenForGoogleUser(googleIdToken);
 
-            // let's save this token
-            _db.SessionTokens.Add(sessionToken);
-            await _db.SaveChangesAsync();
-
+            
             return Ok(new Classes.ApiEndpointsResponseDataModels.SessionToken
             {
                 Created = DateTime.Now,
                 Expires = DateTime.Now.AddMonths(12),
-                Token = sessionToken.Token
+                Token = sessionToken.ToString()
             });
         }
     }

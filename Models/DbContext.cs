@@ -17,7 +17,7 @@ namespace Isolaatti.Models
 
         public DbSet<User> Users { get; set; }
         public DbSet<ChangePasswordToken> ChangePasswordTokens { get; set; }
-        public DbSet<SessionToken> SessionTokens { get; set; }
+        // public DbSet<SessionToken> SessionTokens { get; set; }
         public DbSet<ExternalUser> ExternalUsers { get; set; }
         // public DbSet<SocialNotification> SocialNotifications { get; set; }
         public DbSet<UserProfileLink> UserProfileLinks { get; set; }

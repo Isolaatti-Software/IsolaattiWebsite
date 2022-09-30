@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Isolaatti.Classes.Authentication;
 using Isolaatti.Models;
+using Isolaatti.Models.MongoDB;
 using Isolaatti.Services;
 using Isolaatti.Utils;
 using Microsoft.AspNetCore.Mvc;
@@ -11,13 +13,12 @@ namespace Isolaatti.Pages
 {
     public class Sessions : PageModel
     {
-        private readonly DbContextApp _db;
         private readonly IAccounts _accounts;
-        public List<SessionToken> SessionTokens;
+        public IEnumerable<AuthToken> SessionTokens;
+        public AuthenticationTokenSerializable CurrentToken;
 
-        public Sessions(DbContextApp dbContextApp, IAccounts accounts)
+        public Sessions(IAccounts accounts)
         {
-            _db = dbContextApp;
             _accounts = accounts;
         }
 
@@ -34,10 +35,9 @@ namespace Isolaatti.Pages
             ViewData["profilePicUrl"] = user.ProfileImageId == null
                 ? null
                 : UrlGenerators.GenerateProfilePictureUrl(user.Id, Request.Cookies["isolaatti_user_session_token"]);
-
-
-            SessionTokens = _db.SessionTokens.Where(sessionToken => sessionToken.UserId == user.Id).ToList();
-            ViewData["curentSessionToken"] = Request.Cookies["isolaatti_user_session_token"];
+            
+            CurrentToken = AuthenticationTokenSerializable.FromString(Request.Cookies["isolaatti_user_session_token"]);
+            SessionTokens = _accounts.GetTokenOfUser(user.Id);
 
             return Page();
         }
