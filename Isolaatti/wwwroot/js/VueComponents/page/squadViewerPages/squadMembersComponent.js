@@ -79,6 +79,17 @@ Vue.component('squad-invitations',{
             await this.fetchInvitations();
         }
     },
+    watch: {
+      $route: {
+          deep: true,
+          immediate: true,
+          handler: function(to, from) {
+              const action = to.query.action;
+              if(action !== undefined)
+                this.overallMode = action;
+          }
+      }  
+    },
     mounted: async function() {
         await this.fetchInvitations();
     },
@@ -268,21 +279,31 @@ const squadPeopleComponent = {
             currentScreen: "members" // or "requests" or "members" or "invitations"
         }
     },
+    watch: {
+        $route: {
+            immediate: true,
+            deep: true,
+            handler: function(to, from) {
+                this.currentScreen = to.query.tab
+            }
+        }
+    },
+
     template: `
     <div>
       <section class="isolaatti-card">
         <h5>Personas</h5>
         <div class="btn-group overflow-auto w-100">
           <button type="button" class="btn" :class="[currentScreen==='members' ? 'btn-primary' : 'btn-light']"
-                  @click="currentScreen='members'">
+                  @click="$router.push({path: '/miembros', query:{tab:'members'}})">
             Miembros
           </button>
           <button type="button" class="btn" :class="[currentScreen==='invitations' ? 'btn-primary' : 'btn-light']"
-                  @click="currentScreen='invitations'">
+                  @click="$router.push({path: '/miembros', query:{tab:'invitations'}})">
             Invitaciones
           </button>
           <button type="button" class="btn" :class="[currentScreen==='requests' ? 'btn-primary' : 'btn-light']"
-                  @click="currentScreen='requests'">
+                  @click="$router.push({path: '/miembros', query:{tab:'requests'}})">
             Solicitudes
           </button>
         </div>

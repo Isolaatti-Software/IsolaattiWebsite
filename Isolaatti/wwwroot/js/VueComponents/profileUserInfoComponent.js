@@ -48,8 +48,8 @@
             return this.newDescription?.trim().length < 350 || this.newDescription === null;
         },
         profileImageUrl: function () {
-            if (this.profile.profilePictureId === null) return "/res/imgs/user-solid.png";
-            return `/api/Fetch/ProfileImages/${this.profile.profilePictureId}.png`;
+            if (this.profile.profileImageId === null) return "/res/imgs/user-solid.png";
+            return `/api/Fetch/ProfileImages/${this.profile.profileImageId}.png`;
         },
         receivedLikesPageUrl: function () {
             return `/perfil/${this.userId}/likes_recibidos`;
@@ -68,8 +68,8 @@
             this.profile = await response.json();
         },
         toggleEditProfile: function () {
-            this.newName = this.profile.username;
-            this.newDescription = this.profile.description;
+            this.newName = this.profile.name;
+            this.newDescription = this.profile.descriptionText;
             this.editProfileMode = !this.editProfileMode;
             this.saving = false;
             this.errorSaving = false;
@@ -286,10 +286,10 @@
 
           <div v-if="!editProfileMode">
             <p class="text-center m-0 overflow-auto text-break username-profile">
-              {{ profile.username }}
+              {{ profile.name }}
             </p>
             <p class="text-break text-center">
-              {{ profile.description }}
+              {{ profile.descriptionText }}
             </p>
           </div>
           <div v-else>
@@ -358,7 +358,7 @@
                       data-toggle="modal">
                 <i class="fa-solid fa-pencil"></i>
               </button>
-              <audio-attachment :audio-id="profile.profileAudioId"></audio-attachment>
+              <audio-attachment :audio-id="profile.descriptionAudioId"></audio-attachment>
 
             </div>
             <button v-else class="btn btn-light btn-sm w-100" data-target="#modal-edit-audio" data-toggle="modal">
@@ -375,7 +375,7 @@
               </button>
               <button class="btn btn-link"
                       data-toggle="modal" href="#modal-following" @click="getFollowings">
-                Siguiendo: {{ profile.numberOfFollowings }}
+                Siguiendo: {{ profile.numberOfFollowing }}
               </button>
             </div>
           </div>
@@ -440,13 +440,13 @@
         <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title"><i class="fas fa-palette"></i> Enlace personalizado</h5>
+              <h5 class="modal-title"><i class="fa-solid fa-link"></i> Enlace personalizado</h5>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 &times;
               </button>
             </div>
             <div class="modal-body">
-              <div class="d-flex justify-content-center">
+              <div class="d-flex justify-content-center mb-2">
                 <canvas width="140" height="140" id="user-profile-link-qr"></canvas>
               </div>
               <div class="alert alert-danger" v-if="userLink.error">

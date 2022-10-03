@@ -9,7 +9,12 @@
         return {
             customHeaders: customHttpHeaders,
             userId: userData.id,
-            post: undefined
+            post: undefined,
+            
+            layout: {
+                isFluid: false,
+                showCommentsRight: true
+            }
         }
     },
     methods: {
@@ -31,23 +36,52 @@
         });
     },
     template: `
-      <div class="row  m-0">
-      <div class="col-md-6">
-        <post-template v-if="post!==undefined"
-                       :post="post.postData"
-                       :theme="post.theme"
-                       :key="postId"
-                       :is-full-page="true">
-        </post-template>
-        
-      </div>
-      <div class="col-md-6">
-        <div class="d-flex flex-column ml-4">
-          <h5 class="m-2">Comentarios</h5>
-          <comments-viewer :post-id="postId" :is-under-post="false"></comments-viewer>
-        </div>
-      </div>
-      </div>
+        <section>
+          <div class="container">
+            <div class="row">
+              <div class="col-12 d-flex justify-content-end p-2 align-items-center">
+                <div class="btn-group mr-2">
+                  <button class="btn" 
+                          :class="{
+                                    'btn-primary': !layout.showCommentsRight,
+                                    'btn-light': layout.showCommentsRight
+                                  }" 
+                          @click="layout.showCommentsRight = !layout.showCommentsRight" 
+                          title="Mostrar comentarios a la derecha o abajo">
+                    <i class="fa-solid fa-arrows-down-to-line"></i>
+                  </button>
+                  <button class="btn" 
+                          :class="{
+                                    'btn-primary': layout.isFluid,
+                                    'btn-light': !layout.isFluid
+                                  }" 
+                          @click="layout.isFluid = !layout.isFluid" 
+                          title="Mostrar layout normal o expandido">
+                    <i class="fa-solid fa-expand"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div :class="{'container': !layout.isFluid, 'container-fluid': layout.isFluid}">
+            
+            <div class="m-0" :class="{'row': layout.showCommentsRight}">
+              <div :class="{'col-md-6': layout.showCommentsRight}">
+                <post-template v-if="post!==undefined"
+                               :post="post"
+                               :key="postId"
+                               :is-full-page="true">
+                </post-template>
+          
+              </div>
+              <div :class="{'col-md-6': layout.showCommentsRight}">
+                <div class="d-flex flex-column ml-4">
+                  <comments-viewer :post-id="postId" :is-under-post="false"></comments-viewer>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
     `
 }
 Vue.component('discussion-page', discussionComponent)

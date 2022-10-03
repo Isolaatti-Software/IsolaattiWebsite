@@ -24,15 +24,15 @@
           <div class="sticky-top bg-white isolaatti-card p-3 w-100 d-flex justify-content-center mt-3 max-640">
 
             <div class="btn-group">
-              <button class="btn btn-light" :disabled="currentSection==='discussions'"
+              <button class="btn" :class="[currentSection==='discussions' ? 'btn-primary' : 'btn-light']"
                       v-on:click="currentSection='discussions'">
                 <i class="far fa-newspaper"></i> Discusiones
               </button>
-              <button class="btn btn-light" :disabled="currentSection==='audios'"
+              <button class="btn" :class="[currentSection==='audios' ? 'btn-primary' : 'btn-light']"
                       v-on:click="currentSection='audios'">
                 <i class="fa-solid fa-ear-listen"></i> Audios
               </button>
-              <button class="btn btn-light" :disabled="currentSection==='profile-pictures'"
+              <button class="btn" :class="[currentSection==='profile-pictures' ? 'btn-primary' : 'btn-light']"
                       v-on:click="currentSection='profile-pictures'">
                 <i class="fa-solid fa-image"></i> Fotos de perfil
               </button>

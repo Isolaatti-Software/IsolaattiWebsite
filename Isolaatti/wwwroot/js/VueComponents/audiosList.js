@@ -86,7 +86,6 @@ Vue.component("audios-list", {
     },
     template: `
       <div>
-      <h5 class="mt-2 w-100 text-center"><i class="fa-solid fa-ear-listen"></i> Audios</h5>
       <p class="m-2 text-center" v-if="audios.length === 0"> No hay contenido que mostrar <i
           class="fa-solid fa-face-sad-cry"></i></p>
       <div class="d-flex flex-column">

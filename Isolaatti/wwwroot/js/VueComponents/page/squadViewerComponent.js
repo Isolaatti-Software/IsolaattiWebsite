@@ -27,28 +27,28 @@ Vue.component('squad-view', {
         
     },
     template:`
-        <div class="container-fluid">
-        <div class="row isolaatti-card">
-          <div class="col-12">
-            <squad-header :squad-id="squadId"></squad-header>
-          </div>
-        </div>
-        <div class="row mt-2 isolaatti-card">
-          <div class="col-12">
-            <div class="btn-group overflow-auto mb-1 mt-1">
-              <router-link to="/" class="btn" :class="{'btn-primary': $route.path ==='/'}">Inicio</router-link>
-              <router-link to="/miembros" class="btn" :class="{'btn-primary': $route.path ==='/miembros'}">Personas</router-link>
+        <div class="container">
+          <div class="row isolaatti-card">
+            <div class="col-12">
+              <squad-header :squad-id="squadId"></squad-header>
             </div>
           </div>
-        </div>
-        <div class="row m-0">
-
-          <div class="col-12">
-            <div class="mt-2">
-              <router-view :squadId="squadId"></router-view>
+          <div class="row mt-2 isolaatti-card">
+            <div class="col-12">
+              <div class="btn-group overflow-auto mb-1 mt-1">
+                <router-link to="/" class="btn" active-class="btn-primary" :exact="true">Inicio</router-link>
+                <router-link :to="{path: '/miembros', query: {tab: 'members'}}" active-class="btn-primary" class="btn">Personas</router-link>
+              </div>
             </div>
           </div>
-        </div>
+          <div class="row">
+          
+            <div class="col-12 p-0">
+              <div class="mt-2">
+                <router-view :squadId="squadId"></router-view>
+              </div>
+            </div>
+          </div>
         
         <div class="modal" id="modal-quit-squad">
           <div class="modal-dialog modal-dialog-centered">

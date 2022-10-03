@@ -15,30 +15,28 @@
     },
     methods: {
         fetchFeed: async function () {
-            const globalThis = this;
-            const response = await fetch(`/api/Feed/${this.lastPostGotten}/10`, {
+            const response = await fetch(`/api/Feed?lastId=${this.lastPostGotten}&length=20`, {
                 method: "GET",
                 headers: this.customHeaders
             });
-            response.json().then(feed => {
-                globalThis.posts = globalThis.posts.concat(feed.posts)
-                globalThis.lastPostGotten = feed.lastPostId;
-                globalThis.noMoreContent = !feed.moreContent;
-                globalThis.loading = false;
-            })
+            const parsedResponse = await response.json();
+            this.posts = this.posts.concat(parsedResponse.data)
+            this.lastPostGotten = this.posts[this.posts.length - 1].id | 0;
+            this.noMoreContent = !parsedResponse.moreContent;
+            this.loading = false;
         },
-        refresh: function () {
+        refresh: async function () {
             this.posts = [];
             this.lastPostGotten = 0;
             this.noMoreContent = false;
             this.loading = true;
-            this.fetchFeed();
+            await this.fetchFeed();
         },
         concatPost: function (post) {
             this.posts = [post].concat(this.posts);
         },
         removePost: function (postId) {
-            const index = this.posts.findIndex(p => p.postData.id === postId);
+            const index = this.posts.findIndex(p => p.id === postId);
             if (index === -1) {
                 return;
             }
@@ -70,9 +68,8 @@
     },
     template: `
       <section id="posts-deposit" class="d-flex flex-column pt-1 mt-2 mb-3 align-items-center posts-deposit">
-      <h5 class="mt-2"><i class="far fa-newspaper"></i> Actividad de las personas que sigues</h5>
-      <post-template v-for="post in posts" :post="post.postData"
-                     v-bind:key="post.postData.id" @details="putPostDetails">
+      <post-template v-for="post in posts" :post="post"
+                     v-bind:key="post.id" @details="putPostDetails">
       </post-template>
       <div v-if="loading" class="d-flex justify-content-center mt-2">
         <div class="spinner-border" role="status">
@@ -86,7 +83,7 @@
         </button>
       </div>
       <div v-else>
-        <button class="btn btn-light" v-on:click="fetchFeed()">Cargar más</button>
+        <button class="btn btn-light mt-2" v-on:click="fetchFeed()">Cargar más</button>
       </div>
       <div class="modal" id="modal-post-info">
         <div class="modal-dialog modal-dialog-centered">

@@ -39,7 +39,7 @@ Vue.component('post-template',{
             return this.editable || this.deleteDialog ? "background-color: #f8f9fa; padding:0.2rem" : "";
         },
         squadUrl: function() {
-            if(this.renderPost.squadId === undefined) {
+            if(this.renderPost.squadId === null) {
                 return "";
             }
             
@@ -79,7 +79,7 @@ Vue.component('post-template',{
             });
 
             response.json().then(function (res) {
-                globalThis.renderPost = res.postData;
+                globalThis.renderPost = res;
                 event.target.disabled = false;
             });
         },
@@ -97,12 +97,12 @@ Vue.component('post-template',{
             });
 
             response.json().then(function (res) {
-                globalThis.renderPost = res.postData;
+                globalThis.renderPost = res;
                 event.target.disabled = false;
             });
         },
         updateFromModified: function (feedPost) {
-            this.renderPost = feedPost.postData;
+            this.renderPost = feedPost;
             this.editable = false;
         },
         deletePost: function () {
@@ -137,13 +137,17 @@ Vue.component('post-template',{
             <div class="d-flex">
               <img class="user-avatar" :src="getUserImageUrl(renderPost.userId)">
               <div class="d-flex flex-column ml-2">
-                <span class="user-name"><a :href="profileLink">{{ renderPost.username }}</a> </span>
+                <span class="user-name"><a :href="profileLink">{{ renderPost.userName }}</a> </span>
                 <span class="small" v-if="renderPost.squadId!==undefined">
                   <a :href="squadUrl">{{ renderPost.squadName }}</a>
                 </span>
-                <div class="d-flex privacy-icon-container">
-                  
-                  <span>{{ new Date(renderPost.timeStamp).toLocaleString() }}</span>
+                <div class="d-flex privacy-icon-container align-items-center">
+                  <i class="fa-solid fa-user" v-if="renderPost.privacy==1"></i>
+                  <i class="fa-solid fa-user-group" v-else-if="renderPost.privacy==2"></i>
+                  <i class="fa-solid fa-globe" v-else-if="renderPost.privacy==3"></i>
+                  <span class="ml-2">
+                    {{ new Date(renderPost.date).toLocaleString() }}
+                  </span>
                 </div>
               </div>
             </div>
@@ -163,7 +167,7 @@ Vue.component('post-template',{
           </div>
 
           <audio-attachment :audio-id="renderPost.audioId" v-if="renderPost.audioId!==null"></audio-attachment>
-          <div class="mt-2 post-content" v-html="compileMarkdown(renderPost.content)" ref="postContentContainer" @click="openDiscussion"></div>
+          <div class="mt-2 post-content" v-html="compileMarkdown(renderPost.textContent === null ? '' : renderPost.textContent)" ref="postContentContainer" @click="openDiscussion"></div>
           <div class="d-flex justify-content-center">
             <button class="btn btn-primary btn-sm" v-on:click="showFullPost" v-if="cutContent">Mostrar todo</button>
           </div>

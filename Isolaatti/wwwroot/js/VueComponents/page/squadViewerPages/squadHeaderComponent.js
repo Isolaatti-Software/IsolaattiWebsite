@@ -18,7 +18,8 @@
                 name: "",
                 description: "",
                 extendedDescription: ""
-            }
+            },
+            squadImageEdition: false
         }
     },
     computed:  {
@@ -42,7 +43,7 @@
         compileMarkdown: function (raw) {
             return DOMPurify.sanitize(marked.parse(raw));
         },
-        toggleEditMode: function() {
+        goToEditMode: function() {
             this.squadHeaderEditMode = !this.squadHeaderEditMode;
             this.squadInfoForEdit.name = this.squadInfo.name;
             this.squadInfoForEdit.description = this.squadInfo.description;
@@ -72,6 +73,9 @@
                 await this.fetchSquad();
                 this.squadHeaderEditMode = false;
             }
+        },
+        toggleSquadImageEdition: function(){
+            this.squadImageEdition = !this.squadImageEdition;
         }
     },
     mounted: async function() {
@@ -81,20 +85,40 @@
     },
     template: `
     <section v-if="squadInfo!==undefined">
-    <div class="row m-0" v-if="userIsAdmin">
+    <div class="row m-0">
       <div class="col-12 d-flex justify-content-end">
-        <button class="btn btn-sm" @click="toggleEditMode" v-if="!squadHeaderEditMode">
-          <i class="fa-solid fa-pencil"></i>
-        </button>
+        
       </div>
     </div>
 
     <div class="row m-0" v-if="!squadHeaderEditMode">
       <div class="col-lg-4">
-        <img src="/api/Fetch/ProfileImages/20222e8f-e7d8-46ee-ab07-c558ca50e326.png" width="100" height="100" id="profile_photo" class="profile-pic">
-        <h1>{{squadInfo.name}}</h1>
-        <p>{{squadInfo.description}}</p>
-        
+        <template v-if="!squadImageEdition">
+          <img src="" width="100" height="100" id="profile_photo" class="profile-pic">
+          <h1>{{squadInfo.name}}</h1>
+          <p>{{squadInfo.description}}</p>
+          <div class="d-flex align-items-center w-100">
+            <button class="btn btn-outline-primary w-100" @click="$router.push({path: '/miembros', query:{tab:'invitations', action:'new'}})">
+              <i class="fa-solid fa-plus"></i> Invitar
+            </button>
+            <div class="dropdown ml-auto">
+              <button class="btn" data-toggle="dropdown" aria-expanded="false" id="squad-dropdown">
+                <i class="fa-solid fa-ellipsis"></i>
+              </button>
+              <div class="dropdown-menu" aria-labelledby="squad-dropdown">
+                <button class="dropdown-item" v-if="userIsAdmin" @click="goToEditMode" href="#">Editar información</button>
+                <button class="dropdown-item" @click="toggleSquadImageEdition">Cambiar imagen del squad</button>
+                <a class="dropdown-item" href="#">Configuración</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#">Salir</a>
+              </div>
+            </div>
+          </div>
+        </template>
+        <template v-else>
+          <h3>Cambiar imagen del squad</h3>
+          <profile-image-maker/>
+        </template>
       </div>
       <div class="col-lg-8" ref="extendedDescriptionContainer" :class="extendedDescriptionCssClasses" v-html="compileMarkdown(squadInfo.extendedDescription)"></div>
       <div class="d-flex justify-content-center w-100">
@@ -121,7 +145,7 @@
           <textarea id="extDescription" class="form-control" v-model="squadInfoForEdit.extendedDescription" placeholder="Markdown es compatible" rows="10"></textarea>
         </div>
         <div class="d-flex justify-content-end mt-1">
-          <button class="btn btn-light mr-1" @click="toggleEditMode" :disabled="submitting">Cancelar</button>
+          <button class="btn btn-light mr-1" @click="goToEditMode" :disabled="submitting">Cancelar</button>
           <button class="btn btn-primary" @click="updateSquad" :disabled="!updateValidated || submitting">Guardar</button>
         </div>
       </div>

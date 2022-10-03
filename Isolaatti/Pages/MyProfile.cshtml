@@ -12,16 +12,16 @@
 }
 
 
-<my-profile></my-profile>
+<div class="container">
+    <my-profile></my-profile>
+</div>
 
 
 @section Scripts
 {
-    <script src="https://www.gstatic.com/firebasejs/7.23.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/7.23.0/firebase-storage.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="~/js/lib/purify.min.js"></script>
-    <script src="~/js/lib/qrious.min.js"></script>
+    <script src="https://unpkg.com/dompurify@2.3.5/dist/purify.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
 
     <script src="~/js/VueComponents/newCommentComponent.js"></script>
     <script src="~/js/VueComponents/newDiscussionComponent.js"></script>

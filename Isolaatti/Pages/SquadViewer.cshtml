@@ -5,9 +5,7 @@
     Layout = "Shared/_LayoutWebApp";
 }
 
-<div class="row m-0">
-    <div class="col-12">
-        @if (Model.UserBelongs)
+@if (Model.UserBelongs)
         {
             <squad-view squad-id="@Model.SquadId"></squad-view>     
         }
@@ -15,15 +13,12 @@
         {
             <squad-preview squad-id="@Model.SquadId"></squad-preview>
         }
-        
-    </div>
-</div>
 
 @section Scripts
 {
     
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="~/js/lib/purify.min.js"></script>
+    <script src="https://unpkg.com/dompurify@2.3.5/dist/purify.min.js"></script>
     <script src="~/js/VueComponents/page/squadViewerPages/squadHeaderComponent.js"></script>
     
     @if (Model.UserBelongs)
@@ -45,6 +40,7 @@
         <script src="~/js/VueComponents/commentsViewer.js"></script>
         <script src="~/js/VueComponents/newDiscussionComponent.js"></script>
         <script src="~/js/VueComponents/squadInvitationUserSearcher.js"></script>
+        <script src="~/js/VueComponents/profileImageMakerComponent.js"></script>
         <script src="~/js/VueComponents/page/squadViewerPages/squadNewDiscussionComponent.js"></script>
         <script src="~/js/VueComponents/page/squadViewerPages/squadContentComponent.js"></script>
         <script src="~/js/VueComponents/page/squadViewerPages/squadMembersComponent.js"></script>

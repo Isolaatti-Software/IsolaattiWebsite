@@ -39,52 +39,54 @@ Vue.component("posts-list", {
         }
     },
     methods: {
-        fetchPosts: function (lastId, event) {
+        fetchPosts: async function (event) {
             this.loading = true;
             if (event !== undefined) {
                 event.target.disabled = true;
             }
             if(this.squadId !== undefined) {
-                fetch(`/api/Squads/${this.squadId}/Posting/Posts?lastId=${lastId}&length=10&olderFirst=${this.sortingData.ascending === "1" ? "True" : "False"}`, 
+                const response = await fetch(
+                        `/api/Squads/${this.squadId}/Posting/Posts?lastId=${this.lastId}&length=10&olderFirst=${this.sortingData.ascending === "1" ? "True" : "False"}`, 
+                        {
+                            headers: this.customHeaders
+                        });
+                
+                const parsedResponse = await response.json();
+                this.posts = this.posts.concat(parsedResponse.data);
+                this.moreContent = parsedResponse.moreContent;
+                this.loading = false;
+                if (event !== undefined) {
+                    event.target.disabled = false;
+                }
+                if(this.posts.length > 0)
+                    this.lastId = this.posts[this.posts.length - 1].id;
+            } else {
+                const response = await fetch(
+                    `/api/Fetch/PostsOfUser/${this.userId}?lastId=${this.lastId}&length=25&olderFirst=${this.sortingData.ascending === "1" ? "True" : "False"}`, 
                     {
                         headers: this.customHeaders
-                    }).then(result => {
-                    result.json().then(res => {
-                        this.posts = this.posts.concat(res.feed);
-                        this.moreContent = res.moreContent;
-                        this.loading = false;
-                        if (event !== undefined) {
-                            event.target.disabled = false;
-                        }
-                        this.lastId = res.lastId;
-                    })
-                });
-                
-            } else {
-                fetch(`/api/Fetch/PostsOfUser/${this.userId}/8/${lastId}?olderFirst=${this.sortingData.ascending === "1" ? "True" : "False"}`, {headers: this.customHeaders}).then(result => {
-                    result.json().then(res => {
-                        this.posts = this.posts.concat(res.feed);
-                        this.moreContent = res.moreContent;
-                        this.loading = false;
-                        if (event !== undefined) {
-                            event.target.disabled = false;
-                        }
-                        this.lastId = res.lastId;
-                    })
-                });
+                    });
+                const parsedResponse = await response.json();
+
+                this.posts = this.posts.concat(parsedResponse.data);
+                this.moreContent = parsedResponse.moreContent;
+                this.loading = false;
+                if (event !== undefined) {
+                    event.target.disabled = false;
+                }
+                if(this.posts.length > 0)
+                    this.lastId = this.posts[this.posts.length - 1].id;
             }
-            
-            
         },
-        reloadPosts: function (event) {
+        reloadPosts: async function (event) {
             this.posts = [];
-            this.fetchPosts(-1, event);
+            await this.fetchPosts(-1, event);
         },
         concatPost: function (post) {
             this.posts = [post].concat(this.posts);
         },
         removePost: function (postId) {
-            const index = this.posts.findIndex(p => p.postData.id === postId);
+            const index = this.posts.findIndex(p => p.id === postId);
             if (index === -1) {
                 return;
             }
@@ -109,14 +111,13 @@ Vue.component("posts-list", {
             return `/api/Fetch/ProfileImages/${imageId}.png`;
         }
     },
-    mounted: function () {
-        this.fetchPosts(-1);
+    mounted: async function () {
+        await this.fetchPosts();
         events.$on("posted", this.concatPost);
         events.$on("postDeleted", this.removePost);
     },
     template: `
       <section class="d-flex flex-column pt-1 mt-2 mb-3 align-items-center w-100">
-      <h5><i class="far fa-newspaper"></i> Discusiones</h5>
       <div class="d-flex justify-content-end w-100">
         <div class="btn-group">
           <button type="button" class="btn btn-light" title="Filtrar"
@@ -131,10 +132,9 @@ Vue.component("posts-list", {
       </div>
       <p class="m-2 text-center" v-if="posts.length === 0 && !loading"> No hay contenido que mostrar <i
           class="fa-solid fa-face-sad-cry"></i></p>
-      <post-template v-for="post in posts" :post="post.postData"
-                     v-bind:theme="post.theme"
+      <post-template v-for="post in posts" :post="post"
                      v-bind:preview="false"
-                     v-bind:key="post.postData.id" v-on:delete="" @details="putPostDetails">
+                     v-bind:key="post.id" v-on:delete="" @details="putPostDetails">
       </post-template>
       <div v-if="loading" class="d-flex justify-content-center mt-2">
         <div class="spinner-border" role="status">
@@ -142,7 +142,7 @@ Vue.component("posts-list", {
         </div>
       </div>
       <div v-if="moreContent" class="d-flex flex-column align-items-center mt-2">
-        <button class="btn btn-primary" v-on:click="fetchPosts(lastId, $event)">Cargar más</button>
+        <button class="btn btn-light" v-on:click="fetchPosts($event)">Cargar más</button>
       </div>
       <!-- Modal filter posts -->
       <div class="modal fade" id="modal-filter-posts">

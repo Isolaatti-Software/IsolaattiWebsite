@@ -3,15 +3,8 @@
  * Copyright 2020-2022 Erik Cavazos
  * Copyright 2022 Isolaatti Software
  */
+
 @import url('https://fonts.googleapis.com/css2?family=Zen+Dots&display=swap');
-
-$theme-colors: (
-        "primary": #22034f,
-        "dark": black,
-        "primary-lighter": #7015ea
-);
-
-@import "bt/scss/bootstrap";
 
 body {
   scroll-behavior: smooth;
@@ -29,7 +22,7 @@ body {
 }
 
 .custom-nav {
-  background-color: theme-color("primary");
+  background-color: var(--primary);
   align-items: center;
   z-index: 1050;
   margin-top: 1em;

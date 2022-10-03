@@ -11,27 +11,29 @@
 
     },
     template: `
-    <div class="row m-0">
-        <div class="col-xl-3 col-lg-4">
-            <aside class="mt-4 p-2 isolaatti-card">
+        <div class="container">
+          <div class="row m-0">
+            <div class="col-xl-3 col-lg-4">
+              <aside class="mt-4 p-2 isolaatti-card">
                 <div class="translucent-white-card">
-                    <h3 class="m-2"><i class="fa-solid fa-people-group"></i> Squads</h3>
-                    <div class="d-flex flex-column mt-3">
-                        <button @click="$router.push('/crear')" class="btn btn-sm btn-primary mb-2"><i class="fa-solid fa-plus"></i> Nuevo squad</button>
-                        <div class="dropdown-divider"></div>
-                        <button @click="$router.push('/')" class="btn btn-sm btn-light mb-2">Squads donde eres miembro</button>
-                        <button @click="$router.push('/tuyos')" class="btn btn-sm btn-light mb-2">Tus Squads</button>
-                        <button @click="$router.push('/solicitudes_union')" class="btn btn-sm btn-light mb-2">Solicitudes</button>
-                        <button @click="$router.push('/invitaciones')" class="btn btn-sm btn-light">Invitaciones</button>
-                    </div>
+                  <h3 class="m-2"><i class="fa-solid fa-people-group"></i> Squads</h3>
+                  <div class="d-flex flex-column mt-3">
+                    <button @click="$router.push('/crear')" class="btn btn-sm btn-primary mb-2"><i class="fa-solid fa-plus"></i> Nuevo squad</button>
+                    <div class="dropdown-divider"></div>
+                    <button @click="$router.push('/')" class="btn btn-sm btn-light mb-2">Squads donde eres miembro</button>
+                    <button @click="$router.push('/tuyos')" class="btn btn-sm btn-light mb-2">Tus Squads</button>
+                    <button @click="$router.push('/solicitudes_union')" class="btn btn-sm btn-light mb-2">Solicitudes</button>
+                    <button @click="$router.push('/invitaciones')" class="btn btn-sm btn-light">Invitaciones</button>
+                  </div>
                 </div>
-            </aside>
+              </aside>
+            </div>
+            <div class="col-xl-9 col-lg-8">
+              <router-view class="mt-4"></router-view>
+            </div>
+          
+          </div>
         </div>
-        <div class="col-xl-9 col-lg-8">
-            <router-view class="mt-4"></router-view>
-        </div>
-        
-    </div>
     `
 };
 

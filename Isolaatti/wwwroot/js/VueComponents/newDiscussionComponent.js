@@ -25,23 +25,21 @@
             posting: false,
             discussion: {
                 audioId: null,
-                content: "",
-                description: null,
+                textContent: "",
                 id: -1,
                 liked: false,
                 numberOfComments: 0,
                 numberOfLikes: 0,
                 privacy: 2,
-                timeStamp: new Date(),
-                title: null,
+                date: new Date(),
                 userId: userData.id,
-                username: userData.name
+                userName: userData.name
             }
         }
     },
     computed: {
         ableToPostDiscussion: function () {
-            return this.discussion.content.length >= 1;
+            return this.discussion.textContent.length >= 1;
         },
         uniqueDomIdForPreviewModal: function () {
             return `modal-preview-post-${this.discussion.id}`;
@@ -57,7 +55,7 @@
             let endpointUrl = "/api/Posting/Make";
             let requestBody = {
                 privacy: that.discussion.privacy,
-                content: that.discussion.content,
+                content: that.discussion.textContent,
                 audioId: that.discussion.audioId,
                 squadId: that.squadId
             }
@@ -79,7 +77,7 @@
             }
 
             let madePost = await response.json();
-            this.discussion.content = "";
+            this.discussion.textContent = "";
             this.posting = false;
             if (this.mode !== "modify")
                 events.$emit("posted", madePost);
@@ -105,7 +103,7 @@
                     headers: this.customHeaders
                 }).then(response => response.json())
                     .then(data => {
-                        this.discussion = data.postData;
+                        this.discussion = data;
                     });
             }
         });
@@ -150,7 +148,7 @@
                         v-if="discussion.audioId!==null"
                         v-on:remove="removeAudio"></audio-attachment>
 
-      <textarea class="mt-2 form-control" v-model="discussion.content"
+      <textarea class="mt-2 form-control" v-model="discussion.textContent"
                 placeholder="Escribe aqui el contenido para iniciar la discusión. Markdown es compatible."></textarea>
 
       <div class="d-flex justify-content-end mt-2">

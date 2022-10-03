@@ -27,7 +27,6 @@
     },
     template: `
       <section>
-      <h5 class="mt-2 text-center"><i class="fas fa-camera" aria-hidden="true"></i> Fotos de perfil</h5>
       <p class="m-2 text-center" v-if="images.length === 0"> No hay contenido que mostrar <i
           class="fa-solid fa-face-sad-cry"></i></p>
       <div class="grid-3-columns mt-2">

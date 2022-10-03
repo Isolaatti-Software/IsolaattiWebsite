@@ -10,7 +10,9 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>@ViewData["Title"] | Isolaatti</title>
-    <link rel="stylesheet" href="/css/main.css"/>
+    <!--This is bootstrap sass files compiled with variables changed to create the isolaatti theme-->
+    <link rel="stylesheet" href="https://recursos-estaticos.isolaatti.com/css/custom-bootstrap.css"/>
+    <link rel="stylesheet" href="/css/isolaatti.css"/>
 
     <link rel="shortcut icon" href="~/favicon.ico">
     <link rel="icon" type="image/png" sizes="196x196" href="~/favicon-192.png">
@@ -142,7 +144,7 @@
                                 <i class="fas fa-cog"></i>Ajustes
                             </a>
                             <a class="dropdown-item"
-                               asp-page="/About"
+                               href="https://isolaattisoftware.com.mx/isolaatti"
                                target="_blank">
                                 <i class="fas fa-info"></i>Acerca de
                             </a>
@@ -188,7 +190,7 @@
                 </div>
             </div>
         </noscript>
-        <div class="container p-0">@RenderBody()</div>
+        <div class="p-0">@RenderBody()</div>
     </main>
     <div class="d-flex justify-content-center">
         <audio-player></audio-player>
