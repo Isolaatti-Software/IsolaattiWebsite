@@ -353,7 +353,7 @@
 
           <section v-if="profile.isUserItself" class="mt-3">
             <hr>
-            <div v-if="profile.profileAudioId!==null" class="d-flex flex-column">
+            <div v-if="profile.descriptionAudioId!==null" class="d-flex flex-column">
               <button type="button" class="btn btn-transparent btn-sm ml-auto mb-1" data-target="#modal-edit-audio"
                       data-toggle="modal">
                 <i class="fa-solid fa-pencil"></i>

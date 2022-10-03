@@ -21,7 +21,12 @@
             });
             const parsedResponse = await response.json();
             this.posts = this.posts.concat(parsedResponse.data)
-            this.lastPostGotten = this.posts[this.posts.length - 1].id | 0;
+            if(this.posts.length < 1){
+                this.lastPostGotten = -1;
+            } else {
+                this.lastPostGotten = this.posts[this.posts.length - 1].id;
+            }
+            
             this.noMoreContent = !parsedResponse.moreContent;
             this.loading = false;
         },
