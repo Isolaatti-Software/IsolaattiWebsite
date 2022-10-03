@@ -45,11 +45,19 @@ dotnet run
 4. Realiza la migración de la base de datos. Se da por hecho que ya la tienes instalada y configurada correctamente. También, ya debiste haber 
 proporcionado el connection string donde se menciona más arriba. Para ejecutar una migración, se recomienda eliminar todos los archivos del 
 directorio [Migrations](/Migrations) y después ejecutar el siguiente comando.
-```
+```shell
 dotnet ef migrations add InitialMigration
 dotnet ef database update
 ```
 Al ejecutar el comando `dotnet ef database update` se deberían crear las tablas en la base de datos.
+
+Alternativamente, puedes generar el código SQL que crea todas las tablas, sin realizar migraciones. Para ello haz lo siguiente.
+```shell
+dotnet ef dbcontext script -o miArchivoSql.sql --context DbContextApp
+```
+Lo anterior generará un archivo SQL, que puedes correr en tu instalación de postgreSQL.
+
+Información más a detalle acerca del CLI de Entity Framework: https://learn.microsoft.com/en-us/ef/core/cli/dotnet
 
 5. Ejecuta con el botón de tu IDE, o si estás en linea de comandos, ejecuta `dotnet run`.
 
