@@ -29,46 +29,6 @@ namespace Isolaatti.Controllers
             _squads = squadsRepository;
         }
 
-        [HttpGet]
-        [Route("MyProfile")]
-        public async Task<IActionResult> GetMyProfile([FromHeader(Name = "sessionToken")] string sessionToken)
-        {
-            var user = await _accounts.ValidateToken(sessionToken);
-            if (user == null) return Unauthorized("Token is not valid");
-
-            UserPreferences userPreferences;
-
-            try
-            {
-                userPreferences = await JsonSerializer
-                    .DeserializeAsync<UserPreferences>(
-                        new MemoryStream(System.Text.Encoding.UTF8.GetBytes(user.UserPreferencesJson)));
-            }
-            catch (JsonException)
-            {
-                userPreferences = new UserPreferences()
-                {
-                    EmailNotifications = false,
-                    ProfileHtmlColor = "#731D8C"
-                };
-            }
-
-            var profile = new Profile
-            {
-                Username = user.Name,
-                Email = user.Email,
-                Description = user.DescriptionText,
-                Color = userPreferences.ProfileHtmlColor ?? "#731D8C",
-                NumberOfPosts = await _db.SimpleTextPosts.CountAsync(post => post.UserId == user.Id),
-                NumberOfFollowers = user.NumberOfFollowers,
-                NumberOfFollowings = user.NumberOfFollowing,
-                ProfilePictureId = user.ProfileImageId,
-                ProfileAudioId = user.DescriptionAudioId,
-                NumberOfLikes = await _db.Likes.CountAsync(like => like.TargetUserId == user.Id)
-            };
-            return Ok(profile);
-        }
-
         [HttpPost]
         [Route("UserProfile")]
         public async Task<IActionResult> GetProfile([FromHeader(Name = "sessionToken")] string sessionToken,
@@ -79,54 +39,31 @@ namespace Isolaatti.Controllers
 
             var account = await _db.Users.FindAsync(Convert.ToInt32(identification.Id));
             if (account == null) return NotFound();
-            UserPreferences userPreferences;
 
-            try
-            {
-                userPreferences = JsonSerializer.Deserialize<UserPreferences>(account.UserPreferencesJson);
-            }
-            catch (JsonException)
-            {
-                userPreferences = new UserPreferences()
-                {
-                    EmailNotifications = false,
-                    ProfileHtmlColor = "#731D8C"
-                };
-            }
+            account.NumberOfFollowers = await _db.FollowerRelations.CountAsync(fr => fr.TargetUserId == account.Id);
+            account.NumberOfFollowing = await _db.FollowerRelations.CountAsync(fr => fr.UserId == account.Id);
+            account.NumberOfPosts = await _db.SimpleTextPosts.CountAsync(p => p.UserId == account.Id);
+            account.NumberOfLikes = await _db.Likes.CountAsync(l => l.TargetUserId == account.Id);
+            account.IsUserItself = account.Id == user.Id;
+            account.ThisUserIsFollowingMe =
+                await _db.FollowerRelations.AnyAsync(fr => fr.TargetUserId == user.Id && fr.UserId == account.Id);
+            account.FollowingThisUser =
+                await _db.FollowerRelations.AnyAsync(fr => fr.UserId == user.Id && fr.TargetUserId == account.Id);
 
-            var profile = new Profile
-            {
-                Username = account.Name,
-                Email = account.ShowEmail ? account.Email : null,
-                Description = account.DescriptionText,
-                Color = userPreferences.ProfileHtmlColor ?? "#731D8C",
-                ProfileAudioId = account.DescriptionAudioId,
-                NumberOfPosts = _db.SimpleTextPosts.Count(post => post.UserId == account.Id),
-                ProfilePictureId = account.ProfileImageId,
-                NumberOfFollowers = account.NumberOfFollowers,
-                NumberOfFollowings = account.NumberOfFollowing,
-                NumberOfLikes = _db.Likes.Count(like => like.TargetUserId == account.Id),
-                NumberOfLikesGiven = _db.Likes.Count(like => like.UserId == account.Id),
-                IsUserItself = account.Id == user.Id,
-                FollowingThisUser =
-                    _db.FollowerRelations.Any(fr => fr.UserId == user.Id && fr.TargetUserId == account.Id),
-                ThisUserIsFollowingMe =
-                    _db.FollowerRelations.Any(fr => fr.UserId == account.Id && fr.TargetUserId == user.Id)
-            };
-            return Ok(profile);
+            
+            return Ok(account);
         }
 
         [HttpGet]
-        [Route("PostsOfUser/{userId:int}/{length:int?}/{lastId:long?}")]
+        [Route("PostsOfUser/{userId:int}")]
         public async Task<IActionResult> GetPosts([FromHeader(Name = "sessionToken")] string sessionToken, int userId,
-            int length = 10, long lastId = -1, bool olderFirst = false)
+            int length = 30, long lastId = -1, bool olderFirst = false)
         {
             var user = await _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
             User requestedAuthor = null;
 
-            IQueryable<SimpleTextPost> posts;
-            var likes = _db.Likes.Where(like => like.UserId == user.Id);
+            IQueryable<Post> posts;
             if (user.Id == userId)
             {
                 if (olderFirst)
@@ -134,12 +71,12 @@ namespace Isolaatti.Controllers
                     if (lastId < 0)
                     {
                         posts = _db.SimpleTextPosts
-                            .Where(post => post.UserId == user.Id).Take(length);
+                            .Where(post => post.UserId == user.Id);
                     }
                     else
                     {
                         posts = _db.SimpleTextPosts
-                            .Where(post => post.UserId == user.Id && post.Id > lastId).Take(length);
+                            .Where(post => post.UserId == user.Id && post.Id > lastId);
                     }
                 }
                 else
@@ -148,13 +85,13 @@ namespace Isolaatti.Controllers
                     {
                         posts = _db.SimpleTextPosts
                             .Where(post => post.UserId == user.Id)
-                            .OrderByDescending(post => post.Id).Take(length);
+                            .OrderByDescending(post => post.Id);
                     }
                     else
                     {
                         posts = _db.SimpleTextPosts
                             .Where(post => post.UserId == user.Id && post.Id < lastId)
-                            .OrderByDescending(post => post.Id).Take(length);
+                            .OrderByDescending(post => post.Id);
                     }
                 }
             }
@@ -168,13 +105,17 @@ namespace Isolaatti.Controllers
                     if (lastId < 0)
                     {
                         posts = _db.SimpleTextPosts
-                            .Where(post => post.UserId == requestedAuthor.Id && post.Privacy != 1 && post.SquadId == null).Take(length);
+                            .Where(post =>
+                                post.UserId == requestedAuthor.Id && post.Privacy != 1 && post.SquadId == null)
+                            .OrderByDescending(post => post.Id);
                     }
                     else
                     {
                         posts = _db.SimpleTextPosts
-                            .Where(post => post.UserId == requestedAuthor.Id && post.Privacy != 1 && post.Id > lastId && post.SquadId == null)
-                            .Take(length);
+                            .Where(post =>
+                                post.UserId == requestedAuthor.Id && post.Privacy != 1 && post.Id > lastId &&
+                                post.SquadId == null)
+                            .OrderByDescending(post => post.Id);
                     }
                 }
                 else
@@ -182,57 +123,41 @@ namespace Isolaatti.Controllers
                     if (lastId < 0)
                     {
                         posts = _db.SimpleTextPosts
-                            .Where(post => post.UserId == requestedAuthor.Id && post.Privacy != 1 && post.SquadId == null)
-                            .OrderByDescending(post => post.Id).Take(length);
+                            .Where(post =>
+                                post.UserId == requestedAuthor.Id && post.Privacy != 1 && post.SquadId == null)
+                            .OrderByDescending(post => post.Id);
                     }
                     else
                     {
                         posts = _db.SimpleTextPosts
-                            .Where(post => post.UserId == requestedAuthor.Id && post.Privacy != 1 && post.Id < lastId && post.SquadId == null)
-                            .OrderByDescending(post => post.Id).Take(length);
+                            .Where(post =>
+                                post.UserId == requestedAuthor.Id && post.Privacy != 1 && post.Id < lastId &&
+                                post.SquadId == null)
+                            .OrderByDescending(post => post.Id);
                     }
                 }
             }
 
+            var total = posts.Count();
+            posts = posts.Take(length);
 
-            var feed = posts.ToList()
-                .Select(post => new
-                {
-                    postData = new FeedPost
-                    {
-                        Id = post.Id,
-                        Username = post.User.Name,
-                        UserId = post.UserId,
-                        Liked = likes.Any(element => element.PostId == post.Id && element.UserId == user.Id),
-                        Content = post.TextContent,
-                        NumberOfLikes = post.NumberOfLikes,
-                        NumberOfComments = post.NumberOfComments,
-                        Privacy = post.Privacy,
-                        AudioId = post.AudioId,
-                        TimeStamp = post.Date,
-                        UserIsOwner = post.UserId == user.Id,
-                        SquadId = post.SquadId,
-                        SquadName = _db.Squads.Find(post.SquadId) == null ? null : _db.Squads.Find(post.SquadId)?.Name
-                        // the other attributes are null, but they can be useful in the future
-                    }
-                }).ToList();
+            var feed =
+                (from post in posts
+                    select post
+                        .SetLiked(_db.Likes.Any(l => l.PostId == post.Id && l.UserId == user.Id))
+                        .SetNumberOfComments(_db.Comments.Count(c => c.SimpleTextPostId == post.Id))
+                        .SetNumberOfLikes(_db.Likes.Count(l => l.PostId == post.Id))
+                        .SetSquadName(_db.Squads.FirstOrDefault(squad => squad.Id.Equals(post.SquadId)).Name)
+                        .SetUserName(_accounts.GetUsernameFromId(post.UserId))
+                    ).ToList();
+            
+            
 
-            long lastPostId;
-            try
-            {
-                lastPostId = feed.Last().postData.Id;
-            }
-            catch (InvalidOperationException)
-            {
-                lastPostId = -1;
-            }
 
-            return Ok(new
+            return Ok(new ContentListWrapper<Post>
             {
-                username = requestedAuthor == null ? user.Name : requestedAuthor.Name,
-                feed,
-                moreContent = feed.Count == length,
-                lastId = lastPostId
+                Data = feed,
+                MoreContent = total > feed.Count
             });
         }
 
@@ -257,26 +182,14 @@ namespace Isolaatti.Controllers
                     });
                 }
             }
-            return Ok(new
-            {
-                postData = new FeedPost
-                {
-                    Id = post.Id,
-                    Username = (await _db.Users.FindAsync(post.UserId))?.Name,
-                    UserId = post.UserId,
-                    Liked = _db.Likes.Any(element => element.PostId == post.Id && element.UserId == user.Id),
-                    Content = post.TextContent,
-                    NumberOfLikes = post.NumberOfLikes,
-                    NumberOfComments = post.NumberOfComments,
-                    Privacy = post.Privacy,
-                    AudioId = post.AudioId,
-                    TimeStamp = post.Date,
-                    UserIsOwner = post.UserId == user.Id,
-                    SquadId = post.SquadId,
-                    SquadName = _db.Squads.Find(post.SquadId) == null ? null : _db.Squads.Find(post.SquadId)?.Name
-                    // the other attributes are null, but they can be useful in the future
-                }
-            });
+
+            post.Liked = _db.Likes.Any(l => l.PostId == post.Id && l.UserId == user.Id);
+            post.NumberOfLikes = await _db.Likes.CountAsync(l => l.PostId == post.Id);
+            post.UserName = _accounts.GetUsernameFromId(post.UserId);
+            post.SquadName = _db.Squads.FirstOrDefault(squad => squad.Id.Equals(post.SquadId))?.Name;
+            post.NumberOfComments = _db.Comments.Count(c => c.SimpleTextPostId == post.Id);
+            
+            return Ok(post);
         }
 
         [HttpGet]
@@ -295,20 +208,7 @@ namespace Isolaatti.Controllers
                 .Where(comment => comment.SimpleTextPostId.Equals(post.Id) && comment.Id > lastId)
                 .OrderBy(c => c.Id)
                 .Take(take)
-                .ToList()
-                .Select(com => new FeedComment
-                {
-                    Id = com.Id,
-                    Content = com.TextContent,
-                    AuthorId = com.WhoWrote,
-                    AuthorName = _db.Users.Find(com.WhoWrote)?.Name,
-                    PostId = com.SimpleTextPostId,
-                    TargetUserId = com.TargetUser,
-                    Privacy = com.Privacy,
-                    AudioId = com.AudioId,
-                    TimeStamp = com.Date,
-                    UserIsOwner = com.WhoWrote == user.Id
-                });
+                .ToList();
             return Ok(comments);
         }
 
@@ -323,19 +223,7 @@ namespace Isolaatti.Controllers
             var comment = await _db.Comments.FindAsync(commentId);
             if (comment == null) return NotFound();
 
-            return Ok(new FeedComment()
-            {
-                Content = comment.TextContent,
-                Id = comment.Id,
-                Privacy = comment.Privacy,
-                AudioId = comment.AudioId,
-                AuthorId = comment.WhoWrote,
-                AuthorName = _db.Users.Find(comment.WhoWrote).Name,
-                PostId = comment.SimpleTextPostId,
-                TimeStamp = comment.Date,
-                TargetUserId = comment.TargetUser,
-                UserIsOwner = comment.WhoWrote == user.Id
-            });
+            return Ok(comment);
         }
 
         [HttpGet]
@@ -362,51 +250,7 @@ namespace Isolaatti.Controllers
 
             return Ok(likedBy.ToList());
         }
-
-
-        [HttpGet]
-        [Route("PublicThread/{id:long}")]
-        public async Task<IActionResult> PublicThread(long id)
-        {
-            var post = await _db.SimpleTextPosts.FindAsync(id);
-            if (!post.Privacy.Equals(3)) return NotFound();
-            var author = (await _db.Users.FindAsync(post.UserId)).Name;
-            return Ok(new
-            {
-                comments = _db.Comments
-                    .Where(comment => comment.SimpleTextPostId.Equals(post.Id))
-                    .ToList().Select(com => new FeedComment
-                    {
-                        Id = com.Id,
-                        Content = com.TextContent,
-                        AuthorId = com.WhoWrote,
-                        AuthorName = _db.Users.Find(com.WhoWrote).Name,
-                        PostId = com.SimpleTextPostId,
-                        TargetUserId = com.TargetUser,
-                        Privacy = com.Privacy,
-                        AudioId = com.AudioId,
-                        TimeStamp = com.Date
-                    }),
-                post = new FeedPost
-                {
-                    Id = post.Id,
-                    Username = _db.Users.Find(post.UserId).Name,
-                    UserId = post.UserId,
-                    Liked = false,
-                    Content = post.TextContent,
-                    NumberOfLikes = post.NumberOfLikes,
-                    NumberOfComments = post.NumberOfComments,
-                    Privacy = post.Privacy,
-                    AudioId = post.AudioId,
-                    TimeStamp = DateTime.Now
-                    // the other attributes are null, but they can be useful in the future
-                },
-                theme = post.ThemeJson == null
-                    ? null
-                    : JsonSerializer.Deserialize<PostTheme>(post.ThemeJson,
-                        new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase })
-            });
-        }
+        
 
         [HttpGet]
         [Route("GetUserProfileImage")]

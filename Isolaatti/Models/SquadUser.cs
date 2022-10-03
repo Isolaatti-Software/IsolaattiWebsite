@@ -12,6 +12,6 @@ public class SquadUser
     public SquadUserRole Role { get; set; }
     public DateTime JoinedAt { get; set; }
     
-    [JsonIgnore] public User User { get; set; }
-    [JsonIgnore] public Squad Squad { get; set; }
+    [JsonIgnore] public virtual User User { get; set; }
+    [JsonIgnore] public virtual Squad Squad { get; set; }
 }

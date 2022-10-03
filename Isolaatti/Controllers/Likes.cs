@@ -6,6 +6,7 @@ using Isolaatti.Classes.ApiEndpointsResponseDataModels;
 using Isolaatti.Models;
 using Isolaatti.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Isolaatti.Controllers
 {
@@ -43,32 +44,14 @@ namespace Isolaatti.Controllers
                 TargetUserId = post.UserId
             });
             await _db.SaveChangesAsync();
-            post.NumberOfLikes = _db.Likes.Count(l => l.PostId == post.Id);
-            _db.SimpleTextPosts.Update(post);
-            await _db.SaveChangesAsync();
 
-
-            return Ok(new
-            {
-                postData = new FeedPost
-                {
-                    AudioId = post.AudioId,
-                    Content = post.TextContent,
-                    Description = post.Description,
-                    Id = post.Id,
-                    Language = post.Language,
-                    Liked = true,
-                    NumberOfComments = post.NumberOfComments,
-                    NumberOfLikes = post.NumberOfLikes,
-                    Privacy = post.Privacy,
-                    TimeStamp = post.Date,
-                    Title = post.Title,
-                    Username = (await _db.Users.FindAsync(post.UserId)).Name,
-                    UserId = post.UserId,
-                    SquadId = post.SquadId,
-                    SquadName = _db.Squads.Find(post.SquadId) == null ? null : _db.Squads.Find(post.SquadId)?.Name
-                }
-            });
+            post.Liked = true;
+            post.NumberOfLikes = await _db.Likes.CountAsync(l => l.PostId == post.Id);
+            post.UserName = _accounts.GetUsernameFromId(post.UserId);
+            post.SquadName = _db.Squads.FirstOrDefault(squad => squad.Id.Equals(post.SquadId))?.Name;
+            post.NumberOfComments = _db.Comments.Count(c => c.SimpleTextPostId == post.Id);
+            
+            return Ok(post);
         }
 
         [HttpPost]
@@ -87,31 +70,14 @@ namespace Isolaatti.Controllers
             var like = _db.Likes.Single(element => element.PostId == identification.Id && element.UserId == user.Id);
             _db.Likes.Remove(like);
             await _db.SaveChangesAsync();
-            post.NumberOfLikes = _db.Likes.Count(l => l.PostId == post.Id);
-            _db.SimpleTextPosts.Update(post);
-            await _db.SaveChangesAsync();
 
-            return Ok(new
-            {
-                postData = new FeedPost
-                {
-                    AudioId = post.AudioId,
-                    Content = post.TextContent,
-                    Description = post.Description,
-                    Id = post.Id,
-                    Language = post.Language,
-                    Liked = false,
-                    NumberOfComments = post.NumberOfComments,
-                    NumberOfLikes = post.NumberOfLikes,
-                    Privacy = post.Privacy,
-                    TimeStamp = post.Date,
-                    Title = post.Title,
-                    Username = (await _db.Users.FindAsync(post.UserId))?.Name,
-                    UserId = post.UserId,
-                    SquadId = post.SquadId,
-                    SquadName = _db.Squads.Find(post.SquadId) == null ? null : _db.Squads.Find(post.SquadId)?.Name
-                }
-            });
+            post.Liked = false;
+            post.NumberOfLikes = await _db.Likes.CountAsync(l => l.PostId == post.Id);
+            post.UserName = _accounts.GetUsernameFromId(post.UserId);
+            post.SquadName = _db.Squads.FirstOrDefault(squad => squad.Id.Equals(post.SquadId))?.Name;
+            post.NumberOfComments = _db.Comments.Count(c => c.SimpleTextPostId == post.Id);
+            
+            return Ok(post);
         }
     }
 }

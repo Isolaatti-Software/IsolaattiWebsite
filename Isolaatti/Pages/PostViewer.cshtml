@@ -22,11 +22,11 @@
     </style>
 }
 
-<discussion-page :post-id="@Model.ThisPost.Id"></discussion-page>
+<discussion-page :post-id="@Model.PostId"></discussion-page>
 
 @section Scripts
 {
-    <script src="~/js/lib/purify.min.js"></script>
+    <script src="https://unpkg.com/dompurify@2.3.5/dist/purify.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="~/js/VueComponents/audiosList.js"></script>

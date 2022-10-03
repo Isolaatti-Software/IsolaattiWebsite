@@ -31,7 +31,7 @@ namespace Isolaatti.Controllers
             if (user == null) return RedirectToPage("LogIn");
 
             var posts = _db.SimpleTextPosts.Where(post => post.UserId.Equals(user.Id)).AsEnumerable()
-                .Select(postEntry => JsonSerializer.Serialize(postEntry, typeof(SimpleTextPost))).ToArray();
+                .Select(postEntry => JsonSerializer.Serialize(postEntry, typeof(Post))).ToArray();
 
 
             var comments = _db.Comments.Where(comment => comment.WhoWrote.Equals(user.Id)).AsEnumerable()

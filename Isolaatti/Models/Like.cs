@@ -1,4 +1,6 @@
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Isolaatti.Models
 {
@@ -6,12 +8,15 @@ namespace Isolaatti.Models
     {
         // public long Id { get; set; }
         public Guid LikeId { get; set; }
+        
+        [ForeignKey("SimpleTextPost")]
         public long PostId { get; set; }
         public int UserId { get; set; }
         public int TargetUserId { get; set; }
         public DateTime Date { get; set; }
 
-        public User User { get; set; }
+        [JsonIgnore]
+        public virtual User User { get; set; }
         
 
         public Like()

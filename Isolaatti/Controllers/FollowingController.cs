@@ -48,17 +48,8 @@ namespace Isolaatti.Controllers
             };
 
             Db.FollowerRelations.Add(followerRelation);
-
             await Db.SaveChangesAsync();
-
-            // update number of followings and followers of involved users
-            user.NumberOfFollowing = Db.FollowerRelations.Count(relation => relation.UserId.Equals(user.Id));
-            userToFollow.NumberOfFollowers =
-                Db.FollowerRelations.Count(relation => relation.TargetUserId.Equals(userToFollow.Id));
-
-            Db.Users.Update(user);
-            Db.Users.Update(userToFollow);
-            await Db.SaveChangesAsync();
+            
             return Ok("Followers updated!");
         }
 
@@ -81,14 +72,7 @@ namespace Isolaatti.Controllers
                 Db.FollowerRelations.Remove(followerRelation);
 
                 await Db.SaveChangesAsync();
-
-                // update number of followings and followers of involved users
-                user.NumberOfFollowing = Db.FollowerRelations.Count(relation => relation.UserId.Equals(user.Id));
-                userToUnfollow.NumberOfFollowers =
-                    await Db.FollowerRelations.CountAsync(relation => relation.TargetUserId.Equals(userToUnfollow.Id));
-                Db.Users.Update(user);
-                Db.Users.Update(userToUnfollow);
-                await Db.SaveChangesAsync();
+                
                 return Ok("Followers updated!");
             }
             catch (InvalidOperationException)

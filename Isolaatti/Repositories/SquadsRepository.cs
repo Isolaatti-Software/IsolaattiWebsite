@@ -7,7 +7,7 @@ using Isolaatti.Classes.ApiEndpointsResponseDataModels;
 using Isolaatti.Enums;
 using Isolaatti.Models;
 using Microsoft.EntityFrameworkCore;
-using NUglify.Helpers;
+using Isolaatti.Helpers;
 
 namespace Isolaatti.Repositories;
 

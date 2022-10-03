@@ -111,45 +111,5 @@ namespace Isolaatti.Controllers
             await _db.SaveChangesAsync();
             return Ok();
         }
-
-        [HttpPost]
-        [Route("SetProfileColor")]
-        public async Task<IActionResult> SetProfileColor([FromHeader(Name = "sessionToken")] string sessionToken,
-            SimpleStringData color)
-        {
-            var htmlColor = color.Data;
-            var user = await _accounts.ValidateToken(sessionToken);
-            if (user == null) return Unauthorized("Token is not valid");
-
-            if (htmlColor == null) return BadRequest(new { error = "error/color-null" });
-
-            try
-            {
-                ColorTranslator.FromHtml(htmlColor);
-            }
-            catch (Exception)
-            {
-                return BadRequest(new { error = "error/color-invalid" });
-            }
-
-            UserPreferences userPreferences;
-            try
-            {
-                userPreferences = JsonSerializer.Deserialize<UserPreferences>(user.UserPreferencesJson);
-            }
-            catch (JsonException)
-            {
-                userPreferences = new UserPreferences();
-            }
-
-            userPreferences.ProfileHtmlColor = htmlColor;
-
-            user.UserPreferencesJson = JsonSerializer.Serialize(userPreferences);
-
-            _db.Users.Update(user);
-            await _db.SaveChangesAsync();
-
-            return Ok();
-        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Isolaatti.Classes;
 using Isolaatti.Classes.ApiEndpointsResponseDataModels;
 using Isolaatti.Models;
 using Isolaatti.Repositories;
@@ -49,60 +50,37 @@ public class SquadsPosting : ControllerBase
             });
         }
         
-        IQueryable<SimpleTextPost> posts;
-        var likes = _db.Likes.Where(like => like.UserId == user.Id);
+        IQueryable<Post> posts;
         
         if (lastId < 0)
         {
             posts = _db.SimpleTextPosts
                 .Where(post => post.SquadId.Equals(squad.Id))
-                .OrderByDescending(post => post.Id).Take(length);
+                .OrderByDescending(post => post.Id);
         }
         else
         {
             posts = _db.SimpleTextPosts
                 .Where(post => post.SquadId.Equals(squad.Id) && post.Id < lastId)
-                .OrderByDescending(post => post.Id).Take(length);
+                .OrderByDescending(post => post.Id);
         }
+
+        var total = posts.Count();
+        posts = posts.Take(length);
+        posts = from post in posts
+            select post
+                .SetLiked(_db.Likes.Any(l => l.PostId == post.Id && l.UserId == user.Id))
+                .SetNumberOfComments(_db.Comments.Count(c => c.SimpleTextPostId == post.Id))
+                .SetNumberOfLikes(_db.Likes.Count(l => l.PostId == post.Id))
+                .SetSquadName(_db.Squads.FirstOrDefault(s => s.Id.Equals(post.SquadId)).Name)
+                .SetUserName(_accounts.GetUsernameFromId(post.UserId));
+        var feed = posts.ToList();
         
-        var feed = posts
-            .Select(post => new
-            {
-                postData = new FeedPost
-                {
-                    Id = post.Id,
-                    Username = post.User.Name,
-                    UserId = post.UserId,
-                    Liked = likes.Any(element => element.PostId == post.Id && element.UserId == user.Id),
-                    Content = post.TextContent,
-                    NumberOfLikes = post.NumberOfLikes,
-                    NumberOfComments = post.NumberOfComments,
-                    Privacy = post.Privacy,
-                    AudioId = post.AudioId,
-                    TimeStamp = post.Date,
-                    UserIsOwner = post.UserId == user.Id,
-                    SquadId = post.SquadId,
-                    SquadName = post.Squad.Name
-                    // the other attributes are null, but they can be useful in the future
-                }
-            }).ToList();
         
-        long lastPostId;
-        try
+        return Ok(new ContentListWrapper<Post>
         {
-            lastPostId = feed.Last().postData.Id;
-        }
-        catch (InvalidOperationException)
-        {
-            lastPostId = -1;
-        }
-        
-        return Ok(new
-        {
-            squadName = squad.Name,
-            feed,
-            moreContent = feed.Count == length,
-            lastId = lastPostId
+            Data = feed,
+            MoreContent = total > length
         });
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Isolaatti.Models
 {
@@ -14,11 +15,18 @@ namespace Isolaatti.Models
         public long SimpleTextPostId { get; set; }
         public int TargetUser { get; set; }
         public int Privacy { get; set; }
-        public string AudioUrl { get; set; }
         public string? AudioId { get; set; }
         public DateTime Date { get; set; }
         
-        public User User { get; set; }
+        // Response in the same discussion
+        public long? ResponseForCommentId { get; set; }
+        
+        // Other discussions
+        public long? LinkedDiscussionId { get; set; }
+        public long? LinkedCommentId { get; set; }
+
+        [JsonIgnore]
+        public virtual User User { get; set; }
 
         public Comment()
         {

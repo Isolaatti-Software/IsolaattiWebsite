@@ -61,7 +61,6 @@ public class Accounts : IAccounts
             Name = username,
             Email = email,
             Password = hashedPassword,
-            UserPreferencesJson = "{}",
             EmailValidated = true
         };
         try

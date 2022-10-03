@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Isolaatti.Classes.ApiEndpointsResponseDataModels;
 using Isolaatti.Config;
+using Isolaatti.Models;
 using Isolaatti.Models.MongoDB;
 using Isolaatti.Repositories;
 using Microsoft.Extensions.Options;
@@ -38,7 +39,7 @@ public class NotificationSender
         catch (HttpRequestException) { }
     }
 
-    public async Task SendUpdateEvent(FeedComment comment)
+    public async Task SendUpdateEvent(Comment comment)
     {
         var secret = await _keysRepository.CreateKey();
         var httpClient = new HttpClient();
@@ -48,7 +49,7 @@ public class NotificationSender
             eventData = new
             {
                 type = "post",
-                id = comment.PostId,
+                id = comment.Id,
                 data = comment
             }
         });

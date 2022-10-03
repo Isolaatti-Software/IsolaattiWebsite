@@ -1,12 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Isolaatti.Classes;
-using Isolaatti.Classes.ApiEndpointsRequestDataModels;
-using Isolaatti.Classes.ApiEndpointsResponseDataModels;
 using Isolaatti.Models;
 using Isolaatti.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -27,106 +22,62 @@ namespace Isolaatti.Controllers
         }
 
         [HttpGet]
-        [Route("{lastId:long}/{length:int}")]
         public async Task<IActionResult> Index([FromHeader(Name = "sessionToken")] string sessionToken, long lastId = 0,
             int length = 10)
         {
             var user = await _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
-
-            var likes = Db.Likes.Where(like => like.UserId == user.Id);
-            IQueryable<SimpleTextPost> postsQuery;
+            
+            IQueryable<Post> postsQuery;
+            
             
             // For now, I am only returning posts that are not from squads
             if (lastId <= 0)
             {
                 postsQuery =
-                    from post in Db.SimpleTextPosts.OrderByDescending(post => post.Id)
+                    from post in Db.SimpleTextPosts
                     from following in Db.FollowerRelations
                     where following.UserId == user.Id
                           && post.UserId == following.TargetUserId
                           && post.Privacy != 1
                           && post.SquadId == null
+                    orderby post.Id descending 
                     select post;
-                postsQuery = postsQuery.Take(length);
             }
             else
             {
                 postsQuery =
-                    from post in Db.SimpleTextPosts.OrderByDescending(post => post.Id)
+                    from post in Db.SimpleTextPosts
                     from following in Db.FollowerRelations
                     where following.UserId == user.Id
                           && post.UserId == following.TargetUserId
                           && post.Privacy != 1
                           && post.Id < lastId
                           && post.SquadId == null
+                    orderby post.Id descending 
                     select post;
-                postsQuery = postsQuery.Take(length);
             }
 
-            var posts = postsQuery.Select(rawPost => new
-            {
-                postData = new FeedPost
-                {
-                    Id = rawPost.Id,
-                    Username = rawPost.User.Name,
-                    UserId = rawPost.UserId,
-                    Liked = likes.Any(l => l.PostId == rawPost.Id),
-                    Content = rawPost.TextContent,
-                    NumberOfLikes = rawPost.NumberOfLikes,
-                    NumberOfComments = rawPost.NumberOfComments,
-                    Privacy = rawPost.Privacy,
-                    AudioId = rawPost.AudioId,
-                    TimeStamp = rawPost.Date,
-                    SquadId = rawPost.SquadId
-                    // the other attributes are null, but they can be useful in the future
-                }
-            }).ToList();
+            var total = postsQuery.Count();
+
+            postsQuery = postsQuery.Take(length);
+
+            postsQuery = from post in postsQuery
+                select post
+                    .SetLiked(Db.Likes.Any(l => l.PostId == post.Id && l.UserId == user.Id))
+                    .SetNumberOfLikes(Db.Likes.Count(l => l.PostId == post.Id))
+                    .SetNumberOfComments(Db.Comments.Count(c => c.SimpleTextPostId == post.Id))
+                    .SetUserName(_accounts.GetUsernameFromId(post.UserId))
+                    .SetSquadName(Db.Squads.FirstOrDefault(squad => squad.Id.Equals(post.SquadId)).Name);
+
+            var posts = postsQuery.ToList();
             
-            long lastPostId;
-            try
+            
+            return Ok(new ContentListWrapper<Post>
             {
-                lastPostId = posts.Last().postData.Id;
-            }
-            catch (InvalidOperationException)
-            {
-                lastPostId = -1;
-            }
-
-            return Ok(new
-            {
-                LastPostId = lastPostId,
-                MoreContent = posts.Count == length,
-                Posts = posts
+                Data = posts,
+                MoreContent = total > length
             });
-        }
-
-
-        [HttpGet]
-        [Route("Public")]
-        public IActionResult GetPublicFeed(bool mostLiked = false)
-        {
-            IEnumerable<ReturningPostsComposedResponse> feed;
-            if (mostLiked)
-            {
-                feed = Db.SimpleTextPosts.Where(post => post.Privacy.Equals(3))
-                    .OrderByDescending(post => post.NumberOfLikes)
-                    .Take(100).ToList().Select(post => new ReturningPostsComposedResponse(post)
-                    {
-                        UserName = Db.Users.Find(post.UserId).Name
-                    });
-            }
-            else
-            {
-                feed = Db.SimpleTextPosts.Where(post => post.Privacy.Equals(3))
-                    .OrderByDescending(post => post.Date)
-                    .Take(100).ToList().Select(post => new ReturningPostsComposedResponse(post)
-                    {
-                        UserName = Db.Users.Find(post.UserId).Name
-                    });
-            }
-
-            return Ok(feed);
         }
     }
 }

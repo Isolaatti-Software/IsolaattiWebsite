@@ -7,6 +7,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Text.Json.Serialization;
 
 namespace Isolaatti.Models
 {
@@ -15,22 +18,29 @@ namespace Isolaatti.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
+        [JsonIgnore] 
         public string Password { get; set; }
+        [JsonIgnore] 
         public bool EmailValidated { get; set; }
-
-
-        // fields for user preferences
-        public string UserPreferencesJson { get; set; }
+        [JsonIgnore] 
         public bool ShowEmail { get; set; }
-
-        // here store people (followers and following)
+        [NotMapped] 
         public int NumberOfFollowers { get; set; }
+        [NotMapped] 
         public int NumberOfFollowing { get; set; }
-
+        [NotMapped]
+        public int NumberOfLikes { get; set; }
+        [NotMapped] 
+        public int NumberOfPosts { get; set; }
+        [NotMapped]
+        public bool IsUserItself { get; set; }
+        [NotMapped]
+        public bool FollowingThisUser { get; set; }
+        [NotMapped]
+        public bool ThisUserIsFollowingMe { get; set; }
         public Guid? ProfileImageId { get; set; }
         public string DescriptionText { get; set; }
         public string DescriptionAudioId { get; set; }
 
-        public virtual ICollection<SimpleTextPost> Posts { get; set; }
     }
 }

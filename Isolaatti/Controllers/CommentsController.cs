@@ -43,15 +43,7 @@ namespace Isolaatti.Controllers
 
             _db.Comments.Remove(comment);
             await _db.SaveChangesAsync();
-            // updates comments count of the post this comment belongs
-            var post = await _db.SimpleTextPosts.FindAsync(comment.SimpleTextPostId);
-            if (post != null)
-            {
-                post.NumberOfComments = _db.Comments.Count(c => c.SimpleTextPostId.Equals(post.Id));
-                _db.SimpleTextPosts.Update(post);
-                await _db.SaveChangesAsync();
-            }
-
+            
             return Ok("Comment delete successfully");
         }
 
@@ -77,18 +69,7 @@ namespace Isolaatti.Controllers
             await _db.SaveChangesAsync();
 
 
-            return Ok(new FeedComment
-            {
-                AudioId = commentToEdit.AudioId,
-                AuthorId = commentToEdit.WhoWrote,
-                AuthorName = (await _db.Users.FindAsync(commentToEdit.WhoWrote)).Name,
-                Content = commentToEdit.TextContent,
-                Id = commentToEdit.Id,
-                PostId = commentToEdit.SimpleTextPostId,
-                Privacy = commentToEdit.Privacy,
-                TargetUserId = commentToEdit.TargetUser,
-                TimeStamp = commentToEdit.Date
-            });
+            return Ok(commentToEdit);
         }
     }
 }

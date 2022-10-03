@@ -11,9 +11,8 @@ namespace Isolaatti.Pages
     {
         private readonly DbContextApp _db;
         private readonly IAccounts _accounts;
-
-        public SimpleTextPost ThisPost;
-
+        public long PostId;
+        
         public Threads(DbContextApp dbContextApp, IAccounts accounts)
         {
             _db = dbContextApp;
@@ -23,23 +22,20 @@ namespace Isolaatti.Pages
         public async Task<IActionResult> OnGet([FromRoute] long id)
         {
             var user = await _accounts.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
-            ThisPost = await _db.SimpleTextPosts.FindAsync(id);
-
-            if (ThisPost == null) return NotFound();
-
-            switch (user)
+            var post = await _db.SimpleTextPosts.FindAsync(id);
+            
+            
+            if (post == null) return NotFound();
+            PostId = post.Id;
+            
+            if (user == null)
             {
-                case null when ThisPost.Privacy != 3:
-                    return RedirectToPage("LogIn", new
-                    {
-                        then = Request.Path
-                    });
-                case null when ThisPost.Privacy == 3:
-                    return RedirectToPage("/PublicContent/PublicThreadViewer", new
-                    {
-                        id = ThisPost.Id
-                    });
+                return RedirectToPage("LogIn", new
+                {
+                    then = Request.Path
+                });
             }
+            
 
             // here it's know that account is correct. Data binding!
             ViewData["name"] = user.Name;

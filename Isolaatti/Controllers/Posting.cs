@@ -61,7 +61,7 @@ namespace Isolaatti.Controllers
 
 
             // Yep, here I can create the post
-            var newPost = new SimpleTextPost()
+            var newPost = new Post()
             {
                 UserId = user.Id,
                 TextContent = post.Content,
@@ -75,25 +75,11 @@ namespace Isolaatti.Controllers
             _db.SimpleTextPosts.Add(newPost);
             await _db.SaveChangesAsync();
 
-            return Ok(new
-            {
-                postData = new FeedPost
-                {
-                    Id = newPost.Id,
-                    Username = newPost.User.Name,
-                    UserId = newPost.UserId,
-                    Liked = _db.Likes.Any(element => element.PostId == newPost.Id && element.UserId == user.Id),
-                    Content = newPost.TextContent,
-                    NumberOfLikes = newPost.NumberOfLikes,
-                    NumberOfComments = newPost.NumberOfComments,
-                    Privacy = newPost.Privacy,
-                    AudioId = newPost.AudioId,
-                    TimeStamp = newPost.Date,
-                    SquadId = newPost.SquadId,
-                    SquadName = newPost.Squad?.Name
-                    // the other attributes are null, but they can be useful in the future
-                }
-            });
+            newPost.Liked = _db.Likes.Any(l => l.UserId == user.Id && l.PostId == newPost.Id);
+            newPost.NumberOfLikes = _db.Likes.Count(l => l.PostId == newPost.Id);
+            newPost.NumberOfComments = _db.Comments.Count(c => c.SimpleTextPostId == newPost.Id);
+
+            return Ok(newPost);
         }
 
         [HttpPost]
@@ -114,31 +100,10 @@ namespace Isolaatti.Controllers
             existingPost.AudioId = editedPost.AudioId;
 
             _db.SimpleTextPosts.Update(existingPost);
-
-            // let's reset the history, to make it appear on the users' feed
-            var historyOfThisPost =
-                _db.UserSeenPostHistories.Where(history => history.PostId.Equals(existingPost.Id));
-            _db.UserSeenPostHistories.RemoveRange(historyOfThisPost);
-
+            
             await _db.SaveChangesAsync();
 
-            return Ok(new
-            {
-                postData = new FeedPost
-                {
-                    Id = existingPost.Id,
-                    Username = existingPost.User.Name,
-                    UserId = existingPost.UserId,
-                    Liked = _db.Likes.Any(element => element.PostId == existingPost.Id && element.UserId == user.Id),
-                    Content = existingPost.TextContent,
-                    NumberOfLikes = existingPost.NumberOfLikes,
-                    NumberOfComments = existingPost.NumberOfComments,
-                    Privacy = existingPost.Privacy,
-                    AudioId = existingPost.AudioId,
-                    TimeStamp = existingPost.Date
-                    // the other attributes are null, but they can be useful in the future
-                }
-            });
+            return Ok(existingPost);
         }
 
         [HttpPost]
@@ -195,23 +160,7 @@ namespace Isolaatti.Controllers
 
             _db.Comments.Add(commentToMake);
             await _db.SaveChangesAsync();
-            post.NumberOfComments = _db.Comments.Count(comment => comment.SimpleTextPostId == post.Id);
-            _db.SimpleTextPosts.Update(post);
-            await _db.SaveChangesAsync();
-
-            var comment = new FeedComment
-            {
-                AudioId = commentToMake.AudioId,
-                AuthorId = commentToMake.WhoWrote,
-                AuthorName = commentToMake.User.Name,
-                Content = commentToMake.TextContent,
-                Id = commentToMake.Id,
-                PostId = commentToMake.SimpleTextPostId,
-                Privacy = commentToMake.Privacy,
-                TargetUserId = commentToMake.TargetUser,
-                TimeStamp = commentToMake.Date,
-                UserIsOwner = true
-            };
+            
             if (post.UserId != user.Id)
             {
                 await _notificationSender.NotifyUser(post.UserId, new SocialNotification
@@ -221,8 +170,8 @@ namespace Isolaatti.Controllers
                 });
                 
             }
-            await _notificationSender.SendUpdateEvent(comment);
-            return Ok(comment);
+            await _notificationSender.SendUpdateEvent(commentToMake);
+            return Ok(commentToMake);
         }
 
         [HttpGet]
