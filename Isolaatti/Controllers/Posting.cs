@@ -15,14 +15,14 @@ namespace Isolaatti.Controllers
 {
     [ApiController]
     [Route("/api/Posting")]
-    public class MakePost : ControllerBase
+    public class PostingController : ControllerBase
     {
         private readonly DbContextApp _db;
         private readonly IAccounts _accounts;
         private readonly NotificationSender _notificationSender;
         private readonly SquadsRepository _squads;
 
-        public MakePost(DbContextApp dbContextApp, IAccounts accounts, NotificationSender notificationSender, SquadsRepository squadsRepository)
+        public PostingController(DbContextApp dbContextApp, IAccounts accounts, NotificationSender notificationSender, SquadsRepository squadsRepository)
         {
             _db = dbContextApp;
             _accounts = accounts;
@@ -75,9 +75,11 @@ namespace Isolaatti.Controllers
             _db.SimpleTextPosts.Add(newPost);
             await _db.SaveChangesAsync();
 
-            newPost.Liked = _db.Likes.Any(l => l.UserId == user.Id && l.PostId == newPost.Id);
-            newPost.NumberOfLikes = _db.Likes.Count(l => l.PostId == newPost.Id);
-            newPost.NumberOfComments = _db.Comments.Count(c => c.SimpleTextPostId == newPost.Id);
+            newPost.Liked = false;
+            newPost.NumberOfLikes = 0;
+            newPost.NumberOfComments = 0;
+            newPost.UserName = user.Name;
+            newPost.SquadName = _db.Squads.FirstOrDefault(squad => squad.Id.Equals(post.SquadId))?.Name;
 
             return Ok(newPost);
         }
