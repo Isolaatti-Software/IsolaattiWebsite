@@ -73,12 +73,14 @@ namespace Isolaatti
                         Password = credentialInfo[1],
                         Database = databaseUri.LocalPath.TrimStart('/')
                     };
-                    options.UseNpgsql(connectionStringBuilder.ToString())
+                    options
+                        .UseNpgsql(connectionStringBuilder.ToString())
                         .AddInterceptors(serviceProvider.GetRequiredService<SecondLevelCacheInterceptor>());
                 }
                 else
                 {
-                    options.UseNpgsql(Configuration.GetConnectionString("Database"))
+                    options
+                        .UseNpgsql(Configuration.GetConnectionString("Database"))
                         .AddInterceptors(serviceProvider.GetRequiredService<SecondLevelCacheInterceptor>());;
                 }
             });
@@ -168,18 +170,11 @@ namespace Isolaatti
             // don't allow uploading files larger than 2 MB, for security reasons
             services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = 1024 * 1024 * 2);
             services.AddSwaggerGen();
-            services.AddWebOptimizer(pipeline =>
-            {
-                pipeline.MinifyCssFiles();
-                pipeline.MinifyJsFiles();
-                pipeline.MinifyHtmlFiles();
-                pipeline.AddScssBundle("/css/main.css", "scss/isolaatti.scss");
-            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DbContextApp dbContext,
-            MyKeysDbContext keysDb, IOptions<Servers> servers)
+            MyKeysDbContext keysDb)
         {
             if (env.IsDevelopment())
             {
@@ -194,18 +189,12 @@ namespace Isolaatti
             app.UseStaticFiles();
             app.UseRouting();
             app.UseAuthorization();
-            app.UseWebOptimizer();
             app.UseHttpsRedirection();
             app.UseMiddleware<ScopedHttpContextMiddleware>();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
                 endpoints.MapRazorPages();
-                endpoints.Map("/js/lib/{path}", delegate(HttpContext context)
-                {
-                    var path = context.Request.Path;
-                    context.Response.Redirect($"{servers.Value.StaticResources}{path}", true);
-                });
             });
         }
     }
