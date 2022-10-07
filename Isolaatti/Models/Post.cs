@@ -17,46 +17,19 @@ namespace Isolaatti.Models
         public Guid? SquadId { get; set; }
         public long? LinkedDiscussionId { get; set; }
         public long? LinkedCommentId { get; set; }
-
-        [NotMapped] public int NumberOfLikes { get; set; }
-        [NotMapped] public int NumberOfComments { get; set; }
-        [NotMapped] public string UserName { get; set; }
-        [NotMapped] public string SquadName { get; set; }
-        [NotMapped] public bool Liked { get; set; }
+        
+        [JsonIgnore]
+        public User User { get; set; }
+        [JsonIgnore]
+        public ICollection<Like> Likes { get; set; }
+        [JsonIgnore]
+        public ICollection<Comment> Comments { get; set; }
+        [JsonIgnore]
+        public Squad Squad { get; set; }
 
         public Post()
         {
             Date = DateTime.Now.ToUniversalTime();
-        }
-
-        public Post SetLiked(bool liked)
-        {
-            Liked = liked;
-            return this;
-        }
-
-        public Post SetNumberOfLikes(int number)
-        {
-            NumberOfLikes = number;
-            return this;
-        }
-
-        public Post SetNumberOfComments(int number)
-        {
-            NumberOfComments = number;
-            return this;
-        }
-
-        public Post SetUserName(string name)
-        {
-            UserName = name;
-            return this;
-        }
-
-        public Post SetSquadName(string name)
-        {
-            SquadName = name;
-            return this;
         }
     }
 }

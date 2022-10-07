@@ -39,25 +39,25 @@ public class NotificationSender
         catch (HttpRequestException) { }
     }
 
-    public async Task SendUpdateEvent(Comment comment)
-    {
-        var secret = await _keysRepository.CreateKey();
-        var httpClient = new HttpClient();
-        var content = JsonContent.Create(new
-        {
-            secret = secret.Key,
-            eventData = new
-            {
-                type = "post",
-                id = comment.Id,
-                data = comment
-            }
-        });
-
-        try
-        {
-            await httpClient.PostAsync($"{_servers.RealtimeServerUrl}/update_event", content);
-        }
-        catch(HttpRequestException){ }
-    }
+    // public async Task SendUpdateEvent(Comment comment)
+    // {
+    //     var secret = await _keysRepository.CreateKey();
+    //     var httpClient = new HttpClient();
+    //     var content = JsonContent.Create(new
+    //     {
+    //         secret = secret.Key,
+    //         eventData = new
+    //         {
+    //             type = "post",
+    //             id = comment.SimpleTextPostId,
+    //             data = comment
+    //         }
+    //     });
+    //
+    //     try
+    //     {
+    //         await httpClient.PostAsync($"{_servers.RealtimeServerUrl}/update_event", content);
+    //     }
+    //     catch(HttpRequestException){ }
+    // }
 }

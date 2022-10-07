@@ -68,12 +68,7 @@ public class SquadsPosting : ControllerBase
         var total = posts.Count();
         posts = posts.Take(length);
         posts = from post in posts
-            select post
-                .SetLiked(_db.Likes.Any(l => l.PostId == post.Id && l.UserId == user.Id))
-                .SetNumberOfComments(_db.Comments.Count(c => c.SimpleTextPostId == post.Id))
-                .SetNumberOfLikes(_db.Likes.Count(l => l.PostId == post.Id))
-                .SetSquadName(_db.Squads.FirstOrDefault(s => s.Id.Equals(post.SquadId)).Name)
-                .SetUserName(_accounts.GetUsernameFromId(post.UserId));
+            select post;
         var feed = posts.ToList();
         
         

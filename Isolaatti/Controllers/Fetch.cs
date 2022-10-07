@@ -7,6 +7,7 @@ using Isolaatti.Classes;
 using Isolaatti.Classes.ApiEndpointsRequestDataModels;
 using Isolaatti.Classes.ApiEndpointsResponseDataModels;
 using Isolaatti.Models;
+using Isolaatti.Models.Dto;
 using Isolaatti.Repositories;
 using Isolaatti.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -141,23 +142,27 @@ namespace Isolaatti.Controllers
             var total = posts.Count();
             posts = posts.Take(length);
 
-            var feed =
-                (from post in posts
-                    select post
-                        .SetLiked(_db.Likes.Any(l => l.PostId == post.Id && l.UserId == user.Id))
-                        .SetNumberOfComments(_db.Comments.Count(c => c.SimpleTextPostId == post.Id))
-                        .SetNumberOfLikes(_db.Likes.Count(l => l.PostId == post.Id))
-                        .SetSquadName(_db.Squads.FirstOrDefault(squad => squad.Id.Equals(post.SquadId)).Name)
-                        .SetUserName(_accounts.GetUsernameFromId(post.UserId))
-                    ).ToList();
-            
-            
+
+            var a = from post in posts
+                from u in _db.Users
+                where post.UserId == u.Id
+                select new PostDto()
+                {
+                    Post = post,
+                    UserName = u.Name,
+                    NumberOfComments = post.Likes.Count,
+                    NumberOfLikes = post.Comments.Count,
+                    Liked = _db.Likes.Any(l => l.UserId == user.Id && l.PostId == post.Id),
+                    SquadName = post.Squad.Name
+                };
+
+            var count = posts.Count();
 
 
-            return Ok(new ContentListWrapper<Post>
+            return Ok(new ContentListWrapper<PostDto>
             {
-                Data = feed,
-                MoreContent = total > feed.Count
+                Data = a.ToList(),
+                MoreContent = total > count
             });
         }
 
@@ -182,35 +187,45 @@ namespace Isolaatti.Controllers
                     });
                 }
             }
-
-            post.Liked = _db.Likes.Any(l => l.PostId == post.Id && l.UserId == user.Id);
-            post.NumberOfLikes = await _db.Likes.CountAsync(l => l.PostId == post.Id);
-            post.UserName = _accounts.GetUsernameFromId(post.UserId);
-            post.SquadName = _db.Squads.FirstOrDefault(squad => squad.Id.Equals(post.SquadId))?.Name;
-            post.NumberOfComments = _db.Comments.Count(c => c.SimpleTextPostId == post.Id);
             
-            return Ok(post);
+            
+            return Ok(new PostDto
+            {
+                Post = post,
+                UserName = post.User.Name,
+                // NumberOfComments = post.Likes.Count,
+                // NumberOfLikes = post.Comments.Count,
+                // Liked = _db.Likes.Any(l => l.UserId == user.Id && l.PostId == post.Id),
+                // SquadName = _squads.GetSquadName(post.SquadId)
+            });
         }
 
-        [HttpGet]
-        [Route("Post/{postId:long}/Comments/{take:int?}/{lastId:long?}")]
-        public async Task<IActionResult> GetComments([FromHeader(Name = "sessionToken")] string sessionToken,
-            long postId, long lastId = long.MinValue, int take = 10)
-        {
-            var user = await _accounts.ValidateToken(sessionToken);
-            if (user == null) return Unauthorized("Token is not valid");
-
-            var post = await _db.SimpleTextPosts.FindAsync(postId);
-            if (post == null || (post.Privacy == 1 && post.UserId != user.Id))
-                return Unauthorized("post does not exist or is private");
-
-            var comments = _db.Comments
-                .Where(comment => comment.SimpleTextPostId.Equals(post.Id) && comment.Id > lastId)
-                .OrderBy(c => c.Id)
-                .Take(take)
-                .ToList();
-            return Ok(comments);
-        }
+        // [HttpGet]
+        // [Route("Post/{postId:long}/Comments")]
+        // public async Task<IActionResult> GetComments([FromHeader(Name = "sessionToken")] string sessionToken,
+        //     long postId, long lastId = long.MinValue, int take = 10)
+        // {
+        //     var user = await _accounts.ValidateToken(sessionToken);
+        //     if (user == null) return Unauthorized("Token is not valid");
+        //
+        //     var post = await _db.SimpleTextPosts.FindAsync(postId);
+        //     if (post == null || (post.Privacy == 1 && post.UserId != user.Id))
+        //         return Unauthorized("post does not exist or is private");
+        //
+        //     IQueryable<Comment> comments = _db.Comments
+        //         .Where(comment => comment.SimpleTextPostId.Equals(post.Id) && comment.Id > lastId)
+        //         .OrderBy(c => c.Id);
+        //
+        //     var total = await comments.CountAsync();
+        //
+        //     var commentsList = comments.Take(take).Select(co => co.SetUserName(_accounts.GetUsernameFromId(co.WhoWrote))).ToList();
+        //
+        //     return Ok(new ContentListWrapper<Comment>
+        //     {
+        //         Data = commentsList,
+        //         MoreContent = total > commentsList.Count
+        //     });
+        // }
 
         [HttpGet]
         [Route("Comments/{commentId:long}")]

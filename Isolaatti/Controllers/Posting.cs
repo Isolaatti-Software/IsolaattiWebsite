@@ -75,11 +75,6 @@ namespace Isolaatti.Controllers
             _db.SimpleTextPosts.Add(newPost);
             await _db.SaveChangesAsync();
 
-            newPost.Liked = false;
-            newPost.NumberOfLikes = 0;
-            newPost.NumberOfComments = 0;
-            newPost.UserName = user.Name;
-            newPost.SquadName = _db.Squads.FirstOrDefault(squad => squad.Id.Equals(post.SquadId))?.Name;
 
             return Ok(newPost);
         }
@@ -108,85 +103,74 @@ namespace Isolaatti.Controllers
             return Ok(existingPost);
         }
 
-        [HttpPost]
-        [Route("Delete")]
-        public async Task<IActionResult> DeletePost([FromHeader(Name = "sessionToken")] string sessionToken,
-            SingleIdentification identification)
-        {
-            var user = await _accounts.ValidateToken(sessionToken);
-            if (user == null) return Unauthorized("Token is not valid");
-
-            var post = _db.SimpleTextPosts.Find(identification.Id);
-            if (!post.UserId.Equals(user.Id)) return Unauthorized("You cannot delete a post that is not yours");
-
-            // Yep, here I can delete the post
-            _db.SimpleTextPosts.Remove(post);
-            var commentsOfPost = _db.Comments.Where(comment => comment.SimpleTextPostId == post.Id).ToList();
-            _db.Comments.RemoveRange(commentsOfPost);
-
-            var likesOfPost = _db.Likes.Where(like => like.PostId == post.Id).ToList();
-            _db.Likes.RemoveRange(likesOfPost);
-
-            await _db.SaveChangesAsync();
-
-            return Ok(new DeletePostOperationResult()
-            {
-                PostId = post.Id,
-                Success = true,
-                OperationTime = DateTime.Now
-            });
-        }
-
-        [HttpPost]
-        [Route("Post/{postId:long}/Comment")]
-        public async Task<IActionResult> MakeComment([FromHeader(Name = "sessionToken")] string sessionToken,
-            long postId, MakeCommentModel commentModel)
-        {
-            var user = await _accounts.ValidateToken(sessionToken);
-            if (user == null) return Unauthorized("Token is not valid");
-
-            var post = await _db.SimpleTextPosts.FindAsync(postId);
-            if (post == null) return Unauthorized("Post does not exist");
-
-            if (!post.UserId.Equals(user.Id) && post.Privacy == 1) return Unauthorized("Post is private");
-
-            var commentToMake = new Comment
-            {
-                TextContent = commentModel.Content,
-                WhoWrote = user.Id,
-                SimpleTextPostId = post.Id,
-                TargetUser = post.UserId,
-                Privacy = commentModel.Privacy,
-                AudioId = commentModel.AudioId
-            };
-
-            _db.Comments.Add(commentToMake);
-            await _db.SaveChangesAsync();
-            
-            if (post.UserId != user.Id)
-            {
-                await _notificationSender.NotifyUser(post.UserId, new SocialNotification
-                {
-                    UserId = user.Id,
-                    Type = NotificationType.NewComment
-                });
-                
-            }
-            await _notificationSender.SendUpdateEvent(commentToMake);
-            return Ok(commentToMake);
-        }
-
-        [HttpGet]
-        [Route("Post/{postId:long}/CommentsNumber")]
-        public async Task<IActionResult> GetNumberOfCommentsOfPost(
-            [FromHeader(Name = "sessionToken")] string sessionToken, long postId)
-        {
-            var user = await _accounts.ValidateToken(sessionToken);
-            if (user == null) return Unauthorized("Token is not valid");
-
-            var post = await _db.SimpleTextPosts.FindAsync(postId);
-            if (post == null) return Unauthorized("Post does not exist");
-            return Ok(post.NumberOfComments);
-        }
+        // [HttpPost]
+        // [Route("Delete")]
+        // public async Task<IActionResult> DeletePost([FromHeader(Name = "sessionToken")] string sessionToken,
+        //     SingleIdentification identification)
+        // {
+        //     var user = await _accounts.ValidateToken(sessionToken);
+        //     if (user == null) return Unauthorized("Token is not valid");
+        //
+        //     var post = _db.SimpleTextPosts.Find(identification.Id);
+        //     if (!post.UserId.Equals(user.Id)) return Unauthorized("You cannot delete a post that is not yours");
+        //
+        //     // Yep, here I can delete the post
+        //     _db.SimpleTextPosts.Remove(post);
+        //     var commentsOfPost = _db.Comments.Where(comment => comment.SimpleTextPostId == post.Id).ToList();
+        //     _db.Comments.RemoveRange(commentsOfPost);
+        //
+        //     var likesOfPost = _db.Likes.Where(like => like.PostId == post.Id).ToList();
+        //     _db.Likes.RemoveRange(likesOfPost);
+        //
+        //     await _db.SaveChangesAsync();
+        //
+        //     return Ok(new DeletePostOperationResult()
+        //     {
+        //         PostId = post.Id,
+        //         Success = true,
+        //         OperationTime = DateTime.Now
+        //     });
+        // }
+        //
+        // [HttpPost]
+        // [Route("Post/{postId:long}/Comment")]
+        // public async Task<IActionResult> MakeComment([FromHeader(Name = "sessionToken")] string sessionToken,
+        //     long postId, MakeCommentModel commentModel)
+        // {
+        //     var user = await _accounts.ValidateToken(sessionToken);
+        //     if (user == null) return Unauthorized("Token is not valid");
+        //
+        //     var post = await _db.SimpleTextPosts.FindAsync(postId);
+        //     if (post == null) return Unauthorized("Post does not exist");
+        //
+        //     if (!post.UserId.Equals(user.Id) && post.Privacy == 1) return Unauthorized("Post is private");
+        //
+        //     var commentToMake = new Comment
+        //     {
+        //         TextContent = commentModel.Content,
+        //         UserId = user.Id,
+        //         SimpleTextPostId = post.Id,
+        //         TargetUser = post.UserId,
+        //         Privacy = commentModel.Privacy,
+        //         AudioId = commentModel.AudioId
+        //     };
+        //
+        //     _db.Comments.Add(commentToMake);
+        //     await _db.SaveChangesAsync();
+        //     
+        //     if (post.UserId != user.Id)
+        //     {
+        //         await _notificationSender.NotifyUser(post.UserId, new SocialNotification
+        //         {
+        //             UserId = user.Id,
+        //             Type = NotificationType.NewComment
+        //         });
+        //         
+        //     }
+        //
+        //     // commentToMake.UserName = user.Name;
+        //     await _notificationSender.SendUpdateEvent(commentToMake);
+        //     return Ok(commentToMake);
+        // }
     }
 }

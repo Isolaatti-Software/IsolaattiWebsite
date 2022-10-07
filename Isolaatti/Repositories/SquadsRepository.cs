@@ -253,7 +253,7 @@ public class SquadsRepository
         return await users.ToListAsync();
     }
 
-    public string GetSquadName(Guid squadId)
+    public string GetSquadName(Guid? squadId)
     {
         return _db.Squads.Where(s => s.Id.Equals(squadId)).Select(s => s.Name).FirstOrDefault();
     }

@@ -63,12 +63,7 @@ namespace Isolaatti.Controllers
             postsQuery = postsQuery.Take(length);
 
             postsQuery = from post in postsQuery
-                select post
-                    .SetLiked(Db.Likes.Any(l => l.PostId == post.Id && l.UserId == user.Id))
-                    .SetNumberOfLikes(Db.Likes.Count(l => l.PostId == post.Id))
-                    .SetNumberOfComments(Db.Comments.Count(c => c.SimpleTextPostId == post.Id))
-                    .SetUserName(_accounts.GetUsernameFromId(post.UserId))
-                    .SetSquadName(Db.Squads.FirstOrDefault(squad => squad.Id.Equals(post.SquadId)).Name);
+                select post;
 
             var posts = postsQuery.ToList();
             

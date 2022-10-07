@@ -1,12 +1,9 @@
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Isolaatti.Classes.ApiEndpointsRequestDataModels;
-using Isolaatti.Classes.ApiEndpointsResponseDataModels;
 using Isolaatti.Models;
 using Isolaatti.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Isolaatti.Controllers
 {
@@ -44,12 +41,7 @@ namespace Isolaatti.Controllers
                 TargetUserId = post.UserId
             });
             await _db.SaveChangesAsync();
-
-            post.Liked = true;
-            post.NumberOfLikes = await _db.Likes.CountAsync(l => l.PostId == post.Id);
-            post.UserName = _accounts.GetUsernameFromId(post.UserId);
-            post.SquadName = _db.Squads.FirstOrDefault(squad => squad.Id.Equals(post.SquadId))?.Name;
-            post.NumberOfComments = _db.Comments.Count(c => c.SimpleTextPostId == post.Id);
+            
             
             return Ok(post);
         }
@@ -71,12 +63,6 @@ namespace Isolaatti.Controllers
             _db.Likes.Remove(like);
             await _db.SaveChangesAsync();
 
-            post.Liked = false;
-            post.NumberOfLikes = await _db.Likes.CountAsync(l => l.PostId == post.Id);
-            post.UserName = _accounts.GetUsernameFromId(post.UserId);
-            post.SquadName = _db.Squads.FirstOrDefault(squad => squad.Id.Equals(post.SquadId))?.Name;
-            post.NumberOfComments = _db.Comments.Count(c => c.SimpleTextPostId == post.Id);
-            
             return Ok(post);
         }
     }

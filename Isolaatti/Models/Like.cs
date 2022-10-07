@@ -9,7 +9,6 @@ namespace Isolaatti.Models
         // public long Id { get; set; }
         public Guid LikeId { get; set; }
         
-        [ForeignKey("SimpleTextPost")]
         public long PostId { get; set; }
         public int UserId { get; set; }
         public int TargetUserId { get; set; }
