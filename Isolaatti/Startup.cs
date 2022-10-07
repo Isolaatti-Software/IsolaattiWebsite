@@ -74,14 +74,12 @@ namespace Isolaatti
                         Database = databaseUri.LocalPath.TrimStart('/')
                     };
                     options
-                        .UseNpgsql(connectionStringBuilder.ToString())
-                        .AddInterceptors(serviceProvider.GetRequiredService<SecondLevelCacheInterceptor>());
+                        .UseNpgsql(connectionStringBuilder.ToString());
                 }
                 else
                 {
                     options
-                        .UseNpgsql(Configuration.GetConnectionString("Database"))
-                        .AddInterceptors(serviceProvider.GetRequiredService<SecondLevelCacheInterceptor>());;
+                        .UseNpgsql(Configuration.GetConnectionString("Database"));
                 }
             });
             services.AddDbContext<MyKeysDbContext>(options =>
