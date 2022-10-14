@@ -21,16 +21,16 @@ Vue.component('post-template',{
     },
     computed: {
         profileLink: function () {
-            return `/perfil/${this.post.userId}`
+            return `/perfil/${this.post.post.userId}`
         },
         reportLink: function () {
-            return this.preview ? "#" : `/Reports/ReportPostOrComment?postId=${this.post.id}`;
+            return this.preview ? "#" : `/Reports/ReportPostOrComment?postId=${this.post.post.id}`;
         },
         openThreadLink: function () {
-            return this.preview ? "#" : `/pub/${this.post.id}`;
+            return this.preview ? "#" : `/pub/${this.post.post.id}`;
         },
         editPostLink: function () {
-            return this.preview ? "#" : `/editor?edit=True&postId=${this.post.id}`
+            return this.preview ? "#" : `/editor?edit=True&postId=${this.post.post.id}`
         },
         containerCssClass: function () {
             return this.cutContent ? "d-flex flex-column p-2 post post-cut-height" : "d-flex flex-column p-2 mt-3 post"
@@ -39,11 +39,11 @@ Vue.component('post-template',{
             return this.editable || this.deleteDialog ? "background-color: #f8f9fa; padding:0.2rem" : "";
         },
         squadUrl: function() {
-            if(this.renderPost.squadId === null) {
+            if(this.renderPost.post.squadId === null) {
                 return "";
             }
             
-            return `/squads/${this.renderPost.squadId}`;
+            return `/squads/${this.renderPost.post.squadId}`;
         }
     },
     watch: {
@@ -68,7 +68,7 @@ Vue.component('post-template',{
         like: async function (event) {
             if (this.preview) return;
 
-            const postId = this.renderPost.id;
+            const postId = this.renderPost.post.id;
             const requestData = {id: postId}
             const globalThis = this;
             event.target.disabled = true;
@@ -86,7 +86,7 @@ Vue.component('post-template',{
         unlike: async function (event) {
             if (this.preview) return;
 
-            const postId = this.renderPost.id;
+            const postId = this.renderPost.post.id;
             const requestData = {id: postId}
             const globalThis = this;
             event.target.disabled = true;
@@ -111,10 +111,10 @@ Vue.component('post-template',{
                 method: "POST",
                 headers: this.customHeaders,
                 body: JSON.stringify({
-                    id: this.renderPost.id
+                    id: this.renderPost.post.id
                 })
             }).then(function () {
-                events.$emit("postDeleted", that.renderPost.id);
+                events.$emit("postDeleted", that.renderPost.post.id);
             });
         },
         openDiscussion: function () {
@@ -135,18 +135,18 @@ Vue.component('post-template',{
         <div :class="containerCssClass">
           <div class="d-flex justify-content-between align-items-center">
             <div class="d-flex">
-              <img class="user-avatar" :src="getUserImageUrl(renderPost.userId)">
+              <img class="user-avatar" :src="getUserImageUrl(renderPost.post.userId)">
               <div class="d-flex flex-column ml-2">
                 <span class="user-name"><a :href="profileLink">{{ renderPost.userName }}</a> </span>
-                <span class="small" v-if="renderPost.squadId!==undefined">
+                <span class="small" v-if="renderPost.post.squadId!==undefined">
                   <a :href="squadUrl">{{ renderPost.squadName }}</a>
                 </span>
                 <div class="d-flex privacy-icon-container align-items-center">
-                  <i class="fa-solid fa-user" v-if="renderPost.privacy==1"></i>
-                  <i class="fa-solid fa-user-group" v-else-if="renderPost.privacy==2"></i>
-                  <i class="fa-solid fa-globe" v-else-if="renderPost.privacy==3"></i>
+                  <i class="fa-solid fa-user" v-if="renderPost.post.privacy==1"></i>
+                  <i class="fa-solid fa-user-group" v-else-if="renderPost.post.privacy==2"></i>
+                  <i class="fa-solid fa-globe" v-else-if="renderPost.post.privacy==3"></i>
                   <span class="ml-2">
-                    {{ new Date(renderPost.date).toLocaleString() }}
+                    {{ new Date(renderPost.post.date).toLocaleString() }}
                   </span>
                 </div>
               </div>
@@ -156,18 +156,18 @@ Vue.component('post-template',{
                 <i class="fas fa-ellipsis-h"></i>
               </button>
               <div class="dropdown-menu">
-                <a href="#" class="dropdown-item" v-if="renderPost.userId===this.userData.id" @click="editable=true">Editar</a>
+                <a href="#" class="dropdown-item" v-if="renderPost.post.userId===this.userData.id" @click="editable=true">Editar</a>
                 <a href="#modal-share-post" v-on:click="$emit('input',openThreadLink)" class="dropdown-item"
                    data-toggle="modal">Compartir</a>
-                <a href="#" class="dropdown-item" v-if="renderPost.userId===this.userData.id"
+                <a href="#" class="dropdown-item" v-if="renderPost.post.userId===this.userData.id"
                    v-on:click="deleteDialog=true">Eliminar</a>
                 <a :href="reportLink" class="dropdown-item" target="_blank" v-if="userData.id!==-1">Reportar</a>
               </div>
             </div>
           </div>
 
-          <audio-attachment :audio-id="renderPost.audioId" v-if="renderPost.audioId!==null"></audio-attachment>
-          <div class="mt-2 post-content" v-html="compileMarkdown(renderPost.textContent === null ? '' : renderPost.textContent)" ref="postContentContainer" @click="openDiscussion"></div>
+          <audio-attachment :audio-id="renderPost.post.audioId" v-if="renderPost.post.audioId!==null"></audio-attachment>
+          <div class="mt-2 post-content" v-html="compileMarkdown(renderPost.post.textContent === null ? '' : renderPost.post.textContent)" ref="postContentContainer" @click="openDiscussion"></div>
           <div class="d-flex justify-content-center">
             <button class="btn btn-primary btn-sm" v-on:click="showFullPost" v-if="cutContent">Mostrar todo</button>
           </div>
@@ -191,12 +191,12 @@ Vue.component('post-template',{
           </div>
         </div>
         <div v-if="!isFullPage && !preview && viewCommenter" class="d-flex flex-column">
-          <comments-viewer :post-id="post.id" :is-under-post="true"
+          <comments-viewer :post-id="post.post.id" :is-under-post="true"
                            :number-of-comments="post.numberOfComments"></comments-viewer>
         </div>
 
       </article>
-      <new-discussion v-else :mode="'modify'" :post-to-modify-id="post.id"
+      <new-discussion v-else :mode="'modify'" :post-to-modify-id="post.post.id"
                       @modified="updateFromModified"></new-discussion>
       </div>
     `,

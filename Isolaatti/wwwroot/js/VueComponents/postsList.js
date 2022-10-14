@@ -134,7 +134,7 @@ Vue.component("posts-list", {
           class="fa-solid fa-face-sad-cry"></i></p>
       <post-template v-for="post in posts" :post="post"
                      v-bind:preview="false"
-                     v-bind:key="post.id" v-on:delete="" @details="putPostDetails">
+                     v-bind:key="post.post.id" v-on:delete="" @details="putPostDetails">
       </post-template>
       <div v-if="loading" class="d-flex justify-content-center mt-2">
         <div class="spinner-border" role="status">

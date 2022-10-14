@@ -25,7 +25,7 @@ namespace Isolaatti.Models
         [JsonIgnore]
         public ICollection<Comment> Comments { get; set; }
         [JsonIgnore]
-        public Squad Squad { get; set; }
+        public virtual Squad Squad { get; set; }
 
         public Post()
         {

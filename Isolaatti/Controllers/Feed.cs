@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Isolaatti.Classes;
+using Isolaatti.DTOs;
 using Isolaatti.Models;
 using Isolaatti.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -62,15 +63,23 @@ namespace Isolaatti.Controllers
 
             postsQuery = postsQuery.Take(length);
 
-            postsQuery = from post in postsQuery
-                select post;
 
-            var posts = postsQuery.ToList();
+
+            var posts = from post in postsQuery
+                select new PostDto
+                {
+                    Post = post,
+                    UserName = Db.Users.FirstOrDefault(u => u.Id == post.Id).Name,
+                    NumberOfComments = post.Likes.Count,
+                    NumberOfLikes = post.Comments.Count,
+                    Liked = Db.Likes.Any(l => l.UserId == user.Id && l.PostId == post.Id),
+                    SquadName = post.Squad.Name
+                };
             
             
-            return Ok(new ContentListWrapper<Post>
+            return Ok(new ContentListWrapper<PostDto>
             {
-                Data = posts,
+                Data = posts.ToList(),
                 MoreContent = total > length
             });
         }

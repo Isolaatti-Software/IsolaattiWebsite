@@ -24,28 +24,34 @@
             audioMode: "none",
             posting: false,
             discussion: {
-                audioId: null,
-                textContent: "",
-                id: -1,
-                liked: false,
-                numberOfComments: 0,
+                post: {
+                    id: -1,
+                    textContent: "",
+                    userId: userData.id,
+                    privacy: 2,
+                    date: new Date(),
+                    audioId: null,
+                    squadId: null,
+                    linkedDiscussionId: null,
+                    linkedCommentId: null
+                },
                 numberOfLikes: 0,
-                privacy: 2,
-                date: new Date(),
-                userId: userData.id,
-                userName: userData.name
+                numberOfComments: 0,
+                userName: userData.name,
+                squadName: null,
+                liked: false
             }
         }
     },
     computed: {
         ableToPostDiscussion: function () {
-            return this.discussion.textContent.length >= 1;
+            return this.discussion.post.textContent.length >= 1;
         },
         uniqueDomIdForPreviewModal: function () {
-            return `modal-preview-post-${this.discussion.id}`;
+            return `modal-preview-post-${this.discussion.post.id}`;
         },
         uniqueDomIdForPrivacyModal: function () {
-            return `modal-privacy-post-${this.discussion.id}`;
+            return `modal-privacy-post-${this.discussion.post.id}`;
         }
     },
     methods: {
@@ -54,14 +60,14 @@
             this.posting = true;
             let endpointUrl = "/api/Posting/Make";
             let requestBody = {
-                privacy: that.discussion.privacy,
-                content: that.discussion.textContent,
-                audioId: that.discussion.audioId,
+                privacy: that.discussion.post.privacy,
+                content: that.discussion.post.textContent,
+                audioId: that.discussion.post.audioId,
                 squadId: that.squadId
             }
             if (this.mode === "modify") {
                 endpointUrl = "/api/Posting/Edit";
-                requestBody.postId = that.discussion.id;
+                requestBody.postId = that.discussion.post.id;
             }
 
 
@@ -77,7 +83,7 @@
             }
 
             let madePost = await response.json();
-            this.discussion.textContent = "";
+            this.discussion.post.textContent = "";
             this.posting = false;
             if (this.mode !== "modify")
                 events.$emit("posted", madePost);
@@ -143,12 +149,12 @@
         <audios-list-select v-on:audio-selected="setAudio"></audios-list-select>
       </div>
       <audio-attachment class="mt-2"
-                        :audio-id="discussion.audioId"
+                        :audio-id="discussion.post.audioId"
                         :can-remove="true"
-                        v-if="discussion.audioId!==null"
+                        v-if="discussion.post.audioId!==null"
                         v-on:remove="removeAudio"></audio-attachment>
 
-      <textarea class="mt-2 form-control" v-model="discussion.textContent"
+      <textarea class="mt-2 form-control" v-model="discussion.post.textContent"
                 placeholder="Escribe aqui el contenido para iniciar la discusión. Markdown es compatible."></textarea>
 
       <div class="d-flex justify-content-end mt-2">
@@ -169,7 +175,7 @@
               <button class="close" data-dismiss="modal">&times;</button>
             </div>
             <div class="modal-body">
-              <select class="custom-select w-100 custom-select-sm" v-model="discussion.privacy"
+              <select class="custom-select w-100 custom-select-sm" v-model="discussion.post.privacy"
                       title="Select privacy">
                 <option :value="1">Privado</option>
                 <option :value="2">Usuarios de Isolaatti</option>

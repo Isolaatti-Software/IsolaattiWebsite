@@ -1,4 +1,6 @@
-﻿namespace Isolaatti.Models.Dto;
+﻿using Isolaatti.Models;
+
+namespace Isolaatti.DTOs;
 
 public class PostDto
 {

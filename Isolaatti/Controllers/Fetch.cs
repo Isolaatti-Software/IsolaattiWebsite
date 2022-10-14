@@ -1,13 +1,10 @@
 using System;
-using System.IO;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Isolaatti.Classes;
 using Isolaatti.Classes.ApiEndpointsRequestDataModels;
-using Isolaatti.Classes.ApiEndpointsResponseDataModels;
 using Isolaatti.Models;
-using Isolaatti.Models.Dto;
+using Isolaatti.DTOs;
 using Isolaatti.Repositories;
 using Isolaatti.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -200,32 +197,39 @@ namespace Isolaatti.Controllers
             });
         }
 
-        // [HttpGet]
-        // [Route("Post/{postId:long}/Comments")]
-        // public async Task<IActionResult> GetComments([FromHeader(Name = "sessionToken")] string sessionToken,
-        //     long postId, long lastId = long.MinValue, int take = 10)
-        // {
-        //     var user = await _accounts.ValidateToken(sessionToken);
-        //     if (user == null) return Unauthorized("Token is not valid");
-        //
-        //     var post = await _db.SimpleTextPosts.FindAsync(postId);
-        //     if (post == null || (post.Privacy == 1 && post.UserId != user.Id))
-        //         return Unauthorized("post does not exist or is private");
-        //
-        //     IQueryable<Comment> comments = _db.Comments
-        //         .Where(comment => comment.SimpleTextPostId.Equals(post.Id) && comment.Id > lastId)
-        //         .OrderBy(c => c.Id);
-        //
-        //     var total = await comments.CountAsync();
-        //
-        //     var commentsList = comments.Take(take).Select(co => co.SetUserName(_accounts.GetUsernameFromId(co.WhoWrote))).ToList();
-        //
-        //     return Ok(new ContentListWrapper<Comment>
-        //     {
-        //         Data = commentsList,
-        //         MoreContent = total > commentsList.Count
-        //     });
-        // }
+        [HttpGet]
+        [Route("Post/{postId:long}/Comments")]
+        public async Task<IActionResult> GetComments([FromHeader(Name = "sessionToken")] string sessionToken,
+            long postId, long lastId = long.MinValue, int take = 10)
+        {
+            var user = await _accounts.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
+        
+            var post = await _db.SimpleTextPosts.FindAsync(postId);
+            if (post == null || (post.Privacy == 1 && post.UserId != user.Id))
+                return Unauthorized("post does not exist or is private");
+        
+            IQueryable<Comment> comments = _db.Comments
+                .Where(comment => comment.PostId.Equals(post.Id) && comment.Id > lastId)
+                .OrderBy(c => c.Id);
+        
+            var total = await comments.CountAsync();
+        
+            var commentsList = comments
+                .Take(take)
+                .Select(co => 
+                    new CommentDto { 
+                        Comment = co, 
+                        Username = _db.Users.FirstOrDefault(u => u.Id == co.UserId).Name 
+                    })
+                .ToList();
+        
+            return Ok(new ContentListWrapper<CommentDto>
+            {
+                Data = commentsList,
+                MoreContent = total > commentsList.Count
+            });
+        }
 
         [HttpGet]
         [Route("Comments/{commentId:long}")]
@@ -238,7 +242,11 @@ namespace Isolaatti.Controllers
             var comment = await _db.Comments.FindAsync(commentId);
             if (comment == null) return NotFound();
 
-            return Ok(comment);
+            return Ok(new CommentDto
+            {
+                Comment = comment,
+                Username = _db.Users.FirstOrDefault(u => u.Id == comment.UserId)?.Name
+            });
         }
 
         [HttpGet]
@@ -297,12 +305,15 @@ namespace Isolaatti.Controllers
             var user = await _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
-            var images = _db.ProfileImages.Where(image => image.UserId == userId).Select(i => new
-            {
-                imageId = i.Id,
-                relativeUrl = $"/api/Fetch/ProfileImages/{i.Id}.png",
-                webEndPoint = $"/imagen/{i.Id}"
-            }).ToList();
+            var images = _db.ProfileImages
+                    .Where(image => image.UserId == userId)
+                    .Select(i => new 
+                    {
+                        imageId = i.Id,
+                        relativeUrl = $"/api/Fetch/ProfileImages/{i.Id}.png",
+                        webEndPoint = $"/imagen/{i.Id}"
+                    })
+                    .ToList();
 
             return Ok(images);
         }

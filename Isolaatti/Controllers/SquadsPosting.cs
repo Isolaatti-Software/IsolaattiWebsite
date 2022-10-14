@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Isolaatti.Classes;
-using Isolaatti.Classes.ApiEndpointsResponseDataModels;
+using Isolaatti.DTOs;
 using Isolaatti.Models;
 using Isolaatti.Repositories;
 using Isolaatti.Services;
@@ -67,14 +67,21 @@ public class SquadsPosting : ControllerBase
 
         var total = posts.Count();
         posts = posts.Take(length);
-        posts = from post in posts
-            select post;
-        var feed = posts.ToList();
+        var feed = from post in posts
+            select new PostDto
+            {
+                Post = post,
+                UserName = _db.Users.FirstOrDefault(u => u.Id == post.Id).Name,
+                NumberOfComments = post.Likes.Count,
+                NumberOfLikes = post.Comments.Count,
+                Liked = _db.Likes.Any(l => l.UserId == user.Id && l.PostId == post.Id),
+                SquadName = post.Squad.Name
+            };
         
         
-        return Ok(new ContentListWrapper<Post>
+        return Ok(new ContentListWrapper<PostDto>
         {
-            Data = feed,
+            Data = feed.ToList(),
             MoreContent = total > length
         });
     }

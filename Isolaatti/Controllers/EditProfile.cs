@@ -1,9 +1,6 @@
 using System;
-using System.Drawing;
 using System.IO;
-using System.Text.Json;
 using System.Threading.Tasks;
-using Isolaatti.Classes;
 using Isolaatti.Classes.ApiEndpointsRequestDataModels;
 using Isolaatti.Models;
 using Isolaatti.Repositories;
@@ -69,7 +66,10 @@ namespace Isolaatti.Controllers
             [FromForm] IFormFile file)
         {
             var user = await _accounts.ValidateToken(sessionToken);
-            if (user == null) return Unauthorized("Token is not valid");
+            if (user == null)
+            {
+                return Unauthorized("Token is not valid");
+            }
 
             var stream = new MemoryStream();
             await file.CopyToAsync(stream);
