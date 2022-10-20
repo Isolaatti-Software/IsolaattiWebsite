@@ -1,4 +1,6 @@
-﻿Vue.component('profile-image-maker', {
+﻿
+
+Vue.component('profile-image-maker', {
     data: function () {
         return {
             customHeaders: customHttpHeaders,
@@ -7,7 +9,10 @@
             canvasContext: undefined,
             loadingComponent: true,
             uploading: false,
-            ableToUpload: false
+            ableToUpload: false,
+            
+            userData: userData,
+            mode: "upload" // or existing
         }
     },
     methods: {
@@ -24,7 +29,7 @@
         uploadImage: async function () {
             this.uploading = true;
             const that = this;
-            this.$refs.canvasForRendering.toBlob(async function (blob) {
+            document.getElementById("previewProfilePicture").toBlob(async function (blob) {
 
                 const formData = new FormData();
                 formData.append("file", blob);
@@ -43,10 +48,10 @@
         }
     },
     mounted: function () {
-        this.canvasContext = this.$refs.canvasForRendering.getContext("2d");
+        this.canvasContext = document.getElementById("previewProfilePicture").getContext("2d");
         this.loadingComponent = false;
         const that = this;
-        this.imageForPreview.addEventListener("load", function () {
+        this.imageForPreview.addEventListener("load", function() {
             that.ableToUpload = true;
 
             // horizontal
@@ -68,22 +73,37 @@
     },
     template: `
     <div>
-    <section v-show="loadingComponent">
-      Cargando...
-    </section>
-    <section v-show="!loadingComponent">
-      <div class="d-flex justify-content-center mb-2">
-        <canvas width="120" height="120" id="previewProfilePicture" ref="canvasForRendering"></canvas>
-      </div>
-      <div class="custom-file">
-        <input type="file" class="custom-file-input" accept="image/*" @input="onFileLoaded" id="profilePictureLoadFormElement">
-        <label class="custom-file-label text-ellipsis" for="profilePictureLoadFormElement">{{filename}}</label>
-      </div>
-      <div class="d-flex justify-content-end mt-2">
-        <span v-if="uploading" class="mr-auto">Subiendo...</span>
-        <button type="button" class="btn btn-primary" @click="uploadImage" :disabled="!ableToUpload || uploading">Subir</button>
-      </div>
-    </section>
+    <div class="btn-group w-100">
+        <button class="btn" 
+            :class="[mode==='upload' ? 'btn-primary' : 'btn-light']"
+            @click="mode='upload'">
+            Subir
+        </button>
+        <button class="btn" 
+            :class="[mode==='existing' ? 'btn-primary' : 'btn-light']"
+            @click="mode='existing'">
+            Existente
+        </button>
+    </div>
+    <div v-show="mode==='upload'">
+        <section v-show="loadingComponent">
+            Cargando...
+        </section>
+        <section v-show="!loadingComponent">
+          <div class="d-flex justify-content-center mb-2">
+            <canvas width="120" height="120" id="previewProfilePicture"></canvas>
+          </div>
+          <div class="custom-file">
+            <input type="file" class="custom-file-input" accept="image/*" @input="onFileLoaded" id="profilePictureLoadFormElement">
+            <label class="custom-file-label text-ellipsis" for="profilePictureLoadFormElement">{{filename}}</label>
+          </div>
+          <div class="d-flex justify-content-end mt-2">
+            <span v-if="uploading" class="mr-auto">Subiendo...</span>
+            <button type="button" class="btn btn-primary" @click="uploadImage" :disabled="!ableToUpload || uploading">Subir</button>
+          </div>
+        </section>
+    </div>
+    <profile-images v-show="mode==='existing'" :user-id="userData.id" :is-for-select="true"></profile-images>
     </div>
     `
 })

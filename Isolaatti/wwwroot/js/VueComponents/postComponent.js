@@ -78,10 +78,10 @@ Vue.component('post-template',{
                 body: JSON.stringify(requestData),
             });
 
-            response.json().then(function (res) {
-                globalThis.renderPost = res;
-                event.target.disabled = false;
-            });
+            const likeDto = await response.json();
+            this.renderPost.numberOfLikes = likeDto.likesCount;
+            this.renderPost.liked = true;
+            event.target.disabled = false;
         },
         unlike: async function (event) {
             if (this.preview) return;
@@ -96,10 +96,10 @@ Vue.component('post-template',{
                 body: JSON.stringify(requestData),
             });
 
-            response.json().then(function (res) {
-                globalThis.renderPost = res;
-                event.target.disabled = false;
-            });
+            const likeDto = await response.json();
+            this.renderPost.numberOfLikes = likeDto.likesCount;
+            event.target.disabled = false;
+            this.renderPost.liked = false;
         },
         updateFromModified: function (feedPost) {
             this.renderPost = feedPost;
@@ -173,7 +173,7 @@ Vue.component('post-template',{
           </div>
           <div class="d-flex justify-content-end">
             <button class="btn btn-transparent mr-auto btn-sm" data-toggle="modal" data-target="#modal-post-info" 
-                    @click="$emit('details', post)"><i class="fa-solid fa-info"></i> </button>
+                    @click="$emit('details', post.post)"><i class="fa-solid fa-info"></i> </button>
             <div class="btn-group btn-group-sm" v-if="userData.id!==-1">
 
               <button class="btn btn-transparent" @click="viewCommenter = !viewCommenter" :class="{'text-primary-lighter':viewCommenter}">

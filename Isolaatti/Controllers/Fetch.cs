@@ -147,8 +147,8 @@ namespace Isolaatti.Controllers
                 {
                     Post = post,
                     UserName = u.Name,
-                    NumberOfComments = post.Likes.Count,
-                    NumberOfLikes = post.Comments.Count,
+                    NumberOfComments = post.Comments.Count,
+                    NumberOfLikes = post.Likes.Count,
                     Liked = _db.Likes.Any(l => l.UserId == user.Id && l.PostId == post.Id),
                     SquadName = post.Squad.Name
                 };
@@ -170,13 +170,30 @@ namespace Isolaatti.Controllers
             var user = await _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
-            var post = await _db.SimpleTextPosts.FindAsync(postId);
-            if (post == null || (post.Privacy == 1 && post.UserId != user.Id)) return NotFound("post not found");
+            var postExists = await _db.SimpleTextPosts.AnyAsync(p => p.Id == postId);
+            if (!postExists)
+            {
+                return NotFound("post not found");
+            }
+
+            var post = _db.SimpleTextPosts
+                .Where(p => p.Id == postId)
+                .Select(p => new PostDto
+                {
+                    Post = p,
+                    UserName = p.User.Name,
+                    NumberOfComments = p.Comments.Count,
+                    NumberOfLikes = p.Likes.Count,
+                    Liked = _db.Likes.Any(l => l.UserId == user.Id && l.PostId == p.Id),
+                    SquadName = p.Squad.Name
+                })
+                .FirstOrDefault();
+            
 
             // This post seems to be from a Squad, let's verify user is authorized to see it
-            if (post.SquadId != null)
+            if (post!.Post.SquadId != null) // at this point post should not be null
             {
-                if (!await _squads.UserBelongsToSquad(user.Id, post.SquadId.Value))
+                if (!await _squads.UserBelongsToSquad(user.Id, post.Post.SquadId.Value))
                 {
                     return Unauthorized(new
                     {
@@ -186,15 +203,7 @@ namespace Isolaatti.Controllers
             }
             
             
-            return Ok(new PostDto
-            {
-                Post = post,
-                UserName = post.User.Name,
-                // NumberOfComments = post.Likes.Count,
-                // NumberOfLikes = post.Comments.Count,
-                // Liked = _db.Likes.Any(l => l.UserId == user.Id && l.PostId == post.Id),
-                // SquadName = _squads.GetSquadName(post.SquadId)
-            });
+            return Ok(post);
         }
 
         [HttpGet]

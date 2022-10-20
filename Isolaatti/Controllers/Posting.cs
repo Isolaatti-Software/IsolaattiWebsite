@@ -76,9 +76,9 @@ namespace Isolaatti.Controllers
             {
                 Post = newPost,
                 UserName = _db.Users.FirstOrDefault(u => u.Id == newPost.UserId)?.Name,
-                NumberOfComments = newPost.Likes.Count,
-                NumberOfLikes = newPost.Comments.Count,
-                Liked = _db.Likes.Any(l => l.UserId == user.Id && l.PostId == newPost.Id),
+                NumberOfComments = 0,
+                NumberOfLikes = 0,
+                Liked = false,
                 SquadName = newPost.Squad?.Name
             });
         }
@@ -206,10 +206,12 @@ namespace Isolaatti.Controllers
             //     });
             //     
             // }
-        
-            // commentToMake.UserName = user.Name;
-            // await _notificationSender.SendUpdateEvent(commentToMake);
-            return Ok(commentToMake);
+            await _notificationSender.SendNewCommentEvent(new CommentDto
+            {
+                Comment = commentToMake,
+                Username = _db.Users.FirstOrDefault(u => u.Id == commentToMake.UserId)?.Name
+            });
+            return Ok();
         }
     }
 }

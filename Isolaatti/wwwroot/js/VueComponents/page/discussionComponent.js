@@ -14,6 +14,11 @@
             layout: {
                 isFluid: false,
                 showCommentsRight: true
+            },
+
+            postDetails: {
+                post: undefined,
+                usersWhoLiked: []
             }
         }
     },
@@ -26,12 +31,30 @@
                     that.loading = false;
                 })
             })
+        },
+        putPostDetails: async function (post) {
+            this.postDetails.post = post;
+
+
+            const response = await fetch(`/api/Fetch/Post/${post.id}/LikedBy`, {
+                headers: this.customHeaders
+            });
+            this.postDetails.usersWhoLiked = await response.json();
+        },
+        userProfileLink: function (userId) {
+            return `/perfil/${userId}`;
+        },
+        profilePictureUrl: function (imageId) {
+            if (imageId === null) {
+                return "/res/imgs/user-solid.png";
+            }
+            return `/api/Fetch/ProfileImages/${imageId}.png`;
         }
     },
     mounted: async function () {
         await this.fetchPost();
         socket.emit("subscribe-scope", {
-            type: "post",
+            type: "new_comment",
             id: this.postId
         });
     },
@@ -70,17 +93,40 @@
                 <post-template v-if="post!==undefined"
                                :post="post"
                                :key="postId"
+                               @details="putPostDetails"
                                :is-full-page="true">
                 </post-template>
           
               </div>
               <div :class="{'col-md-6': layout.showCommentsRight}">
                 <div class="d-flex flex-column ml-4">
-                  <comments-viewer :post-id="postId" :is-under-post="false"></comments-viewer>
+                  <comments-viewer v-if="post!==undefined" :post-id="postId" :is-under-post="false" :numberOfComments="post.numberOfComments"></comments-viewer>
                 </div>
               </div>
             </div>
           </div>
+          
+          <div class="modal" id="modal-post-info">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Detalles</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <h6>Personas que dieron like</h6>
+              <div class="list-group list-group-flush">
+                <a class="list-group-item list-group-item-action" v-for="user in postDetails.usersWhoLiked" :href="userProfileLink(user.id)">
+                  <img class="user-avatar" :src="profilePictureUrl(user.profileImageId)">
+                  <span>{{user.name}}</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
         </section>
     `
 }

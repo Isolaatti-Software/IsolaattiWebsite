@@ -23,6 +23,7 @@
             selectionEnd: 0,
             audioMode: "none",
             posting: false,
+            showPreview: false,
             discussion: {
                 post: {
                     id: -1,
@@ -49,9 +50,6 @@
         },
         uniqueDomIdForPreviewModal: function () {
             return `modal-preview-post-${this.discussion.post.id}`;
-        },
-        uniqueDomIdForPrivacyModal: function () {
-            return `modal-privacy-post-${this.discussion.post.id}`;
         }
     },
     methods: {
@@ -128,7 +126,7 @@
       </div>
 
       <div class="btn-group btn-group-sm mb-1">
-        <button class="btn btn-light" :data-target="'#' + uniqueDomIdForPreviewModal" data-toggle="modal">
+        <button class="btn" :class="[showPreview ? 'btn-primary' : 'btn-light']" @click="showPreview=!showPreview">
           <i class="fa-solid fa-eye"></i> Vista previa
         </button>
       </div>
@@ -148,6 +146,9 @@
         </div>
         <audios-list-select v-on:audio-selected="setAudio"></audios-list-select>
       </div>
+      
+      <post-template v-if="showPreview" :post="discussion" :preview="true"></post-template>
+      
       <audio-attachment class="mt-2"
                         :audio-id="discussion.post.audioId"
                         :can-remove="true"
@@ -164,36 +165,6 @@
         <div v-else class="d-flex align-items-center mt-1">
           <div class="spinner-border mr-1" role="status">
             <span class="sr-only">Publicando...</span>
-          </div>
-        </div>
-      </div>
-      <div class="modal" :id="uniqueDomIdForPrivacyModal">
-        <div class="modal-dialog modal-dialog-centered">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title">Privacidad</h5>
-              <button class="close" data-dismiss="modal">&times;</button>
-            </div>
-            <div class="modal-body">
-              <select class="custom-select w-100 custom-select-sm" v-model="discussion.post.privacy"
-                      title="Select privacy">
-                <option :value="1">Privado</option>
-                <option :value="2">Usuarios de Isolaatti</option>
-                <option :value="3">Todos</option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="modal" :id="uniqueDomIdForPreviewModal">
-        <div class="modal-dialog modal-dialog-centered">
-          <div class="modal-content">
-            <div class="modal-header">
-              <div class="modal-title">Vista previa</div>
-            </div>
-            <div class="modal-body">
-              <post-template :post="discussion" :preview="true"></post-template>
-            </div>
           </div>
         </div>
       </div>

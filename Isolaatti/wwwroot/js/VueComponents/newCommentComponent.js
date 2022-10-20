@@ -20,29 +20,33 @@
             userData: userData,
             tool: "none",
             posting: false,
-            comment: {
-                id: -1,
-                content: "",
-                authorId: userData.id,
-                authorName: userData.name,
-                postId: -1,
-                targetUserId: 1,
-                privacy: 1,
-                audioId: null,
-                timeStamp: new Date()
+            commentDto: {
+                comment: {
+                    id: -1,
+                    textContent: "",
+                    userId: 1,
+                    postId: this.postToComment,
+                    targetUser: 1,
+                    audioId: null,
+                    linkedCommentId: null,
+                    linkedDiscussionId: null,
+                    responseForCommentId: null,
+                    date: new Date()
+                },
+                username: userData.name
             }
         }
     },
     computed: {
         ableToPostDiscussion: function () {
-            return this.comment.content.length >= 1;
+            return this.commentDto.comment.textContent.length >= 1;
         },
         uniqueDomIdForPreviewModal: function () {
-            return `modal-preview-comment-${this.comment.id}`;
+            return `modal-preview-comment-${this.commentDto.comment.id}`;
         }
     },
     methods: {
-        postComment: function () {
+        postComment: async function () {
             const that = this;
             this.posting = true;
 
@@ -52,35 +56,19 @@
                 url = `/api/Comment/${this.commentToEdit}/Edit`;
             }
 
-            fetch(url, {
+            await fetch(url, {
                 method: "POST",
                 headers: this.customHeaders,
                 body: JSON.stringify({
-                    content: this.comment.content,
-                    audioId: this.comment.audioId,
-                    privacy: this.comment.privacy
+                    content: this.comment.textContent,
+                    audioId: this.comment.audioId
                 })
-            }).then(res => res.json()).then(function (postedComment) {
-                that.posting = false;
-                that.comment = {
-                    id: -1,
-                    content: "",
-                    authorId: userData.id,
-                    authorName: userData.name,
-                    postId: -1,
-                    targetUserId: 1,
-                    privacy: 1,
-                    audioId: null,
-                    timeStamp: new Date()
-                };
-                if (that.mode === "modify") {
-                    events.$emit("commentEdited", postedComment);
-                    that.$emit("commentEdited");
-                } else {
-                    that.$emit("commented", postedComment);
-                }
-
             });
+
+            this.commentDto.textContent = "";
+            this.commentDto.date = new Date();
+            
+            this.posting = false;
         },
         audioPosted: function (id) {
             this.comment.audioId = id;
@@ -90,7 +78,7 @@
             this.comment.audioId = null;
         },
         setAudio: function (audioId) {
-            this.comment.audioId = audioId;
+            this.comment.comment.audioId = audioId;
         }
     },
     mounted: function () {
@@ -142,15 +130,15 @@
         <div class="d-flex justify-content-end">
           <button class="btn btn-light btn-sm close" v-on:click="tool='none'">&times;</button>
         </div>
-        <comment :comment="comment" :in-preview="true"></comment>
+        <comment :comment="commentDto" :in-preview="true"></comment>
       </div>
       <audio-attachment class="mt-2"
-                        :audio-id="comment.audioId"
+                        :audio-id="commentDto.comment.audioId"
                         :can-remove="true"
-                        v-if="comment.audioId!==null"
+                        v-if="commentDto.comment.audioId!==null"
                         v-on:remove="removeAudio"></audio-attachment>
 
-      <textarea class="mt-2 form-control" v-model="comment.content"
+      <textarea class="mt-2 form-control" v-model="commentDto.comment.textContent"
                 placeholder="Escribe aquí el contenido para el comentario. Markdown es compatible."></textarea>
 
       <div class="d-flex justify-content-end mt-2">

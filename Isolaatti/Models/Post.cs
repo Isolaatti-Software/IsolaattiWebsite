@@ -21,9 +21,9 @@ namespace Isolaatti.Models
         [JsonIgnore]
         public User User { get; set; }
         [JsonIgnore]
-        public ICollection<Like> Likes { get; set; }
+        public virtual ICollection<Like> Likes { get; set; }
         [JsonIgnore]
-        public ICollection<Comment> Comments { get; set; }
+        public virtual ICollection<Comment> Comments { get; set; }
         [JsonIgnore]
         public virtual Squad Squad { get; set; }
 

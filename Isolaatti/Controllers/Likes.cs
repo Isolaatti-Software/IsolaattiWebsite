@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Isolaatti.Classes.ApiEndpointsRequestDataModels;
+using Isolaatti.DTOs;
 using Isolaatti.Models;
 using Isolaatti.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -43,7 +44,11 @@ namespace Isolaatti.Controllers
             await _db.SaveChangesAsync();
             
             
-            return Ok(post);
+            return Ok(new LikeDto
+            {
+                PostId = post.Id,
+                LikesCount = post.Likes.Count
+            });
         }
 
         [HttpPost]
@@ -63,7 +68,11 @@ namespace Isolaatti.Controllers
             _db.Likes.Remove(like);
             await _db.SaveChangesAsync();
 
-            return Ok(post);
+            return Ok(new LikeDto
+            {
+                PostId = post.Id,
+                LikesCount = post.Likes.Count
+            });
         }
     }
 }

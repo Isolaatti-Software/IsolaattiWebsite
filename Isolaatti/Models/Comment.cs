@@ -14,10 +14,10 @@ namespace Isolaatti.Models
         public string AudioId { get; set; }
         public DateTime Date { get; set; }
         
-        [JsonIgnore]
-        public User User { get; set; }
-        [JsonIgnore]
-        public Post Post { get; set; }
+        // [JsonIgnore]
+        // public virtual User User { get; set; }
+        // [JsonIgnore]
+        // public virtual Post Post { get; set; }
 
         // Response in the same discussion
         public long? ResponseForCommentId { get; set; }

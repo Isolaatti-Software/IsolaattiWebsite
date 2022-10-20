@@ -238,7 +238,7 @@
             this.following.usersFollowing = await response.json();
         },
         onImageUpdated: function (imageId) {
-            this.profile.profilePictureId = imageId;
+            this.profile.profileImageId = imageId;
             $('#modal-edit-photo').modal('hide');
         },
         onAudioPosted: async function (audioId) {
@@ -482,7 +482,7 @@
       </div>
 
       <!-- Modal to select what to edit (photo or description)-->
-      <div class="modal fade" id="modal-edit-photo" v-if="profile?.isUserItself">
+      <div class="modal" id="modal-edit-photo" v-if="profile?.isUserItself">
         <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
           <div class="modal-content">
             <div class="modal-header">

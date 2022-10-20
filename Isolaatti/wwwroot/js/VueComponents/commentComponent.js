@@ -29,9 +29,6 @@ Vue.component('comment', {
         containerCssClass: function () {
             return this.cutContent ? "post d-flex flex-column p-2 post-cut-height" : "post d-flex flex-column p-2"
         },
-        titleAtr: function () {
-            return `id del comentario: ${this.comment.id}`
-        },
         rootContainerCss: function () {
             return this.edit || this.deleteMode ? "background-color: #f8f9fa; padding:0.2rem" : "";
         }
@@ -76,13 +73,13 @@ Vue.component('comment', {
       </section>
       <article v-if="!edit" class="d-flex align-items-center">
         <div class="comments-start-line"></div>
-        <div :class="containerCssClass" :title="titleAtr">
+        <div :class="containerCssClass">
           <div class="d-flex justify-content-between align-items-center">
             <div class="d-flex">
-              <img class="user-avatar" :src="getUserImageUrl(comment.authorId)">
+              <img class="user-avatar" :src="getUserImageUrl(comment.comment.userId)">
               <div class="d-flex flex-column ml-2">
-                <span class="user-name"><a :href="profileLink">{{ comment.authorName }}</a> </span>
-                <span>{{ new Date(comment.timeStamp).toLocaleString() }}</span>
+                <span class="user-name"><a :href="profileLink">{{ comment.username }}</a> </span>
+                <span>{{ new Date(comment.comment.date).toLocaleString() }}</span>
               </div>
             </div>
             <div class="dropdown dropleft" v-if="userData.id!==-1">
@@ -90,23 +87,23 @@ Vue.component('comment', {
                 <i class="fas fa-ellipsis-h"></i>
               </button>
               <div class="dropdown-menu">
-                <a href="#" class="dropdown-item" v-if="comment.authorId===this.userData.id"
+                <a href="#" class="dropdown-item" v-if="comment.comment.userId===this.userData.id"
                    @click="edit=true">Editar</a>
-                <a href="#" class="dropdown-item" v-if="comment.authorId===this.userData.id"
+                <a href="#" class="dropdown-item" v-if="comment.comment.userId===this.userData.id"
                    v-on:click="deleteMode=true">Eliminar</a>
                 <a :href="reportLink" class="dropdown-item" target="_blank">Reportar</a>
               </div>
             </div>
           </div>
-          <audio-attachment v-if="comment.audioId!==null" :audio-id="comment.audioId"></audio-attachment>
-          <div class="mt-2 post-content" v-html="compileMarkdown(comment.content)" ref="commentContentContainer"></div>
+          <audio-attachment v-if="comment.comment.audioId!==null" :audio-id="comment.comment.audioId"></audio-attachment>
+          <div class="mt-2 post-content" v-html="compileMarkdown(comment.comment.textContent)" ref="commentContentContainer"></div>
           <div class="d-flex justify-content-center">
             <button class="btn btn-primary " v-on:click="showFullPost" v-if="cutContent">Mostrar todo</button>
           </div>
         </div>
       </article>
       <section v-else>
-        <new-comment :post-to-comment="comment.postId" :mode="'modify'" :comment-to-edit="comment.id"
+        <new-comment :post-to-comment="comment.comment.id" :mode="'modify'" :comment-to-edit="comment.comment.id"
                      @commentEdited="edit=false"></new-comment>
       </section>
       </div>

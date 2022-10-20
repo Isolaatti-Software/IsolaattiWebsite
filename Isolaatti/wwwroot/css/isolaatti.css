@@ -545,7 +545,9 @@ footer#footer > a, footer#footer > span {
 .isolaatti-card {
   box-shadow: rgba(225, 225, 225, 0.2) 0px 48px 100px 0px;
   border-radius: 30px;
-  background-color: white;
+  background-color: #fafafa;
   padding: 1rem;
 }
-
+.primary-border-2px {
+  border: 2px solid var(--primary);
+}

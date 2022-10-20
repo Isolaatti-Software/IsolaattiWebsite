@@ -74,7 +74,7 @@
     template: `
       <section id="posts-deposit" class="d-flex flex-column pt-1 mt-2 mb-3 align-items-center posts-deposit">
       <post-template v-for="post in posts" :post="post"
-                     v-bind:key="post.id" @details="putPostDetails">
+                     v-bind:key="post.post.id" @details="putPostDetails">
       </post-template>
       <div v-if="loading" class="d-flex justify-content-center mt-2">
         <div class="spinner-border" role="status">
