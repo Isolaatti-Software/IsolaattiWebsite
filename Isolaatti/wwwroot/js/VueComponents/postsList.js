@@ -80,7 +80,8 @@ Vue.component("posts-list", {
         },
         reloadPosts: async function (event) {
             this.posts = [];
-            await this.fetchPosts(-1, event);
+            this.lastId = -1;
+            await this.fetchPosts(event);
         },
         concatPost: function (post) {
             this.posts = [post].concat(this.posts);

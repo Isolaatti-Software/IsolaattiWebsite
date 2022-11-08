@@ -551,3 +551,15 @@ footer#footer > a, footer#footer > span {
 .primary-border-2px {
   border: 2px solid var(--primary);
 }
+.image-selected {
+  background-color:rgba(0,0,0,0.6);
+  color: white; 
+  left: 0; 
+  top: 0; 
+  bottom: 0; 
+  right: 0; 
+  position: absolute; 
+  display: flex; 
+  justify-content: center; 
+  align-items: center
+}
