@@ -15,6 +15,7 @@ public class SquadJoinRequest
     public int SenderUserId { get; set; }
     public string Message { get; set; }
     public string ResponseMessage { get; set; }
+    public bool Seen { get; set; }
     public DateTime CreationDate { get; set; }
     public SquadInvitationStatus JoinRequestStatus { get; set; }
 }

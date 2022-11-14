@@ -116,7 +116,11 @@
           </div>
         </template>
         <template v-else>
+          <div class="d-flex">
+            <button class="btn btn-light btn-sm" @click="toggleSquadImageEdition"><i class="fa-solid fa-arrow-left"></i></button>
+          </div>
           <h3>Cambiar imagen del squad</h3>
+          
           <profile-image-maker/>
         </template>
       </div>

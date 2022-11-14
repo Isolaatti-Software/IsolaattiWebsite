@@ -1,6 +1,13 @@
 ﻿
 
 Vue.component('profile-image-maker', {
+    props: {
+        // Pass this property in case you want to show squad images instead user's images
+        squadId: {
+            required: false,
+            default: null
+        }
+    },
     data: function () {
         return {
             customHeaders: customHttpHeaders,

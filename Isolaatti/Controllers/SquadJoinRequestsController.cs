@@ -238,4 +238,28 @@ public class SquadJoinRequestsController : ControllerBase
             squadName = _squadsRepository.GetSquadName(request.SquadId)
         }));
     }
+    /// <summary>
+    /// Endpoint that returns the join requests the user has received in the squads this admins
+    /// </summary>
+    /// <param name="sessionToken">Auth token</param>
+    /// <param name="lastId">Last join request served id for pagination.</param>
+    /// <returns></returns>
+    
+    [HttpGet]
+    [Route("JoinRequestsForMe")]
+    public async Task<IActionResult> ListRequestsMadeForUser([FromHeader(Name = "sessionToken")] string sessionToken, 
+        string lastId = null)
+    {
+        var user = await _accounts.ValidateToken(sessionToken);
+        if(user == null) return Unauthorized("Token is not valid");
+
+        var joinRequests = await _joinRequestsRepository.GetJoinRequestsForUser(user.Id, lastId);
+        
+        return Ok(joinRequests.Select(request => new
+        {
+            request,
+            username = _accounts.GetUsernameFromId(request.SenderUserId),
+            squadName = _squadsRepository.GetSquadName(request.SquadId)
+        }));
+    }
 }

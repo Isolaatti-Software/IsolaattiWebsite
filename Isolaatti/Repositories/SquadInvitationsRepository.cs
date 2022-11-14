@@ -153,4 +153,9 @@ public class SquadInvitationsRepository
             .Limit(20)
             .ToListAsync();
     }
+
+    public async Task<long> GetUnseenInvitationsForUser(int userId)
+    {
+        return await _invitations.Find(inv => inv.RecipientUserId == userId && !inv.Seen).CountDocumentsAsync();
+    }
 }

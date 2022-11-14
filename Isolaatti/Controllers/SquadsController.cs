@@ -200,7 +200,7 @@ public class SquadsController : ControllerBase
         var user = await _accounts.ValidateToken(sessionToken);
         if(user == null) return Unauthorized("Token is not valid");
 
-        return Ok(await _squadsRepository.GetSquadsUserAdmins(user.Id, lastId));
+        return Ok(await _squadsRepository.GetSquadsUserAdmins(user.Id, lastId).ToListAsync());
     }
 
     [HttpGet]

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Isolaatti.Enums;
 using Isolaatti.Models.MongoDB;
@@ -13,13 +14,15 @@ public class SquadJoinRequestsRepository
 {
     private readonly IMongoCollection<SquadJoinRequest> _joinRequests;
     private readonly MongoDatabaseConfiguration _settings;
+    private readonly SquadsRepository _squads;
     
-    public SquadJoinRequestsRepository(IOptions<MongoDatabaseConfiguration> settings)
+    public SquadJoinRequestsRepository(IOptions<MongoDatabaseConfiguration> settings, SquadsRepository squads)
     {
         _settings = settings.Value;
         var client = new MongoClient(_settings.ConnectionString);
         var database = client.GetDatabase(_settings.DatabaseName);
         _joinRequests = database.GetCollection<SquadJoinRequest>(_settings.SquadsJoinRequestsCollectionName);
+        _squads = squads;
     }
 
     public async Task CreateJoinRequest(Guid squadId, int senderUserId, string message)
@@ -109,9 +112,42 @@ public class SquadJoinRequestsRepository
             .ToListAsync();
     }
 
+    /// <summary>
+    /// Returns the join requests a given user has received in all of the squads this admins
+    /// Returns a up to 20 item enumerable. To get the next page pass the last id.
+    /// </summary>
+    /// <returns>IEnumerable<see cref="SquadJoinRequest"/></returns>
+    public async Task<IEnumerable<SquadJoinRequest>> GetJoinRequestsForUser(int userId, string lastId = null)
+    {
+        // As join requests don't store the userId of the user that receives, I need to retrieve the ids of the
+        // squads that the user admins.
+
+        var squads = _squads.GetSquadsUserAdmins(userId).Select(squad => squad.Id).ToArray();
+        
+        // Now that I have the ids, I can check the squads array against the join requests
+        if (lastId == null)
+            return await _joinRequests
+                .Find(joinReq => squads.Contains(joinReq.SquadId))
+                .Limit(20)
+                .ToListAsync();
+        
+        var paginationFilter = Builders<SquadJoinRequest>.Filter.Gt("id", lastId);
+        var userFilter = Builders<SquadJoinRequest>.Filter.Eq("SenderUserId", userId);
+        
+        return await _joinRequests
+            .Find(userFilter & paginationFilter)
+            .Limit(20)
+            .ToListAsync();
+    }
+
     public async Task<SquadJoinRequest> SearchJoinRequest(Guid squadId, int senderUserId)
     {
         return await _joinRequests.Find(joinReq =>
             joinReq.SenderUserId.Equals(senderUserId) && joinReq.SquadId.Equals(squadId)).FirstOrDefaultAsync();
+    }
+
+    public async Task<long> GetUnseenRequestsForUser(Guid[] squads)
+    {
+        return await _joinRequests.Find(req => squads.Contains(req.SquadId)).CountDocumentsAsync();
     }
 }

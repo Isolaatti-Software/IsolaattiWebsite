@@ -222,11 +222,10 @@ public class SquadsRepository
             select squad;
     }
 
-    public async Task<IEnumerable<Squad>> GetSquadsUserAdmins(int userId, Guid? lastId = null)
+    public IQueryable<Squad> GetSquadsUserAdmins(int userId, Guid? lastId = null)
     {
-        return await _db.Squads
-            .Where(squad => squad.UserId == userId)
-            .ToListAsync();
+        return  _db.Squads
+            .Where(squad => squad.UserId == userId);
     }
 
     public async Task<IEnumerable<UserFeed>> GetMembersOfSquad(Guid squadId)

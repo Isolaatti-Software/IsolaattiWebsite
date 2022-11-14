@@ -216,73 +216,83 @@ const requestsComponent = {
     data: function() {
         return {
             customHeaders: customHttpHeaders,
-            joinRequests: [],
+            requests: [],
             loading: true,
             error: false,
             editionMode: false,
-            selectedInvitationId: undefined,
-            
             overallMode: "forMe" //or fromMe
         }
     },
     methods: {
-        fetchInvitations: async function() {
-            const response = await fetch(`/api/Users/Me/Squads/MyInvitations`, {
+        fetchRequestsForMe: async function() {
+            this.loading = true;
+            const response = await fetch(`/api/Squads/JoinRequests/JoinRequestsForMe`, {
+                headers: this.customHeaders
+            });
+            try {
+                this.requests = (await response.json());
+            } catch (e) {
+                this.error = true;
+            }
+            this.loading = false;
+        },
+        fetchRequestsFromMe: async function() {
+            const response = await fetch(`/api/Squads/JoinRequests/MyJoinRequests`, {
                 headers: this.customHeaders
             });
             try {
                 this.invitations = (await response.json());
-                this.loading = false;
-            } catch (e) {
+            } catch(e) {
                 this.error = true;
             }
+            this.loading = false;
         },
-        selectInvitation: function(id) {
-            if(this.selectedInvitationId === id) {
-                this.selectedInvitationId = undefined;
-            } else {
-                this.selectedInvitationId = id;
-            }
-
-        },
-        setEditionMode: function() {
-            this.editionMode = !this.editionMode;
-        },
-        profileLink: function(profileId) {
-            return `/perfil/${profileId}`;
-        },
-        profileImageLink: function(profileId) {
-            return `/api/Fetch/GetUserProfileImage?userId=${profileId}`
+        onInvitationUpdate: function(invitation) {
+            const index = this.invitations.findIndex(inv => inv.invitation.id === invitation.id);
+            const temp = this.invitations;
+            temp[index].invitation = invitation;
+            this.invitations = temp;
+        }
+    },
+    watch:{
+        overallMode: {
+            handler: async function(val, oldVal) {
+                if(val === oldVal) {
+                    return;
+                }
+                this.invitations = [];
+                switch(val) {
+                    case "forMe": await this.fetchRequestsForMe()
+                        break;
+                    case "fromMe": await this.fetchRequestsFromMe();
+                        break;
+                }
+            },
+            immediate: true
         }
     },
     mounted: async function() {
-        await this.fetchInvitations();
+
     },
     template: `
-      <section class="isolaatti-card">
-      <h5>Solicitudes</h5>
+    <section class="isolaatti-card">
+      <h5>Invitaciones</h5>
       <div class="btn-group w-100">
-        <button class="btn">
+        <button class="btn" :class="{'btn-primary':overallMode==='forMe'}" @click="overallMode='forMe'">
           Para tí
         </button>
-        <button class="btn">
+        <button class="btn" :class="{'btn-primary':overallMode==='fromMe'}" @click="overallMode='fromMe'">
           De tí
         </button>
       </div>
-      
-      <template v-if="overallMode==='forMe'">
-        
-      </template>
-      <template v-else>
-        
-      </template>
+      <squad-requests-list :items="requests" @invitation-update="onInvitationUpdate"></squad-requests-list>
       <div v-if="loading" class="d-flex justify-content-center mt-2">
         <div class="spinner-border" role="status">
           <span class="sr-only">Cargando más contenido...</span>
         </div>
       </div>
       
-      </section>
+    </section>
     `
 }
 

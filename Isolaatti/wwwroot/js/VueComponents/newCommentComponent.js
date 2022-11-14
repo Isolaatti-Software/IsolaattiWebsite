@@ -60,8 +60,8 @@
                 method: "POST",
                 headers: this.customHeaders,
                 body: JSON.stringify({
-                    content: this.comment.textContent,
-                    audioId: this.comment.audioId
+                    content: this.commentDto.comment.textContent,
+                    audioId: this.commentDto.comment.audioId
                 })
             });
 

@@ -71,9 +71,9 @@ public class SquadsPosting : ControllerBase
             select new PostDto
             {
                 Post = post,
-                UserName = _db.Users.FirstOrDefault(u => u.Id == post.Id).Name,
-                NumberOfComments = post.Likes.Count,
-                NumberOfLikes = post.Comments.Count,
+                UserName = _db.Users.FirstOrDefault(u => u.Id == post.UserId).Name,
+                NumberOfComments = post.Comments.Count,
+                NumberOfLikes = post.Likes.Count,
                 Liked = _db.Likes.Any(l => l.UserId == user.Id && l.PostId == post.Id),
                 SquadName = post.Squad.Name
             };
