@@ -65,8 +65,8 @@
                 })
             });
 
-            this.commentDto.textContent = "";
-            this.commentDto.date = new Date();
+            this.commentDto.comment.textContent = "";
+            this.commentDto.comment.date = new Date();
             
             this.posting = false;
         },

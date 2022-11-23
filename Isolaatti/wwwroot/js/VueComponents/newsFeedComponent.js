@@ -24,7 +24,7 @@
             if(this.posts.length < 1){
                 this.lastPostGotten = -1;
             } else {
-                this.lastPostGotten = this.posts[this.posts.length - 1].id;
+                this.lastPostGotten = this.posts[this.posts.length - 1].post.id;
             }
             
             this.noMoreContent = !parsedResponse.moreContent;

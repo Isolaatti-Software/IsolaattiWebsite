@@ -21,7 +21,7 @@ Vue.component('comment', {
     },
     computed: {
         profileLink: function () {
-            return `/perfil/${this.comment.authorId}`
+            return `/perfil/${this.comment.comment.userId}`
         },
         reportLink: function () {
             return `/Reports/ReportPostOrComment?commentId=${this.comment.id}`;

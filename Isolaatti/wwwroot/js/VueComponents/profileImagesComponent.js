@@ -73,7 +73,7 @@
           </span>
         </div>
       </div>
-      <div v-if="isForSelect" class="d-flex mt-2 justify-content-end">
+      <div v-if="isForSelect" class="d-flex mt-2 mb-0 justify-content-end position-sticky bg-white p-2" style="bottom: 0">
         <button class="btn btn-primary" :disabled="imageSelected===undefined">Aceptar</button>
       </div>
       </section>

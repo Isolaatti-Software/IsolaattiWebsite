@@ -48,7 +48,7 @@
             return this.newDescription?.trim().length < 350 || this.newDescription === null;
         },
         profileImageUrl: function () {
-            if (this.profile.profileImageId === null) return "/res/imgs/user-solid.png";
+            if (this.profile.profileImageId === null) return "/res/imgs/avatar.svg";
             return `/api/Fetch/ProfileImages/${this.profile.profileImageId}.png`;
         },
         receivedLikesPageUrl: function () {

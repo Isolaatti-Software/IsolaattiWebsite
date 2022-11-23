@@ -75,7 +75,7 @@ Vue.component("posts-list", {
                     event.target.disabled = false;
                 }
                 if(this.posts.length > 0)
-                    this.lastId = this.posts[this.posts.length - 1].id;
+                    this.lastId = this.posts[this.posts.length - 1].post.id;
             }
         },
         reloadPosts: async function (event) {
