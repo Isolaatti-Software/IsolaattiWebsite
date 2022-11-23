@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using System.Text.Json;
-using EFCoreSecondLevelCacheInterceptor;
+// using EFCoreSecondLevelCacheInterceptor;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Isolaatti.Config;
@@ -11,18 +11,14 @@ using Isolaatti.Models.MongoDB;
 using Isolaatti.Repositories;
 using Isolaatti.Services;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
-using Npgsql;
 using SendGrid.Extensions.DependencyInjection;
 
 namespace Isolaatti
@@ -34,6 +30,41 @@ namespace Isolaatti
             Configuration = configuration;
             _environment = webHostEnvironment;
         }
+        
+        private string TransformMySqlInAppConnectionString(string original)
+        {
+            if (original == null)
+            {
+                return null;
+            }
+
+            var host = "";
+            var user = "";
+            var password = "";
+            var port = "";
+
+            foreach (var comp in original.Split(';'))
+            {
+                if (comp.Contains("Data Source"))
+                {
+                    var hostWithPort = comp.Split("=")[1];
+                    host = hostWithPort.Split(":")[0];
+                    port = hostWithPort.Split(":")[1];
+                }
+                if (comp.Contains("Password"))
+                {
+                    password = comp.Split("=")[1];
+                }
+
+                if (comp.Contains("User Id"))
+                {
+                    user = comp.Split("=")[1];
+                }
+            }
+
+            return $"server={host};port={port};database=localdb;user={user};password={password}";
+        }
+
 
         public IConfiguration Configuration { get; }
         private IWebHostEnvironment _environment { get; }
@@ -46,66 +77,81 @@ namespace Isolaatti
             {
                 Credential = GoogleCredential.FromStream(file)
             });
+            services.AddCors(options => 
+                options.AddPolicy(name: "cors",
+                    policy =>
+                    {
+                        policy.WithOrigins("http://localhost:8100", "http://10.0.0.9:8100")
+                            .AllowAnyMethod()
+                            .AllowAnyHeader();
+                    })
+            );
             services.AddControllers();
             services.AddMvcCore().AddApiExplorer();
             services.AddRazorPages().AddRazorRuntimeCompilation();
-            services.AddEFSecondLevelCache(options =>
-            {
-                options.UseMemoryCacheProvider()
-                    .DisableLogging(true)
-                    .UseCacheKeyPrefix("EF_");
-                options.CacheAllQueries(CacheExpirationMode.Absolute, TimeSpan.FromMinutes(30));
-            });
+            // services.AddEFSecondLevelCache(options =>
+            // {
+            //     options.UseMemoryCacheProvider()
+            //         .DisableLogging(true)
+            //         .UseCacheKeyPrefix("EF_");
+            //     options.CacheAllQueries(CacheExpirationMode.Absolute, TimeSpan.FromMinutes(30));
+            // });
                 services.AddDbContextPool<DbContextApp>((serviceProvider, options) =>
             {
          
                 if (_environment.IsProduction())
                 {
-                    var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
-                    var databaseUri = new Uri(databaseUrl!);
-                    var credentialInfo = databaseUri.UserInfo.Split(":"); // first part is user, second part is password
-
-                    var connectionStringBuilder = new NpgsqlConnectionStringBuilder
-                    {
-                        Host = databaseUri.Host,
-                        Port = databaseUri.Port,
-                        Username = credentialInfo[0],
-                        Password = credentialInfo[1],
-                        Database = databaseUri.LocalPath.TrimStart('/')
-                    };
-                    options
-                        .UseNpgsql(connectionStringBuilder.ToString());
+                    // var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+                    // var databaseUri = new Uri(databaseUrl!);
+                    // var credentialInfo = databaseUri.UserInfo.Split(":"); // first part is user, second part is password
+                    //
+                    // var connectionStringBuilder = new NpgsqlConnectionStringBuilder
+                    // {
+                    //     Host = databaseUri.Host,
+                    //     Port = databaseUri.Port,
+                    //     Username = credentialInfo[0],
+                    //     Password = credentialInfo[1],
+                    //     Database = databaseUri.LocalPath.TrimStart('/')
+                    // };
+                    // options
+                    //     .UseNpgsql(connectionStringBuilder.ToString());
+                    
+                    // For now I will use MySql instead postgres
+                    var connectionString =
+                        TransformMySqlInAppConnectionString(Environment.GetEnvironmentVariable("MYSQLCONNSTR_localdb"));
+                    var version = ServerVersion.AutoDetect(connectionString);
+                    options.UseMySql(connectionString, version);
                 }
                 else
                 {
-                    options
-                        .UseNpgsql(Configuration.GetConnectionString("Database"));
+                    var version = ServerVersion.AutoDetect(Configuration.GetConnectionString("Database"));
+                    options.UseMySql(Configuration.GetConnectionString("Database"), version);
                 }
             });
-            services.AddDbContext<MyKeysDbContext>(options =>
-            {
-                if (_environment.IsProduction())
-                {
-                    var databaseUrl = Environment.GetEnvironmentVariable("HEROKU_POSTGRESQL_BLACK_URL");
-                    var databaseUri = new Uri(databaseUrl!);
-                    var credentialInfo = databaseUri.UserInfo.Split(":"); // first part is user, second part is password
-
-                    var connectionStringBuilder = new NpgsqlConnectionStringBuilder
-                    {
-                        Host = databaseUri.Host,
-                        Port = databaseUri.Port,
-                        Username = credentialInfo[0],
-                        Password = credentialInfo[1],
-                        Database = databaseUri.LocalPath.TrimStart('/')
-                    };
-                    options.UseNpgsql(connectionStringBuilder.ToString());
-                }
-                else
-                {
-                    options.UseNpgsql(Configuration.GetConnectionString("KeysDatabase"));
-                }
-            });
-            services.AddDataProtection().PersistKeysToDbContext<MyKeysDbContext>();
+            // services.AddDbContext<MyKeysDbContext>(options =>
+            // {
+            //     if (_environment.IsProduction())
+            //     {
+            //         var databaseUrl = Environment.GetEnvironmentVariable("HEROKU_POSTGRESQL_BLACK_URL");
+            //         var databaseUri = new Uri(databaseUrl!);
+            //         var credentialInfo = databaseUri.UserInfo.Split(":"); // first part is user, second part is password
+            //
+            //         var connectionStringBuilder = new NpgsqlConnectionStringBuilder
+            //         {
+            //             Host = databaseUri.Host,
+            //             Port = databaseUri.Port,
+            //             Username = credentialInfo[0],
+            //             Password = credentialInfo[1],
+            //             Database = databaseUri.LocalPath.TrimStart('/')
+            //         };
+            //         options.UseNpgsql(connectionStringBuilder.ToString());
+            //     }
+            //     else
+            //     {
+            //         options.UseNpgsql(Configuration.GetConnectionString("KeysDatabase"));
+            //     }
+            // });
+            // services.AddDataProtection().PersistKeysToDbContext<MyKeysDbContext>();
             if (_environment.IsProduction())
             {
                 var mongoConfigEnvVar = Environment.GetEnvironmentVariable("mongodb_config");
@@ -119,6 +165,7 @@ namespace Isolaatti
                     config.SquadsInvitationsCollectionName = mongoConfig?.SquadsInvitationsCollectionName;
                     config.SquadsJoinRequestsCollectionName = mongoConfig?.SquadsJoinRequestsCollectionName;
                     config.RealtimeServiceKeysCollectionName = mongoConfig?.RealtimeServiceKeysCollectionName;
+                    config.AuthTokensCollectionName = mongoConfig?.AuthTokensCollectionName;
                 });
                 
                 var serversConfigEnvVar = Environment.GetEnvironmentVariable("servers");
@@ -168,24 +215,24 @@ namespace Isolaatti
             // don't allow uploading files larger than 2 MB, for security reasons
             services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = 1024 * 1024 * 2);
             services.AddSwaggerGen();
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DbContextApp dbContext,
-            MyKeysDbContext keysDb)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DbContextApp dbContext)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            dbContext.Database.Migrate();
-            keysDb.Database.Migrate();
+
+            // Stop using this on production when app is for public use
+            app.UseDeveloperExceptionPage();
+            
             app.UseSwagger();
             app.UseSwaggerUI();
             app.UseForwardedHeaders();
             app.UseHsts();
             app.UseStaticFiles();
+            
             app.UseRouting();
+            app.UseCors("cors");
             app.UseAuthorization();
             app.UseHttpsRedirection();
             app.UseMiddleware<ScopedHttpContextMiddleware>();
