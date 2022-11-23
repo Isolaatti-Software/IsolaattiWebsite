@@ -5,6 +5,7 @@ using Isolaatti.DTOs;
 using Isolaatti.Models;
 using Isolaatti.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Isolaatti.Controllers
 {
@@ -47,7 +48,7 @@ namespace Isolaatti.Controllers
             return Ok(new LikeDto
             {
                 PostId = post.Id,
-                LikesCount = post.Likes.Count
+                LikesCount = await _db.Likes.CountAsync(like => like.PostId == post.Id)
             });
         }
 
@@ -71,7 +72,7 @@ namespace Isolaatti.Controllers
             return Ok(new LikeDto
             {
                 PostId = post.Id,
-                LikesCount = post.Likes.Count
+                LikesCount = await _db.Likes.CountAsync(like => like.PostId == post.Id)
             });
         }
     }
