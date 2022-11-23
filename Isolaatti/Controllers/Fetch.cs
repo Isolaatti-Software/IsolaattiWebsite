@@ -290,7 +290,7 @@ namespace Isolaatti.Controllers
         {
             var otherUser = await _db.Users.FindAsync(userId);
             if (otherUser == null) return NotFound("User not found");
-            if (otherUser.ProfileImageId == null) return Redirect("/res/imgs/user-solid.svg");
+            if (otherUser.ProfileImageId == null) return Redirect("/res/imgs/avatar.svg");
             var profileImage = await _db.ProfileImages.FindAsync(otherUser.ProfileImageId);
             if (profileImage == null) return Redirect("/res/imgs/user-solid.svg");
             return new FileContentResult(Convert.FromBase64String(profileImage.ImageData), "image/png");
