@@ -72,7 +72,7 @@ namespace Isolaatti.Controllers
             return Ok(new LikeDto
             {
                 PostId = post.Id,
-                LikesCount = await _db.Likes.CountAsync(like => like.PostId == post.Id)
+                LikesCount = await _db.Likes.CountAsync(l => l.PostId == post.Id)
             });
         }
     }
