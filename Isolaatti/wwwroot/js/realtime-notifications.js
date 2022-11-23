@@ -1,5 +1,5 @@
 // socket is globally available
-const socket = io("http://localhost:3000",{
+const socket = io(realtimeServer ,{
     withCredentials: true,
     auth: {
         sessionToken

@@ -1,9 +1,12 @@
+@using Isolaatti.Config
 @using Isolaatti.isolaatti_lib
 @using Isolaatti.Services
 @using Microsoft.AspNetCore.Hosting
 @using Microsoft.Extensions.Hosting
+@using Microsoft.Extensions.Options
 @inject IWebHostEnvironment _environment
 @inject ServerRenderedAlerts _RenderedAlerts
+@inject IOptions<Servers> _servers
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -218,6 +221,7 @@ else
     <script src="https://unpkg.com/vue-router@2.0.0/dist/vue-router.min.js"></script>
 }
 <script>const events = new Vue();</script>
+<script>const realtimeServer = "@_servers.Value.RealtimeServerUrl"</script>
 @* This script exposes socket variable, which is globally accessible *@
 <script src="~/js/realtime-notifications.js"></script>
 <script src="~/js/audioService.js"></script>
