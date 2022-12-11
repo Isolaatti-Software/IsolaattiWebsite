@@ -28,14 +28,14 @@ namespace Isolaatti.Controllers
         }
 
         [HttpPost]
-        [Route("UserProfile")]
+        [Route("UserProfile/{userId:int}")]
         public async Task<IActionResult> GetProfile([FromHeader(Name = "sessionToken")] string sessionToken,
-            SingleIdentification identification)
+            int userId)
         {
             var user = await _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
 
-            var account = await _db.Users.FindAsync(Convert.ToInt32(identification.Id));
+            var account = await _db.Users.FindAsync(userId);
             if (account == null) return NotFound();
 
             account.NumberOfFollowers = await _db.FollowerRelations.CountAsync(fr => fr.TargetUserId == account.Id);

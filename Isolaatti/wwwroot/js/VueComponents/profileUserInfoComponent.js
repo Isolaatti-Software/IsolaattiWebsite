@@ -60,10 +60,9 @@
     },
     methods: {
         fetchProfile: async function () {
-            const response = await fetch(`/api/Fetch/UserProfile`, {
+            const response = await fetch(`/api/Fetch/UserProfile/${this.userId === null ? this.userData.id : this.userId}`, {
                 headers: this.customHeaders,
-                method: "post",
-                body: JSON.stringify({id: this.userId === null ? this.userData.id : this.userId})
+                method: "post"
             });
             this.profile = await response.json();
         },
