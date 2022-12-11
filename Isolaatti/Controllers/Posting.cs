@@ -8,6 +8,7 @@ using Isolaatti.Models;
 using Isolaatti.Repositories;
 using Isolaatti.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Isolaatti.Controllers
 {
@@ -113,11 +114,11 @@ namespace Isolaatti.Controllers
             return Ok(new PostDto()
             {
                 Post = existingPost,
-                UserName = _db.Users.FirstOrDefault(u => u.Id == existingPost.Id)?.Name,
-                NumberOfComments = existingPost.Likes.Count,
-                NumberOfLikes = existingPost.Comments.Count,
+                UserName = _db.Users.FirstOrDefault(u => u.Id == existingPost.UserId)?.Name,
+                NumberOfComments = await _db.Comments.CountAsync(c => c.PostId == existingPost.Id),
+                NumberOfLikes = await _db.Likes.CountAsync(l => l.PostId == existingPost.Id),
                 Liked = _db.Likes.Any(l => l.UserId == user.Id && l.PostId == existingPost.Id),
-                SquadName = existingPost.Squad.Name
+                SquadName = existingPost.SquadId == null ? null : _squads.GetSquadName(existingPost.SquadId)
             });
         }
 
