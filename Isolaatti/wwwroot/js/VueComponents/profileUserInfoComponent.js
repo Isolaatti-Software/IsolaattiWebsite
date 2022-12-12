@@ -90,10 +90,11 @@
                     this.errorSaving = true;
                     return;
                 }
+                this.errorSaving = false;
 
                 const parsedResponse = await response.json();
-                this.profile.username = parsedResponse.newUsername;
-                this.profile.description = parsedResponse.newDescription;
+                this.profile.name = parsedResponse.newUsername;
+                this.profile.descriptionText = parsedResponse.newDescription;
 
                 this.editProfileMode = false;
             } catch (e) {
