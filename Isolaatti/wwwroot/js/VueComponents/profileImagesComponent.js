@@ -74,7 +74,7 @@
         </div>
       </div>
       <div v-if="isForSelect" class="d-flex mt-2 mb-0 justify-content-end position-sticky bg-white p-2" style="bottom: 0">
-        <button class="btn btn-primary" :disabled="imageSelected===undefined">Aceptar</button>
+        <button class="btn btn-primary" :disabled="imageSelected===undefined" @click="$emit('accepted', imageSelected);">Aceptar</button>
       </div>
       </section>
     `

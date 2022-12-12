@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Isolaatti.Classes.ApiEndpointsRequestDataModels;
 using Isolaatti.Models;
@@ -7,6 +8,7 @@ using Isolaatti.Repositories;
 using Isolaatti.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Isolaatti.Controllers
 {
@@ -39,8 +41,11 @@ namespace Isolaatti.Controllers
                     error = "Name must be between 1 and 20 characters. String is trimmed."
                 });
 
-            user.Name = payload.NewUsername.Trim();
-            user.DescriptionText = payload.NewDescription.Trim();
+            
+            if(payload.NewUsername != null)
+                user.Name = payload.NewUsername.Trim();
+            if(payload.NewDescription != null)
+                user.DescriptionText = payload.NewDescription.Trim();
 
             _db.Users.Update(user);
 
@@ -109,6 +114,34 @@ namespace Isolaatti.Controllers
 
             _db.Users.Update(user);
             await _db.SaveChangesAsync();
+            return Ok();
+        }
+
+        [HttpPost]
+        [Route("SetProfilePhoto")]
+        public async Task<IActionResult> UpdateProfileImageWithImageId([FromHeader(Name = "sessionToken")] string sessionToken, [FromQuery] Guid imageId)
+        {
+            var user = await _accounts.ValidateToken(sessionToken);
+            if (user == null)
+            {
+                return Unauthorized("Token is not valid");
+            }
+
+            var selectedImage = await _db.ProfileImages.Where(image => image.Id.Equals(imageId)).Select(image => new {id = image.Id, userId = image.UserId}).FirstOrDefaultAsync();
+            if (selectedImage == null)
+            {
+                return NotFound(imageId);
+            }
+
+            if (selectedImage.userId != user.Id)
+            {
+                return Unauthorized();
+            }
+            
+            user.ProfileImageId = selectedImage.id;
+            _db.Users.Update(user);
+            await _db.SaveChangesAsync();
+            
             return Ok();
         }
     }

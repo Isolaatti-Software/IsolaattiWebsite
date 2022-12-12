@@ -52,6 +52,12 @@ Vue.component('profile-image-maker', {
                 request.send(formData);
 
             });
+        },
+        updateImage: async function(imageId) {
+            const url = `/api/EditProfile/SetProfilePhoto?imageId=${imageId}`;
+            const response = await fetch(url, {method: "post", headers: this.customHeaders});
+            if(response.ok)
+                this.$emit('imageUpdated',imageId)
         }
     },
     mounted: function () {
@@ -110,7 +116,10 @@ Vue.component('profile-image-maker', {
           </div>
         </section>
     </div>
-    <profile-images v-show="mode==='existing'" :user-id="userData.id" :is-for-select="true"></profile-images>
+    <profile-images v-show="mode==='existing'" 
+                    :user-id="userData.id" 
+                    :is-for-select="true"
+                    @accepted="updateImage"></profile-images>
     </div>
     `
 })
