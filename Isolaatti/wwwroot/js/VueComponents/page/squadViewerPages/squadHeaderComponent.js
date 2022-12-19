@@ -37,6 +37,9 @@
                 return "post-cut-height"
             }
             return "overflow-auto"
+        },
+        imageUrl: function() {
+            return this.squadInfo.imageId === null ? "" : `/api/images/image/${this.squadInfo.imageId}?mode=reduced`;
         }
     },
     methods: {
@@ -74,8 +77,9 @@
                 this.squadHeaderEditMode = false;
             }
         },
-        toggleSquadImageEdition: function(){
-            this.squadImageEdition = !this.squadImageEdition;
+        onImageUpdated: function(imageId) {
+            this.squadInfo.imageId = imageId;
+            $('#modal-edit-photo').modal('hide');
         }
     },
     mounted: async function() {
@@ -93,38 +97,28 @@
 
     <div class="row m-0" v-if="!squadHeaderEditMode">
       <div class="col-lg-4">
-        <template v-if="!squadImageEdition">
-          <img src="" width="100" height="100" id="profile_photo" class="profile-pic">
-          <h1>{{squadInfo.name}}</h1>
-          <p>{{squadInfo.description}}</p>
-          <div class="d-flex align-items-center w-100">
-            <button class="btn btn-outline-primary w-100" @click="$router.push({path: '/miembros', query:{tab:'invitations', action:'new'}})">
-              <i class="fa-solid fa-plus"></i> Invitar
+        <img src="" width="100" height="100" id="profile_photo" class="profile-pic" :src="imageUrl">
+        <h1>{{squadInfo.name}}</h1>
+        <p>{{squadInfo.description}}</p>
+        <div class="d-flex align-items-center w-100">
+          <button class="btn btn-outline-primary w-100" @click="$router.push({path: '/miembros', query:{tab:'invitations', action:'new'}})">
+            <i class="fa-solid fa-plus"></i> Invitar
+          </button>
+          <div class="dropdown ml-auto">
+            <button class="btn" data-toggle="dropdown" aria-expanded="false" id="squad-dropdown">
+              <i class="fa-solid fa-ellipsis"></i>
             </button>
-            <div class="dropdown ml-auto">
-              <button class="btn" data-toggle="dropdown" aria-expanded="false" id="squad-dropdown">
-                <i class="fa-solid fa-ellipsis"></i>
-              </button>
-              <div class="dropdown-menu" aria-labelledby="squad-dropdown">
-                <button class="dropdown-item" v-if="userIsAdmin" @click="goToEditMode" href="#">Editar información</button>
-                <button class="dropdown-item" @click="toggleSquadImageEdition">Cambiar imagen del squad</button>
-                <a class="dropdown-item" href="#">Configuración</a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#">Salir</a>
-              </div>
+            <div class="dropdown-menu" aria-labelledby="squad-dropdown">
+              <button class="dropdown-item" v-if="userIsAdmin" @click="goToEditMode" href="#">Editar información</button>
+              <button class="dropdown-item" data-toggle="modal" data-target="#modal-edit-photo">Cambiar imagen del squad</button>
+              <a class="dropdown-item" href="#">Configuración</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="#">Salir</a>
             </div>
           </div>
-        </template>
-        <template v-else>
-          <div class="d-flex">
-            <button class="btn btn-light btn-sm" @click="toggleSquadImageEdition"><i class="fa-solid fa-arrow-left"></i></button>
-          </div>
-          <h3>Cambiar imagen del squad</h3>
-          
-          <profile-image-maker/>
-        </template>
+        </div>
       </div>
-      <div class="col-lg-8" ref="extendedDescriptionContainer" :class="extendedDescriptionCssClasses" v-html="compileMarkdown(squadInfo.extendedDescription)"></div>
+      <div class="col-lg-8 bg-white" ref="extendedDescriptionContainer" :class="extendedDescriptionCssClasses" v-html="compileMarkdown(squadInfo.extendedDescription)"></div>
       <div class="d-flex justify-content-center w-100">
         <button class="btn btn-link btn-sm" @click="squadExtendedDescriptionCutContent = !squadExtendedDescriptionCutContent">
           <span v-if="squadExtendedDescriptionCutContent">Mostrar todo</span>
@@ -151,6 +145,22 @@
         <div class="d-flex justify-content-end mt-1">
           <button class="btn btn-light mr-1" @click="goToEditMode" :disabled="submitting">Cancelar</button>
           <button class="btn btn-primary" @click="updateSquad" :disabled="!updateValidated || submitting">Guardar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="modal-edit-photo">
+      <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title"><i class="fa-solid fa-image"></i> Cambiar imagen del squad</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              &times;
+            </button>
+          </div>
+          <div class="modal-body">
+            <profile-image-maker @imageUpdated="onImageUpdated" :squad-id="squadId" :profile="true"></profile-image-maker>
+          </div>
         </div>
       </div>
     </div>

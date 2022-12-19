@@ -1,13 +1,18 @@
 ﻿Vue.component('profile-images', {
     props: {
         userId: {
-            required: true,
+            required: false,
             type: Number
         },
         isForSelect: {
             required: false,
             type: Boolean,
             default: false
+        },
+        squadId: {
+            required: false,
+            type: String,
+            default: null
         }
     },
     data: function () {
@@ -20,7 +25,9 @@
     },
     methods: {
         getImages: async function () {
-            this.images = await (await fetch(`/api/Fetch/ProfileImages/OfUser/${this.userId}`, {
+            const url = this.squadId !== null ? `/api/images/of_squad/${this.squadId}` : `/api/images/of_user/${this.userId}`
+            
+            this.images = await (await fetch(url, {
                 method: "GET",
                 headers: this.customHeaders
             })).json();
@@ -30,7 +37,7 @@
                 if(this.imagesSelected.length > 0) {
                     this.showOptions(undefined, imageId);
                 } else {
-                    window.location = `/imagen/${imageId}`;
+                    window.location = `/api/images/image/${imageId}?mode=original`;
                 }
                 
             } else {
@@ -48,6 +55,9 @@
             } else {
                 this.imagesSelected.push(imageId);
             }
+        },
+        relativeUrl: function(imageId) {
+            return `/api/images/image/${imageId}?mode=reduced`;
         }
     },
     mounted: async function () {
@@ -63,12 +73,12 @@
           class="fa-solid fa-face-sad-cry"></i></p>
       <div class="grid-3-columns mt-2">
         <div class="position-relative d-flex justify-content-center w-100 hover-image-container" 
-            :class="{'primary-border-2px':imageSelected===image.imageId}"
+            :class="{'primary-border-2px':imageSelected===image.id}"
             v-for="image in images"
-            @click="imageOnClick(image.imageId)"
+            @click="imageOnClick(image.id)"
             @contextmenu="showOptions($event, image.imageId)">
-          <img :src="image.relativeUrl" class="w-100"/>
-          <span class="image-selected" v-show="imagesSelected.includes(image.imageId)">
+          <img :src="relativeUrl(image.id)" class="w-100" />
+          <span class="image-selected" v-show="imagesSelected.includes(image.id)">
             <i class="fa-solid fa-check"></i>
           </span>
         </div>

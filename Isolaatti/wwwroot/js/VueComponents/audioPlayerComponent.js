@@ -16,7 +16,7 @@ Vue.component('audio-player', {
           return `/perfil/${this.userId}`;
       },
       userImage: function() {
-          return `/api/Fetch/GetUserProfileImage?userId=${this.userId}`;
+          return `/api/images/profile_image/of_user/${this.userId}?mode=small`;
       }  
     },
     methods: {

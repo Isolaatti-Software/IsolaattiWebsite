@@ -4,17 +4,9 @@ namespace Isolaatti.Utils
 {
     public class UrlGenerators
     {
-        public static string GenerateProfilePictureUrl(int userId, string sessionToken, HttpRequest request = null)
+        public static string GenerateProfilePictureUrl(int userId, string token)
         {
-            string res = "";
-            if (request != null)
-            {
-                var protocol = request.IsHttps ? "https://" : "http://";
-                res += $"{protocol}{request.HttpContext.Request.Host.Value}";
-            }
-
-            res += $"/api/Fetch/GetUserProfileImage?userId={userId}";
-            return res;
+            return $"/api/images/profile_image/of_user/{userId}?mode=small";
         }
     }
 }

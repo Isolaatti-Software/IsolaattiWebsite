@@ -8,16 +8,19 @@ using Isolaatti.Enums;
 using Isolaatti.Models;
 using Microsoft.EntityFrameworkCore;
 using Isolaatti.Helpers;
+using Isolaatti.Models.MongoDB;
 
 namespace Isolaatti.Repositories;
 
 public class SquadsRepository
 {
     private readonly DbContextApp _db;
+    private readonly ImagesRepository _images;
 
-    public SquadsRepository(DbContextApp dbContextApp)
+    public SquadsRepository(DbContextApp dbContextApp, ImagesRepository images)
     {
         _db = dbContextApp;
+        _images = images;
     }
 
     public async Task<bool> ValidateSquadOwner(Guid squadId, int userId)
@@ -255,5 +258,23 @@ public class SquadsRepository
     public string GetSquadName(Guid? squadId)
     {
         return _db.Squads.Where(s => s.Id.Equals(squadId)).Select(s => s.Name).FirstOrDefault();
+    }
+
+    public async Task SetSquadImage(Guid squadId, string imageId)
+    {
+        var squad = await _db.Squads.FindAsync(squadId);
+        if (squad == null)
+        {
+            return;
+        }
+
+        squad.ImageId = imageId;
+        _db.Squads.Update(squad);
+        await _db.SaveChangesAsync();
+    }
+
+    public async Task<IEnumerable<Image>> GetImagesOfSquad(Guid squadId, string lastId)
+    {
+        return await _images.GetImagesOfSquad(squadId, lastId);
     }
 }

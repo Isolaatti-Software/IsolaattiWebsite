@@ -19,8 +19,7 @@ public class ImageViewer : PageModel
         _accounts = accounts;
     }
 
-    public ProfileImage Image;
-
+    
     public async Task<IActionResult> OnGet(Guid imageId)
     {
         var token = Request.Cookies["isolaatti_user_session_token"];
@@ -43,9 +42,7 @@ public class ImageViewer : PageModel
         ViewData["profilePicUrl"] = user.ProfileImageId == null
             ? null
             : UrlGenerators.GenerateProfilePictureUrl(user.Id, Request.Cookies["isolaatti_user_session_token"]);
-
-        Image = await _db.ProfileImages.FindAsync(imageId);
-        if (Image == null) return NotFound();
+        
 
         return Page();
     }

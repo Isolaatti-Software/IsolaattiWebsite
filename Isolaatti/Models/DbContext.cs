@@ -1,13 +1,16 @@
+using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Isolaatti.Models
 {
-    public class DbContextApp : DbContext
+    public class DbContextApp : DbContext, IDataProtectionKeyContext
     {
         public DbContextApp(DbContextOptions<DbContextApp> options) : base(options)
         {
             
         }
+        
+        public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
         
         public DbSet<User> Users { get; set; }
         public DbSet<ChangePasswordToken> ChangePasswordTokens { get; set; }
@@ -18,7 +21,6 @@ namespace Isolaatti.Models
         public DbSet<Post> SimpleTextPosts { get; set; }
         public DbSet<Like> Likes { get; set; }
         public DbSet<FollowerRelation> FollowerRelations { get; set; }
-        public DbSet<ProfileImage> ProfileImages { get; set; }
         public DbSet<Squad> Squads { get; set; }
         public DbSet<SquadUser> SquadUsers { get; set; }
     }

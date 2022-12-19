@@ -21,7 +21,7 @@
             userData: userData,
             selectionStart: 0,
             selectionEnd: 0,
-            audioMode: "none",
+            activeAction: "none",
             posting: false,
             showPreview: false,
             discussion: {
@@ -89,14 +89,23 @@
                 this.$emit("modified", madePost)
         },
         audioPosted: function (id) {
-            this.discussion.audioId = id;
-            this.audioMode = "none";
+            this.discussion.post.audioId = id;
+            this.activeAction = "none";
         },
         removeAudio: function () {
-            this.discussion.audioId = null;
+            this.discussion.post.audioId = null;
         },
         setAudio: function (audioId) {
-            this.discussion.audioId = audioId;
+            this.discussion.post.audioId = audioId;
+            this.activeAction = "none";
+        },
+        imageUrl: function(imageId) {
+            return `/api/images/image/${imageId}?mode=reduced`
+        },
+        imageUpdated: function(imageId) {
+            const markdown = `![${imageId}](${this.imageUrl(imageId)})`
+            this.discussion.post.textContent += `\n\n${markdown}`;
+            this.activeAction = "none";
         }
     },
     mounted: function () {
@@ -115,13 +124,17 @@
     template: `
       <section>
       <div class="btn-group btn-group-sm mb-1">
-        <button class="btn btn-light" v-on:click="audioMode='newAudio'"
-                :disabled="audioMode==='newAudio'">
+        <button class="btn btn-light" v-on:click="activeAction='newAudio'"
+                :disabled="activeAction==='newAudio'">
           <i class="fa-solid fa-microphone"></i>
         </button>
-        <button class="btn btn-light" v-on:click="audioMode='existingAudio'"
-                :disabled="audioMode==='existingAudio'">
+        <button class="btn btn-light" v-on:click="activeAction='existingAudio'"
+                :disabled="activeAction==='existingAudio'">
           <i class="fa-solid fa-file-audio"></i>
+        </button>
+        <button class="btn btn-light" v-on:click="activeAction='image'"
+                :disabled="activeAction==='image'">
+          <i class="fa-sharp fa-solid fa-image"></i>
         </button>
       </div>
 
@@ -132,19 +145,27 @@
       </div>
 
 
-      <div v-if="audioMode==='newAudio'">
+      <div v-if="activeAction==='newAudio'" class="bg-white p-3">
         <div class="d-flex justify-content-end">
-          <button class="btn btn-light btn-sm close" v-on:click="audioMode='none'">&times;</button>
+          <button class="btn btn-light btn-sm close" v-on:click="activeAction='none'">&times;</button>
         </div>
 
         <audio-recorder class="mt-2" :is-discussion="true" v-on:audio-posted="audioPosted"></audio-recorder>
       </div>
-      <div v-if="audioMode==='existingAudio'">
+      <div v-else-if="activeAction==='existingAudio'" class="bg-white p-3">
         <div class="d-flex justify-content-end">
           <span class="mr-auto">Audio existente</span>
-          <button class="btn btn-light btn-sm close" v-on:click="audioMode='none'">&times;</button>
+          <button class="btn btn-light btn-sm close" v-on:click="activeAction='none'">&times;</button>
         </div>
         <audios-list-select v-on:audio-selected="setAudio"></audios-list-select>
+      </div>
+      <div v-else-if="activeAction==='image'" class="bg-white p-3">
+        <span class="mr-auto">Agregar imagen</span>
+        <button class="btn btn-light btn-sm close" v-on:click="activeAction='none'">&times;</button>
+        <div class="alert alert-info mt-1">
+          Agrega una imagen a la discusión. Se generará el código Markdown correspondiente y se insertará al final dando un salto de línea.
+        </div>
+        <profile-image-maker :squad-id="squadId" @imageUpdated="imageUpdated" :profile="false"></profile-image-maker>
       </div>
       
       <post-template v-if="showPreview" :post="discussion" :preview="true"></post-template>
@@ -155,7 +176,7 @@
                         v-if="discussion.post.audioId!==null"
                         v-on:remove="removeAudio"></audio-attachment>
 
-      <textarea class="mt-2 form-control" v-model="discussion.post.textContent"
+      <textarea class="mt-2 form-control" v-model="discussion.post.textContent" rows="10"
                 placeholder="Escribe aqui el contenido para iniciar la discusión. Markdown es compatible."></textarea>
 
       <div class="d-flex justify-content-end mt-2">

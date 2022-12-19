@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Isolaatti.Models.MongoDB;
 using Microsoft.Extensions.Options;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Isolaatti.Repositories;
@@ -20,24 +21,45 @@ public class ImagesRepository
         _images = database.GetCollection<Image>(_settings.ImagesCollectionName);
     }
 
+    public async Task<Image> InsertImage(int userId, string name, string idOnFirebase, Guid? squadId)
+    {
+        var image = new Image()
+        {
+            IdOnFirebase = idOnFirebase,
+            UserId = userId,
+            Name = name,
+            SquadId = squadId
+        };
+        await _images.InsertOneAsync(image);
+        return image;
+    }
+
     public async Task<Image> GetImage(string id)
     {
         return await _images.Find(i => i.Id.Equals(id)).FirstOrDefaultAsync();
     }
 
-    public async Task<IEnumerable<Image>> GetImagesOfUser(int userId, string lastId)
+    public async Task<IEnumerable<Image>> GetImagesOfUser(int userId, string? lastId)
     {
         var userFilter = Builders<Image>.Filter.Eq("UserId", userId);
+        var antiSquadFilter = Builders<Image>.Filter.Eq("SquadId", BsonNull.Value);
+        if (lastId == null)
+        {
+            return await _images.Find(userFilter & antiSquadFilter).Limit(20).ToListAsync();
+        }
         var pagingFilter = Builders<Image>.Filter.Gt("id", lastId);
 
-        return await _images.Find(userFilter & pagingFilter).Limit(20).ToListAsync();
+        return await _images.Find(userFilter & pagingFilter & antiSquadFilter).Limit(20).ToListAsync();
     }
 
     public async Task<IEnumerable<Image>> GetImagesOfSquad(Guid squadId, string lastId)
     {
         var userFilter = Builders<Image>.Filter.Eq("SquadId", squadId);
+        if (lastId == null)
+        {
+            return await _images.Find(userFilter).Limit(20).ToListAsync();
+        }
         var pagingFilter = Builders<Image>.Filter.Gt("id", lastId);
-        
         return await _images.Find(userFilter & pagingFilter).Limit(20).ToListAsync();
     }
 

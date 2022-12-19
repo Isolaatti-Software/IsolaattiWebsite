@@ -60,7 +60,7 @@ Vue.component('post-template',{
             return DOMPurify.sanitize(marked.parse(raw));
         },
         getUserImageUrl: function (userId) {
-            return `/api/Fetch/GetUserProfileImage?userId=${userId}`
+            return `/api/images/profile_image/of_user/${userId}?mode=small`
         },
         showFullPost: function () {
             this.cutContent = false;

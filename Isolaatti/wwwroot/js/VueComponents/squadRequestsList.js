@@ -30,12 +30,12 @@
             return `/perfil/${profileId}`;
         },
         profileImageLink: function(profileId) {
-            return `/api/Fetch/GetUserProfileImage?userId=${profileId}`
+            return `/api/images/profile_images/of_user/${profileId}?mode=small`
         },
         squadLink: function(squadId) {
             return `/squads/${squadId}`;
         },
-        acceptInvitation: async function(invitation) {
+        acceptRequest: async function(request) {
             const response = await fetch(`/api/Squads/Invitations/${invitation.id}/Accept`, {
                 method: "POST",
                 headers: this.customHeaders,
@@ -61,13 +61,13 @@
           <div class="d-flex align-content-center">
             <div class="mb-2">
               <div class="m-0">
-                <img class="user-avatar" :src="profileImageLink(request.request.senderId)" alt="Foto">
+                <img class="user-avatar" :src="profileImageLink(request.request.senderUserId)" alt="Foto">
                 <strong>
                   <a :href="profileLink(request.request.senderUserId)">
                     {{ request.username }}</a>
                 </strong>
-                solicitó unirse a <strong>{{ invitation.squadName }}</strong>
-              </strong> el
+                solicitó unirse a <strong>{{ request.squadName }}</strong>
+               el
                 <strong>{{ new Date(request.request.creationDate).toLocaleDateString("es") }}</strong>
               </div>
               <div class="small">
@@ -93,7 +93,7 @@
               <i class="fa-solid fa-arrow-down"></i>
             </button>
           </div>
-          <template v-if="selectedInvitationId === request.request.id">
+          <template v-if="selectedRequestId === request.request.id">
             <template v-if="!editionMode">
               <template v-if="request.request.message !== null">
                 <p><strong>Mensaje de invitación:</strong> "{{ request.request.message }}"</p>
@@ -108,7 +108,7 @@
                 <div class="d-flex justify-content-end">
                   <button type="button" class="btn btn-primary mr-auto"
                           v-if="invitation.invitation.recipientUserId === userData.id"
-                          @click="acceptInvitation(invitation.invitation)">
+                          @click="acceptRequest(invitation.invitation)">
                     Aceptar
                   </button>
                   <button type="button" class="btn btn-light btn-sm" v-if="invitation.invitation.senderUserId === userData.id">

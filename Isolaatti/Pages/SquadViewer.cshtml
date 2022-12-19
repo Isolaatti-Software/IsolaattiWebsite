@@ -16,11 +16,11 @@
 
 @section Scripts
 {
-    
+
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://unpkg.com/dompurify@2.3.5/dist/purify.min.js"></script>
     <script src="~/js/VueComponents/page/squadViewerPages/squadHeaderComponent.js"></script>
-    
+
     @if (Model.UserBelongs)
     {
         ViewData["squadsRouter"] = true;
@@ -28,7 +28,8 @@
         function getRoutesForPage() { 
             return [
                 { path: "/", component: squadNewDiscussionComponent },
-                { path: "/miembros", component: squadPeopleComponent }
+                { path: "/miembros", component: squadPeopleComponent },
+                { path: "/imagenes", component: squadImages}
         ]}
         </script>
         <script src="~/js/VueComponents/squadInvitationsList.js"></script>
@@ -53,5 +54,5 @@
     {
         <script src="~/js/VueComponents/page/squadViewerPages/squadPreviewPage.js"></script>
     }
-    
+
 }

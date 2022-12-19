@@ -276,7 +276,7 @@ const requestsComponent = {
     },
     template: `
     <section class="isolaatti-card">
-      <h5>Invitaciones</h5>
+      <h5>Solicitudes</h5>
       <div class="btn-group w-100">
         <button class="btn" :class="{'btn-primary':overallMode==='forMe'}" @click="overallMode='forMe'">
           Para tí

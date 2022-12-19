@@ -282,49 +282,5 @@ namespace Isolaatti.Controllers
 
             return Ok(likedBy.ToList());
         }
-        
-
-        [HttpGet]
-        [Route("GetUserProfileImage")]
-        public async Task<IActionResult> GetUserProfileImage(int userId)
-        {
-            var otherUser = await _db.Users.FindAsync(userId);
-            if (otherUser == null) return NotFound("User not found");
-            if (otherUser.ProfileImageId == null) return Redirect("/res/imgs/avatar.svg");
-            var profileImage = await _db.ProfileImages.FindAsync(otherUser.ProfileImageId);
-            if (profileImage == null) return Redirect("/res/imgs/user-solid.svg");
-            return new FileContentResult(Convert.FromBase64String(profileImage.ImageData), "image/png");
-        }
-
-        [HttpGet]
-        [Route("ProfileImages/{id:guid}.png")]
-        public async Task<IActionResult> GetProfileImage(Guid id)
-        {
-            var image = await _db.ProfileImages.FindAsync(id);
-            if (image == null) return NotFound();
-            if (image.ImageData == null) return NotFound();
-            return new FileContentResult(Convert.FromBase64String(image.ImageData), "image/png");
-        }
-
-        [HttpGet]
-        [Route("ProfileImages/OfUser/{userId:int}")]
-        public async Task<IActionResult> GetProfilePhotosOfUser([FromHeader(Name = "sessionToken")] string sessionToken,
-            int userId)
-        {
-            var user = await _accounts.ValidateToken(sessionToken);
-            if (user == null) return Unauthorized("Token is not valid");
-
-            var images = _db.ProfileImages
-                    .Where(image => image.UserId == userId)
-                    .Select(i => new 
-                    {
-                        imageId = i.Id,
-                        relativeUrl = $"/api/Fetch/ProfileImages/{i.Id}.png",
-                        webEndPoint = $"/imagen/{i.Id}"
-                    })
-                    .ToList();
-
-            return Ok(images);
-        }
     }
 }

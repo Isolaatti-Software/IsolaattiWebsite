@@ -10,7 +10,7 @@
             if(imageId === null) {
                 return "/res/imgs/avatar.svg";
             }
-            return `/api/Fetch/ProfileImages/${imageId}.png`
+            return `/api/images/image/${imageId}?mode=reduced`
         },
         navigateToProfile: function (profileId) {
             window.location = `/perfil/${profileId}`;

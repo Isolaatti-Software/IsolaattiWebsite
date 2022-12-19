@@ -30,7 +30,7 @@
             return `/perfil/${profileId}`;
         },
         profileImageLink: function(profileId) {
-            return `/api/Fetch/GetUserProfileImage?userId=${profileId}`
+            return `/api/images/profile_image/of_user/${profileId}?mode=small`
         },
         squadLink: function(squadId) {
             return `/squads/${squadId}`;

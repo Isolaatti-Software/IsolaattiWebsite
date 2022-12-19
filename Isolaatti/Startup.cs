@@ -11,6 +11,7 @@ using Isolaatti.Models.MongoDB;
 using Isolaatti.Repositories;
 using Isolaatti.Services;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
@@ -19,6 +20,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Npgsql;
 using SendGrid.Extensions.DependencyInjection;
 
 namespace Isolaatti
@@ -101,57 +103,26 @@ namespace Isolaatti
          
                 if (_environment.IsProduction())
                 {
-                    // var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
-                    // var databaseUri = new Uri(databaseUrl!);
-                    // var credentialInfo = databaseUri.UserInfo.Split(":"); // first part is user, second part is password
-                    //
-                    // var connectionStringBuilder = new NpgsqlConnectionStringBuilder
-                    // {
-                    //     Host = databaseUri.Host,
-                    //     Port = databaseUri.Port,
-                    //     Username = credentialInfo[0],
-                    //     Password = credentialInfo[1],
-                    //     Database = databaseUri.LocalPath.TrimStart('/')
-                    // };
-                    // options
-                    //     .UseNpgsql(connectionStringBuilder.ToString());
+                    var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+                    var databaseUri = new Uri(databaseUrl!);
+                    var credentialInfo = databaseUri.UserInfo.Split(":"); // first part is user, second part is password
                     
-                    // For now I will use MySql instead postgres
-                    var connectionString =
-                        TransformMySqlInAppConnectionString(Environment.GetEnvironmentVariable("MYSQLCONNSTR_localdb"));
-                    var version = ServerVersion.AutoDetect(connectionString);
-                    options.UseMySql(connectionString, version);
+                    var connectionStringBuilder = new NpgsqlConnectionStringBuilder()
+                    {
+                        Host = databaseUri.Host,
+                        Port = databaseUri.Port,
+                        Username = credentialInfo[0],
+                        Password = credentialInfo[1],
+                        Database = databaseUri.LocalPath.TrimStart('/')
+                    };
+                    options.UseNpgsql(connectionStringBuilder.ToString());
                 }
                 else
                 {
-                    var version = ServerVersion.AutoDetect(Configuration.GetConnectionString("Database"));
-                    options.UseMySql(Configuration.GetConnectionString("Database"), version);
+                    options.UseNpgsql(Configuration.GetConnectionString("Database"));
                 }
             });
-            // services.AddDbContext<MyKeysDbContext>(options =>
-            // {
-            //     if (_environment.IsProduction())
-            //     {
-            //         var databaseUrl = Environment.GetEnvironmentVariable("HEROKU_POSTGRESQL_BLACK_URL");
-            //         var databaseUri = new Uri(databaseUrl!);
-            //         var credentialInfo = databaseUri.UserInfo.Split(":"); // first part is user, second part is password
-            //
-            //         var connectionStringBuilder = new NpgsqlConnectionStringBuilder
-            //         {
-            //             Host = databaseUri.Host,
-            //             Port = databaseUri.Port,
-            //             Username = credentialInfo[0],
-            //             Password = credentialInfo[1],
-            //             Database = databaseUri.LocalPath.TrimStart('/')
-            //         };
-            //         options.UseNpgsql(connectionStringBuilder.ToString());
-            //     }
-            //     else
-            //     {
-            //         options.UseNpgsql(Configuration.GetConnectionString("KeysDatabase"));
-            //     }
-            // });
-            // services.AddDataProtection().PersistKeysToDbContext<MyKeysDbContext>();
+                services.AddDataProtection().PersistKeysToDbContext<DbContextApp>();
             if (_environment.IsProduction())
             {
                 var mongoConfigEnvVar = Environment.GetEnvironmentVariable("mongodb_config");
@@ -211,9 +182,10 @@ namespace Isolaatti
             services.AddScoped<ServerRenderedAlerts>();
             services.AddScoped<GoogleCloudStorageService>();
             services.AddScoped<AudiosService>();
+            services.AddScoped<ImagesRepository>();
             services.AddScoped<ImagesService>();
             // don't allow uploading files larger than 2 MB, for security reasons
-            services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = 1024 * 1024 * 2);
+            services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = 1024 * 1024 * 10);
             services.AddSwaggerGen();
             
         }

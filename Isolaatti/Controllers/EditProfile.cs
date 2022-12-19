@@ -1,14 +1,9 @@
-using System;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Isolaatti.Classes.ApiEndpointsRequestDataModels;
 using Isolaatti.Models;
 using Isolaatti.Repositories;
 using Isolaatti.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Isolaatti.Controllers
 {
@@ -19,12 +14,14 @@ namespace Isolaatti.Controllers
         private readonly DbContextApp _db;
         private readonly IAccounts _accounts;
         private readonly AudiosRepository _audios;
+        private readonly ImagesService _images;
 
-        public EditProfile(DbContextApp dbContextApp, IAccounts accounts, AudiosRepository audios)
+        public EditProfile(DbContextApp dbContextApp, IAccounts accounts, AudiosRepository audios, ImagesService images)
         {
             _db = dbContextApp;
             _accounts = accounts;
             _audios = audios;
+            _images = images;
         }
 
         [HttpPost]
@@ -65,37 +62,37 @@ namespace Isolaatti.Controllers
             return Ok();
         }
 
-        [HttpPost]
-        [Route("UpdatePhoto")]
-        public async Task<IActionResult> UpdatePhoto([FromHeader(Name = "sessionToken")] string sessionToken,
-            [FromForm] IFormFile file)
-        {
-            var user = await _accounts.ValidateToken(sessionToken);
-            if (user == null)
-            {
-                return Unauthorized("Token is not valid");
-            }
-
-            var stream = new MemoryStream();
-            await file.CopyToAsync(stream);
-
-            var array = stream.ToArray();
-
-            // add the image
-            var profileImage = new ProfileImage
-            {
-                ImageData = Convert.ToBase64String(array),
-                UserId = user.Id
-            };
-            _db.ProfileImages.Add(profileImage);
-            await _db.SaveChangesAsync();
-
-            user.ProfileImageId = profileImage.Id;
-            _db.Users.Update(user);
-            await _db.SaveChangesAsync();
-
-            return Ok(profileImage.Id);
-        }
+        // [HttpPost]
+        // [Route("UpdatePhoto")]
+        // public async Task<IActionResult> UpdatePhoto([FromHeader(Name = "sessionToken")] string sessionToken,
+        //     [FromForm] IFormFile file)
+        // {
+        //     var user = await _accounts.ValidateToken(sessionToken);
+        //     if (user == null)
+        //     {
+        //         return Unauthorized("Token is not valid");
+        //     }
+        //
+        //     var stream = new MemoryStream();
+        //     await file.CopyToAsync(stream);
+        //
+        //     var array = stream.ToArray();
+        //
+        //     // add the image
+        //     var profileImage = new ProfileImage
+        //     {
+        //         ImageData = Convert.ToBase64String(array),
+        //         UserId = user.Id
+        //     };
+        //     _db.ProfileImages.Add(profileImage);
+        //     await _db.SaveChangesAsync();
+        //
+        //     user.ProfileImageId = profileImage.Id;
+        //     _db.Users.Update(user);
+        //     await _db.SaveChangesAsync();
+        //
+        //     return Ok(profileImage.Id);
+        // }
 
         [HttpPost]
         [Route("UpdateAudioDescription")]
@@ -119,7 +116,7 @@ namespace Isolaatti.Controllers
 
         [HttpPost]
         [Route("SetProfilePhoto")]
-        public async Task<IActionResult> UpdateProfileImageWithImageId([FromHeader(Name = "sessionToken")] string sessionToken, [FromQuery] Guid imageId)
+        public async Task<IActionResult> UpdateProfileImageWithImageId([FromHeader(Name = "sessionToken")] string sessionToken, [FromQuery] string imageId)
         {
             var user = await _accounts.ValidateToken(sessionToken);
             if (user == null)
@@ -127,21 +124,38 @@ namespace Isolaatti.Controllers
                 return Unauthorized("Token is not valid");
             }
 
-            var selectedImage = await _db.ProfileImages.Where(image => image.Id.Equals(imageId)).Select(image => new {id = image.Id, userId = image.UserId}).FirstOrDefaultAsync();
+            var selectedImage = await _images.GetImage(imageId);
             if (selectedImage == null)
             {
                 return NotFound(imageId);
             }
 
-            if (selectedImage.userId != user.Id)
+            if (selectedImage.UserId != user.Id)
             {
                 return Unauthorized();
             }
             
-            user.ProfileImageId = selectedImage.id;
+            user.ProfileImageId = selectedImage.Id;
             _db.Users.Update(user);
             await _db.SaveChangesAsync();
             
+            return Ok();
+        }
+
+        [HttpPost]
+        [Route("RemoveAudioFromProfile")]
+        public async Task<IActionResult> RemoveAudioFromDescription([FromHeader(Name = "sessionToken")] string sessionToken)
+        {
+            var user = await _accounts.ValidateToken(sessionToken);
+            if (user == null)
+            {
+                return Unauthorized("Token is not valid");
+            }
+
+            user.DescriptionAudioId = null;
+
+            _db.Update(user);
+            await _db.SaveChangesAsync();
             return Ok();
         }
     }

@@ -38,6 +38,7 @@ Vue.component('squad-view', {
               <div class="btn-group overflow-auto mb-1 mt-1">
                 <router-link to="/" class="btn" active-class="btn-primary" :exact="true">Inicio</router-link>
                 <router-link :to="{path: '/miembros', query: {tab: 'members'}}" active-class="btn-primary" class="btn">Personas</router-link>
+                <router-link :to="{path: '/imagenes'}" active-class="btn-primary" class="btn">Imágenes</router-link>
               </div>
             </div>
           </div>

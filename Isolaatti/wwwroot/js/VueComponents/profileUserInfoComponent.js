@@ -49,7 +49,7 @@
         },
         profileImageUrl: function () {
             if (this.profile.profileImageId === null) return "/res/imgs/avatar.svg";
-            return `/api/Fetch/ProfileImages/${this.profile.profileImageId}.png`;
+            return `/api/images/image/${this.profile.profileImageId}?mode=reduced`;
         },
         receivedLikesPageUrl: function () {
             return `/perfil/${this.userId}/likes_recibidos`;
@@ -250,6 +250,14 @@
                 })
             });
             this.profile.profileAudioId = audioId;
+            $('#modal-edit-audio').modal('hide');
+        },
+        removeAudio: async function() {
+            await fetch("/api/EditProfile/RemoveAudioFromProfile", {
+                method: "post",
+                headers: this.customHeaders
+            });
+            this.profile.profileAudioId = null;
             $('#modal-edit-audio').modal('hide');
         }
     },
@@ -486,13 +494,13 @@
         <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title"><i class="far fa-edit"></i> Cambiar foto de perfil</h5>
+              <h5 class="modal-title"><i class="fa-solid fa-image"></i> Cambiar foto de perfil</h5>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 &times;
               </button>
             </div>
             <div class="modal-body">
-              <profile-image-maker @imageUpdated="onImageUpdated"></profile-image-maker>
+              <profile-image-maker @imageUpdated="onImageUpdated" :profile="true"></profile-image-maker>
             </div>
           </div>
         </div>
@@ -508,9 +516,9 @@
               </button>
             </div>
             <div class="modal-body">
-              <div class="isolaatti-card">
+              <div class="isolaatti-card" v-if="profile.descriptionAudioId">
                 <p class="mb-0">Actualmente tienes un audio colocado.</p>
-                <button class="btn btn-sm btn-danger w-100" type="button">Quitar</button>
+                <button class="btn btn-sm btn-danger w-100" type="button" @click="">Quitar</button>
               </div>
               <div class="isolaatti-card mt-2">
                 <p>Este audio aparecerá destacado en tu perfil.</p>

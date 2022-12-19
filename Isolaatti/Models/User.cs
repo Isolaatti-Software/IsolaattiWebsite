@@ -38,7 +38,7 @@ namespace Isolaatti.Models
         public bool FollowingThisUser { get; set; }
         [NotMapped]
         public bool ThisUserIsFollowingMe { get; set; }
-        public Guid? ProfileImageId { get; set; }
+        public string? ProfileImageId { get; set; }
         public string DescriptionText { get; set; }
         public string DescriptionAudioId { get; set; }
 

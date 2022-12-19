@@ -34,7 +34,7 @@
               </button>
               <button class="btn" :class="[currentSection==='profile-pictures' ? 'btn-primary' : 'btn-light']"
                       v-on:click="currentSection='profile-pictures'">
-                <i class="fa-solid fa-image"></i> Fotos de perfil
+                <i class="fa-solid fa-image"></i> Imagenes
               </button>
             </div>
           </div>

@@ -14,9 +14,12 @@ public class Image
     
     [Required]
     public int UserId { get; set; }
+
+    [Required]
+    public string Name { get; set; }
     
-    public Guid SquadId { get; set; }
+    public Guid? SquadId { get; set; }
     
     [Required]
-    public string FirebaseObjectPath { get; set; }
+    public string IdOnFirebase { get; set; }
 }
