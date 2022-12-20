@@ -291,18 +291,18 @@ const squadPeopleComponent = {
 
     template: `
     <div>
-      <section class="isolaatti-card">
+      <section>
         <h5>Personas</h5>
         <div class="btn-group overflow-auto w-100">
-          <button type="button" class="btn" :class="[currentScreen==='members' ? 'btn-primary' : 'btn-light']"
+          <button type="button" class="btn" :class="[currentScreen==='members' ? 'btn-outline-primary' : '']"
                   @click="$router.push({path: '/miembros', query:{tab:'members'}})">
             Miembros
           </button>
-          <button type="button" class="btn" :class="[currentScreen==='invitations' ? 'btn-primary' : 'btn-light']"
+          <button type="button" class="btn" :class="[currentScreen==='invitations' ? 'btn-outline-primary' : '']"
                   @click="$router.push({path: '/miembros', query:{tab:'invitations'}})">
             Invitaciones
           </button>
-          <button type="button" class="btn" :class="[currentScreen==='requests' ? 'btn-primary' : 'btn-light']"
+          <button type="button" class="btn" :class="[currentScreen==='requests' ? 'btn-outline-primary' : '']"
                   @click="$router.push({path: '/miembros', query:{tab:'requests'}})">
             Solicitudes
           </button>

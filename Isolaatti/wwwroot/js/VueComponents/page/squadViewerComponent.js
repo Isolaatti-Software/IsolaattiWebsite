@@ -9,45 +9,32 @@ Vue.component('squad-view', {
     data: function() {
         return {
             customHeaders: customHttpHeaders,
-            userData: userData
+            userData: userData,
+            description: ""
         }
     },
     methods: {
-        fetchSquadMembers: async function() {
-            
-        },
-        fetchSquadPosts: async function() {
-            
+        onDescription: function(text) {
+            this.description = text;
         }
-    },
-    computed: {
-        
     },
     mounted: async function() {
         
     },
     template:`
         <div class="container">
-          <div class="row isolaatti-card">
-            <div class="col-12">
-              <squad-header :squad-id="squadId"></squad-header>
+          <div class="row">
+            <div class="col-md-4">
+              <squad-header :squad-id="squadId" @description="onDescription"></squad-header>
             </div>
-          </div>
-          <div class="row mt-2 isolaatti-card">
-            <div class="col-12">
-              <div class="btn-group overflow-auto mb-1 mt-1">
+            <div class="col-md-8">
+              <squad-description :text="description" class="mt-2 mb-2"></squad-description>
+              <div class="btn-group overflow-auto mb-2 mt-3 isolaatti-card w-100">
                 <router-link to="/" class="btn" active-class="btn-primary" :exact="true">Inicio</router-link>
                 <router-link :to="{path: '/miembros', query: {tab: 'members'}}" active-class="btn-primary" class="btn">Personas</router-link>
                 <router-link :to="{path: '/imagenes'}" active-class="btn-primary" class="btn">Imágenes</router-link>
               </div>
-            </div>
-          </div>
-          <div class="row">
-          
-            <div class="col-12 p-0">
-              <div class="mt-2">
-                <router-view :squadId="squadId"></router-view>
-              </div>
+              <router-view :squadId="squadId"></router-view>
             </div>
           </div>
         

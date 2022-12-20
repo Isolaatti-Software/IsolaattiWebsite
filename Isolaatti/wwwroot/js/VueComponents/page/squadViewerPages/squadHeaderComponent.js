@@ -32,20 +32,11 @@
                 && this.squadInfoForEdit.extendedDescription.length > 0
                 && this.squadInfoForEdit.description.length > 0;
         },
-        extendedDescriptionCssClasses: function() {
-            if(this.squadExtendedDescriptionCutContent) {
-                return "post-cut-height"
-            }
-            return "overflow-auto"
-        },
         imageUrl: function() {
             return this.squadInfo.imageId === null ? "" : `/api/images/image/${this.squadInfo.imageId}?mode=reduced`;
         }
     },
     methods: {
-        compileMarkdown: function (raw) {
-            return DOMPurify.sanitize(marked.parse(raw));
-        },
         goToEditMode: function() {
             this.squadHeaderEditMode = !this.squadHeaderEditMode;
             this.squadInfoForEdit.name = this.squadInfo.name;
@@ -58,6 +49,7 @@
             });
 
             this.squadInfo = await response.json();
+            this.$emit("description", this.squadInfo.extendedDescription);
         },
         updateSquad: async function() {
             this.submitting = true;
@@ -84,19 +76,11 @@
     },
     mounted: async function() {
         await this.fetchSquad();
-        this.squadExtendedDescriptionCutContent = 
-            this.$refs.extendedDescriptionContainer.scrollHeight > this.$refs.extendedDescriptionContainer.clientHeight;
     },
     template: `
     <section v-if="squadInfo!==undefined">
-    <div class="row m-0">
-      <div class="col-12 d-flex justify-content-end">
-        
-      </div>
-    </div>
-
     <div class="row m-0" v-if="!squadHeaderEditMode">
-      <div class="col-lg-4">
+      <div class="col-12">
         <img src="" width="100" height="100" id="profile_photo" class="profile-pic" :src="imageUrl">
         <h1>{{squadInfo.name}}</h1>
         <p>{{squadInfo.description}}</p>
@@ -117,13 +101,6 @@
             </div>
           </div>
         </div>
-      </div>
-      <div class="col-lg-8 bg-white" ref="extendedDescriptionContainer" :class="extendedDescriptionCssClasses" v-html="compileMarkdown(squadInfo.extendedDescription)"></div>
-      <div class="d-flex justify-content-center w-100">
-        <button class="btn btn-link btn-sm" @click="squadExtendedDescriptionCutContent = !squadExtendedDescriptionCutContent">
-          <span v-if="squadExtendedDescriptionCutContent">Mostrar todo</span>
-          <span v-else>Contraer</span>
-        </button>
       </div>
     </div>
     <div class="row m-0" v-else>
@@ -169,3 +146,19 @@
 }
 
 Vue.component('squad-header', squadHeaderComponent);
+Vue.component('squad-description', {
+    props: {
+        text: {
+            required: true,
+            type: String
+        }
+    },
+    methods: {
+        compileMarkdown: function (raw) {
+            return DOMPurify.sanitize(marked.parse(raw));
+        }
+    },
+    template: `
+    <div class="col-lg-8 bg-white" ref="extendedDescriptionContainer" v-html="compileMarkdown(text)"></div>
+    `
+});
