@@ -137,6 +137,7 @@ namespace Isolaatti
                     config.SquadsJoinRequestsCollectionName = mongoConfig?.SquadsJoinRequestsCollectionName;
                     config.RealtimeServiceKeysCollectionName = mongoConfig?.RealtimeServiceKeysCollectionName;
                     config.AuthTokensCollectionName = mongoConfig?.AuthTokensCollectionName;
+                    config.ImagesCollectionName = mongoConfig?.ImagesCollectionName;
                 });
                 
                 var serversConfigEnvVar = Environment.GetEnvironmentVariable("servers");
