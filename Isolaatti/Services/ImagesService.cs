@@ -5,9 +5,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Isolaatti.Classes.ApiEndpointsResponseDataModels;
 using Isolaatti.Repositories;
-using Microsoft.AspNetCore.Mvc;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Webp;
 using SixLabors.ImageSharp.Processing;
 using Image = Isolaatti.Models.MongoDB.Image;
 
@@ -37,6 +35,7 @@ public class ImagesService
         // Create original image. No resize is performed, but only converted to webp format
         var originalImageConvertedToWebpStream = new MemoryStream();
         var originalImage = await SixLabors.ImageSharp.Image.LoadAsync(file);
+        file.Close();
         using (var img = originalImage.Clone(context => context.Resize(context.GetCurrentSize())))
         {
             await img.SaveAsWebpAsync(originalImageConvertedToWebpStream);
@@ -60,11 +59,14 @@ public class ImagesService
         }
 
         // Upload original image object
-        await _storage.CreateObject(file, "image/webp", originalImageObjectName);
+        await _storage.CreateObject(originalImageConvertedToWebpStream, "image/webp", originalImageObjectName);
+        originalImageConvertedToWebpStream.Close();
         // Upload small image object
         await _storage.CreateObject(smallImageStream, "image/webp", smallImageObjectName);
+        smallImageStream.Close();
         // Upload reduced image object
         await _storage.CreateObject(reducedImageStream, "image/webp", reducedImageObjectName);
+        reducedImageStream.Close();
         return await _imagesRepository.InsertImage(userId, name, imageGuid.ToString(), squadId);
     }
 
@@ -85,7 +87,7 @@ public class ImagesService
         if (image == null) return null;
 
         if (mode.Equals("original") || mode.Equals("reduced") || mode.Equals("small"))
-            return await _storage.GetSignedUrl($"images/{image.IdOnFirebase}/{mode}");
+            return await _storage.GetDownloadUrl($"images/{image.IdOnFirebase}/{mode}");
         return null;
     }
 

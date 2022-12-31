@@ -46,9 +46,9 @@
         },
         profilePictureUrl: function (imageId) {
             if (imageId === null) {
-                return "/res/imgs/user-solid.png";
+                return "/res/imgs/avatar.svg";
             }
-            return `/api/Fetch/ProfileImages/${imageId}.png`;
+            return `/api/images/image/${imageId}?mode=small`;
         }
     },
     mounted: async function () {

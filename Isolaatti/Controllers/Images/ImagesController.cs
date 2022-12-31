@@ -7,6 +7,7 @@ using Isolaatti.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Primitives;
 
 namespace Isolaatti.Controllers.Images;
 
@@ -32,6 +33,7 @@ public class ImagesController : ControllerBase
     public async Task<IActionResult> GetImage(string imageId, [FromQuery] string mode)
     {
         var url = await _images.GetImageDownloadUrl(imageId, mode);
+        Response.Headers.CacheControl = new StringValues(new []{"max-age=604800", $"etag={imageId}"});
         return url != null ? Redirect(url) : NotFound();
     }
 
@@ -78,7 +80,7 @@ public class ImagesController : ControllerBase
         var imageId = await _db.Users.Where(u => u.Id == userId).Select(u => u.ProfileImageId).FirstOrDefaultAsync();
         var url = await _images.GetImageDownloadUrl(imageId, mode);
         
-        return url != null ? Redirect(url) : NotFound();
+        return url != null ? Redirect(url) : Redirect("/res/imgs/avatar.svg");
     }
 
     [HttpGet]

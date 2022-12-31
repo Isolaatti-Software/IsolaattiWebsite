@@ -41,7 +41,7 @@
             this.posts = [post].concat(this.posts);
         },
         removePost: function (postId) {
-            const index = this.posts.findIndex(p => p.id === postId);
+            const index = this.posts.findIndex(p => p.post.id === postId);
             if (index === -1) {
                 return;
             }
@@ -61,7 +61,7 @@
         },
         profilePictureUrl: function (imageId) {
             if (imageId === null) {
-                return "/res/imgs/user-solid.png";
+                return "/res/imgs/avatar.svg";
             }
             return `/api/images/image/${imageId}?mode=small`;
         }

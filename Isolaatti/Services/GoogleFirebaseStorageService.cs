@@ -36,4 +36,10 @@ public class GoogleCloudStorageService
         var urlSigner = UrlSigner.FromServiceAccountPath(GoogleCloudCredentialPath);
         return await urlSigner.SignAsync(FirebaseProjectName, objectName, TimeSpan.FromHours(1), HttpMethod.Get);
     }
+
+    public async Task<string> GetDownloadUrl(string objectName)
+    {
+        var firestoreObject = await _storage.GetObjectAsync(FirebaseProjectName, objectName);
+        return firestoreObject.MediaLink;
+    }
 }
