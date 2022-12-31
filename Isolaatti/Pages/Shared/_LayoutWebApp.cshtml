@@ -43,10 +43,12 @@
 @* All the content of this div with id app can host Vue.js components. Do not create new instances of Vue.js inside *@
 <div id="app" class="position-relative overflow-hidden">
     
-    <div class="modal fade" id="search-modal">
-        <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
-            <div class="modal-content bg-transparent p-2 border-0">
-                <quick-search></quick-search>
+    <div class="modal fade" id="search-modal" style="z-index: 1060">
+        <div class="modal-dialog modal-dialog-scrollable modal-xl modal-dialog-centered">
+            <div class="modal-content p-2 border-0 h-100">
+                <div class="d-flex">
+                    <quick-search class="w-100"></quick-search>
+                </div>
             </div>
         </div>
     </div>
@@ -194,6 +196,24 @@
             </div>
         </noscript>
         <div class="p-0">@RenderBody()</div>
+            <footer class="mt-auto">
+                <p class="text-center">
+                    <span class="isolaatti-name-footer">Isolaatti</span>
+                    hecho con <i class="fas fa-heart" style="color: red"></i> por <em>Erik Cavazos</em>, 2020 - 2022
+                </p>
+                <p class="text-center footer-font-color font-weight-lighter">
+                    <a href="https://github.com/Isolaatti-Software/IsolaattiWebsite" class="link">Código fuente</a>
+                    <a href="https://play.google.com/store/apps/details?id=com.erik.isolaatti" class="link">App</a>
+                    <a href="https://isolaattisoftware.com.mx/isolaatti" class="link">Acerca de</a>
+                    <a asp-page="/s/Legal/PrivacyPolicy" class="link">Política de privacidad y cookies</a>
+                    <a asp-page="/s/Legal/TermsOfUse" class="link">Términos de uso</a>
+                    <a href="https://ayuda.isolaatti.com/" class="link">Ayuda</a>
+                    <a href="https://blog.isolaattisoftware.com.mx/" target="_blank" class="link">Blog</a>
+                </p>
+                <p class="text-center text-white-50">
+        
+                </p>
+            </footer>
     </main>
     <div class="d-flex justify-content-center">
         <audio-player></audio-player>
