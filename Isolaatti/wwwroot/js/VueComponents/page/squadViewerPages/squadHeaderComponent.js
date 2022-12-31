@@ -95,7 +95,7 @@
             <div class="dropdown-menu" aria-labelledby="squad-dropdown">
               <button class="dropdown-item" v-if="userIsAdmin" @click="goToEditMode" href="#">Editar información</button>
               <button class="dropdown-item" data-toggle="modal" data-target="#modal-edit-photo">Cambiar imagen del squad</button>
-              <a class="dropdown-item" href="#">Configuración</a>
+              <button class="dropdown-item" v-if="userIsAdmin" data-toggle="modal" data-target="#modal-squad-settings">Configuración</button>
               <div class="dropdown-divider"></div>
               <a class="dropdown-item" href="#">Salir</a>
             </div>
@@ -137,6 +137,22 @@
           </div>
           <div class="modal-body">
             <profile-image-maker @imageUpdated="onImageUpdated" :squad-id="squadId" :profile="true"></profile-image-maker>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="modal" id="modal-squad-settings">
+      <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Ajustes del squad</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              &times;
+            </button>
+          </div>
+          <div class="modal-body">
+            <squad-settings :squad-id="squadId" />
           </div>
         </div>
       </div>

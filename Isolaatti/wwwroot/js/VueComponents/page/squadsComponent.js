@@ -291,6 +291,9 @@ const requestsComponent = {
           <span class="sr-only">Cargando más contenido...</span>
         </div>
       </div>
+      <div v-if="!loading && requests.length === 0">
+        <p class="m-2 text-center"> No hay contenido que mostrar <i class="fa-solid fa-face-sad-cry"></i></p>
+      </div>
       
     </section>
     `
@@ -377,6 +380,9 @@ const invitationsComponent = {
           <span class="sr-only">Cargando más contenido...</span>
         </div>
       </div>
+    <div v-if="!loading && invitations.length === 0">
+      <p class="m-2 text-center"> No hay contenido que mostrar <i class="fa-solid fa-face-sad-cry"></i></p>
+    </div>
       
     </section>
     `

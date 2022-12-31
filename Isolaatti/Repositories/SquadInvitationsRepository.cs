@@ -78,6 +78,16 @@ public class SquadInvitationsRepository
                 .Set("ResponseMessage",responseMessage));
     }
 
+    /// <summary>
+    /// Updates the invitation
+    /// </summary>
+    /// <param name="invitationId">Id of the invitation to update.</param>
+    /// <param name="message">It is the message that the maker of the invitation writes.</param>
+    public void UpdateInvitationMessage(string invitationId, string message)
+    {
+        _invitations.UpdateOne(inv => inv.Id.Equals(invitationId), Builders<SquadInvitation>.Update.Set("Message", message));
+    }
+
     
     public async Task<bool> SameInvitationExists(Guid squadId, int senderUserId, int recipientUserId)
     {

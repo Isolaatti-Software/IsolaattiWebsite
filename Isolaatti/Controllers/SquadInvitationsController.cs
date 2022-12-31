@@ -15,6 +15,11 @@ namespace Isolaatti.Controllers;
 [Route("/api/Squads/Invitations/{invitationId}")]
 public class SquadInvitationsController : ControllerBase
 {
+    public class InvitationUpdatePayload
+    {
+        public string Message { get; set; }
+    }
+    
     private readonly IAccounts _accounts;
     private readonly SquadInvitationsRepository _squadInvitationsRepository;
     private readonly SquadsRepository _squadsRepository;
@@ -74,6 +79,7 @@ public class SquadInvitationsController : ControllerBase
     
 
     [HttpDelete]
+    [Route("Remove")]
     public async Task<IActionResult> RemoveInvitation([FromHeader(Name = "sessionToken")] string sessionToken,
         string invitationId)
     {
@@ -224,5 +230,28 @@ public class SquadInvitationsController : ControllerBase
                 recipientName = _db.Users.Find(inv.RecipientUserId)?.Name
             })
         });
+    }
+
+    [HttpPut]
+    [Route("Update")]
+    public async Task<IActionResult> UpdateInvitation([FromHeader(Name = "sessionToken")] string sessionToken, InvitationUpdatePayload invitationUpdatePayload, string invitationId)
+    {
+        var user = await _accounts.ValidateToken(sessionToken);
+        if(user == null) return Unauthorized("Token is not valid");
+        
+        var invitation = _squadInvitationsRepository.GetInvitation(invitationId);
+        if (invitation == null)
+        {
+            return NotFound();
+        }
+
+        if (invitation.SenderUserId != user.Id)
+        {
+            return Unauthorized();
+        }
+        
+        _squadInvitationsRepository.UpdateInvitationMessage(invitationId, invitationUpdatePayload.Message);
+
+        return Ok();
     }
 }
