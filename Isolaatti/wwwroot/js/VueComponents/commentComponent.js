@@ -56,6 +56,10 @@ Vue.component('comment', {
                 this.deleteMode = false;
                 that.$emit("commentDeleted", that.comment.id);
             });
+        },
+        handleUpdate: function(commentDto) {
+            this.edit = false;
+            this.$emit("updated", commentDto)
         }
     },
     template: `
@@ -104,7 +108,7 @@ Vue.component('comment', {
       </article>
       <section v-else>
         <new-comment :post-to-comment="comment.comment.id" :mode="'modify'" :comment-to-edit="comment.comment.id"
-                     @commentEdited="edit=false"></new-comment>
+                     @done="handleUpdate"></new-comment>
       </section>
       </div>
     `,

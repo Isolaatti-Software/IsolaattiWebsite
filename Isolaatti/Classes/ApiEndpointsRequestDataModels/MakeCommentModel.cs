@@ -6,6 +6,5 @@ namespace Isolaatti.Classes.ApiEndpointsRequestDataModels
     {
         public string Content { get; set; }
         public string? AudioId { get; set; }
-        public int Privacy { get; set; }
     }
 }

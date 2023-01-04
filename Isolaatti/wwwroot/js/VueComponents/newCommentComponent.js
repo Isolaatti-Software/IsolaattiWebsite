@@ -56,7 +56,7 @@
                 url = `/api/Comment/${this.commentToEdit}/Edit`;
             }
 
-            await fetch(url, {
+            const response = await fetch(url, {
                 method: "POST",
                 headers: this.customHeaders,
                 body: JSON.stringify({
@@ -69,6 +69,7 @@
             this.commentDto.comment.date = new Date();
             
             this.posting = false;
+            this.$emit("done", await response.json());
         },
         audioPosted: function (id) {
             this.comment.audioId = id;
@@ -88,7 +89,7 @@
                 method: "GET",
                 headers: this.customHeaders
             }).then(res => res.json()).then(function (comment) {
-                that.comment = comment;
+                that.commentDto = comment;
             });
         }
     },

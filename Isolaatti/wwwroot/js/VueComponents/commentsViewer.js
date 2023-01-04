@@ -31,14 +31,6 @@ Vue.component("comments-viewer", {
             return this.preview ? "#" : `/pub/${this.postId}`;
         }
     },
-    watch: {
-        comments: function (old, newValue) {
-            const that = this;
-            setTimeout(function () {
-                that.scrollToBottom();
-            }, 200);
-        }
-    },
     methods: {
         fetchComments: async function (event) {
             this.loading = true;
@@ -67,11 +59,9 @@ Vue.component("comments-viewer", {
 
             this.comments.splice(index, 1);
         },
-        scrollToBottom: function () {
-            let appDiv = document.getElementById("app-main");
-            let appHeight = appDiv.scrollHeight;
-            console.log(appHeight);
-            appDiv.scrollTo(0, appHeight);
+        onCommentEdited: function(commentDto) {
+            const index = this.comments.findIndex(c => c.comment.id === commentDto.comment.id);
+            this.comments.splice(index, 1, commentDto);
         }
     },
     mounted: async function () {
@@ -97,7 +87,7 @@ Vue.component("comments-viewer", {
       <h5 v-if="comments.length===0 && !isUnderPost" class="m-4 text-center"><i class="fas fa-sad-tear"></i> No hay
         comentarios que mostrar</h5>
       <comment v-for="comment in comments" :comment="comment" class="w-auto" :key="comment.comment.id"
-               @commentDeleted="onCommentRemoved"></comment>
+               @commentDeleted="onCommentRemoved" @updated="onCommentEdited"></comment>
       <a :href="openThreadLink" v-if="comments.length < numberOfComments && isUnderPost" class="text-center">Ver
         discusión</a>
       <a href="#" v-on:click="fetchComments" class="text-center mt-2"

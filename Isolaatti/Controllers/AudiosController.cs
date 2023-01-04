@@ -117,6 +117,6 @@ public class AudiosController : ControllerBase
             return NotFound();
         }
 
-        return Redirect(await _storage.GetSignedUrl(audio.FirestoreObjectPath));
+        return Redirect(await _storage.GetDownloadUrl(audio.FirestoreObjectPath));
     }
 }
