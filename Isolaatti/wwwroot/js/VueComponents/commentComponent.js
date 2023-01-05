@@ -50,7 +50,7 @@ Vue.component('comment', {
                 method: "POST",
                 headers: this.customHeaders,
                 body: JSON.stringify({
-                    id: this.comment.id
+                    id: this.comment.comment.id
                 })
             }).then(_ => {
                 this.deleteMode = false;
