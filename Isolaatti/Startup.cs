@@ -207,7 +207,6 @@ namespace Isolaatti
             app.UseRouting();
             app.UseCors("cors");
             app.UseAuthorization();
-            app.UseHttpsRedirection();
             app.UseMiddleware<ScopedHttpContextMiddleware>();
             app.UseEndpoints(endpoints =>
             {
