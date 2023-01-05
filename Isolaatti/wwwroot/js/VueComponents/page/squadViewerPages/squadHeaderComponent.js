@@ -33,7 +33,7 @@
                 && this.squadInfoForEdit.description.length > 0;
         },
         imageUrl: function() {
-            return this.squadInfo.imageId === null ? "" : `/api/images/image/${this.squadInfo.imageId}?mode=reduced`;
+            return this.squadInfo.imageId === null ? "/res/imgs/avatar.svg" : `/api/images/image/${this.squadInfo.imageId}?mode=reduced`;
         }
     },
     methods: {
