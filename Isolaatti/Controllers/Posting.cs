@@ -197,7 +197,7 @@ namespace Isolaatti.Controllers
         
             _db.Comments.Add(commentToMake);
             await _db.SaveChangesAsync();
-            
+
             // if (post.UserId != user.Id)
             // {
             //     await _notificationSender.NotifyUser(post.UserId, new SocialNotification
@@ -207,12 +207,13 @@ namespace Isolaatti.Controllers
             //     });
             //     
             // }
-            await _notificationSender.SendNewCommentEvent(new CommentDto
+            var commentDto = new CommentDto
             {
                 Comment = commentToMake,
                 Username = _db.Users.FirstOrDefault(u => u.Id == commentToMake.UserId)?.Name
-            });
-            return Ok();
+            };
+            await _notificationSender.SendNewCommentEvent(commentDto);
+            return Ok(commentDto);
         }
     }
 }
