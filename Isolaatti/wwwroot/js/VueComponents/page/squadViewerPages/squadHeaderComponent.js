@@ -3,6 +3,11 @@
         squadId: {
             required: true,
             type: String
+        },
+        preview: {
+          required: false,
+          type: Boolean,
+          default: false
         }
     },
     data: function() {
@@ -84,7 +89,7 @@
         <img src="" width="100" height="100" id="profile_photo" class="profile-pic" :src="imageUrl">
         <h1>{{squadInfo.name}}</h1>
         <p>{{squadInfo.description}}</p>
-        <div class="d-flex align-items-center w-100">
+        <div class="d-flex align-items-center w-100" v-if="!preview">
           <button class="btn btn-outline-primary w-100" @click="$router.push({path: '/miembros', query:{tab:'invitations', action:'new'}})">
             <i class="fa-solid fa-plus"></i> Invitar
           </button>
@@ -126,7 +131,7 @@
       </div>
     </div>
 
-    <div class="modal" id="modal-edit-photo">
+    <div class="modal" id="modal-edit-photo" v-if="!preview">
       <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
@@ -142,7 +147,7 @@
       </div>
     </div>
     
-    <div class="modal" id="modal-squad-settings">
+    <div class="modal" id="modal-squad-settings" v-if="!preview">
       <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-xl">
         <div class="modal-content">
           <div class="modal-header">
@@ -152,7 +157,7 @@
             </button>
           </div>
           <div class="modal-body">
-            <squad-settings :squad-id="squadId" />
+            <squad-settings v-if="squadInfo!==undefined" :squad="squadInfo" />
           </div>
         </div>
       </div>

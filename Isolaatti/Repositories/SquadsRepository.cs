@@ -277,4 +277,18 @@ public class SquadsRepository
     {
         return await _images.GetImagesOfSquad(squadId, lastId);
     }
+
+    public async Task SetSquadPrivacy(Guid squadId, SquadPrivacy privacy) 
+    {
+        var squad = await _db.Squads.FindAsync(squadId);
+        if(squad == null)
+        {
+            return;
+        }
+
+        squad.Privacy = privacy;
+
+        _db.Squads.Update(squad);
+        await _db.SaveChangesAsync();
+    }
 }

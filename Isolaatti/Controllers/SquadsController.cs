@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Isolaatti.Classes.ApiEndpointsRequestDataModels;
+using Isolaatti.Enums;
 using Isolaatti.Models;
 using Isolaatti.Repositories;
 using Isolaatti.Services;
@@ -271,5 +272,43 @@ public class SquadsController : ControllerBase
             result = (await _squadsRepository.UpdateSquad(squadId, payload.Name, payload.Description,
                 payload.ExtendedDescription)).ToString()
         });
+    }
+
+    [HttpPost]
+    [Route("{squadId:guid}/UpdatePrivacyTo/{privacy}")]
+    public async Task<IActionResult> UpdatePrivacy(
+        [FromHeader(Name = "sessionToken")] string sessionToken,
+        Guid squadId, string privacy)
+    {
+        SquadPrivacy squadPrivacy;
+        try 
+        {
+            squadPrivacy = Enum.Parse<SquadPrivacy>(privacy);
+        }
+        catch(ArgumentException) 
+        {
+            return BadRequest(new 
+            {
+                message = "Provide value for route param privacy: Private or Public"
+            });
+        }
+
+        var user = await _accounts.ValidateToken(sessionToken);
+        if(user == null) return Unauthorized("Token is not valid");
+
+        var squad = await _squadsRepository.GetSquad(squadId);
+        if (squad == null)
+        {
+            return NotFound(new { error = "Squad does not exist" });
+        }
+
+        if (!squad.UserId.Equals(user.Id))
+        {
+            return Unauthorized(new { error = "Squad cannot be updated by this user" });
+        }
+
+        await _squadsRepository.SetSquadPrivacy(squadId, squadPrivacy);
+
+        return Ok();
     }
 }
