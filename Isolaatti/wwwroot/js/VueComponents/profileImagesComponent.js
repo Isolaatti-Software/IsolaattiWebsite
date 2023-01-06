@@ -13,6 +13,11 @@
             required: false,
             type: String,
             default: null
+        },
+        userIself: {
+          required: false,
+          type: Boolean,
+          default: true
         }
     },
     data: function () {
@@ -71,7 +76,7 @@
     },
     template: `
       <section>
-      <div class="d-flex justify-content-end">
+      <div class="d-flex justify-content-end" v-if="userIself">
         <button class="btn btn-sm btn-light" title="Nueva imagen" data-target="#modal-upload-photo" data-toggle="modal">
           <i class="fa-solid fa-plus"></i>
         </button>

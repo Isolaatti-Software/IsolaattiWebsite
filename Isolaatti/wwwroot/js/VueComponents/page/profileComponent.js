@@ -40,7 +40,7 @@
           </div>
           <posts-list :user-id="userId" v-if="currentSection==='discussions'" class="max-640"></posts-list>
           <audios-list :user-id="userId" v-if="currentSection==='audios'" class="max-640"></audios-list>
-          <profile-images :user-id="userId" v-if="currentSection==='profile-pictures'" class="max-640"></profile-images>
+          <profile-images :user-id="userId" v-if="currentSection==='profile-pictures'" class="max-640" :user-iself="false"></profile-images>
         </section>
       </div>
       </div>
