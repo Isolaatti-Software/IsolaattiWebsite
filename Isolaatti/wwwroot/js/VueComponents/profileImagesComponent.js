@@ -113,7 +113,7 @@
               </button>
             </div>
             <div class="modal-body">
-              <image-uploader :profile="false" @uploaded="onUploaded"/>
+              <image-uploader :profile="false" :squad-id="squadId" @uploaded="onUploaded"/>
             </div>
           </div>
         </div>
