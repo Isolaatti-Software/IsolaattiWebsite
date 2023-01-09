@@ -288,25 +288,23 @@ const squadPeopleComponent = {
             }
         }
     },
-
+    methods: {
+        onOptionSelected: function (e) {
+            switch (e.target.value) {
+                case "0": this.$router.push({ path: '/miembros', query: { tab: 'members' } }); break;
+                case "1": this.$router.push({ path: '/miembros', query: { tab: 'invitations' } }); break;
+                case "2": this.$router.push({ path: '/miembros', query: { tab: 'requests' } }); break;
+            }
+        }
+    },
     template: `
     <div>
       <section>
-        <h5>Personas</h5>
-        <div class="btn-group overflow-auto w-100">
-          <button type="button" class="btn" :class="[currentScreen==='members' ? 'btn-outline-primary' : '']"
-                  @click="$router.push({path: '/miembros', query:{tab:'members'}})">
-            Miembros
-          </button>
-          <button type="button" class="btn" :class="[currentScreen==='invitations' ? 'btn-outline-primary' : '']"
-                  @click="$router.push({path: '/miembros', query:{tab:'invitations'}})">
-            Invitaciones
-          </button>
-          <button type="button" class="btn" :class="[currentScreen==='requests' ? 'btn-outline-primary' : '']"
-                  @click="$router.push({path: '/miembros', query:{tab:'requests'}})">
-            Solicitudes
-          </button>
-        </div>
+        <select class="custom-select" @input="onOptionSelected">
+            <option selected value="0">Miembros</option>
+            <option value="1">Invitaciones</option>
+            <option value="2">Solicitudes</option>
+        </select>
       </section>
       <div class="mt-2">
         <squad-invitations :squad-id="squadId" v-if="currentScreen==='invitations'"></squad-invitations>
