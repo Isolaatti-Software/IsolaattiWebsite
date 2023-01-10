@@ -69,12 +69,12 @@ namespace Isolaatti.Controllers
                     if (lastId < 0)
                     {
                         posts = _db.SimpleTextPosts
-                            .Where(post => post.UserId == user.Id);
+                            .Where(post => post.UserId == user.Id).OrderBy(post => post.Id);
                     }
                     else
                     {
                         posts = _db.SimpleTextPosts
-                            .Where(post => post.UserId == user.Id && post.Id > lastId);
+                            .Where(post => post.UserId == user.Id && post.Id > lastId).OrderBy(post => post.Id);
                     }
                 }
                 else
@@ -105,7 +105,7 @@ namespace Isolaatti.Controllers
                         posts = _db.SimpleTextPosts
                             .Where(post =>
                                 post.UserId == requestedAuthor.Id && post.Privacy != 1 && post.SquadId == null)
-                            .OrderByDescending(post => post.Id);
+                            .OrderBy(post => post.Id);
                     }
                     else
                     {
@@ -113,7 +113,7 @@ namespace Isolaatti.Controllers
                             .Where(post =>
                                 post.UserId == requestedAuthor.Id && post.Privacy != 1 && post.Id > lastId &&
                                 post.SquadId == null)
-                            .OrderByDescending(post => post.Id);
+                            .OrderBy(post => post.Id);
                     }
                 }
                 else
