@@ -4,6 +4,7 @@
       <div class="d-flex align-items-center flex-column"
            id="feed-and-thread-reader-container"
            ref="feedAndThreadReaderContainer">
+        <shotcuts></shotcuts>
         <new-post class="w-100"></new-post>
         <feed></feed>
       </div>

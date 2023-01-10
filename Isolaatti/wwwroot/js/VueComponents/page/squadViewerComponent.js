@@ -31,7 +31,7 @@ Vue.component('squad-view', {
               <squad-description :text="description" class="mt-2 mb-2"></squad-description>
               <div class="btn-group overflow-auto mb-2 mt-3 isolaatti-card w-100">
                 <router-link to="/" class="btn" active-class="btn-primary" :exact="true">Inicio</router-link>
-                <router-link :to="{path: '/miembros', query: {tab: 'members'}}" active-class="btn-primary" class="btn">Personas</router-link>
+                <router-link :to="{path: '/miembros', query: {opcion: 'members'}}" active-class="btn-primary" class="btn">Personas</router-link>
                 <router-link :to="{path: '/imagenes'}" active-class="btn-primary" class="btn">Imágenes</router-link>
               </div>
               <router-view :squadId="squadId"></router-view>

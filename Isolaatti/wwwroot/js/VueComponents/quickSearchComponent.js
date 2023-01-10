@@ -24,7 +24,8 @@
     },
     template: `
       <section>
-      <div>
+      <div class="d-flex">
+        <button class="btn btn-light" data-toggle="modal" data-target="#search-modal">&times;</button>
         <input class="form-control" placeholder="Búsqueda rápida" @input="search" v-model="query"/>
       </div>
       <div class="list-group list-group-flush mt-3">

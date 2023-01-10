@@ -90,7 +90,7 @@
         <h1>{{squadInfo.name}}</h1>
         <p>{{squadInfo.description}}</p>
         <div class="d-flex align-items-center w-100" v-if="!preview">
-          <button class="btn btn-outline-primary w-100" @click="$router.push({path: '/miembros', query:{tab:'invitations', action:'new'}})">
+          <button class="btn btn-outline-primary w-100" @click="$router.push({path: '/miembros', query:{opcion:'invitations', action:'new'}})">
             <i class="fa-solid fa-plus"></i> Invitar
           </button>
           <div class="dropdown ml-auto">

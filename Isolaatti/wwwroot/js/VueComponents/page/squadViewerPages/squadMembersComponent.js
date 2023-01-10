@@ -199,73 +199,6 @@ Vue.component('squad-invitations',{
     `
 });
 
-Vue.component('squad-requests', {
-    props: {
-        squadId: {
-            type: String,
-            required: true
-        }
-    },
-    data: function() {
-        return {
-            customHeaders: customHttpHeaders,
-            requests: [],
-            loading: true,
-            error: false
-        }
-    },
-    methods: {
-        fetchRequests: async function() {
-            const response = await fetch(`/api/Squads/${this.squadId}/Re`)
-        }
-    },
-    template: `
-    <section class="isolaatti-card">
-    
-    </section>
-    `
-});
-
-Vue.component('squad-members', {
-    props: {
-        squadId: {
-            type: String,
-            required: true
-        }
-    },
-    data: function() {
-        return {
-            customHeaders: customHttpHeaders,
-            members: [],
-            admins: []
-        }
-    },
-    methods: {
-        fetchMembers: async function() {
-            const response = await fetch(`/api/Squads/${this.squadId}/Members`,{
-                method: "GET",
-                headers: this.customHeaders
-            });
-            const parsedResponse = await response.json();
-            this.members = parsedResponse.members;
-            this.admins = [parsedResponse.admin];
-        },
-        pictureUrl: function(picId) {
-            return `/api/Fetch/ProfileImages/${picId}.png`;
-        }
-    },
-    mounted: async function() {
-        await this.fetchMembers();
-    },
-    template: `
-    <section class="isolaatti-card">
-      <h5>Administrador</h5>
-      <users-grid :users="admins"></users-grid>
-      <h5>Miembros</h5>
-      <users-grid :users="members"></users-grid>
-    </section>
-    `
-});
 
 const squadPeopleComponent = {
     props:{
@@ -284,16 +217,16 @@ const squadPeopleComponent = {
             immediate: true,
             deep: true,
             handler: function(to, from) {
-                this.currentScreen = to.query.tab
+                this.currentScreen = to.query.opcion
             }
         }
     },
     methods: {
         onOptionSelected: function (e) {
             switch (e.target.value) {
-                case "0": this.$router.push({ path: '/miembros', query: { tab: 'members' } }); break;
-                case "1": this.$router.push({ path: '/miembros', query: { tab: 'invitations' } }); break;
-                case "2": this.$router.push({ path: '/miembros', query: { tab: 'requests' } }); break;
+                case "0": this.$router.push({ path: '/miembros', query: { opcion: 'members' } }); break;
+                case "1": this.$router.push({ path: '/miembros', query: { opcion: 'invitations' } }); break;
+                case "2": this.$router.push({ path: '/miembros', query: { opcion: 'requests' } }); break;
             }
         }
     },
