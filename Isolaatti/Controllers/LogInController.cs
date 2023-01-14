@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Isolaatti.Classes.ApiEndpointsRequestDataModels;
 using Isolaatti.Classes.ApiEndpointsResponseDataModels;
+using Isolaatti.Classes.Authentication;
 using Isolaatti.Models;
 using Isolaatti.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -62,7 +63,7 @@ namespace Isolaatti.Controllers
         public async Task<IActionResult> SignOut([FromHeader(Name = "sessionToken")] string sessionToken)
         {
             var user = await _accounts.ValidateToken(sessionToken);
-            await _accounts.RemoveAToken(user.Id, sessionToken);
+            await _accounts.RemoveAToken(user.Id, AuthenticationTokenSerializable.FromString(sessionToken).Id);
             return Ok();
         }
     }
