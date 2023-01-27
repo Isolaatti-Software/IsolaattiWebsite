@@ -149,7 +149,7 @@
     
     <div class="modal" id="modal-squad-settings" v-if="!preview">
       <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-xl">
-        <div class="modal-content">
+        <div class="modal-content h-100">
           <div class="modal-header">
             <h5 class="modal-title">Ajustes del squad</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
