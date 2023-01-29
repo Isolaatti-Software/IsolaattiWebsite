@@ -11,6 +11,7 @@
     methods: {
         onInputFocus: function(e) {
             this.resultIsVisible = true;
+            events.$emit('backdrop-toggle', true)
         },
         search: _.debounce(async function () {
             this.result = undefined;
@@ -45,6 +46,7 @@
         const that = this;
         events.$on('backdrop-clicked', function() {
             that.resultIsVisible = false;
+            events.$emit('backdrop-toggle', false);
         })
     },
     template: `

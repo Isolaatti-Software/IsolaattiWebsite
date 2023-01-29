@@ -44,7 +44,7 @@
 
 @* All the content of this div with id app can host Vue.js components. Do not create new instances of Vue.js inside *@
 <div id="app" class="position-relative overflow-hidden">
-    <div id="backdrop" v-on:click="onBackdropClick"></div>
+    <div id="backdrop" v-if="renderBackdrop" v-on:click="onBackdropClick"></div>
 
     <section class="notifications-stack" id="notifications">
 

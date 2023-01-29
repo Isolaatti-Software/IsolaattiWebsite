@@ -2,7 +2,8 @@
 
 let app;
 const data = {
-    showTopBarMobileMenu: false
+    showTopBarMobileMenu: false,
+    renderBackdrop: false
 }
 
 const methods = {
@@ -18,6 +19,10 @@ const methods = {
 // Initialize here global events related to UI.
 // Use 'events' Vue instance to broadcast global events
 function mounted() {
+    const that = this;
+    events.$on('backdrop-toggle', function(value){
+        that.renderBackdrop = value;
+    })
 }
 
 if(!renderRouter) {
