@@ -566,3 +566,11 @@ footer#footer > a, footer#footer > span {
 blockquote {
   border-left: var(--primary) solid 2px;
 }
+#backdrop{
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 100;
+}

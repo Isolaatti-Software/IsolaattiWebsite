@@ -16,6 +16,7 @@
     <!--This is bootstrap sass files compiled with variables changed to create the isolaatti theme-->
     <link rel="stylesheet" href="https://recursos-estaticos.isolaatti.com/css/custom-bootstrap.css"/>
     <link rel="stylesheet" href="/css/isolaatti.css"/>
+    <link rel="stylesheet" href="css/search-box.css"/>
 
     <link rel="shortcut icon" href="~/favicon.ico">
     <link rel="icon" type="image/png" sizes="196x196" href="~/favicon-192.png">
@@ -39,22 +40,12 @@
 </head>
 <body>
 
+      
 
 @* All the content of this div with id app can host Vue.js components. Do not create new instances of Vue.js inside *@
 <div id="app" class="position-relative overflow-hidden">
-    
-    <div class="modal" id="search-modal" style="z-index: 1060">
-        <div class="modal-dialog">
-            
-            <div class="modal-content p-2 border-0">
-                <div class="modal-header">
-                    <h5 class="modal-title">Búsqueda rápida</h5>
-                    <button class="close" data-toggle="modal" data-target="#search-modal">&times</button>
-                </div>
-                <quick-search class="w-100"></quick-search>
-            </div>
-        </div>
-    </div>
+    <div id="backdrop" v-on:click="onBackdropClick"></div>
+
     <section class="notifications-stack" id="notifications">
 
     </section>
@@ -82,11 +73,8 @@
                     <button class="btn nav-link custom-nav-link mr-auto ml-1 mobile-only" v-on:click="toggleTopBarShowMenu">
                         <i class="fa-solid fa-bars"></i>
                     </button>
-
-                    @* <audio-player class="ml-auto"></audio-player> *@
-                    <button class="btn nav-link custom-nav-link mr-1 ml-auto desktop-only" data-toggle="modal" data-target="#search-modal">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                    </button>
+                    <quick-search></quick-search>
+                    
                     <a class="btn custom-nav-link mr-1 ml-1 desktop-only" type="button" asp-page="/Squads">
                         <i class="fa-solid fa-people-group"></i>
                     </a>

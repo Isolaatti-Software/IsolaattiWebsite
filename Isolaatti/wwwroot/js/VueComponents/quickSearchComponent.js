@@ -4,10 +4,14 @@
             customHeaders: customHttpHeaders,
             query: "",
             loading: false,
-            result: undefined
+            result: undefined,
+            resultIsVisible: false
         }
     },
     methods: {
+        onInputFocus: function(e) {
+            this.resultIsVisible = true;
+        },
         search: _.debounce(async function () {
             this.result = undefined;
             this.loading = true
@@ -37,13 +41,25 @@
             return `/squads/${squadId}`;
         }
     },
+    mounted: function() {
+        const that = this;
+        events.$on('backdrop-clicked', function() {
+            that.resultIsVisible = false;
+        })
+    },
     template: `
-      <section>
-      <div class="d-flex">
-        <input class="form-control" placeholder="Búsqueda rápida" @input="search" v-model="query"/>
+      <section class="search-box">
+      <div class="d-flex justify-content-center">
+        <input class="form-control" 
+            :class="resultIsVisible ? 'w-100' : 'search-box-input'" 
+            @focus="onInputFocus" 
+            placeholder="Búsqueda rápida" 
+            @input="search" 
+            v-model="query"/>
       </div>
-        <div v-if="query === ''" class="m-3">
-            <p class="text-center">Comienza a escribir para realizar una busqueda en toda la plataforma...</p>
+      <div class="search-box-results" :class="resultIsVisible ? '' : 'd-none'">
+      <div v-if="query === ''" class="m-3">
+            <p class="text-center">Comienza a escribir para realizar una búsqueda en toda la plataforma...</p>
         </div>
         <div v-else class="p-2">
             <div v-if="result !== undefined">
@@ -77,6 +93,7 @@
             </div>
             
         </div>
+</div>
       </section>
     `
 });

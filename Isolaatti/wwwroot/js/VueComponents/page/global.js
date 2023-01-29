@@ -8,14 +8,24 @@ const data = {
 const methods = {
     toggleTopBarShowMenu: function() {
         this.showTopBarMobileMenu = !this.showTopBarMobileMenu;
+    },
+    onBackdropClick: function() {
+        events.$emit('backdrop-clicked');
     }
+}
+
+// This functions is called when app is mounted.
+// Initialize here global events related to UI.
+// Use 'events' Vue instance to broadcast global events
+function mounted() {
 }
 
 if(!renderRouter) {
     app = new Vue({
         el: '#app',
         data,
-        methods
+        methods,
+        mounted
     });
 } else {
     
@@ -30,6 +40,7 @@ if(!renderRouter) {
         el: '#app',
         data,
         methods,
-        router
+        router,
+        mounted
     });
 }
