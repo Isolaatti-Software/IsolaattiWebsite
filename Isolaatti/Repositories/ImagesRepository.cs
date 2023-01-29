@@ -19,6 +19,7 @@ public class ImagesRepository
         var client = new MongoClient(_settings.ConnectionString);
         var database = client.GetDatabase(_settings.DatabaseName);
         _images = database.GetCollection<Image>(_settings.ImagesCollectionName);
+        _images.Indexes.CreateOne(new CreateIndexModel<Image>(Builders<Image>.IndexKeys.Text(i => i.Name)));
     }
 
     public async Task<Image> InsertImage(int userId, string name, string idOnFirebase, Guid? squadId)
@@ -86,6 +87,13 @@ public class ImagesRepository
     public async Task SetNullSquadOfImage(string id)
     {
         
+    }
+
+    public async Task<List<Image>> SearchOnName(string query)
+    {
+        return await (await _images
+            .FindAsync(Builders<Image>.Filter.Text(query, new TextSearchOptions { CaseSensitive = false })))
+            .ToListAsync();
     }
 
 }

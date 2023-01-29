@@ -19,6 +19,7 @@ public class AudiosRepository
         var client = new MongoClient(_settings.ConnectionString);
         var database = client.GetDatabase(_settings.DatabaseName);
         _audios = database.GetCollection<Audio>(_settings.AudiosCollectionName);
+        _audios.Indexes.CreateOne(new CreateIndexModel<Audio>(Builders<Audio>.IndexKeys.Text(x => x.Name)));
     }
 
 #nullable enable
@@ -80,5 +81,10 @@ public class AudiosRepository
     public async Task<long> NumberOfAudios()
     {
         return await _audios.EstimatedDocumentCountAsync();
+    }
+
+    public async Task<List<Audio>> SearchByName(string query)
+    {
+        return await (await _audios.FindAsync(Builders<Audio>.Filter.Text(query))).ToListAsync();
     }
 }

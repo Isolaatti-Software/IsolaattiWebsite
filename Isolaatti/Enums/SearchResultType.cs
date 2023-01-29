@@ -4,5 +4,7 @@ public enum SearchResultType
 {
     Post,
     Profile,
-    Audio
+    Audio,
+    Squad,
+    Image
 }

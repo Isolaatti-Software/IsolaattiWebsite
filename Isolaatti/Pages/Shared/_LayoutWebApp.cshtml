@@ -43,12 +43,15 @@
 @* All the content of this div with id app can host Vue.js components. Do not create new instances of Vue.js inside *@
 <div id="app" class="position-relative overflow-hidden">
     
-    <div class="modal fade" id="search-modal" style="z-index: 1060">
-        <div class="modal-dialog modal-dialog-scrollable modal-xl modal-dialog-centered">
-            <div class="modal-content p-2 border-0 h-100">
-                <div class="d-flex">
-                    <quick-search class="w-100"></quick-search>
+    <div class="modal" id="search-modal" style="z-index: 1060">
+        <div class="modal-dialog">
+            
+            <div class="modal-content p-2 border-0">
+                <div class="modal-header">
+                    <h5 class="modal-title">Búsqueda rápida</h5>
+                    <button class="close" data-toggle="modal" data-target="#search-modal">&times</button>
                 </div>
+                <quick-search class="w-100"></quick-search>
             </div>
         </div>
     </div>

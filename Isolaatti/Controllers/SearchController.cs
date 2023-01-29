@@ -1,14 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Isolaatti.Classes.ApiEndpointsResponseDataModels;
-using Isolaatti.Enums;
+using Isolaatti.DTOs;
 using Isolaatti.Helpers;
 using Isolaatti.Models;
 using Isolaatti.Repositories;
 using Isolaatti.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Isolaatti.Controllers;
 
@@ -19,50 +19,49 @@ public class SearchController : ControllerBase
     private readonly DbContextApp _db;
     private readonly IAccounts _accounts;
     private readonly AudiosRepository _audios;
-    private readonly SquadInvitationsRepository _squadInvitationsRepository;
-    private readonly SquadsRepository _squadsRepository;
+    private readonly ImagesRepository _imagesRepository;
 
-    public SearchController(DbContextApp db, 
-        IAccounts accounts, 
-        AudiosRepository audios, 
-        SquadInvitationsRepository squadInvitationsRepository, 
-        SquadsRepository squadRepository)
+    public SearchController(DbContextApp db,
+        IAccounts accounts,
+        AudiosRepository audios,
+        ImagesRepository imagesRepository)
     {
         _db = db;
         _audios = audios;
         _accounts = accounts;
-        _squadInvitationsRepository = squadInvitationsRepository;
-        _squadsRepository = squadRepository;
+        _imagesRepository = imagesRepository;
     }
 
     [Route("Quick")]
     [HttpGet]
     public async Task<IActionResult> QuickSearch([FromHeader(Name = "sessionToken")] string sessionToken,
-        [FromQuery] string q, [FromQuery] string contextType = "global", string contextValue = null, [FromQuery] bool onlyProfile = false )
+        [FromQuery] string q, [FromQuery] string contextType = "global", string contextValue = null,
+        [FromQuery] bool onlyProfile = false)
     {
         var user = await _accounts.ValidateToken(sessionToken);
         if (user == null) return Unauthorized("Token is not valid");
 
 
-        var results = new List<SearchResult>();
+        var results = new SearchResult();
         if (q.IsNullOrWhiteSpace())
         {
             return Ok(results);
         }
 
         var lowerCaseQ = q.ToLower();
-        
+
 
         // Perform basic search on profiles
         var profilesResults = from u in _db.Users
             where u.Name.ToLower().Contains(lowerCaseQ)
-            select new SearchResult
+            select new UserFeed
             {
-                ResultType = SearchResultType.Profile,
-                ResourceId = u.Id,
-                ContentPreview = u.Name
+                Id = u.Id,
+                ImageId = u.ProfileImageId,
+                Name = u.Name
             };
-        
+
+
         // perform another filtering so that users already in the squad don't get listed as search result
         if (contextType.Equals("squad") && contextValue != null)
         {
@@ -73,20 +72,17 @@ public class SearchController : ControllerBase
                 {
                     profilesResults = from profileResult in profilesResults
                         from squadUser in _db.SquadUsers
-                        where squadUser.SquadId.Equals(squadId) && !squadUser.UserId.Equals(profileResult.ResourceId)
+                        where squadUser.SquadId.Equals(squadId) && !squadUser.UserId.Equals(profileResult.Id)
                         select profileResult;
                 }
-                
-                
             }
             catch (FormatException)
             {
-                
             }
-
         }
-        results.AddRange(profilesResults.Take(20));
-        
+
+        results.Profiles.AddRange(await profilesResults.Take(10).ToListAsync());
+
         if (onlyProfile)
         {
             return Ok(results);
@@ -95,16 +91,62 @@ public class SearchController : ControllerBase
         // Perform basic search on posts
         var postsResults = from post in _db.SimpleTextPosts
             where post.TextContent.ToLower().Contains(lowerCaseQ)
-            select new SearchResult
+            select new PostDto
             {
-                ResultType = SearchResultType.Post,
-                ResourceId = post.Id.ToString(),
-                ContentPreview = post.TextContent.Substring(0, 30)
+                Post = post,
+                Liked = _db.Likes.Any(l => l.UserId == user.Id && l.PostId == post.Id),
+                NumberOfComments = _db.Comments.Count(c => c.PostId == post.Id),
+                NumberOfLikes = _db.Likes.Count(l => l.PostId == post.Id),
+                SquadName = _db.Squads.Where(s => s.Id.Equals(post.SquadId)).Select(s => s.Name).FirstOrDefault(),
+                UserName = _db.Users.Where(u => u.Id == post.UserId).Select(u => u.Name).FirstOrDefault()
             };
 
-        results.AddRange(postsResults.Take(20));
+        results.Posts.AddRange(postsResults.Take(10).ToList());
 
+        // Perform basic search on squads
+        var squadsResults = from squad in _db.Squads
+            where squad.Name.ToLower().Contains(lowerCaseQ) || squad.Description.ToLower().Contains(lowerCaseQ) ||
+                  squad.ExtendedDescription.ToLower().Contains(lowerCaseQ)
+            select squad;
 
+        results.Squads.AddRange(await squadsResults.Take(8).ToListAsync());
+
+        // Perform basic search on audios
+        var audiosResult = await _audios.SearchByName(lowerCaseQ);
+
+        results.Audios.AddRange(audiosResult.Select(a => new FeedAudio(a)
+        {
+            UserName = _db.Users.Where(u => u.Id == a.UserId).Select(u => u.Name).FirstOrDefault()
+        }));
+
+        // Perform basic search on images
+        var imagesResult = await _imagesRepository.SearchOnName(lowerCaseQ);
+        results.Images.AddRange(imagesResult.Select(i => new ImageFeed(i)
+        {
+            UserName = _db.Users.Where(u => u.Id == i.UserId).Select(u => u.Name).FirstOrDefault()
+        }));
+        
+        // Some post processing
+        // Add to users result the authors from the posts, audios and images
+        var postsAuthors = 
+            from po in results.Posts.DistinctBy(po => po.Post.Id) select po.Post.UserId;
+
+        var absentUsers = 
+            from postAuthor in postsAuthors.Except(results.Profiles.Select(p => p.Id)) select postAuthor;
+
+        foreach (var absentUserId in absentUsers)
+        {
+            var absentUser = _db.Users.Where(u => u.Id == absentUserId).Select(u => new UserFeed()
+            {
+                Id = u.Id,
+                Name = u.Name,
+                ImageId = u.ProfileImageId
+            }).FirstOrDefault();
+            if (absentUsers != null)
+            {
+                results.Profiles.Add(absentUser);
+            }
+        }
         return Ok(results);
     }
 }

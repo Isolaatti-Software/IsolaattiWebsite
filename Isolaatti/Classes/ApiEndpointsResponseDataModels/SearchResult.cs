@@ -1,10 +1,25 @@
-﻿using Isolaatti.Enums;
+﻿using System.Collections.Generic;
+using Isolaatti.DTOs;
+using Isolaatti.Enums;
+using Isolaatti.Models;
+using Isolaatti.Models.MongoDB;
 
 namespace Isolaatti.Classes.ApiEndpointsResponseDataModels;
 
 public class SearchResult
 {
-    public SearchResultType ResultType { get; set; }
-    public object ResourceId { get; set; }
-    public string ContentPreview { get; set; }
+    public List<UserFeed> Profiles { get; }
+    public List<PostDto> Posts { get; }
+    public List<Squad> Squads { get; }
+    public List<FeedAudio> Audios { get; }
+    public List<ImageFeed> Images { get; }
+
+    public SearchResult()
+    {
+        Profiles = new List<UserFeed>();
+        Posts = new List<PostDto>();
+        Squads = new List<Squad>();
+        Audios = new List<FeedAudio>();
+        Images = new List<ImageFeed>();
+    }
 }
