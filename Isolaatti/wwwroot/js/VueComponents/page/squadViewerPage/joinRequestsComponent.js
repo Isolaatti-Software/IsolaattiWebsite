@@ -41,6 +41,7 @@
         <p class="m-2 text-center"> No hay contenido que mostrar <i
             class="fa-solid fa-face-sad-cry"></i></p>
       </template>
+      <template v-else-if="">   </template>
     </section>
     `
 });

@@ -22,10 +22,10 @@
         filteredSearchResult: function(){
             if(this.userSearchResult === undefined)
                 return [];
-            return this.userSearchResult.filter(el => !this.invitationsUserIds.includes(Number(el.resourceId)));
+            return this.userSearchResult.filter(el => !this.invitationsUserIds.includes(Number(el.id)));
         },
         invitationsUserIds: function(){
-            return this.invitations.map(el => Number(el.resourceId));
+            return this.invitations.map(el => Number(el.id));
         }
     },
     watch: {
@@ -46,7 +46,7 @@
                 method: "get",
                 headers: this.customHeaders
             });
-            this.userSearchResult = await response.json();
+            this.userSearchResult = (await response.json()).profiles;
         }, 300),
         addToInvitations: function(invitation) {
             this.invitations.push(invitation);
@@ -65,6 +65,15 @@
                 })
             });
             this.$emit("created");
+        },
+        profilePictureUrl: function (imageId) {
+            if (imageId === null) {
+                return "/res/imgs/avatar.svg";
+            }
+            return `/api/images/image/${imageId}?mode=small`;
+        },
+        profileLink: function(profileId) {
+            return `/perfil/${profileId}`;
         }
     },
     mounted: function() {
@@ -78,10 +87,16 @@
                         <label>Mensaje de invitación</label>
                         <textarea class="form-control" v-model="invitationMessage"></textarea>
                     </div>
-                    <div class="rounded p-2 bg-primary text-light pr-3 m-1" v-for="invitedUser in invitations"> 
-                        <button type="button" class="btn btn-sm btn-primary" @click="removeFromInvitations(invitedUser)">&times;</button> 
-                        <span>{{invitedUser.contentPreview}}</span>
-                    </div> 
+                    <div class="isolaatti-card d-flex flex-column" v-if="invitations.length > 0">
+                        <h5>Bolsa de invitaciones</h5>
+                        <div class="d-flex">
+                            <div class="d-flex flex-column p-2 pr-3 m-1 align-items-center" v-for="invitedUser in invitations"> 
+                                <button type="button" class="btn btn-sm" @click="removeFromInvitations(invitedUser)">&times;</button> 
+                                <img :src="profilePictureUrl(invitedUser.imageId)" class="user-avatar"/>
+                                <a :href="profileLink(invitedUser.id)" target="_blank">{{invitedUser.name}}</a>
+                            </div> 
+                        </div>
+                    </div>
                 </div>
                 <input type="text" class="form-control"  v-model="userSearchQuery" @input="search"
                 placeholder="Comienza a buscar por nombre..."/>
@@ -91,8 +106,12 @@
                   </button>
                 </div>
                 <div class="list-group-flush list-group mt-1" v-if="userSearchResult!==undefined">
+                    
                     <button class="list-group-item list-group-item-action" v-for="result in filteredSearchResult" 
-                        @click="addToInvitations(result)">#{{result.resourceId}} {{result.contentPreview}}</button>
+                        @click="addToInvitations(result)"> 
+                        <img :src="profilePictureUrl(result.imageId)" class="user-avatar"/>
+                        <span>{{result.name}}</span>
+                    </button>
                 </div>
             </div>
     `

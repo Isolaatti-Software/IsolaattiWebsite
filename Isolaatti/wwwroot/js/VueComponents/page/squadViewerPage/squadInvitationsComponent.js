@@ -1,23 +1,7 @@
-﻿Vue.component('squad-new-invitation', {
-    props: {
-        squadId: {
-            type: String,
-            required: true
-        }
-    },
-    methods: {
-
-    },
-    template: `
-    <section>
-    <squad-invitation-creator-user-searcher
-        :auto-send="false"
-        :squad-id="squadId"
-        @created="$emit('created')"
-    ></squad-invitation-creator-user-searcher>
-    </section>
-    `
-})
+﻿/**
+ * Squad invitations
+ * This component shows the invitations made from this squad.
+ */
 
 Vue.component('squad-invitations',{
     props: {
@@ -55,7 +39,7 @@ Vue.component('squad-invitations',{
             } else {
                 this.selectedInvitationId = id;
             }
-            
+
         },
         setEditionMode: function() {
             this.editionMode = !this.editionMode;
@@ -80,15 +64,15 @@ Vue.component('squad-invitations',{
         }
     },
     watch: {
-      $route: {
-          deep: true,
-          immediate: true,
-          handler: function(to, from) {
-              const action = to.query.action;
-              if(action !== undefined)
-                this.overallMode = action;
-          }
-      }  
+        $route: {
+            deep: true,
+            immediate: true,
+            handler: function(to, from) {
+                const action = to.query.action;
+                if(action !== undefined)
+                    this.overallMode = action;
+            }
+        }
     },
     mounted: async function() {
         await this.fetchInvitations();
@@ -198,68 +182,3 @@ Vue.component('squad-invitations',{
     </section>
     `
 });
-
-
-const squadPeopleComponent = {
-    props:{
-        squadId: {
-            required: true,
-            type: String
-        }
-    },
-    data: function() {
-        return {
-            currentScreen: "members" // or "requests" or "members" or "invitations"
-        }
-    },
-    watch: {
-        $route: {
-            immediate: true,
-            deep: true,
-            handler: function(to, from) {
-                this.currentScreen = to.query.opcion
-            }
-        }
-    },
-    methods: {
-        onOptionSelected: function (e) {
-            switch (e.target.value) {
-                case "0": this.$router.push({ path: '/miembros', query: { opcion: 'members' } }); break;
-                case "1": this.$router.push({ path: '/miembros', query: { opcion: 'invitations' } }); break;
-                case "2": this.$router.push({ path: '/miembros', query: { opcion: 'requests' } }); break;
-            }
-        }
-    },
-    template: `
-    <div>
-      <section>
-        <select class="custom-select" @input="onOptionSelected">
-            <option selected value="0">Miembros</option>
-            <option value="1">Invitaciones</option>
-            <option value="2">Solicitudes</option>
-        </select>
-      </section>
-      <div class="mt-2">
-        <squad-invitations :squad-id="squadId" v-if="currentScreen==='invitations'"></squad-invitations>
-        <squad-requests :squad-id="squadId" v-if="currentScreen==='requests'"></squad-requests>
-        <squad-members :squad-id="squadId" v-if="currentScreen==='members'"></squad-members>
-      </div>
-    </div>
-    `
-}
-
-Vue.component('squad-people', squadPeopleComponent);
-
-const squadImages = {
-    props: {
-        squadId: {
-            required: true,
-            type: String
-        }
-    },
-    template: `
-      <div>
-        <profile-images :squad-id="squadId"></profile-images>
-      </div>
-    `
-}
