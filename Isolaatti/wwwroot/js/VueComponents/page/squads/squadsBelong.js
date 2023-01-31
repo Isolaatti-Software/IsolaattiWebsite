@@ -16,6 +16,9 @@
         },
         squadUrl: function(squadId) {
             return `/squads/${squadId}`;
+        },
+        imageUrl: function(imageId) {
+            return imageId ? `/api/images/image/${imageId}?mode=reduced` : "/res/imgs/groups.png";
         }
     },
     mounted: async function() {
@@ -31,6 +34,7 @@
         </div>
         <div class="list-group list-group-flush">
           <a :href="squadUrl(squad.id)" class="list-group-item list-group-item-action" v-for="squad in mySquads">
+            <img :src="imageUrl(squad.imageId)" class="user-avatar"/>
             {{squad.name}}<br>
             <small>id: {{squad.id}}</small>
           </a>
