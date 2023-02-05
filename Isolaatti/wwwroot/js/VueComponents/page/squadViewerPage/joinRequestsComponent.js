@@ -26,6 +26,7 @@
             this.loading = false;
             if(response.ok) {
                 this.requests = await response.json();
+                console.log(this.requests);
             } else {
                 this.error = true
             }
@@ -41,7 +42,12 @@
         <p class="m-2 text-center"> No hay contenido que mostrar <i
             class="fa-solid fa-face-sad-cry"></i></p>
       </template>
-      <template v-else-if="">   </template>
+      <div v-if="loading" class="d-flex justify-content-center mt-2">
+          <div class="spinner-border" role="status">
+            <span class="sr-only">Cargando más contenido...</span>
+          </div>
+      </div>
+      <squad-requests-list :items="requests"></squad-requests-list>
     </section>
     `
 });

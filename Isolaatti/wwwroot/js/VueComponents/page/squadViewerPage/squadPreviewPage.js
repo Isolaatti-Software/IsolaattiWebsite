@@ -80,8 +80,8 @@
         await this.searchUserJoinRequest();
     },
     template: `
-    <section>
-    <squad-header :squad-id="squadId" class="isolaatti-card" :preview="true"></squad-header>
+    <section class="container">
+    <squad-header :squad-id="squadId" class="isolaatti-card mb-2" :preview="true"></squad-header>
     <div class="isolaatti-card mt-4">
       <div class="d-flex flex-column">
         <div class="display-3 text-center w-100"><i class="fa-solid fa-face-kiss-wink-heart"></i></div>

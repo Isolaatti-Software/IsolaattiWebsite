@@ -23,21 +23,26 @@
             this.loading = false;
         },
         fetchRequestsFromMe: async function() {
+            this.loading = true;
             const response = await fetch(`/api/Squads/JoinRequests/MyJoinRequests`, {
                 headers: this.customHeaders
             });
             try {
-                this.invitations = (await response.json());
+                this.requests = (await response.json());
             } catch(e) {
                 this.error = true;
             }
             this.loading = false;
         },
-        onInvitationUpdate: function(invitation) {
+        onRequestUpdate: function(invitation) {
             const index = this.invitations.findIndex(inv => inv.invitation.id === invitation.id);
             const temp = this.invitations;
             temp[index].invitation = invitation;
             this.invitations = temp;
+        },
+        onDeleted: function(requestId) {
+            const index = this.requests.findIndex(req => req.request.id === requestId);
+            this.requests.splice(index, 1);
         }
     },
     watch:{
@@ -63,7 +68,7 @@
     template: `
     <section class="isolaatti-card">
       <h5>Solicitudes</h5>
-      <div class="btn-group w-100">
+      <div class="btn-group btn-group-sm w-100">
         <button class="btn" :class="{'btn-primary':overallMode==='forMe'}" @click="overallMode='forMe'">
           Para tí
         </button>
@@ -71,7 +76,7 @@
           De tí
         </button>
       </div>
-      <squad-requests-list :items="requests" @invitation-update="onInvitationUpdate"></squad-requests-list>
+      <squad-requests-list v-if="!loading" :items="requests" @request-update="onRequestUpdate" @deleted="onDeleted"></squad-requests-list>
       <div v-if="loading" class="d-flex justify-content-center mt-2">
         <div class="spinner-border" role="status">
           <span class="sr-only">Cargando más contenido...</span>

@@ -210,8 +210,15 @@ public class SquadJoinRequestsController : ControllerBase
             });
         }
 
+        var requests = await _joinRequestsRepository.GetJoinRequestsOfSquad(squad.Id, lastId);
+
         
-        return Ok(await _joinRequestsRepository.GetJoinRequestsOfSquad(squad.Id, lastId));
+        return Ok(requests.Select(request => new
+        {
+            request,
+            senderName = _db.Users.Where(u => u.Id == request.SenderUserId).Select(u => u.Name).FirstOrDefault(),
+            squadName = _squadsRepository.GetSquadName(request.SquadId)
+        }));
     }
 
     /// <summary>
@@ -234,8 +241,9 @@ public class SquadJoinRequestsController : ControllerBase
         return Ok(joinRequests.Select(request => new
         {
             request,
-            username = _accounts.GetUsernameFromId(request.SenderUserId),
-            squadName = _squadsRepository.GetSquadName(request.SquadId)
+            senderName = _accounts.GetUsernameFromId(request.SenderUserId),
+            squadName = _squadsRepository.GetSquadName(request.SquadId),
+            admins = false
         }));
     }
     /// <summary>
@@ -258,8 +266,49 @@ public class SquadJoinRequestsController : ControllerBase
         return Ok(joinRequests.Select(request => new
         {
             request,
-            username = _accounts.GetUsernameFromId(request.SenderUserId),
-            squadName = _squadsRepository.GetSquadName(request.SquadId)
+            senderName = _accounts.GetUsernameFromId(request.SenderUserId),
+            squadName = _squadsRepository.GetSquadName(request.SquadId),
+            admins = true
         }));
+    }
+
+    [HttpPost]
+    [Route("{requestId}/Accept")]
+
+    public async Task<IActionResult> AcceptJoinRequest([FromHeader(Name = "sessionToken")] string sessionToken,
+        string requestId, [FromForm] string message)
+
+    {
+        var user = await _accounts.ValidateToken(sessionToken);
+        if (user == null) return Unauthorized("Token is not valid");
+
+        var joinRequest = _joinRequestsRepository.GetJoinRequest(requestId);
+
+        if (joinRequest == null)
+        {
+            return NotFound();
+        }
+
+        var squad = await _squadsRepository.GetSquad(joinRequest.SquadId);
+        if (squad.UserId != user.Id)
+        {
+            return Unauthorized();
+        }
+        
+        var result =_joinRequestsRepository.UpdateJoinRequest(requestId, SquadInvitationStatus.Accepted, message);
+
+        joinRequest = _joinRequestsRepository.GetJoinRequest(requestId);
+        await _squadsRepository.AddUserToSquad(squad.Id, joinRequest.SenderUserId);
+        if (result)
+        {
+            return Ok(new
+            {
+                request = joinRequest,
+                senderName = _accounts.GetUsernameFromId(joinRequest.SenderUserId),
+                squadName = _squadsRepository.GetSquadName(joinRequest.SquadId),
+                admins = squad.UserId == user.Id
+            });
+        }
+        return NotFound();
     }
 }

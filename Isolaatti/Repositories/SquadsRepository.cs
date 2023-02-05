@@ -20,7 +20,7 @@ public class SquadsRepository
     public SquadsRepository(DbContextApp dbContextApp, ImagesRepository images)
     {
         _db = dbContextApp;
-        _images = images;
+        _images = images; 
     }
 
     public async Task<bool> ValidateSquadOwner(Guid squadId, int userId)
@@ -291,4 +291,14 @@ public class SquadsRepository
         _db.Squads.Update(squad);
         await _db.SaveChangesAsync();
     }
+
+    public List<int> GetAdminsOfSquad(Guid squadId)
+    {
+        // For now just returning a single admin, but in the future there will be more than one
+        var admin =
+            _db.Squads.Where(s => s.Id.Equals(squadId)).Select(s => s.UserId).FirstOrDefault();
+        return new List<int>() {admin};
+    }
+
+
 }

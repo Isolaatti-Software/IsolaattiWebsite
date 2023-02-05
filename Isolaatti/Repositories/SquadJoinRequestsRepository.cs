@@ -42,13 +42,15 @@ public class SquadJoinRequestsRepository
         await _joinRequests.DeleteOneAsync(joinReq => joinReq.Id.Equals(id));
     }
 
-    public void UpdateJoinRequest(string id, SquadInvitationStatus status, string message)
+    public bool UpdateJoinRequest(string id, SquadInvitationStatus status, string message)
     {
-        _joinRequests
+        var result = _joinRequests
             .UpdateOne(joinReq => joinReq.Id.Equals(id), Builders<SquadJoinRequest>
                 .Update
                     .Set("JoinRequestStatus", status)
                     .Set("ResponseMessage", message));
+
+        return result.IsAcknowledged;
     }
 
     public async Task<bool> SameJoinRequestExists(Guid squadId, int senderUserId)
