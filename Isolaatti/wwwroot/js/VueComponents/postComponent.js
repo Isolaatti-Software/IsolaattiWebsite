@@ -181,11 +181,11 @@ Vue.component('post-template',{
                 {{ renderPost.numberOfComments }}
               </button>
               <button v-if="!renderPost.liked" v-on:click="like($event)" class="btn btn-transparent btn-sm" type="button">
-                <i class="fas fa-thumbs-up" aria-hidden="true"></i> {{ renderPost.numberOfLikes }}
+                <i class="fa-solid fa-hands-clapping"></i> {{ renderPost.numberOfLikes }}
               </button>
               <button v-if="renderPost.liked" v-on:click="unlike($event)" class="text-primary-lighter btn btn-transparent  btn-sm"
                       type="button">
-                <i class="fas fa-thumbs-up" aria-hidden="true"></i> {{ renderPost.numberOfLikes }}
+                <i class="fa-solid fa-hands-clapping"></i> {{ renderPost.numberOfLikes }}
               </button>
             </div>
           </div>
