@@ -22,14 +22,19 @@ Vue.component('profile-image-maker', {
     methods: {
         updateImage: async function(imageId) {
             let url = "";
-            if(this.squadId === null){
-                url =  `/api/EditProfile/SetProfilePhoto?imageId=${imageId}`;
+            if(this.profile) {
+                if(this.squadId === null){
+                    url =  `/api/EditProfile/SetProfilePhoto?imageId=${imageId}`;
+                } else {
+                    url = `/api/images/set_image_of_squad/${this.squadId}?imageId=${imageId}`;
+                }
+                const response = await fetch(url, {method: "post", headers: this.customHeaders});
+                if(response.ok)
+                    this.$emit('imageUpdated',imageId)
             } else {
-                url = `/api/images/set_image_of_squad/${this.squadId}?imageId=${imageId}`;
-            }
-            const response = await fetch(url, {method: "post", headers: this.customHeaders});
-            if(response.ok)
                 this.$emit('imageUpdated',imageId)
+            }
+            
         },
         onUploaded: function(image) {
             this.$emit("imageUpdated", image.id)
@@ -37,7 +42,7 @@ Vue.component('profile-image-maker', {
     },
     template: `
     <div>
-    <div class="btn-group w-100">
+    <div class="btn-group btn-group-sm w-100">
         <button class="btn" 
             :class="[mode==='upload' ? 'btn-primary' : 'btn-light']"
             @click="mode='upload'">

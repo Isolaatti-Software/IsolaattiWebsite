@@ -4,6 +4,7 @@
 @{
     Layout = "Shared/_LayoutWebApp";
     ViewData["Title"] = ViewData["name"];
+    ViewData["squadsRouter"] = true;
 }
 
 @section CSS
@@ -22,7 +23,16 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://unpkg.com/dompurify@2.3.5/dist/purify.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
-
+        <script>
+        function getRoutesForPage() { 
+            return [
+                { path: "/", component: myProfileStartPage },
+                { path: "/interacciones", component: interactions },
+                { path: "/interacciones/likes", component: likesPage },
+                { path: "/interacciones/discusiones", component: interactionsDiscussionsPage },
+                { path: "/interacciones/en_squads", component: interactionsSquads }
+            ]}
+        </script>
     <script src="~/js/VueComponents/newCommentComponent.js"></script>
     <script src="~/js/VueComponents/newDiscussionComponent.js"></script>
     <script src="~/js/VueComponents/postComponent.js"></script>
@@ -39,4 +49,9 @@
     <script src="~/js/VueComponents/profileImageMakerComponent.js"></script>
     <script src="~/js/VueComponents/profileUserInfoComponent.js"></script>
     <script src="~/js/VueComponents/page/myProfileComponent.js"></script>
+    <script src="~/js/VueComponents/page/myProfile/myProfileStartPage.js"></script>
+    <script src="~/js/VueComponents/interactionsComponent.js"></script>
+    <script src="~/js/VueComponents/page/interactionsSquads.js"></script>
+    <script src="~/js/VueComponents/page/interactionsDiscussionsPage.js"></script>
+    <script src="~/js/VueComponents/page/givenLikesComponent.js"></script>
 }

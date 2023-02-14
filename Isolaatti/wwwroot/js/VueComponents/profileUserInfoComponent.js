@@ -387,27 +387,7 @@
               </button>
             </div>
           </div>
-
-          <div class="card mb-2">
-            <ul class="list-group list-group-flush">
-              <li class="list-group-item bg-light d-flex justify-content-between align-items-center">
-                <span>Likes: {{ profile.numberOfLikes }}</span>
-                <button type="button" class="btn btn-transparent btn-sm"
-                        @click="likes.showDetails = !likes.showDetails">
-                  <i class="fa-solid fa-angle-down"></i>
-                </button>
-              </li>
-              <li class="list-group-item" v-show="likes.showDetails">
-                <div><a :href="receivedLikesPageUrl">Likes recibidos: {{ profile.numberOfLikes }} <i
-                    class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
-                <div><a :href="givenLikesPageUrl">Likes dados: {{ profile.numberOfLikesGiven }} <i
-                    class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
-              </li>
-              <li class="list-group-item bg-light d-flex justify-content-between align-items-center">
-                Discusiones: {{ profile.numberOfPosts }}
-              </li>
-            </ul>
-          </div>
+          
           <div style="height: 10px"></div>
         </div>
       </aside>

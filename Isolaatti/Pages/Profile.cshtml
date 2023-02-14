@@ -4,6 +4,7 @@
 @{
     Layout = "Shared/_LayoutWebApp";
     ViewData["Title"] = ViewData["profile_name"];
+    ViewData["squadsRouter"] = true;
 }
 
 @if ((bool)ViewData["no-redirect"])
@@ -17,7 +18,16 @@
 
 @section Scripts
 {
-
+    <script>
+    function getRoutesForPage() { 
+        return [
+            { path: "/", component: profileStartPage },
+            { path: "/interacciones", component: interactions },
+            { path: "/interacciones/likes", component: likesPage },
+            { path: "/interacciones/discusiones", component: interactionsDiscussionsPage },
+            { path: "/interacciones/en_squads", component: interactionsSquads }
+        ]}
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://unpkg.com/dompurify@2.3.5/dist/purify.min.js"></script>
     <script src="~/js/VueComponents/newCommentComponent.js"></script>
@@ -31,4 +41,9 @@
     <script src="~/js/VueComponents/usersGridComponent.js"></script>
     <script src="~/js/VueComponents/profileUserInfoComponent.js"></script>
     <script src="~/js/VueComponents/page/profileComponent.js"></script>
+    <script src="~/js/VueComponents/page/profile/profileStartPage.js"></script>
+    <script src="~/js/VueComponents/interactionsComponent.js"></script>
+    <script src="~/js/VueComponents/page/interactionsSquads.js"></script>
+    <script src="~/js/VueComponents/page/interactionsDiscussionsPage.js"></script>
+    <script src="~/js/VueComponents/page/givenLikesComponent.js"></script>
 }

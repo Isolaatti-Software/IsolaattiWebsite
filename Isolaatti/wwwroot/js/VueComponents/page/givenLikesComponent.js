@@ -1,11 +1,15 @@
-﻿Vue.component('given_likes', {
-    props: {
-        userId: {
-            type: Number,
-            required: true
-        }
-    },
+﻿const likesPage = {
     template: `
-    <p>Given likes funciona</p>
+    <div>
+        <ol class="breadcrumb mt-2">
+            <li class="breadcrumb-item">
+                <router-link to="/interacciones">Interacciones</router-link>
+            </li>
+            <li class="breadcrumb-item active">
+                Dio like
+            </li>
+        </ol>
+        <p></p>
+    </div>
     `
-})
+}

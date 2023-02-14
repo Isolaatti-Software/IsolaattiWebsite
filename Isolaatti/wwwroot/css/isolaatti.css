@@ -25,8 +25,6 @@ body {
   background-color: var(--primary);
   align-items: center;
   z-index: 1050;
-  margin-top: 1em;
-  border-radius: 30px;
   padding: 0.2rem 0.5rem;
   box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
 
@@ -544,7 +542,6 @@ footer#footer > a, footer#footer > span {
 
 .isolaatti-card {
   box-shadow: rgba(225, 225, 225, 0.2) 0px 48px 100px 0px;
-  border-radius: 30px;
   background-color: #fafafa;
   padding: 1rem;
 }

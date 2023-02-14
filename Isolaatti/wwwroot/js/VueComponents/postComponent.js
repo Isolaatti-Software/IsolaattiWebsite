@@ -169,7 +169,7 @@ Vue.component('post-template',{
           <audio-attachment :audio-id="renderPost.post.audioId" v-if="renderPost.post.audioId!==null"></audio-attachment>
           <div class="mt-2 post-content" v-html="compileMarkdown(renderPost.post.textContent === null ? '' : renderPost.post.textContent)" ref="postContentContainer" @click="openDiscussion"></div>
           <div class="d-flex justify-content-center">
-            <button class="btn btn-primary btn-sm" v-on:click="showFullPost" v-if="cutContent">Mostrar todo</button>
+            <button class="btn btn-link btn-sm mt-1" v-on:click="showFullPost" v-if="cutContent">Mostrar todo</button>
           </div>
           <div class="d-flex justify-content-end">
             <button class="btn btn-transparent mr-auto btn-sm" data-toggle="modal" data-target="#modal-post-info" 
