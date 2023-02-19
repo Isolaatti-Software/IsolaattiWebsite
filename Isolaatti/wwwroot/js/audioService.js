@@ -10,6 +10,8 @@
     const gainNode = audioContext.createGain();
     let duration = 10000000;
     
+    audio.crossOrigin = "anonymous"
+    
     // audio graph setup
     audioSource
         .connect(gainNode)
