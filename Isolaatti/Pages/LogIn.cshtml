@@ -39,9 +39,9 @@
                 signInSuccessUrl: `ExternalAuth${queryParam}`,
                 signInOptions: [
                   // Leave the lines as is for the providers you want to offer your users.
-                  firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-                  firebase.auth.FacebookAuthProvider.PROVIDER_ID,
-                  "microsoft.com"
+                  firebase.auth.GoogleAuthProvider.PROVIDER_ID
+                  // firebase.auth.FacebookAuthProvider.PROVIDER_ID,
+                  // "microsoft.com"
                 ],
                 // tosUrl and privacyPolicyUrl accept either url string or a callback
                 // function.
@@ -64,10 +64,8 @@
     <meta proerty="og-title" content="Inicia sesión en Isolaatti"/>
 }
 
-<div class="d-flex col-lg-7 col-md-6 flex-column">
-    
-</div>
-<div class="col-lg-5 col-md-6 justify-content-end align-items-center">
+<div class="col-md-3 flex-column"></div>
+<div class="col-md-6 d-flex justify-content-center align-items-center">
     <div class="sign-in-up-form-container" id="sign-in">
         <form method="POST" class="sign-in-up-form mt-3">
             <h2>@Languages.Spanish[Languages.SignIn]</h2>
@@ -114,3 +112,4 @@
         </div>
     </div>
 </div>
+<div class="col-md-3 flex-column"></div>
