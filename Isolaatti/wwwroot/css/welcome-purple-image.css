@@ -31,10 +31,10 @@ h1{
 
 .sign-in-up-form-container {
     max-width: 400px;
-    box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
+    /*box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;*/
     padding: 1em 0.5em;
     margin-top: 1.2em;
-    border-radius: 30px;
+    /*border-radius: 30px;*/
 }
 #isolaatti-icon {
     display: flex;
