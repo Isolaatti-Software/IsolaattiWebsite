@@ -65,30 +65,38 @@
                 </div>
             }
             <nav class="d-flex custom-nav sticky-top pr-2 pl-2" id="isolaatti-top-bar">
-                <a href="/" class="nav-link custom-nav-link mr-md-auto" id="isolaatti_brand"></a>
+                <a href="/" class="nav-link custom-nav-link mr-md-auto" id="isolaatti_brand" v-show="!showingMobileSearch"></a>
                 <div class="container-md container-fluid" id="top-bar-content">
     
                     <div class="d-flex w-100 align-items-center">
-                        <button class="btn nav-link custom-nav-link mr-auto ml-1 mobile-only" v-on:click="toggleTopBarShowMenu">
+                        <button class="btn nav-link custom-nav-link mr-auto ml-1 mobile-only" v-show="!showingMobileSearch" v-on:click="toggleTopBarShowMenu">
                             <i class="fa-solid fa-bars"></i>
                         </button>
-                        <quick-search></quick-search>
-                        
+                        <button class="btn mobile-only custom-nav-link disappear-on-search" v-show="showingMobileSearch" v-on:click="closeMobileSearch"><i class="fa-solid fa-xmark"></i></button>
+                        <quick-search :class="{'desktop-only':!showingMobileSearch}"></quick-search>
+                        <button class="btn mobile-only custom-nav-link disappear-on-search" v-show="!showingMobileSearch" v-on:click="mobileSearchToggle"><i class="fa-solid fa-magnifying-glass"></i></button>
                         <a class="btn custom-nav-link mr-1 ml-1 desktop-only" type="button" asp-page="/Squads">
                             <i class="fa-solid fa-people-group"></i>
                         </a>
     
-                        <div class="dropdown">
+                        <div class="dropdown" v-show="!showingMobileSearch">
                             <a class="nav-link custom-nav-link mr-1 dropdown-toggle"
                                href="#"
                                role="button"
                                id="dropdownNotificationsMenuLink"
                                aria-haspopup="true" aria-expanded="false"
                                data-toggle="dropdown">
-                                <i class="fas fa-bell"></i>
-                                <span class="badge badge-light" id="unread-count"></span>
+                                
+                                <span class="fa-layers fa-fw">
+                                    <i class="fas fa-bell"></i>
+                                    <!--
+                                    Uncomment this to show bag count
+                                    
+                                    -->
+                                    <span class="fa-layers-counter" style="font-size: 1.5em">15</span>
+                                </span>
                             </a>
-                            <div class="dropdown-menu">
+                            <div class="dropdown-menu" v-show="!showingMobileSearch">
                                 <div class="dropdown-header">
                                     Notificaciones
                                 </div>
@@ -99,7 +107,7 @@
                             </div>
                         </div>
     
-                        <div class="dropdown">
+                        <div class="dropdown" v-show="!showingMobileSearch">
                             <a class="nav-link custom-nav-link nav-link mr-1 dropdown-toggle"
                                href="#"
                                role="button"
@@ -155,9 +163,7 @@
             </nav>
             <section class="mobile-only" v-if="showTopBarMobileMenu">
                 <div class="d-flex flex-column">
-                    <button class="btn" data-toggle="modal" data-target="#search-modal">
-                        <i class="fa-solid fa-magnifying-glass"></i> Buscar
-                    </button>
+                    
                     <a class="btn" type="button" asp-page="/Squads">
                         <i class="fa-solid fa-people-group"></i> Squads
                     </a>

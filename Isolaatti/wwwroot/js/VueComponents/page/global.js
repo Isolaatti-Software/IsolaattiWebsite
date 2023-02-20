@@ -3,7 +3,8 @@
 let app;
 const data = {
     showTopBarMobileMenu: false,
-    renderBackdrop: false
+    renderBackdrop: false,
+    showingMobileSearch: false
 }
 
 const methods = {
@@ -12,6 +13,15 @@ const methods = {
     },
     onBackdropClick: function() {
         events.$emit('backdrop-clicked');
+    },
+    mobileSearchToggle: function() {
+        // disappear-on-search
+        this.showingMobileSearch = !this.showingMobileSearch
+        
+    },
+    closeMobileSearch: function() {
+        this.showingMobileSearch = false;
+        this.onBackdropClick();
     }
 }
 

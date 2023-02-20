@@ -32,6 +32,9 @@ body {
 
 .custom-nav-link {
   color: rgba(255, 255, 255, 0.5);
+  font-size: 1.3em;
+  display: flex;
+  align-items: center;
 }
 
 .custom-nav-link:hover {
