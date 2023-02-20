@@ -26,7 +26,15 @@
             images: [],
             imageSelected: undefined,
             imagesSelected: [],
-            imageOnViewer: undefined
+            imageOnViewer: 0 // this is the position on the array
+        }
+    },
+    computed: {
+        prevDisabled: function() {
+            return this.images.length === 0 || this.imageOnViewer === 0;
+        },
+        nextDisabled: function() {
+            return this.images.length === 0 || this.imageOnViewer === this.images.length - 1;
         }
     },
     methods: {
@@ -50,6 +58,14 @@
             } else {
                 this.imageSelected = image.id;
             }
+        },
+        onPrev: function() {
+            if(this.imageOnViewer > 0)
+                this.imageOnViewer -= 1;
+        },
+        onNext: function() {
+            if(this.imageOnViewer < this.images.length - 1)
+                this.imageOnViewer += 1;
         },
         showOptions: function(e, imageId) {
             if(e !== undefined) {
@@ -90,8 +106,8 @@
       <div class="grid-3-columns mt-2">
         <div class="position-relative d-flex justify-content-center w-100 hover-image-container" 
             :class="{'primary-border-2px':imageSelected===image.id}"
-            v-for="image in images"
-            @click="imageOnClick(image)"
+            v-for="(image, index) in images"
+            @click="imageOnClick(index)"
             @contextmenu="showOptions($event, image.imageId)">
           <img :src="relativeUrl(image.id)" class="w-100" />
           <span class="image-selected" v-show="imagesSelected.includes(image.id)">
@@ -124,18 +140,25 @@
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title"><i class="fa-solid fa-image"></i> Imagen</h5>
+              
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 &times;
               </button>
             </div>
             <div class="modal-body">
-              <div class="container-fluid h-100" v-if="imageOnViewer !== undefined">
+
+              <div class="container-fluid h-100" v-if="images[imageOnViewer] !== undefined">
                 <div class="row">
-                  <div class="col-md-6">
-                    <img :src="relativeUrl(imageOnViewer.id, 'original')" class="h-100 w-100"/>
+                  <div class="col-md-6 position-relative d-flex align-items-center justify-content-center">
+                    <div class="d-flex justify-content-between w-100 position-absolute">
+                      <button class="btn btn-light" :disabled="prevDisabled" @click="onPrev"><i class="fa-solid fa-chevron-left"></i></button>
+                      <button class="btn btn-light" :disabled="nextDisabled" @click="onNext"><i class="fa-solid fa-chevron-right"></i></button>
+                    </div>
+                    <img :src="relativeUrl(images[imageOnViewer].id, 'original')" class="h-100 w-100"/>
+                    
                   </div>
                   <div class="col-md-6">
-                    <p>{{imageOnViewer.name}}</p>
+                    <p>{{images[imageOnViewer].name}}</p>
                   </div>
                 </div>
               </div>
