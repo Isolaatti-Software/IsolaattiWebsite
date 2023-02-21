@@ -46,17 +46,17 @@
                 headers: this.customHeaders
             })).json();
         },
-        imageOnClick: function (image) {
+        imageOnClick: function (index) {
             if(!this.isForSelect) {
                 if(this.imagesSelected.length > 0) {
-                    this.showOptions(undefined, image.id);
+                    this.showOptions(undefined, this.images[index].id);
                 } else {
-                    this.imageOnViewer = image;
+                    this.imageOnViewer = index;
                     $("#modal-image-viewer").modal("show");
                 }
                 
             } else {
-                this.imageSelected = image.id;
+                this.imageSelected = this.images[index].id;
             }
         },
         onPrev: function() {
