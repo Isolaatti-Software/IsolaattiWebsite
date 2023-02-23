@@ -61,4 +61,26 @@ public class NotificationSender
         }
         catch(HttpRequestException){ }
     }
+
+    public async Task SendPostUpdate(PostDto post)
+    {
+        var secret = await _keysRepository.CreateKey();
+        var httpClient = new HttpClient();
+        var content = JsonContent.Create(new
+        {
+            secret = secret.Key,
+            eventData = new
+            {
+                type = "post_update",
+                id = post.Post.Id,
+                data = post
+            }
+        });
+    
+        try
+        {
+            await httpClient.PostAsync($"{_servers.RealtimeServerUrl}/update_event", content);
+        }
+        catch(HttpRequestException){ }
+    }
 }

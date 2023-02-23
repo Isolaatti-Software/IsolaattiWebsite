@@ -111,7 +111,7 @@ namespace Isolaatti.Controllers
             
             await _db.SaveChangesAsync();
 
-            return Ok(new PostDto()
+            var updatedPost = new PostDto()
             {
                 Post = existingPost,
                 UserName = _db.Users.FirstOrDefault(u => u.Id == existingPost.UserId)?.Name,
@@ -119,7 +119,11 @@ namespace Isolaatti.Controllers
                 NumberOfLikes = await _db.Likes.CountAsync(l => l.PostId == existingPost.Id),
                 Liked = _db.Likes.Any(l => l.UserId == user.Id && l.PostId == existingPost.Id),
                 SquadName = existingPost.SquadId == null ? null : _squads.GetSquadName(existingPost.SquadId)
-            });
+            };
+
+            await _notificationSender.SendPostUpdate(updatedPost);
+
+            return Ok(updatedPost);
         }
 
         [HttpPost]

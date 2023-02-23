@@ -206,5 +206,12 @@ Vue.component('post-template',{
         this.$nextTick(function () {
             this.cutContent = this.$refs.postContentContainer.scrollHeight > this.$refs.postContentContainer.clientHeight;
         });
+
+        socket.on(`post_update`, function(updatedPost) {
+            console.log(updatedPost);
+            if(updatedPost.post.id === that.renderPost.post.id) {
+                that.renderPost = updatedPost
+            }
+        });
     }
 })

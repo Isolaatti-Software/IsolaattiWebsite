@@ -57,6 +57,11 @@
             type: "new_comment",
             id: this.postId
         });
+        socket.emit("subscribe-scope", {
+            type: "post_update",
+            id: this.postId
+        });
+        
     },
     template: `
         <section>
