@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Isolaatti.Classes.ApiEndpointsRequestDataModels;
@@ -15,11 +16,13 @@ namespace Isolaatti.Controllers
     {
         private readonly DbContextApp _db;
         private readonly IAccounts _accounts;
+        private readonly NotificationSender _notificationSender;
 
-        public Likes(DbContextApp dbContextApp, IAccounts accounts)
+        public Likes(DbContextApp dbContextApp, IAccounts accounts, NotificationSender notificationSender)
         {
             _db = dbContextApp;
             _accounts = accounts;
+            _notificationSender = notificationSender;
         }
 
         [HttpPost]
@@ -43,13 +46,20 @@ namespace Isolaatti.Controllers
                 TargetUserId = post.UserId
             });
             await _db.SaveChangesAsync();
-            
-            
-            return Ok(new LikeDto
+
+            var likeDto = new LikeDto
             {
                 PostId = post.Id,
                 LikesCount = await _db.Likes.CountAsync(like => like.PostId == post.Id)
-            });
+            };
+
+            try
+            {
+                var clientId = Guid.Parse(Request.Headers["client-id"]);
+                await _notificationSender.SendPostUpdate(post.Id, clientId);
+            } catch(FormatException) {}
+            
+            return Ok(likeDto);
         }
 
         [HttpPost]
@@ -69,11 +79,20 @@ namespace Isolaatti.Controllers
             _db.Likes.Remove(like);
             await _db.SaveChangesAsync();
 
-            return Ok(new LikeDto
+            var likeDto = new LikeDto
             {
                 PostId = post.Id,
                 LikesCount = await _db.Likes.CountAsync(l => l.PostId == post.Id)
-            });
+            };
+
+            try
+            {
+                var clientId = Guid.Parse(Request.Headers["client-id"]);
+                await _notificationSender.SendPostUpdate(post.Id, clientId);
+            } catch(FormatException) {}
+
+
+            return Ok(likeDto);
         }
     }
 }

@@ -33,9 +33,11 @@
     <script>
     const userData = {id:@ViewData["userId"],name:"@ViewData["name"]",email:"@ViewData["email"]"};
     const sessionToken = '@Html.Raw(Context.Request.Cookies["isolaatti_user_session_token"])';
+    const clientId = "@Guid.NewGuid()";
     const customHttpHeaders = new Headers();
     customHttpHeaders.append("sessionToken",sessionToken);
     customHttpHeaders.append("Content-Type", "application/json")
+    customHttpHeaders.append("client-id", clientId)
     </script>
 </head>
 <body>

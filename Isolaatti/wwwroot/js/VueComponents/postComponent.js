@@ -12,6 +12,7 @@ Vue.component('post-template',{
             userData: userData,
             cutContent: true,
             customHeaders: customHttpHeaders,
+            clientId: clientId,
             thisTime: Date.now(),
             editable: false,
             renderPost: undefined,
@@ -119,6 +120,13 @@ Vue.component('post-template',{
         },
         openDiscussion: function () {
             window.location = this.openThreadLink;
+        },
+        fetchSelf: async function() {
+            const response = await fetch(`/api/Fetch/Post/${this.post.post.id}`, {
+                headers: this.customHeaders
+            });
+            if(response.ok)
+                this.renderPost = await response.json();
         }
     },
     template: `
@@ -207,10 +215,9 @@ Vue.component('post-template',{
             this.cutContent = this.$refs.postContentContainer.scrollHeight > this.$refs.postContentContainer.clientHeight;
         });
 
-        socket.on(`post_update`, function(updatedPost) {
-            console.log(updatedPost);
-            if(updatedPost.post.id === that.renderPost.post.id) {
-                that.renderPost = updatedPost
+        socket.on(`post_update`, function(updatedPostId, clientId) {
+            if(updatedPostId === that.renderPost.post.id && clientId !== this.clientId) {
+                that.fetchSelf();
             }
         });
     }

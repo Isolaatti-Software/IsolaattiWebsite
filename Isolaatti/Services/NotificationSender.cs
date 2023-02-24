@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Isolaatti.Classes.ApiEndpointsResponseDataModels;
@@ -62,7 +63,7 @@ public class NotificationSender
         catch(HttpRequestException){ }
     }
 
-    public async Task SendPostUpdate(PostDto post)
+    public async Task SendPostUpdate(long postId, Guid clientId)
     {
         var secret = await _keysRepository.CreateKey();
         var httpClient = new HttpClient();
@@ -72,8 +73,8 @@ public class NotificationSender
             eventData = new
             {
                 type = "post_update",
-                id = post.Post.Id,
-                data = post
+                id = postId,
+                data = clientId
             }
         });
     

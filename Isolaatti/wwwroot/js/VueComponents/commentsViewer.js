@@ -75,7 +75,7 @@ Vue.component("comments-viewer", {
             that.comments.splice(index, 1, comment);
         });
         
-        socket.on(`new_comment`, function(comingComment) {
+        socket.on(`new_comment`, function(commentId, comingComment) {
             console.log(comingComment);
             that.comments.push(comingComment);
         });

@@ -121,7 +121,11 @@ namespace Isolaatti.Controllers
                 SquadName = existingPost.SquadId == null ? null : _squads.GetSquadName(existingPost.SquadId)
             };
 
-            await _notificationSender.SendPostUpdate(updatedPost);
+            try
+            {
+                var clientId = Guid.Parse(Request.Headers["client-id"]);
+                await _notificationSender.SendPostUpdate(editedPost.PostId, clientId);
+            } catch(FormatException) {}
 
             return Ok(updatedPost);
         }
