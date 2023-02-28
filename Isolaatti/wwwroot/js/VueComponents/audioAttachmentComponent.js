@@ -1,5 +1,10 @@
 ﻿Vue.component("audio-attachment", {
     props: {
+        audioObject: {
+            type: Object,
+            required: false,
+            default: null
+        },
         audioId: {
             type: String,
             required: false
@@ -36,15 +41,23 @@
         const that = this;
         
         this.$nextTick(function () {
-            fetch(`/api/Audios/${that.audioId}`, {
-                method: "GET",
-                headers: customHttpHeaders
-            }).then(res => res.json())
-                .then(audioMetadata => {
-                    that.name = audioMetadata.name;
-                    that.userName = audioMetadata.userName;
-                    that.userId = audioMetadata.userId;
-                });
+            // Only feteches data when the data is not passed as property. Data is usually passed when
+            // this component is in a list, but not passed when it is on a discussion
+            if(that.audioObject === null) {
+                fetch(`/api/Audios/${that.audioId}`, {
+                    method: "GET",
+                    headers: customHttpHeaders
+                }).then(res => res.json())
+                    .then(audioMetadata => {
+                        that.name = audioMetadata.name;
+                        that.userName = audioMetadata.userName;
+                        that.userId = audioMetadata.userId;
+                    });
+            } else {
+                that.name = that.audioObject.name;
+                that.userName = that.audioObject.userName;
+                that.userId = that.audioObject.userId
+            }
         })
 
         // I need to listen to these events to update UI when another 

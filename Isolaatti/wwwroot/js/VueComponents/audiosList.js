@@ -89,7 +89,7 @@ Vue.component("audios-list", {
       <p class="m-2 text-center" v-if="audios.length === 0"> No hay contenido que mostrar <i
           class="fa-solid fa-face-sad-cry"></i></p>
       <div class="d-flex flex-column">
-        <audio-attachment :audio-id="audio.id" v-for="audio in audios" v-on:click="$emit('audio-selected',audio.id)"
+        <audio-attachment :audio-object="audio" v-for="audio in audios" v-on:click="$emit('audio-selected',audio.id)"
                           data-dismiss="modal" class="mt-1" :key="audio.id"></audio-attachment>
         <div class="d-flex mt-2 justify-content-center">
           <button class="btn" v-if="loadMore" @click="fetchAudios">

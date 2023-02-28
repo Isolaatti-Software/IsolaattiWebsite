@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Isolaatti.Classes.ApiEndpointsResponseDataModels;
+using Isolaatti.Models;
 using Isolaatti.Models.MongoDB;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -12,14 +16,17 @@ public class AudiosRepository
 {
     private readonly IMongoCollection<Audio> _audios;
     private readonly MongoDatabaseConfiguration _settings;
+    private readonly DbContextApp _db;
 
-    public AudiosRepository(IOptions<MongoDatabaseConfiguration> settings)
+    public AudiosRepository(IOptions<MongoDatabaseConfiguration> settings, DbContextApp db)
     {
         _settings = settings.Value;
         var client = new MongoClient(_settings.ConnectionString);
         var database = client.GetDatabase(_settings.DatabaseName);
         _audios = database.GetCollection<Audio>(_settings.AudiosCollectionName);
         _audios.Indexes.CreateOne(new CreateIndexModel<Audio>(Builders<Audio>.IndexKeys.Text(x => x.Name)));
+
+        _db = db;
     }
 
 #nullable enable
@@ -31,16 +38,26 @@ public class AudiosRepository
 
 #nullable disable
 
-    public async Task<List<Audio>> GetAudiosOfUser(int userId, string lastAudioId = null)
+    public async Task<IEnumerable<FeedAudio>> GetAudiosOfUser(int userId, string lastAudioId = null)
     {
+        List<Audio> audiosData;
         if (lastAudioId == null)
         {
-            return await _audios.Find(a => a.UserId == userId).SortByDescending(a => a.Id).Limit(10).ToListAsync();
+            audiosData = await _audios.Find(a => a.UserId == userId).SortByDescending(a => a.Id).Limit(10).ToListAsync();
+        }
+        else
+        {
+            var filterLt = Builders<Audio>.Filter.Lt(doc => doc.Id, lastAudioId);
+            var userFilter = Builders<Audio>.Filter.Eq(doc => doc.UserId, userId);
+            audiosData = await _audios.Find(userFilter & filterLt).SortByDescending(a => a.Id).Limit(10).ToListAsync();
         }
 
-        var filterLt = Builders<Audio>.Filter.Lt(doc => doc.Id, lastAudioId);
-        var userFilter = Builders<Audio>.Filter.Eq(doc => doc.UserId, userId);
-        return await _audios.Find(userFilter & filterLt).SortByDescending(a => a.Id).Limit(10).ToListAsync();
+        
+        
+        // This might not be optimal, but it is better than making one http request per audio to get its user name
+        return audiosData.Select(audioData => new FeedAudio(audioData)
+            { UserName = _db.Users.FirstOrDefault(u => u.Id == audioData.UserId)?.Name });
+
     }
 
     public async Task<List<Audio>> GetGlobalFeed(string lastAudioId = null)
