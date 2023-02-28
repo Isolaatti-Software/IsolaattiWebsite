@@ -249,7 +249,7 @@
                     data: audioId
                 })
             });
-            this.profile.profileAudioId = audioId;
+            this.profile.descriptionAudioId = audioId;
             $('#modal-edit-audio').modal('hide');
         },
         removeAudio: async function() {
@@ -257,8 +257,8 @@
                 method: "post",
                 headers: this.customHeaders
             });
-            this.profile.profileAudioId = null;
-            $('#modal-edit-audio').modal('hide');
+            this.profile.descriptionAudioId = null;
+            
         }
     },
     mounted: async function () {
@@ -359,17 +359,17 @@
             </button>
           </nav>
 
-          <section v-if="profile.isUserItself" class="mt-3">
+          <section class="mt-3">
             <hr>
             <div v-if="profile.descriptionAudioId!==null" class="d-flex flex-column">
-              <button type="button" class="btn btn-transparent btn-sm ml-auto mb-1" data-target="#modal-edit-audio"
+              <button v-if="profile.isUserItself" type="button" class="btn btn-transparent btn-sm ml-auto mb-1" data-target="#modal-edit-audio"
                       data-toggle="modal">
                 <i class="fa-solid fa-pencil"></i>
               </button>
               <audio-attachment :audio-id="profile.descriptionAudioId"></audio-attachment>
 
             </div>
-            <button v-else class="btn btn-light btn-sm w-100" data-target="#modal-edit-audio" data-toggle="modal">
+            <button v-else-if="profile.isUserItself" class="btn btn-light btn-sm w-100" data-target="#modal-edit-audio" data-toggle="modal">
               <i class="fa-solid fa-microphone"></i> Configurar audio de presentación
             </button>
             <hr>
@@ -498,7 +498,7 @@
             <div class="modal-body">
               <div class="isolaatti-card" v-if="profile.descriptionAudioId">
                 <p class="mb-0">Actualmente tienes un audio colocado.</p>
-                <button class="btn btn-sm btn-danger w-100" type="button" @click="">Quitar</button>
+                <button class="btn btn-sm btn-danger w-100" type="button" @click="removeAudio">Quitar</button>
               </div>
               <div class="isolaatti-card mt-2">
                 <p>Este audio aparecerá destacado en tu perfil.</p>
@@ -516,7 +516,7 @@
                 </div>
 
                 <audio-recorder @audio-posted="onAudioPosted" v-if="profileAudioMode==='new'"></audio-recorder>
-                <audios-list :user-id="userId" v-else-if="profileAudioMode==='existing'"></audios-list>
+                <audios-list :user-id="userId" v-else-if="profileAudioMode==='existing'" @audio-selected="onAudioPosted"></audios-list>
               </div>
             </div>
           </div>

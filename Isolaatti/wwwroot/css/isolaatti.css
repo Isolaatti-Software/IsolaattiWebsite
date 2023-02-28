@@ -516,6 +516,7 @@ footer#footer > a, footer#footer > span {
   border: 1px solid #f8f9fa;
   border-radius: 0.25rem;
   background-color: #f8f9fa;
+  cursor: pointer;
 }
 
 .global-audio-player {
