@@ -215,8 +215,8 @@ Vue.component('post-template',{
             this.cutContent = this.$refs.postContentContainer.scrollHeight > this.$refs.postContentContainer.clientHeight;
         });
 
-        socket.on(`post_update`, function(updatedPostId, clientId) {
-            if(updatedPostId === that.renderPost.post.id && clientId !== this.clientId) {
+        socket.on(0, function(clientId, updatedPostId, payload) {
+            if(updatedPostId === that.renderPost.post.id && clientId !== that.clientId) {
                 that.fetchSelf();
             }
         });

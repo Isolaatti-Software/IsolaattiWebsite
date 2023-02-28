@@ -205,22 +205,19 @@ namespace Isolaatti.Controllers
         
             _db.Comments.Add(commentToMake);
             await _db.SaveChangesAsync();
-
-            // if (post.UserId != user.Id)
-            // {
-            //     await _notificationSender.NotifyUser(post.UserId, new SocialNotification
-            //     {
-            //         UserId = user.Id,
-            //         Type = NotificationType.NewComment
-            //     });
-            //     
-            // }
+            
             var commentDto = new CommentDto
             {
                 Comment = commentToMake,
                 Username = _db.Users.FirstOrDefault(u => u.Id == commentToMake.UserId)?.Name
             };
-            await _notificationSender.SendNewCommentEvent(commentDto);
+            
+            try
+            {
+                var clientId = Guid.Parse(Request.Headers["client-id"]);
+                await _notificationSender.SendNewCommentEvent(commentDto, clientId);
+            } catch(FormatException) {}
+            
             return Ok(commentDto);
         }
     }

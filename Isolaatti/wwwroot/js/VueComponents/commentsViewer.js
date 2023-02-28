@@ -21,6 +21,7 @@ Vue.component("comments-viewer", {
     data: function () {
         return {
             customHeaders: customHttpHeaders,
+            clientId: clientId,
             comments: [],
             loading: false,
             moreContent: false
@@ -53,34 +54,73 @@ Vue.component("comments-viewer", {
                 event.target.disabled = false;
             }
         },
-        onCommentRemoved: function (id) {
-            const index = this.comments.findIndex(c => c.id === id);
+        onCommentRemoved: function(id) {
+            const index = this.comments.findIndex(c => c.comment.id === id);
             if (index === -1) return;
 
             this.comments.splice(index, 1);
         },
-        onCommentEdited: function(commentDto) {
-            const index = this.comments.findIndex(c => c.comment.id === commentDto.comment.id);
-            this.comments.splice(index, 1, commentDto);
+        onCommentEdited: function(comment) {
+            const index = this.comments.findIndex(c => c.comment.id === comment.comment.id);
+            if (index === -1) return;
+
+            this.comments.splice(index, 1, comment);
+        },
+        onCommentAdded: function(comingComment) {
+            this.comments.push(comingComment);
         }
     },
     mounted: async function () {
         const that = this;
-        this.fetchComments();
+        await this.fetchComments();
 
-        events.$on("commentEdited", function (comment) {
-            const index = that.comments.findIndex(c => c.id === comment.id);
-            if (index === -1) return;
+        // Local events
+        events.$on("comment-edited", this.onCommentEdited);
+        events.$on("comment-removed", this.onCommentRemoved);
+        events.$on("comment-added", this.onCommentAdded);
+        
+        // Remote events
+        // Remote event callback is as follows (clientId, relatedId, payload)
+        // Note that payload can be null
 
-            that.comments.splice(index, 1, comment);
+        socket.emit("subscribe-scope", {
+            type: 2,
+            id: this.postId
+        });
+
+        socket.emit("subscribe-scope", {
+            type: 3,
+            id: this.postId
         });
         
-        socket.on(`new_comment`, function(commentId, comingComment) {
-            console.log(comingComment);
-            that.comments.push(comingComment);
+        // 1. Comment added remotely
+        socket.on(1, function(clientId, postId, comingComment) {
+            // Comment is only added when it's not added by this client itself
+            if(clientId === that.clientId)
+                return;
+
+            // Check if comment is actually for this post
+            if(postId === that.postId)
+                that.onCommentAdded(comingComment);
         });
         
-        socket.on("comment-removed", that.onCommentRemoved);
+        // 2. Comment removed remotely
+        socket.on(2, function(clientId, postId, commentId){
+            // Comment is only removed when it's not removed by this client itself
+            if(clientId === that.clientId)
+                return;
+            if(postId === that.postId)
+                that.onCommentRemoved(commentId);
+        });
+        
+        // 3. Comment modified remotely
+        socket.on(3, function(clientId, postId, commentId) {
+            // Comment is only updated when it's not modified by this client itself
+            if(clientId === that.clientId)
+                return;
+            if(postId === that.postId)
+                that.onCommentEdited(commentId);
+        })
     },
     template: `
       <div class="d-flex flex-column comments-section">
@@ -92,7 +132,7 @@ Vue.component("comments-viewer", {
         discusión</a>
       <a href="#" v-on:click="fetchComments" class="text-center mt-2"
          v-if="!isUnderPost && comments.length < numberOfComments">Cargar más</a>
-      <new-comment :post-to-comment="postId" class="mt-2"></new-comment>
+      <new-comment :post-to-comment="postId" class="mt-2" @commented="onCommentAdded"></new-comment>
       </div>
       
     `

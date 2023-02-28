@@ -69,7 +69,7 @@
             this.commentDto.comment.date = new Date();
             
             this.posting = false;
-            this.$emit("done", await response.json());
+            this.$emit("commented", await response.json());
         },
         audioPosted: function (id) {
             this.comment.audioId = id;

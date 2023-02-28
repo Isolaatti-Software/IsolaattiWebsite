@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Isolaatti.Classes.ApiEndpointsRequestDataModels;
@@ -14,11 +15,13 @@ namespace Isolaatti.Controllers
     {
         private readonly DbContextApp _db;
         private readonly IAccounts _accounts;
+        private readonly NotificationSender _notificationSender;
 
-        public CommentsController(DbContextApp dbContextApp, IAccounts accounts)
+        public CommentsController(DbContextApp dbContextApp, IAccounts accounts, NotificationSender notificationSender)
         {
             _db = dbContextApp;
             _accounts = accounts;
+            _notificationSender = notificationSender;
         }
 
         [Route("Delete")]
@@ -44,6 +47,14 @@ namespace Isolaatti.Controllers
             _db.Comments.Remove(comment);
             await _db.SaveChangesAsync();
             
+            
+            try
+            {
+                var clientId = Guid.Parse(Request.Headers["client-id"]);
+                await _notificationSender.SendDeleteCommentEvent(comment.PostId, comment.Id, clientId);
+            } catch(FormatException) {}
+            
+            
             return Ok();
         }
         
@@ -65,13 +76,19 @@ namespace Isolaatti.Controllers
         
             _db.Comments.Update(commentToEdit);
             await _db.SaveChangesAsync();
-        
-        
-            return Ok(new CommentDto
+
+            var commentDto = new CommentDto
             {
                 Comment = commentToEdit,
                 Username = _db.Users.FirstOrDefault(u => u.Id == commentToEdit.UserId)?.Name
-            });
+            };
+            try
+            {
+                var clientId = Guid.Parse(Request.Headers["client-id"]);
+                await _notificationSender.SendCommentModifiedEvent(commentDto, clientId);
+            } catch(FormatException) {}
+
+            return Ok(commentDto);
         }
     }
 }

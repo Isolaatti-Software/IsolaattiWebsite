@@ -54,11 +54,11 @@
     mounted: async function () {
         await this.fetchPost();
         socket.emit("subscribe-scope", {
-            type: "new_comment",
+            type: 1,
             id: this.postId
         });
         socket.emit("subscribe-scope", {
-            type: "post_update",
+            type: 0,
             id: this.postId
         });
         
