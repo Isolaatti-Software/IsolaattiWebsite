@@ -6,6 +6,7 @@ using Isolaatti.Config;
 using Isolaatti.DTOs;
 using Isolaatti.Models.MongoDB;
 using Isolaatti.Repositories;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Isolaatti.Services;
@@ -14,11 +15,13 @@ public class NotificationSender
 {
     private readonly SocketIoServiceKeysRepository _keysRepository;
     private readonly Servers _servers;
+    private readonly ILogger<NotificationSender> _logger;
 
-    public NotificationSender(IOptions<Servers> servers,SocketIoServiceKeysRepository keysRepository)
+    public NotificationSender(IOptions<Servers> servers,SocketIoServiceKeysRepository keysRepository, ILogger<NotificationSender> logger)
     {
         _keysRepository = keysRepository;
         _servers = servers.Value;
+        _logger = logger;
     }
     
     public async Task NotifyUser(int userId, SocialNotification notification)
@@ -89,12 +92,15 @@ public class NotificationSender
                 RelatedId = postId
             }
         });
-    
+
         try
         {
             await httpClient.PostAsync($"{_servers.RealtimeServerUrl}/event", content);
         }
-        catch(HttpRequestException){ }
+        catch (HttpRequestException e)
+        {
+            _logger.Log(LogLevel.Error,"Error making request");
+        }
     }
 
     public async Task SendDeleteCommentEvent(long postId, long commentId, Guid clientId)
