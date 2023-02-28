@@ -163,11 +163,19 @@ namespace Isolaatti
                     var serversConfig = JsonSerializer.Deserialize<Servers>(serversConfigEnvVar!);
                     config.RealtimeServerUrl= serversConfig?.RealtimeServerUrl;
                 });
+                var recaptchaConfigEnvVar = Environment.GetEnvironmentVariable("recaptcha");
+                services.Configure<ReCaptchaConfig>(config =>
+                {
+                    var recaptchaConfig = JsonSerializer.Deserialize<ReCaptchaConfig>(recaptchaConfigEnvVar);
+                    config.Site = recaptchaConfig.Site;
+                    config.Secret = recaptchaConfig.Secret;
+                });
             }
             else
             {
                 services.Configure<MongoDatabaseConfiguration>(Configuration.GetSection("MongoDb"));
                 services.Configure<Servers>(Configuration.GetSection("Servers"));
+                services.Configure<ReCaptchaConfig>(Configuration.GetSection("ReCaptcha"));
             }
             services.AddScoped<AudiosRepository>();
             services.AddScoped<SquadInvitationsRepository>();
