@@ -15,9 +15,24 @@ public class GoogleCloudStorageService
 
     public GoogleCloudStorageService()
     {
-        var file = File.Open(GoogleCloudCredentialPath, FileMode.Open, FileAccess.Read,
-            FileShare.Read);
-        var googleCloudCredential = GoogleCredential.FromStream(file);
+        const string filePath = "isolaatti-firebase-adminsdk.json";
+        GoogleCredential credential;
+        if (File.Exists(filePath))
+        {
+            credential = GoogleCredential.FromStream(File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read));
+        }
+        else
+        {
+            var json = Environment.GetEnvironmentVariable("google_admin_sdk");
+            if(json != null)
+                credential = GoogleCredential.FromJson(json);
+            else
+            {
+                throw new FileNotFoundException(
+                    "Google credential file was not found. Tried to use env vars but did not have success.");
+            }
+        }
+        var googleCloudCredential = credential;
         _storage = StorageClient.Create(googleCloudCredential);
     }
 
