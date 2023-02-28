@@ -50,10 +50,10 @@ namespace Isolaatti.Pages
         public async Task<IActionResult> OnPost(string username, string email, string password,
             [FromQuery] string then = "")
         {
-            if (_db.Users.Count() >= 50)
-            {
-                return RedirectToPage("MakeAccount", new { limitOfAccounts = true });
-            }
+            // if (_db.Users.Count() >= 50)
+            // {
+            //     return RedirectToPage("MakeAccount", new { limitOfAccounts = true });
+            // }
 
             if (username == null || email == null || password == null)
             {
