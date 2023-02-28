@@ -74,10 +74,27 @@ namespace Isolaatti
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var file = File.Open("isolaatti-firebase-adminsdk.json", FileMode.Open);
+            const string filePath = "isolaatti-firebase-adminsdk.json";
+            GoogleCredential credential;
+            if (File.Exists(filePath))
+            {
+                credential = GoogleCredential.FromStream(File.Open(filePath, FileMode.Open));
+            }
+            else
+            {
+                var json = Environment.GetEnvironmentVariable("google_admin_sdk");
+                if(json != null)
+                    credential = GoogleCredential.FromJson(json);
+                else
+                {
+                    throw new FileNotFoundException(
+                        "Google credential file was not found. Tried to use env vars but did not have success.");
+                }
+            }
+            
             FirebaseApp.Create(new AppOptions()
             {
-                Credential = GoogleCredential.FromStream(file)
+                Credential = credential
             });
             services.AddCors(options => 
                 options.AddPolicy(name: "cors",
