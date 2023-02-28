@@ -82,6 +82,7 @@
 
             let madePost = await response.json();
             this.discussion.post.textContent = "";
+            this.discussion.post.audioId = null;
             this.posting = false;
             if (this.mode !== "modify")
                 events.$emit("posted", madePost);
