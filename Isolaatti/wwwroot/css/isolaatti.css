@@ -575,3 +575,8 @@ blockquote {
   left: 0;
   z-index: 100;
 }
+.footer-font-color a.link {
+  color: rgb(3, 3, 3);
+  font-weight: lighter;
+  margin: 0 0.5rem;
+}
