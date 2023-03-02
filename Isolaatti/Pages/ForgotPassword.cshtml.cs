@@ -30,7 +30,7 @@ namespace Isolaatti.Pages
             return Page();
         }
 
-        public async Task<IActionResult> OnPost([FromForm] string email)
+        public async Task<IActionResult> OnPostAsync([FromForm] string email)
         {
             Post = true;
             try
@@ -40,6 +40,9 @@ namespace Isolaatti.Pages
             catch (InvalidOperationException)
             {
                 EmailFound = false;
+                // Using delay to simulate that email was sent. This may not be necessary, but users
+                // could realize that the email they entered is not in the system and use this to find
+                // out what email addresses are registered and which not.
                 await Task.Delay(1500);
                 return Page();
             }

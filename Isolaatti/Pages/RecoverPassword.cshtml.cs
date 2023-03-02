@@ -15,16 +15,26 @@ namespace Isolaatti.Pages
         {
             Db = dbContextApp;
         }
+        
+        [BindProperty (SupportsGet = true, Name = "id")]
+        public Guid TokenId { get; set; }
+        [BindProperty (SupportsGet = true, Name = "value")]
+        public string TokenValue { get; set; }
+        [BindProperty]
+        public string NewPassword { get; set; }
+        [BindProperty]
+        public bool NewPasswordInvalid { get; set; }
+        public bool UserDoesNotExist { get; set; }
 
-        public async Task<IActionResult> OnGet([FromQuery] Guid id, [FromQuery] string value)
+        public async Task<IActionResult> OnGet()
         {
-            var changePasswordToken = await Db.ChangePasswordTokens.FindAsync(id);
+            var changePasswordToken = await Db.ChangePasswordTokens.FindAsync(TokenId);
             if (changePasswordToken == null)
             {
                 return NotFound();
             }
 
-            if (changePasswordToken.Token != value) return Unauthorized();
+            if (changePasswordToken.Token != TokenValue) return Unauthorized();
 
             if (changePasswordToken.Expires < DateTime.Now.ToUniversalTime())
             {
@@ -38,16 +48,26 @@ namespace Isolaatti.Pages
             return Page();
         }
 
-        public IActionResult OnPost([FromForm] Guid id, [FromForm] string tokenStr, [FromForm] string newPassword)
+        public IActionResult OnPost()
         {
-            var token = Db.ChangePasswordTokens.Find(id);
+            var token = Db.ChangePasswordTokens.Find(TokenId);
             if (token == null) return NotFound();
 
-            if (token.Token != tokenStr) return Unauthorized();
+            if (token.Token != TokenValue) return Unauthorized();
+            if (NewPassword == null || NewPassword.Length < 8)
+            {
+                NewPasswordInvalid = true;
+                return Page();
+            }
 
             var user = Db.Users.Find(token.UserId);
+            if (user == null)
+            {
+                UserDoesNotExist = true;
+                return Page();
+            }
             var passwordHasher = new PasswordHasher<string>();
-            user.Password = passwordHasher.HashPassword(user.Email, newPassword);
+            user.Password = passwordHasher.HashPassword(user.Email, NewPassword);
             Db.Users.Update(user);
             Db.ChangePasswordTokens.Remove(token);
             Db.SaveChanges();
