@@ -1,32 +1,53 @@
 ﻿new Vue({
     el: "#sign-up",
     data: {
-        name: "",
-        email: "",
-        password: "",
-        passwordConfirmation: ""
-    },
-    computed: {
-        nameIsValid: function () {
-            return this.name.length > 0 && this.name.length <= 20;
+        nameField: {
+            value: name, // server rendered
+            hadInput: false
         },
-        emailIsValid: function () {
-            const emailValidationRegex = new RegExp("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$");
-            return emailValidationRegex.test(this.email);
+        emailField: {
+            value: email, // server rendered
+            hadInput: false
         },
-        passwordIsValid: function () {
-            return this.password.length > 7;
+        passwordField: {
+            value: "",
+            hadInput: false
         },
-        passwordUnMatches: function () {
-            return this.password !== this.passwordConfirmation && this.passwordConfirmation.length > 0 && this.password.length > 0;
-        },
-        canSignUp: function () {
-            return this.emailIsValid && this.passwordIsValid;
+        passwordConfirmationField: {
+            value: "",
+            hadInput: false
         }
     },
-    mounted: function () {
-        if (username !== undefined) {
-            this.email = username;
+    computed: {
+        nameIsInvalid: function () {
+            return this.nameField.value.length < 1 || this.nameField.value.length > 20;
+        },
+        emailIsInvalid: function () {
+            const emailValidationRegex = new RegExp("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$");
+            return !emailValidationRegex.test(this.emailField.value);
+        },
+        passwordIsInvalid: function () {
+            return this.passwordField.value.length < 8;
+        },
+        passwordUnMatches: function () {
+            return this.passwordField.value !== this.passwordConfirmationField.value && this.passwordConfirmationField.value.length > 0 && this.passwordField.value.length > 0;
+        },
+        canSignUp: function () {
+            return !this.nameIsInvalid && !this.emailIsInvalid && !this.passwordIsInvalid && !this.passwordUnMatches;
+        }
+    },
+    watch: {
+        "nameField.value": function() {
+            this.nameField.hadInput = true;
+        },
+        "emailField.value": function() {
+            this.emailField.hadInput = true;
+        },
+        "passwordField.value": function() {
+            this.passwordField.hadInput = true;
+        },
+        "passwordConfirmationField.value": function() {
+            this.passwordConfirmationField.hadInput = true
         }
     }
 })

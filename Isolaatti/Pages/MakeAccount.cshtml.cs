@@ -16,47 +16,45 @@ namespace Isolaatti.Pages
 {
     public class MakeAccount : PageModel
     {
-        private readonly DbContextApp _db;
-
-        public bool emailUsed = false;
-        public bool nameUsed = false;
-        public bool LimitOfAccountsReached = false;
-        public bool AccountNotMade = false;
         private readonly IAccounts _accounts;
         private readonly IOptions<ReCaptchaConfig> _recaptchaConfig;
 
-        public MakeAccount(DbContextApp dbContextApp, IAccounts accounts, IOptions<ReCaptchaConfig> recaptchaConfig)
+        public MakeAccount(IAccounts accounts, IOptions<ReCaptchaConfig> recaptchaConfig)
         {
-            _db = dbContextApp;
             _accounts = accounts;
             _recaptchaConfig = recaptchaConfig;
         }
+        
+        [BindProperty]
+        public string Name { get; set; }
+        [BindProperty]
+        public string Email { get; set; }
+        [BindProperty]
+        public string Password { get; set; }
+        [BindProperty]
+        public string PasswordConfirmation { get; set; }
+        
+        [BindProperty]
+        public bool EmailPrevUsed { get; set; }
+        [BindProperty]
+        public bool RecaptchaError { get; set; }
 
-        public async Task<IActionResult> OnGet(string user = "", string email = "", string error = "",
-            string referer = "", string then = "")
+        public async Task<IActionResult> OnGet(string then = "")
         {
             ViewData["alerts"] = new Dictionary<string, string>();
-            if (error.Equals("emailused"))
+            if (EmailPrevUsed)
             {
                 ((Dictionary<string, string>)ViewData["alerts"])["error"] =
                     "La dirección de correo introducida ya ha sido utilizada. Intenta con otra.";
             }
-
-
-            if (referer.Equals("demixer"))
-            {
-                ((Dictionary<string, string>)ViewData["alerts"])["info"] =
-                    "Crearemos tu cuenta y te regresaremos a Demixer";
-            }
+            
 
             ViewData["then"] = then;
 
             return Page();
         }
 
-        public async Task<IActionResult> OnPost(string username, string email, string password,
-        [FromForm(Name = "g-recaptcha-response")] string recaptchaResponse,
-            [FromQuery] string then = "")
+        public async Task<IActionResult> OnPost([FromForm(Name = "g-recaptcha-response")] string recaptchaResponse, [FromQuery] string then = "")
         {
             var httpClient = new HttpClient();
             var recaptchaValidationResponseMessage = await httpClient.PostAsync("https://www.google.com/recaptcha/api/siteverify",
@@ -70,16 +68,17 @@ namespace Isolaatti.Pages
                 await recaptchaValidationResponseMessage.Content.ReadFromJsonAsync<RecaptchaResponse>();
             if (!recaptchaValidation.Success)
             {
-                return RedirectToPage("/MakeAccount", new { reCaptchaError = true });
+                RecaptchaError = true;
+                return Page();
             }
 
 
-            if (username == null || email == null || password == null)
+            if (Name == null || Email == null || Password == null || PasswordConfirmation == null)
             {
                 return Page();
             }
 
-            var result = await _accounts.MakeAccountAsync(username, email, password);
+            var result = await _accounts.MakeAccountAsync(Name, Email, Password);
             switch (result)
             {
                 case AccountMakingResult.Ok:
@@ -91,20 +90,13 @@ namespace Isolaatti.Pages
                     return RedirectToPage("LogIn", new
                     {
                         newUser = true,
-                        username = email
+                        username = Email
                     });
                 case AccountMakingResult.EmailNotAvailable:
-                    return RedirectToPage("MakeAccount", new
-                    {
-                        user = username,
-                        error = "emailused"
-                    });
+                    EmailPrevUsed = true;
+                    return Page();
                 default:
-                    return RedirectToPage("MakeAccount", new
-                    {
-                        email = email,
-                        error = "couldnotsendemail"
-                    });
+                    return Page();
             }
         }
     }
