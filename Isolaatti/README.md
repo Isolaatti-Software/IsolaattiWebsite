@@ -1,6 +1,8 @@
 # Isolaatti-BackendWebApp
 Sitio web de Isolaatti
 
+[![.NET](https://github.com/Isolaatti-Software/IsolaattiWebsite/actions/workflows/dotnet.yml/badge.svg)](https://github.com/Isolaatti-Software/IsolaattiWebsite/actions/workflows/dotnet.yml)
+
 Bienvenid@
 
 ## Plataformas compatibles
