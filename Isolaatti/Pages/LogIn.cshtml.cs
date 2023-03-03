@@ -114,8 +114,7 @@ namespace Isolaatti.Pages
                 // {
                 // }
 
-                await _accounts.SendJustLoginEmail(user.Email, user.Name,
-                    HttpContext.Connection.RemoteIpAddress?.ToString());
+                await _accounts.SendJustLoginEmail(user.Email, user.Name,request.Headers["HTTP_X_FORWARDED_FOR"]);
                 return RedirectToPage("Index");
             }
             catch (InvalidOperationException)
