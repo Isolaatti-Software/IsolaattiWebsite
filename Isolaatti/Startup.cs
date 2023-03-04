@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text.Json;
+using EFCoreSecondLevelCacheInterceptor;
 // using EFCoreSecondLevelCacheInterceptor;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
@@ -108,13 +109,14 @@ namespace Isolaatti
             services.AddControllers();
             services.AddMvcCore().AddApiExplorer();
             services.AddRazorPages().AddRazorRuntimeCompilation();
-            // services.AddEFSecondLevelCache(options =>
-            // {
-            //     options.UseMemoryCacheProvider()
-            //         .DisableLogging(true)
-            //         .UseCacheKeyPrefix("EF_");
-            //     options.CacheAllQueries(CacheExpirationMode.Absolute, TimeSpan.FromMinutes(30));
-            // });
+            services.AddEFSecondLevelCache(options =>
+            {
+                options.UseMemoryCacheProvider()
+                    .DisableLogging(true)
+                    .UseCacheKeyPrefix("EF_");
+                options.CacheQueriesContainingTypes(CacheExpirationMode.Absolute, TimeSpan.FromMinutes(10),
+                    TableTypeComparison.Contains, typeof(User), typeof(Like), typeof(Post));
+            });
                 services.AddDbContextPool<DbContextApp>((serviceProvider, options) =>
             {
          
@@ -132,11 +134,13 @@ namespace Isolaatti
                         Password = credentialInfo[1],
                         Database = databaseUri.LocalPath.TrimStart('/')
                     };
-                    options.UseNpgsql(connectionStringBuilder.ToString());
+                    options.UseNpgsql(connectionStringBuilder.ToString())
+                        .AddInterceptors(serviceProvider.GetRequiredService<SecondLevelCacheInterceptor>());
                 }
                 else
                 {
-                    options.UseNpgsql(Configuration.GetConnectionString("Database"));
+                    options.UseNpgsql(Configuration.GetConnectionString("Database"))
+                        .AddInterceptors(serviceProvider.GetRequiredService<SecondLevelCacheInterceptor>());
                 }
             });
                 services.AddDataProtection().PersistKeysToDbContext<DbContextApp>();
