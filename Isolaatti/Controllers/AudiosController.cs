@@ -76,7 +76,7 @@ public class AudiosController : ControllerBase
     }
 
     [HttpPost]
-    [Route("{audioId:guid}/Rename")]
+    [Route("{audioId}/Rename")]
     public async Task<IActionResult> Rename([FromHeader(Name = "sessionToken")] string sessionToken, string audioId,
         SimpleStringData payload)
     {
@@ -103,6 +103,11 @@ public class AudiosController : ControllerBase
         if (user == null) return Unauthorized("Token is not valid");
 
         var feedAudio = await _audios.GetAudio(audioId);
+
+        if (feedAudio == null)
+        {
+            return NotFound();
+        }
 
         return Ok(feedAudio);
     }

@@ -154,6 +154,10 @@ Vue.component('audio-recorder', {
             this.resetRecording();
             this.postAudio();
         },
+        
+        resetState: function() {
+            this.$emit('remount')
+        },
 
         postAudio: function () {
             const request = new XMLHttpRequest();
@@ -164,6 +168,7 @@ Vue.component('audio-recorder', {
                 const response = JSON.parse(request.response);
                 that.$emit("audio-posted", response.id);
                 that.uploading = false;
+                that.resetState();
             }
 
             request.open("POST", "/api/Audios/Create");

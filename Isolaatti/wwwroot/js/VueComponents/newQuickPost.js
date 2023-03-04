@@ -4,7 +4,13 @@
             mode: undefined, // or audio
             example: {
                 template: "<p>Hola</p>"
-            }
+            },
+            audioRecorderKey: Date.now() // this is changed to force remount of the component
+        }
+    },
+    methods: {
+        onAudioRecorderRemount: function() {
+            this.audioRecorderKey = Date.now()
         }
     },
     mounted: function() {
@@ -37,7 +43,7 @@
               <button class="btn btn-light btn-sm" @click="mode=undefined">&times;</button>
             </div>
             <new-discussion v-if="mode==='discussion'"></new-discussion>
-            <audio-recorder v-else-if="mode==='audio'"></audio-recorder>
+            <audio-recorder v-else-if="mode==='audio'" :key="audioRecorderKey" @remount="onAudioRecorderRemount"></audio-recorder>
             <div v-else-if="mode==='article'">Pronto podrás escribir articulos</div>
         </div>
       </div>

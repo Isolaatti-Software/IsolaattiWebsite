@@ -86,12 +86,12 @@ public class AudiosRepository
 
     public async Task RemoveAudio(string audioId)
     {
-        await _audios.DeleteOneAsync(a => new ObjectId(a.Id) == new ObjectId(audioId));
+        await _audios.DeleteOneAsync(a => a.Id == audioId);
     }
 
     public async Task RenameAudio(string audioId, string name)
     {
-        await _audios.UpdateOneAsync(a => new ObjectId(audioId) == new ObjectId(a.Id),
+        await _audios.UpdateOneAsync(a => audioId == a.Id,
             new ObjectUpdateDefinition<Audio>(new { name }));
     }
 
