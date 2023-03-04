@@ -305,6 +305,6 @@ public class Accounts : IAccounts
         var xForwardedForHeaderValue = _httpContext.Request.Headers["X-Forwarded-For"];
         return xForwardedForHeaderValue.Count == 0 
                 ? _httpContext.Request.HttpContext.Connection.RemoteIpAddress?.ToString() 
-                : _httpContext.Request.Headers["X-Forwarded-For"][0];
+                : _httpContext.Request.Headers["X-Forwarded-For"][0].Split(",")[0].Trim();
     }
 }
