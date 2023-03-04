@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Google;
 using Isolaatti.Classes.ApiEndpointsResponseDataModels;
 using Isolaatti.Enums;
 using Isolaatti.Models.MongoDB;
@@ -68,7 +69,14 @@ public class AudiosService
         if (audio.UserId != userId)
             return AudiosOperationResult.NotOwned;
 
-        await _storage.DeleteObject(audio.FirestoreObjectPath);
+        try
+        {
+            await _storage.DeleteObject(audio.FirestoreObjectPath);
+        }
+        catch (GoogleApiException)
+        {
+            
+        }
         await _audiosRepository.RemoveAudio(audio.Id);
 
         return AudiosOperationResult.Success;

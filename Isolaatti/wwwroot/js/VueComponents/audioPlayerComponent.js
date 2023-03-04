@@ -8,7 +8,8 @@ Vue.component('audio-player', {
             duration: 0.0,
             name: "",
             userName: "",
-            userId: 0
+            userId: 0,
+            volume: 1.0
         }
     },
     computed: {
@@ -81,7 +82,10 @@ Vue.component('audio-player', {
         });
     },
     template: `
-<section class="d-flex mb-1 p-3 w-100 bg-light align-items-center" v-if="loaded">
+<section class="d-flex mb-1 p-3 w-100 bg-light align-items-center position-relative" style="z-index: 1030" v-if="loaded">
+    <div class="mobile-only position-absolute w-100 d-flex justify-content-center" style="transform: translateY(-50px)">
+        <button class="btn btn-dark btn-sm"><i class="fa-solid fa-chevron-up"></i></button>
+    </div>
     <img width="50" height="50" :src="userImage" class="mr-1" alt="Foto del usuario">
     <div class="d-flex flex-column">
       <div>{{name}}</div>
@@ -107,10 +111,11 @@ Vue.component('audio-player', {
         <span>{{getClockFormatTime(duration)}}</span>
       </div>
     </div>
-    <div>
-      <button class="btn">
-        <i class="fa-solid fa-volume-high"></i>
-      </button>
+    <div class="d-flex justify-content-between desktop-only" style="width: 150px">
+        <i v-if="volume===0.0" class="fa-solid fa-volume-off"></i>
+        <i v-else-if="volume <= 0.5" class="fa-solid fa-volume-low"></i>
+        <i v-else class="fa-solid fa-volume-high"></i>
+        <input type="range" min="0.0" max="1.0" step="0.1" v-model.number="volume"/>
     </div>
 </section>
     `

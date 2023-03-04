@@ -109,7 +109,7 @@ button.isolaatti-btn:hover {
 }
 
 .mobile-only {
-  display: none;
+  display: none!important;
 }
 
 @media screen and (max-width: 576px) {
@@ -158,11 +158,11 @@ button.isolaatti-btn:hover {
   }
 
   .desktop-only {
-    display: none;
+    display: none!important;
   }
   
   .mobile-only {
-    display: block;
+    display: inherit!important;
   }
 }
 
@@ -516,7 +516,6 @@ footer#footer > a, footer#footer > span {
   border: 1px solid #f8f9fa;
   border-radius: 0.25rem;
   background-color: #f8f9fa;
-  cursor: pointer;
 }
 
 .global-audio-player {
@@ -579,4 +578,8 @@ blockquote {
   color: rgb(3, 3, 3);
   font-weight: lighter;
   margin: 0 0.5rem;
+}
+.item-in-place-dialog-background {
+  background-color: rgb(248, 249, 250); 
+  padding: 0.2rem;
 }
