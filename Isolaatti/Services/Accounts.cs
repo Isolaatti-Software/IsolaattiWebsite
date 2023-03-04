@@ -117,7 +117,7 @@ public class Accounts : IAccounts
             Guid = token.Item1,
             HashedKey = passwordHasher.HashPassword(token.Item1, token.Item2),
             UserAgent = _httpContext.Request.Headers.UserAgent,
-            IpAddress = _httpContext.Connection.RemoteIpAddress?.ToString(),
+            IpAddress = GetIpAddress(),
             CreationDate = DateTime.Now.ToUniversalTime(),
             UserId = userId
         };
@@ -131,6 +131,10 @@ public class Accounts : IAccounts
             Guid = result.Guid,
             Secret = token.Item2
         };
+
+        
+        
+        await SendJustLoginEmail(user.Email, user.Name,GetIpAddress());
 
         return tokenSerializable;
     }
@@ -222,6 +226,8 @@ public class Accounts : IAccounts
         var passwordHasher = new PasswordHasher<string>();
 
         var token = _keyGenService.GenerateKeyAndHash();
+        
+        
 
         // This object is stored. It includes only the hashed key
         var authToken = new AuthToken()
@@ -229,7 +235,7 @@ public class Accounts : IAccounts
             Guid = token.Item1,
             HashedKey = passwordHasher.HashPassword(token.Item1, token.Item2),
             UserAgent = _httpContext.Request.Headers.UserAgent,
-            IpAddress = _httpContext.Connection.RemoteIpAddress?.ToString(),
+            IpAddress = GetIpAddress(),
             CreationDate = DateTime.Now.ToUniversalTime(),
             UserId = user.Id
         };
@@ -243,6 +249,10 @@ public class Accounts : IAccounts
             Guid = result.Guid,
             Secret = token.Item2
         };
+        
+        
+        
+        await SendJustLoginEmail(user.Email, user.Name,GetIpAddress());
 
         return tokenSerializable;
     }
@@ -288,5 +298,13 @@ public class Accounts : IAccounts
     public IEnumerable<AuthToken> GetTokenOfUser(int userId)
     {
         return _authTokensRepository.FindTokenOfUser(userId);
+    }
+
+    public string GetIpAddress()
+    {
+        var xForwardedForHeaderValue = _httpContext.Request.Headers["X-Forwarded-For"];
+        return xForwardedForHeaderValue.Count == 0 
+                ? _httpContext.Request.HttpContext.Connection.RemoteIpAddress?.ToString() 
+                : _httpContext.Request.Headers["X-Forwarded-For"][0];
     }
 }

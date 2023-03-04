@@ -22,4 +22,5 @@ public interface IAccounts
     Task<AuthenticationTokenSerializable> CreateTokenForGoogleUser(string accessToken);
     Task SendJustLoginEmail(string email, string name, string ipAddress);
     IEnumerable<AuthToken> GetTokenOfUser(int userId);
+    string GetIpAddress();
 }
