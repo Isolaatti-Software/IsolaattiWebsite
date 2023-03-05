@@ -32,7 +32,8 @@
             deleting: false,
             newName: "",
             performingDeletion: false,
-            errorDeleting: false
+            errorDeleting: false,
+            performingNameChange: false
         }
     },
     methods: {
@@ -55,7 +56,23 @@
             this.showDialogBackground = false;
             this.deleting = false;
         },
-        changeAudioName: function() {
+        changeAudioName: async function() {
+            this.performingNameChange = true
+            const response = await fetch(`/api/Audios/${this.id}/Rename`, {
+                method: "post",
+                headers: this.customHeaders,
+                body: JSON.stringify({
+                    data: this.newName
+                })
+            });
+            this.performingNameChange = false
+            if(response.ok) {
+                this.name = this.newName;
+                
+            }
+            this.hideChangeNameDialog();
+            
+            
             
             this.$emit("nameChanged", this.id);
             this.hideChangeNameDialog();
@@ -85,6 +102,9 @@
                 return this.audioObject.id;
             }
             return this.audioId;
+        },
+        newNameIsInvalid: function() {
+            return this.newName.length < 1;
         }
     },
     mounted: function () {
@@ -177,7 +197,7 @@
             <div class="d-flex flex-column overflow-hidden w-100 align-items-start">
                 <div class="d-flex w-100" v-if="changingName">
                     <input type="text" class="form-control w-100" v-model="newName"/>
-                    <button class="btn btn-primary ml-1" @click="changeAudioName"><i class="fa-solid fa-floppy-disk"></i></button>
+                    <button class="btn btn-primary ml-1" @click="changeAudioName" :disabled="newNameIsInvalid || performingNameChange"><i class="fa-solid fa-floppy-disk"></i></button>
                     <button class="btn" @click="hideChangeNameDialog"><i class="fa-solid fa-xmark"></i></button>
                 </div>
                 

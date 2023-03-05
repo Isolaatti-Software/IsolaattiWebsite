@@ -21,7 +21,7 @@ namespace Isolaatti.Pages
         public async Task<IActionResult> OnGet()
         {
             var user = await _accounts.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
-            if (user == null) return RedirectToPage("/PublicContent/Feed");
+            if (user == null) return RedirectToPage("/LogIn");
 
             // here it's know that account is correct. Data binding!
             ViewData["name"] = user.Name;

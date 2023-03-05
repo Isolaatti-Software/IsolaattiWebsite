@@ -91,8 +91,8 @@ public class AudiosRepository
 
     public async Task RenameAudio(string audioId, string name)
     {
-        await _audios.UpdateOneAsync(a => audioId == a.Id,
-            new ObjectUpdateDefinition<Audio>(new { name }));
+        var update = Builders<Audio>.Update.Set(audio => audio.Name, name);
+        await _audios.UpdateOneAsync(a => audioId == a.Id,update);
     }
 
     public async Task<long> NumberOfAudios()

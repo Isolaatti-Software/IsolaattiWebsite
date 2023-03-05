@@ -86,6 +86,11 @@ public class AudiosController : ControllerBase
             return Unauthorized("Token is not valid");
         }
 
+        if (payload.Data.Length < 1)
+        {
+            return Problem("Name cannot be empty");
+        }
+
         var result = await _audios.RenameAudio(audioId, user.Id, payload.Data);
 
         return Ok(new
