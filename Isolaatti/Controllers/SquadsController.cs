@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Isolaatti.Classes.ApiEndpointsRequestDataModels;
 using Isolaatti.Enums;
+using Isolaatti.Helpers;
 using Isolaatti.Models;
 using Isolaatti.Repositories;
 using Isolaatti.Services;
@@ -44,7 +45,7 @@ public class SquadsController : ControllerBase
     {
         var user = await _accounts.ValidateToken(sessionToken);
         if(user == null) return Unauthorized("Token is not valid");
-
+        
         var creationResult = await _squadsRepository.MakeSquad(user.Id, payload);
         return Ok(creationResult);
     }

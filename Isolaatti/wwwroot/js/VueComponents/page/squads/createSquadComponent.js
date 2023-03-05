@@ -15,7 +15,9 @@
         }
     },
     computed: {
-
+        isValid: function() {
+            return this.name.length >= 1 && this.shortDescription.length >= 1;
+        }
     },
     methods: {
         createSquad: async function() {
@@ -35,11 +37,6 @@
             const squadCreationParsedResponse = await squadCreationResponse.json();
             this.makingInvitations = true;
             this.justCreatedSquadId = squadCreationParsedResponse.squad.id;
-
-        },
-        onInvitationsCreated: function() {
-            this.makingInvitations = false;
-            this.submitting = false;
             window.location = `/squads/${this.justCreatedSquadId}`;
         }
     },
@@ -51,15 +48,18 @@
             <div class="form-group">
                 <label for="name">Nombre</label>
                 <input type="text" class="form-control" id="name" v-model="name">
+                <small>Obligatorio</small>
             </div>
             <div class="form-group">
                 <label for="short-description">Descripción corta</label>
                 <input type="text" class="form-control" id="short-description" v-model="shortDescription">
+                <small>Obligatorio</small>
             </div>
             <div class="form-group">
                 <label for="description">Descripción extendida</label>
                 <textarea type="text" class="form-control" 
                 id="description" placeholder="Markdown es compatible" rows="10" v-model="extendedDescription"></textarea>
+                
             </div>
             <div class="form-group">
                 <label for="privacy-selector">Privacidad</label>
@@ -68,19 +68,8 @@
                     <option :value="0">Solo por invitación</option>
                 </select>
             </div>
-            <squad-invitation-creator-user-searcher 
-                :auto-send="true" 
-                :squad-id="justCreatedSquadId"
-                @created="onInvitationsCreated"
-            ></squad-invitation-creator-user-searcher>
-            <div class="alert alert-info" v-if="makingSquad">
-                Creando squad...
-            </div>
-            <div class="alert alert-info" v-if="makingInvitations">
-                Haciendo invitaciones...
-            </div>
             <div class="d-flex justify-content-end">
-                <button type="button" class="btn btn-primary" @click="createSquad" :disabled="submitting">Crear</button>
+                <button type="button" class="btn btn-primary" @click="createSquad" :disabled="submitting || !isValid" >Crear</button>
             </div>
         </div>
 

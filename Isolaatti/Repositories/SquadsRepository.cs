@@ -43,8 +43,7 @@ public class SquadsRepository
         }
 
         if (squadCreationRequest.Name.IsNullOrWhiteSpace() 
-            || squadCreationRequest.Description.IsNullOrWhiteSpace() 
-            || squadCreationRequest.ExtendedDescription.IsNullOrWhiteSpace())
+            || squadCreationRequest.Description.IsNullOrWhiteSpace())
         {
             return new SquadCreationResponse
             {
