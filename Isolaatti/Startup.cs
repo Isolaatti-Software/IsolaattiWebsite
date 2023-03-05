@@ -109,15 +109,7 @@ namespace Isolaatti
             services.AddControllers();
             services.AddMvcCore().AddApiExplorer();
             services.AddRazorPages().AddRazorRuntimeCompilation();
-            services.AddEFSecondLevelCache(options =>
-            {
-                options.UseMemoryCacheProvider()
-                    .DisableLogging(true)
-                    .UseCacheKeyPrefix("EF_");
-                options.CacheQueriesContainingTypes(CacheExpirationMode.Absolute, TimeSpan.FromMinutes(10),
-                    TableTypeComparison.Contains, typeof(User), typeof(Like), typeof(Post));
-            });
-                services.AddDbContextPool<DbContextApp>((serviceProvider, options) =>
+            services.AddDbContextPool<DbContextApp>((serviceProvider, options) =>
             {
          
                 if (_environment.IsProduction())
@@ -134,13 +126,11 @@ namespace Isolaatti
                         Password = credentialInfo[1],
                         Database = databaseUri.LocalPath.TrimStart('/')
                     };
-                    options.UseNpgsql(connectionStringBuilder.ToString())
-                        .AddInterceptors(serviceProvider.GetRequiredService<SecondLevelCacheInterceptor>());
+                    options.UseNpgsql(connectionStringBuilder.ToString());
                 }
                 else
                 {
-                    options.UseNpgsql(Configuration.GetConnectionString("Database"))
-                        .AddInterceptors(serviceProvider.GetRequiredService<SecondLevelCacheInterceptor>());
+                    options.UseNpgsql(Configuration.GetConnectionString("Database"));
                 }
             });
                 services.AddDataProtection().PersistKeysToDbContext<DbContextApp>();
