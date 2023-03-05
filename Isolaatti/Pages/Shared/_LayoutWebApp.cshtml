@@ -71,12 +71,12 @@
                 <div class="container-md container-fluid" id="top-bar-content">
     
                     <div class="d-flex w-100 align-items-center">
-                        <button class="btn nav-link custom-nav-link mr-auto ml-1 mobile-only" v-show="!showingMobileSearch" v-on:click="toggleTopBarShowMenu">
+                        <button class="btn nav-link custom-nav-link mr-auto ml-1 mobile-only" v-if="!showingMobileSearch" v-on:click="toggleTopBarShowMenu">
                             <i class="fa-solid fa-bars"></i>
                         </button>
-                        <button class="btn mobile-only custom-nav-link disappear-on-search" v-show="showingMobileSearch" v-on:click="closeMobileSearch"><i class="fa-solid fa-xmark"></i></button>
+                        <button class="btn mobile-only custom-nav-link disappear-on-search" v-if="showingMobileSearch" v-on:click="closeMobileSearch"><i class="fa-solid fa-xmark"></i></button>
                         <quick-search :class="{'desktop-only':!showingMobileSearch}"></quick-search>
-                        <button class="btn mobile-only custom-nav-link disappear-on-search" v-show="!showingMobileSearch" v-on:click="mobileSearchToggle"><i class="fa-solid fa-magnifying-glass"></i></button>
+                        <button class="btn mobile-only custom-nav-link disappear-on-search" v-if="!showingMobileSearch" v-on:click="mobileSearchToggle"><i class="fa-solid fa-magnifying-glass"></i></button>
                         <a class="btn custom-nav-link mr-1 ml-1 desktop-only" type="button" asp-page="/Squads">
                             <i class="fa-solid fa-people-group"></i>
                         </a>
