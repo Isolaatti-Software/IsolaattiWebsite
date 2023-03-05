@@ -21,16 +21,18 @@ Vue.component("posts-list", {
             moreContent: false,
             loading: false,
             lastId: -1,
-            filterData: {
-                privacy: {
-                    private: true,
-                    isolaatti: true,
-                    public: true
-                },
-                content: "all"
-            },
+            showingFilter: false,
             sortingData: {
                 ascending: "0"
+            },
+            filter: {
+                includeAudio: "both", // onlyAudio, onlyNoAudio
+                includeFromSquads: "both", // onlyFromSquads, onlyNotFromSquads
+                dateRange: {
+                    enabled: false,
+                    from: "1900-01-01",
+                    to: "3000-12-31"
+                }
             },
             postDetails: {
                 post: undefined,
@@ -62,7 +64,7 @@ Vue.component("posts-list", {
                     this.lastId = this.posts[this.posts.length - 1].id;
             } else {
                 const response = await fetch(
-                    `/api/Fetch/PostsOfUser/${this.userId}?lastId=${this.lastId}&length=25&olderFirst=${this.sortingData.ascending === "1" ? "True" : "False"}`, 
+                    `/api/Fetch/PostsOfUser/${this.userId}?lastId=${this.lastId}&length=25&olderFirst=${this.sortingData.ascending === "1" ? "True" : "False"}&filterJson=${decodeURIComponent(JSON.stringify(this.filter))}`, 
                     {
                         headers: this.customHeaders
                     });
@@ -119,16 +121,55 @@ Vue.component("posts-list", {
     },
     template: `
       <section class="d-flex flex-column pt-1 mt-2 mb-3 align-items-center w-100">
-      <div class="d-flex justify-content-end w-100">
-        <div class="btn-group">
-          <button type="button" class="btn btn-light" title="Filtrar"
-                  data-target="#modal-filter-posts" data-toggle="modal">
-            <i class="fas fa-filter"></i>
-          </button>
-          <button type="button" class="btn btn-light" title="Ordenar"
-                  data-target="#modal-sort-posts" data-toggle="modal">
-            <i class="fas fa-sort"></i>
-          </button>
+      
+      <div class="d-flex w-100 justify-content-end">
+        <button class="btn ml-1" :class="{'btn-primary': showingFilter, 'btn-light': !showingFilter}" @click="showingFilter = !showingFilter"><i class="fa-solid fa-filter"></i></button>
+        <div class="dropdown">
+          <button type="button" class="btn" data-toggle="dropdown" aria-haspopup="true"><i class="fas fa-ellipsis-h" aria-hidden="true"></i></button>
+          <div class="dropdown-menu">
+            <a href="#" class="dropdown-item">Borrado por lotes</a>
+            <a href="#" class="dropdown-item">Descarga tu información</a>
+          </div>
+        </div>
+      </div>
+      <div v-if="showingFilter" class="d-flex flex-column align-items-start w-100 isolaatti-card mt-2">
+        <div class="w-100">
+          <h6>Ordenamiento</h6>
+          <select class="custom-select" v-model="sortingData.ascending">
+            <option value="0">Más nuevo primero</option>
+            <option value="1">Más viejo primero</option>
+          </select>
+          <h6 class="mt-1">Audio</h6>
+          <select class="custom-select" v-model="filter.includeAudio">
+            <option value="both">No filtrar</option>
+            <option value="onlyAudio">Solo con audio</option>
+            <option value="onlyNoAudio">Solo sin audio</option>
+          </select>
+          <h6 class="mt-1">Squad</h6>
+          <select class="custom-select" v-model="filter.includeFromSquads">
+            <option value="both">No filtrar</option>
+            <option value="onlyFromSquads">Solo de squads</option>
+            <option value="onlyNotFromSquads">Solo que no sea de squads</option>
+          </select>
+          <h6 class="mt-2">Fecha</h6>
+          <div class="form-group">
+            <label for="date-filter-check" >Filtrar por fecha</label>
+            <input type="checkbox" class="custom-checkbox" id="date-filter-check" v-model="filter.dateRange.enabled">
+          </div>
+          <div class="d-flex w-100" v-if="filter.dateRange.enabled">
+            
+            <div class="form-group mr-1 w-50">
+              <label for="date_from">Desde</label>
+              <input type="date" id="date_from" class="form-control" v-model="filter.dateRange.from">
+            </div>
+            <div class="form-group ml-1 w-50">
+              <label for="date_to">Hasta</label>
+              <input type="date" id="date_to" class="form-control" v-model="filter.dateRange.to">
+            </div>
+          </div>
+          <div class="d-flex justify-content-end">
+            <button class="btn btn-primary" @click="reloadPosts">Traer</button>
+          </div>
         </div>
       </div>
       <p class="m-2 text-center" v-if="posts.length === 0 && !loading"> No hay contenido que mostrar <i
@@ -145,64 +186,7 @@ Vue.component("posts-list", {
       <div v-if="moreContent" class="d-flex flex-column align-items-center mt-2">
         <button class="btn btn-light" v-on:click="fetchPosts($event)">Cargar más</button>
       </div>
-      <!-- Modal filter posts -->
-      <div class="modal fade" id="modal-filter-posts">
-        <div class="modal-dialog modal-dialog-centered">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title">Filtrar</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              <h6>Contenido</h6>
-              <select class="custom-select" v-model="filterData.content">
-                <option value="all">Todo</option>
-                <option value="withAudio">Solo con audio</option>
-                <option value="withoutAudio">Solo sin audio</option>
-              </select>
-
-              <h6 class="mt-3">Privacidad</h6>
-              <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" id="privacy-filter-option-private"
-                       v-model="filterData.privacy.private">
-                <label class="form-check-label" for="privacy-filter-option-private">Privado</label>
-              </div>
-              <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" id="privacy-filter-option-isolaatti"
-                       v-model="filterData.privacy.isolaatti">
-                <label class="form-check-label" for="privacy-filter-option-isolaatti">Usuarios de Isolaatti</label>
-              </div>
-              <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" id="privacy-filter-option-everybody"
-                       v-model="filterData.privacy.public">
-                <label class="form-check-label" for="privacy-filter-option-everybody">Todos</label>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Modal sort posts -->
-      <div class="modal fade" id="modal-sort-posts">
-        <div class="modal-dialog modal-dialog-centered">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title">Ordenar</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              <select class="custom-select" v-model="sortingData.ascending" v-on:change="reloadPosts">
-                <option value="0">Más nuevo primero</option>
-                <option value="1">Más viejo primero</option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
+      
       
       <div class="modal" id="modal-post-info">
         <div class="modal-dialog modal-dialog-centered">

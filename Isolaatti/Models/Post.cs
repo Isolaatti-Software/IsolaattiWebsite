@@ -12,7 +12,7 @@ namespace Isolaatti.Models
         public string TextContent { get; set; }
         public int UserId { get; set; }
         public int Privacy { get; set; }
-        public DateTime Date { get; set; }
+        public DateTimeOffset Date { get; set; }
         public string? AudioId { get; set; }
         public Guid? SquadId { get; set; }
         public long? LinkedDiscussionId { get; set; }

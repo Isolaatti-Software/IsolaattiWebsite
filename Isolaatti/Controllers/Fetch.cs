@@ -1,5 +1,7 @@
 using System;
+using System.Globalization;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Isolaatti.Classes;
 using Isolaatti.Classes.ApiEndpointsRequestDataModels;
@@ -55,85 +57,139 @@ namespace Isolaatti.Controllers
         [HttpGet]
         [Route("PostsOfUser/{userId:int}")]
         public async Task<IActionResult> GetPosts([FromHeader(Name = "sessionToken")] string sessionToken, int userId,
-            int length = 30, long lastId = -1, bool olderFirst = false)
+            int length = 30, long lastId = -1, bool olderFirst = false, string filterJson = null)
         {
             var user = await _accounts.ValidateToken(sessionToken);
             if (user == null) return Unauthorized("Token is not valid");
             User requestedAuthor = null;
 
+            PostFilterDto filter = null;
+            
+            // try to parse json filter
+            if (filterJson != null)
+            {
+                filter = JsonSerializer.Deserialize<PostFilterDto>(filterJson, new JsonSerializerOptions() {PropertyNamingPolicy = JsonNamingPolicy.CamelCase});
+            }
+            
+
             IQueryable<Post> posts;
             if (user.Id == userId)
             {
-                if (olderFirst)
-                {
-                    if (lastId < 0)
-                    {
-                        posts = _db.SimpleTextPosts
-                            .Where(post => post.UserId == user.Id).OrderBy(post => post.Id);
-                    }
-                    else
-                    {
-                        posts = _db.SimpleTextPosts
-                            .Where(post => post.UserId == user.Id && post.Id > lastId).OrderBy(post => post.Id);
-                    }
-                }
-                else
-                {
-                    if (lastId < 0)
-                    {
-                        posts = _db.SimpleTextPosts
-                            .Where(post => post.UserId == user.Id)
-                            .OrderByDescending(post => post.Id);
-                    }
-                    else
-                    {
-                        posts = _db.SimpleTextPosts
-                            .Where(post => post.UserId == user.Id && post.Id < lastId)
-                            .OrderByDescending(post => post.Id);
-                    }
-                }
+                /*
+                 * Composition of query
+                 * 1. Apply filters that are not paging
+                 * 2. Order
+                 * 3. Paging by cursor
+                 */
+                 posts = _db.SimpleTextPosts.Where(post => post.UserId == user.Id);
+                 if (filter != null)
+                 {
+                     posts = filter.IncludeAudio switch
+                     {
+                         "onlyAudio" => posts.Where(post => post.AudioId != null),
+                         "onlyNoAudio" => posts.Where(post => post.AudioId == null),
+                         _ => posts
+                     };
+
+                     posts = filter.IncludeFromSquads switch
+                     {
+                         "onlyFromSquads" => posts.Where(post => post.SquadId != null),
+                         "onlyNotFromSquads" => posts.Where(post => post.SquadId == null),
+                         _ => posts
+                     };
+                     if (filter.DateRange.Enabled)
+                     {
+                         // try to parse dates
+
+                         var dateFrom = DateTimeOffset.MinValue.ToUniversalTime();
+                         var dateTo = DateTimeOffset.MaxValue.ToUniversalTime();
+
+                         try
+                         {
+                             dateFrom = DateTime.Parse(filter.DateRange.From).ToUniversalTime();
+                         }
+                         catch (Exception)
+                         {
+                         }
+
+                         try
+                         {
+                             dateTo = DateTimeOffset.Parse(filter.DateRange.To).ToUniversalTime();
+                         }
+                         catch (Exception)
+                         {
+                         }
+
+                         posts = posts.Where(post => post.Date.Date >= dateFrom && post.Date.Date <= dateTo);
+                     }
+                 }
+
+                 posts = olderFirst ? posts.OrderBy(post => post.Id) : posts.OrderByDescending(post => post.Id);
+
+                 if (lastId > 0)
+                 {
+                     posts = olderFirst ? posts.Where(post => post.Id > lastId) : posts.Where(post => post.Id < lastId);
+                 }
+
             }
             else
             {
                 requestedAuthor = await _db.Users.FindAsync(userId);
                 if (requestedAuthor == null) return NotFound();
 
-                if (olderFirst)
-                {
-                    if (lastId < 0)
-                    {
-                        posts = _db.SimpleTextPosts
-                            .Where(post =>
-                                post.UserId == requestedAuthor.Id && post.Privacy != 1 && post.SquadId == null)
-                            .OrderBy(post => post.Id);
-                    }
-                    else
-                    {
-                        posts = _db.SimpleTextPosts
-                            .Where(post =>
-                                post.UserId == requestedAuthor.Id && post.Privacy != 1 && post.Id > lastId &&
-                                post.SquadId == null)
-                            .OrderBy(post => post.Id);
-                    }
-                }
-                else
-                {
-                    if (lastId < 0)
-                    {
-                        posts = _db.SimpleTextPosts
-                            .Where(post =>
-                                post.UserId == requestedAuthor.Id && post.Privacy != 1 && post.SquadId == null)
-                            .OrderByDescending(post => post.Id);
-                    }
-                    else
-                    {
-                        posts = _db.SimpleTextPosts
-                            .Where(post =>
-                                post.UserId == requestedAuthor.Id && post.Privacy != 1 && post.Id < lastId &&
-                                post.SquadId == null)
-                            .OrderByDescending(post => post.Id);
-                    }
-                }
+                posts = _db.SimpleTextPosts.Where(post => post.UserId == requestedAuthor.Id);
+                 if (filter != null)
+                 {
+                     posts = filter.IncludeAudio switch
+                     {
+                         "onlyAudio" => posts.Where(post => post.AudioId != null),
+                         "onlyNoAudio" => posts.Where(post => post.AudioId == null),
+                         _ => posts
+                     };
+
+                     posts = filter.IncludeFromSquads switch
+                     {
+                         "onlyFromSquads" => posts.Where(post => post.SquadId != null),
+                         "onlyNotFromSquads" => posts.Where(post => post.SquadId == null),
+                         _ => posts
+                     };
+                     if (filter.DateRange.Enabled)
+                     {
+                         // try to parse dates
+
+                         var dateFrom = DateTime.MinValue;
+                         var dateTo = DateTime.MaxValue;
+
+                         try
+                         {
+                             dateFrom = DateTime.ParseExact(filter.DateRange.From, "yyyy-mm-dd",
+                                 CultureInfo.InvariantCulture,
+                                 DateTimeStyles.AssumeLocal);
+                         }
+                         catch (Exception)
+                         {
+                         }
+
+                         try
+                         {
+                             dateTo = DateTime.ParseExact(filter.DateRange.To, "yyyy-mm-dd",
+                                 CultureInfo.InvariantCulture,
+                                 DateTimeStyles.AssumeLocal);
+                         }
+                         catch (Exception)
+                         {
+                         }
+
+                         posts = posts.Where(post => post.Date >= dateFrom && post.Date <= dateTo);
+                     }
+                 }
+
+                 posts = olderFirst ? posts.OrderBy(post => post.Id) : posts.OrderByDescending(post => post.Id);
+
+                 if (lastId > 0)
+                 {
+                     posts = olderFirst ? posts.Where(post => post.Id > lastId) : posts.Where(post => post.Id < lastId);
+                 }
             }
 
             var total = posts.Count();
