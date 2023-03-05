@@ -102,7 +102,7 @@
               <button class="dropdown-item" data-toggle="modal" data-target="#modal-edit-photo">Cambiar imagen del squad</button>
               <button class="dropdown-item" v-if="userIsAdmin" data-toggle="modal" data-target="#modal-squad-settings">Configuración</button>
               <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="#">Salir</a>
+              <button class="dropdown-item" data-toggle="modal" data-target="#modal-squad-leave">Salir</button>
             </div>
           </div>
         </div>
@@ -162,6 +162,27 @@
         </div>
       </div>
     </div>
+    
+    <div class="modal" id="modal-squad-leave" v-if="!preview">
+      <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Dejar el squad</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              &times;
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>¿Estás seguro de que quieres dejar el squad?</p>
+            <div class="d-flex justify-content-end">
+              <button class="btn btn-light btn-sm mr-1">No, cancelar</button>
+              <button class="btn btn-primary btn-sm">Sí, salir</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
     </section>
     `
 }

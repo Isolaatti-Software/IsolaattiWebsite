@@ -10,7 +10,6 @@
             userData: userData,
             editionMode: false,
             selectedRequestId: undefined,
-            selectedInvitationResponseMessage: null,
             customHeaders: customHttpHeaders,
             showingDeleteActionRequestId: undefined,
             requestInProgress: false,
@@ -40,24 +39,37 @@
         },
         acceptRequest: async function(request) {
             this.requestInProgress = true;
-            const form = new FormData();
-            form.append("message", request.responseMessage);
             const response = await fetch(`/api/Squads/JoinRequests/${request.request.id}/Accept`, {
                 method: "POST",
                 headers: this.customHeaders,
-                body: form
+                body: JSON.stringify({
+                    data: request.request.responseMessage
+                })
             });
 
             this.requestInProgress = false;
 
             if(response.ok) {
                 const parsedResult = await response.json();
-                this.$emit("request-update",parsedResult.request);
+                this.$emit("requestUpdate",parsedResult);
             }
 
         },
         rejectRequest: async function(request) {
+            this.requestInProgress = true;
+            const response = await fetch(`/api/Squads/JoinRequests/${request.request.id}/Reject`, {
+                method: "post",
+                headers: this.customHeaders,
+                body: JSON.stringify({
+                    data: request.request.responseMessage
+                })
+            })
             
+            this.requestInProgress = false;
+            
+            if(response.ok) {
+                this.$emit("requestUpdate", await response.json())
+            }
         },
         showDeleteActions: function(request){
             this.showingDeleteActionRequestId = request.request.id;
@@ -133,8 +145,13 @@
               <template v-if="request.request.joinRequestStatus === 0">
                 <textarea class="form-control"
                     v-if="request.admins"
-                    v-model="request.responseMessage" placeholder="Escribe un mensaje de aceptación"></textarea>
+                    v-model="request.request.responseMessage" placeholder="Escribe un mensaje de aceptación"></textarea>
                 <div class="d-flex justify-content-end mt-1">
+                  <button type="button" class="btn btn-light mr-1"
+                          v-if="request.admins"
+                          @click="rejectRequest(request)">
+                    Rechazar
+                  </button>
                   <button type="button" class="btn btn-primary"
                     v-if="request.admins"
                     @click="acceptRequest(request)">
@@ -161,7 +178,11 @@
                     
                 </div>
               </template>
-              
+              <template v-else-if="request.request.joinRequestStatus === 2 && request.admins">
+                <div class="d-flex justify-content-end w-100">
+                  <button class="btn btn-light" @click="request.request.joinRequestStatus = 0">Cambié de parecer</button>
+                </div>
+              </template>
             </template>
 
           </template>

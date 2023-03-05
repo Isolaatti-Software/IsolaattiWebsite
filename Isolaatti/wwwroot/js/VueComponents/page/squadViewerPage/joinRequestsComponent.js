@@ -26,11 +26,17 @@
             this.loading = false;
             if(response.ok) {
                 this.requests = await response.json();
-                console.log(this.requests);
             } else {
                 this.error = true
             }
 
+        },
+        onRequestUpdate: function(request) {
+            const index = this.requests.findIndex(r => r.request.id === request.request.id);
+            if(index !== -1) {
+                this.requests.splice(index,1, request);
+            }
+            
         }
     },
     mounted: async function() {
@@ -47,7 +53,7 @@
             <span class="sr-only">Cargando más contenido...</span>
           </div>
       </div>
-      <squad-requests-list :items="requests"></squad-requests-list>
+      <squad-requests-list :items="requests" @requestUpdate="onRequestUpdate"></squad-requests-list>
     </section>
     `
 });

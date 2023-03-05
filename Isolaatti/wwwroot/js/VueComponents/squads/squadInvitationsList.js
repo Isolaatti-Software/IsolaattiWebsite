@@ -11,7 +11,8 @@
             editionMode: false,
             selectedInvitationId: undefined,
             selectedInvitationResponseMessage: null,
-            customHeaders: customHttpHeaders
+            customHeaders: customHttpHeaders,
+            performingRequest: false
         }
     },
     methods: {
@@ -36,19 +37,35 @@
             return `/squads/${squadId}`;
         },
         acceptInvitation: async function(invitation) {
-            const response = await fetch(`/api/Squads/Invitations/${invitation.id}/Accept`, {
+            this.performingRequest = true;
+            const response = await fetch(`/api/Squads/Invitations/${invitation.invitation.id}/Accept`, {
                 method: "POST",
                 headers: this.customHeaders,
                 body: JSON.stringify({
-                    message: invitation.responseMessage
+                    message: invitation.invitation.responseMessage
                 })
             });
+            this.performingRequest = false;
             
             if(response.ok) {
                 const parsedResult = await response.json();
                 this.$emit("invitation-update",parsedResult.invitation);
-            } 
+            }
+        },
+        rejectInvitation: async function(invitation) {
+            this.performingRequest = true;
+            const response = await fetch(`/api/Squads/Invitations/${invitation.invitation.id}/Decline`, {
+                method: "post",
+                headers: this.customHeaders,
+                body: JSON.stringify({
+                    data: invitation.invitation.responseMessage
+                })
+            })
+            this.performingRequest = false;
             
+            if(response.ok) {
+                this.$emit("invitation-update", await response.json());
+            }
         }
     },
     template: `
@@ -109,10 +126,15 @@
                 <textarea class="form-control" 
                           v-if="invitation.invitation.recipientUserId === userData.id" 
                           v-model="invitation.invitation.responseMessage"></textarea>
-                <div class="d-flex justify-content-end">
-                  <button type="button" class="btn btn-primary mr-auto"
+                <div class="d-flex w-100 justify-content-end">
+                  <button type="button" class="btn btn-light mt-1"
                           v-if="invitation.invitation.recipientUserId === userData.id"
-                          @click="acceptInvitation(invitation.invitation)">
+                          @click="rejectInvitation(invitation)">
+                    Rechazar
+                  </button>
+                  <button type="button" class="btn btn-primary mt-1"
+                          v-if="invitation.invitation.recipientUserId === userData.id"
+                          @click="acceptInvitation(invitation)">
                     Aceptar
                   </button>
                   <button type="button" class="btn btn-light btn-sm" v-if="invitation.invitation.senderUserId === userData.id">

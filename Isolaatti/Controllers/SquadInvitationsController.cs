@@ -168,7 +168,7 @@ public class SquadInvitationsController : ControllerBase
     public async Task<IActionResult> RejectInvitation(
         [FromHeader(Name = "sessionToken")] string sessionToken, 
         string invitationId, 
-        SquadInvitationAnswer payload)
+        SimpleStringData payload)
     {
         var user = await _accounts.ValidateToken(sessionToken);
         if(user == null) return Unauthorized("Token is not valid");
@@ -190,9 +190,11 @@ public class SquadInvitationsController : ControllerBase
         }
         
         _squadInvitationsRepository
-            .UpdateInvitationStatus(invitationId, SquadInvitationStatus.Rejected, payload.Message);
+            .UpdateInvitationStatus(invitationId, SquadInvitationStatus.Rejected, payload.Data);
+
+        var updatedInvitation = _squadInvitationsRepository.GetInvitation(invitationId);
         
-        return Ok();
+        return Ok(updatedInvitation);
     }
 
     [HttpGet]

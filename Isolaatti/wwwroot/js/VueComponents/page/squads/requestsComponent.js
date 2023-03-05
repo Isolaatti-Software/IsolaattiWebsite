@@ -34,16 +34,17 @@
             }
             this.loading = false;
         },
-        onRequestUpdate: function(invitation) {
-            const index = this.invitations.findIndex(inv => inv.invitation.id === invitation.id);
-            const temp = this.invitations;
-            temp[index].invitation = invitation;
-            this.invitations = temp;
+        onRequestUpdate: function(request) {
+            const index = this.requests.findIndex(req => req.request.id === request.request.id);
+            if(index === -1) {
+                return;
+            }
+            this.requests.splice(index, 1,request )
         },
         onDeleted: function(requestId) {
             const index = this.requests.findIndex(req => req.request.id === requestId);
             this.requests.splice(index, 1);
-        }
+        },
     },
     watch:{
         overallMode: {
@@ -76,7 +77,7 @@
           De tí
         </button>
       </div>
-      <squad-requests-list v-if="!loading" :items="requests" @request-update="onRequestUpdate" @deleted="onDeleted"></squad-requests-list>
+      <squad-requests-list v-if="!loading" :items="requests" @requestUpdate="onRequestUpdate" @deleted="onDeleted"></squad-requests-list>
       <div v-if="loading" class="d-flex justify-content-center mt-2">
         <div class="spinner-border" role="status">
           <span class="sr-only">Cargando más contenido...</span>

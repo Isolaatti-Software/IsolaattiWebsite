@@ -106,21 +106,15 @@ public class SquadJoinRequestsController : ControllerBase
     /// <param name="payload">Object containing the reason message. The string can be null but not the object.</param>
     /// <returns></returns>
     [HttpPost]
-    [Route("{requestId}/{action}")]
+    [Route("{requestId}/Reject")]
     public async Task<IActionResult> Reject(
         [FromHeader(Name = "sessionToken")] string sessionToken, 
         string requestId,
-        string action,
-        SquadInvitationAnswer payload)
+        SimpleStringData payload)
     {
         var user = await _accounts.ValidateToken(sessionToken);
         if(user == null) return Unauthorized("Token is not valid");
         
-        // Performs validation for action param
-        if (!action.Equals("Reject") || action.Equals("Accept"))
-        {
-            return Problem("Action path param does not match 'Reject' or 'Accept'.");
-        }
 
         // Validates join request's existence
         var joinRequest = _joinRequestsRepository.GetJoinRequest(requestId);
@@ -148,30 +142,17 @@ public class SquadJoinRequestsController : ControllerBase
             });
         }
 
-        // Validates as a request that was already rejected cannot be changed.
-        if (joinRequest.JoinRequestStatus != SquadInvitationStatus.Requested)
+        
+        _joinRequestsRepository.UpdateJoinRequest(requestId, SquadInvitationStatus.Rejected, payload.Data);
+        joinRequest = _joinRequestsRepository.GetJoinRequest(requestId);
+        
+        return Ok(new
         {
-            return Problem("This request cannot be rejected, it was accepted or rejected already");
-        }
-
-        switch(action)
-        {
-            case "Reject":
-                _joinRequestsRepository.UpdateJoinRequest(requestId, SquadInvitationStatus.Rejected, payload.Message);
-                return Ok(new
-                {
-                    result = "Join request rejected"
-                });
-            case "Accept":
-                _joinRequestsRepository.UpdateJoinRequest(requestId, SquadInvitationStatus.Accepted, payload.Message);
-                await _squadsRepository.AddUserToSquad(squad.Id, joinRequest.SenderUserId);
-                return Ok(new
-                {
-                    result = "Join request accepted. User joined."
-                });
-            default:
-                return Problem("No action performed.");
-        }
+            request = joinRequest,
+            senderName = _accounts.GetUsernameFromId(joinRequest.SenderUserId),
+            squadName = _squadsRepository.GetSquadName(joinRequest.SquadId),
+            admins = squad.UserId == user.Id
+        });
     }
 
     /// <summary>
@@ -217,7 +198,8 @@ public class SquadJoinRequestsController : ControllerBase
         {
             request,
             senderName = _db.Users.Where(u => u.Id == request.SenderUserId).Select(u => u.Name).FirstOrDefault(),
-            squadName = _squadsRepository.GetSquadName(request.SquadId)
+            squadName = _squadsRepository.GetSquadName(request.SquadId),
+            admins = squad.UserId == user.Id
         }));
     }
 
@@ -276,7 +258,7 @@ public class SquadJoinRequestsController : ControllerBase
     [Route("{requestId}/Accept")]
 
     public async Task<IActionResult> AcceptJoinRequest([FromHeader(Name = "sessionToken")] string sessionToken,
-        string requestId, [FromForm] string message)
+        string requestId, SimpleStringData message)
 
     {
         var user = await _accounts.ValidateToken(sessionToken);
@@ -295,7 +277,7 @@ public class SquadJoinRequestsController : ControllerBase
             return Unauthorized();
         }
         
-        var result =_joinRequestsRepository.UpdateJoinRequest(requestId, SquadInvitationStatus.Accepted, message);
+        var result =_joinRequestsRepository.UpdateJoinRequest(requestId, SquadInvitationStatus.Accepted, message.Data);
 
         joinRequest = _joinRequestsRepository.GetJoinRequest(requestId);
         await _squadsRepository.AddUserToSquad(squad.Id, joinRequest.SenderUserId);
