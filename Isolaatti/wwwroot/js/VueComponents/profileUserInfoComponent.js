@@ -37,7 +37,8 @@
             likes: {
                 showDetails: false
             },
-            profileAudioMode: "new" // or "existing"
+            profileAudioMode: "new", // or "existing"
+            audioRecorderKey: Date.now() // this is changed to force remount of the component
         }
     },
     computed: {
@@ -259,6 +260,9 @@
             });
             this.profile.descriptionAudioId = null;
             
+        },
+        onAudioRecorderRemount: function() {
+            this.audioRecorderKey = Date.now()
         }
     },
     mounted: async function () {
@@ -515,7 +519,7 @@
                   </div>
                 </div>
 
-                <audio-recorder @audio-posted="onAudioPosted" v-if="profileAudioMode==='new'"></audio-recorder>
+                <audio-recorder @audio-posted="onAudioPosted" v-if="profileAudioMode==='new'" @remount="onAudioRecorderRemount" :key="audioRecorderKey"></audio-recorder>
                 <audios-list :user-id="userId" v-else-if="profileAudioMode==='existing'" @audio-selected="onAudioPosted"></audios-list>
               </div>
             </div>
