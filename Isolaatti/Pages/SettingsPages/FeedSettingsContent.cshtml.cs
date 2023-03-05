@@ -17,6 +17,8 @@ public class FeedSettingsContent : PageModel
     {
         _db = dbContextApp;
         _accounts = accounts;
+        
+        
     }
 
     [BindProperty] public bool ShowOwnPostsOnFeed { get; set; }
@@ -45,6 +47,14 @@ public class FeedSettingsContent : PageModel
     {
         var user = await _accounts.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
         if (user == null) return RedirectToPage("LogIn");
+        
+        // here it's know that account is correct. Data binding!
+        ViewData["name"] = user.Name;
+        ViewData["email"] = user.Email;
+        ViewData["userId"] = user.Id;
+        ViewData["profilePicUrl"] = user.ProfileImageId == null
+            ? null
+            : UrlGenerators.GenerateProfilePictureUrl(user.Id, Request.Cookies["isolaatti_user_session_token"]);
 
         if (_db.FollowerRelations.Any(fr => fr.TargetUserId == user.Id && fr.UserId == user.Id) == ShowOwnPostsOnFeed)
         {

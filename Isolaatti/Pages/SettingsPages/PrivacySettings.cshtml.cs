@@ -34,9 +34,7 @@ namespace Isolaatti.Pages
             ViewData["profilePicUrl"] = user.ProfileImageId == null
                 ? null
                 : UrlGenerators.GenerateProfilePictureUrl(user.Id, Request.Cookies["isolaatti_user_session_token"]);
-
-            ViewData["curentSessionToken"] = Request.Cookies["isolaatti_user_session_token"];
-
+            
             ShowEmail = user.ShowEmail;
 
             return Page();
@@ -47,6 +45,15 @@ namespace Isolaatti.Pages
         {
             var user = await _accounts.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
             if (user == null) return RedirectToPage("LogIn");
+            // here it's know that account is correct. Data binding!
+            ViewData["name"] = user.Name;
+            ViewData["email"] = user.Email;
+            ViewData["userId"] = user.Id;
+            ViewData["password"] = user.Password;
+            ViewData["profilePicUrl"] = user.ProfileImageId == null
+                ? null
+                : UrlGenerators.GenerateProfilePictureUrl(user.Id, Request.Cookies["isolaatti_user_session_token"]);
+            
 
             user.ShowEmail = ShowEmail;
             _db.Users.Update(user);
