@@ -19,6 +19,7 @@ namespace Isolaatti.Pages
         }
 
         [BindProperty] public bool ShowEmail { get; set; }
+        [BindProperty] public bool PreferencesUpdated { get; set; }
 
         public async Task<IActionResult> OnGet()
         {
@@ -50,7 +51,8 @@ namespace Isolaatti.Pages
             user.ShowEmail = ShowEmail;
             _db.Users.Update(user);
             await _db.SaveChangesAsync();
-            return RedirectToPage("/PrivacySettings");
+            PreferencesUpdated = true;
+            return Page();
         }
     }
 }

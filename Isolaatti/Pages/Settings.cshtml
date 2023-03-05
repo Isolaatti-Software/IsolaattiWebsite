@@ -6,54 +6,56 @@
     ViewData["Title"] = "Ajustes";
 }
 
-<div class="row m-0">
-    <div class="col-lg-3 col-md-2"></div>
-    <div class="col-lg-6 col-md-8">
-        <h5 class="mt-3 text-center"><i class="fas fa-cog"></i> Ajustes</h5>
-
-        <div class="card mb-3 mt-5">
-            <h5 class="card-header"><i class="fa-solid fa-user"></i> Cuenta</h5>
-            <div class="card-body d-flex flex-column">
-                <div class="list-group list-group-flush">
-                    <a href="#" class="list-group-item list-group-item-action disabled"><i class="fa-brands fa-google"></i> Vinculación de cuentas de Google, Facebook o Microsoft</a>
-                    <a asp-page="/SettingsPages/Sessions" class="list-group-item list-group-item-action"><i class="fa-solid fa-shield-halved"></i> Consulta dónde mantienes una sesión iniciada</a>
-                    <a asp-page="/SettingsPages/ChangePassword" class="list-group-item list-group-item-action"><i class="fa-solid fa-lock"></i> Cambia tu contraseña</a>
-                    <a asp-controller="WebLogOut" asp-action="Index" class="list-group-item list-group-item-action"><i class="fa-solid fa-arrow-right-from-bracket"></i> Cerrar esta sesión</a>
-                    <a asp-controller="WebLogOut" asp-action="CloseAllSessions" class="list-group-item list-group-item-action"><i class="fa-solid fa-arrow-right-from-bracket"></i> Cerrar todas las sesiones</a>
-                    <a href="#" class="list-group-item list-group-item-action disabled"><i class="fa-solid fa-bell"></i> Ajustar notificaciones de inicio de sesión</a>
-                    <a href="#" class="list-group-item list-group-item-action disabled"><i class="fa-solid fa-face-sad-cry"></i> Solicitar eliminación de cuenta</a>
+<div class="container">
+    <div class="row m-0">
+        <div class="col-lg-3 col-md-2"></div>
+        <div class="col-lg-6 col-md-8">
+            <h5 class="mt-3 text-center"><i class="fas fa-cog"></i> Ajustes</h5>
+    
+            <div class="card mb-3 mt-5">
+                <h5 class="card-header"><i class="fa-solid fa-user"></i> Cuenta</h5>
+                <div class="card-body d-flex flex-column">
+                    <div class="list-group list-group-flush">
+                        <a href="#" class="list-group-item list-group-item-action disabled"><i class="fa-brands fa-google"></i> Vinculación de cuentas de Google, Facebook o Microsoft</a>
+                        <a asp-page="/SettingsPages/Sessions" class="list-group-item list-group-item-action"><i class="fa-solid fa-shield-halved"></i> Consulta dónde mantienes una sesión iniciada</a>
+                        <a asp-page="/SettingsPages/ChangePassword" class="list-group-item list-group-item-action"><i class="fa-solid fa-lock"></i> Cambia tu contraseña</a>
+                        <a asp-controller="WebLogOut" asp-action="Index" class="list-group-item list-group-item-action"><i class="fa-solid fa-arrow-right-from-bracket"></i> Cerrar esta sesión</a>
+                        <a asp-controller="WebLogOut" asp-action="CloseAllSessions" class="list-group-item list-group-item-action"><i class="fa-solid fa-arrow-right-from-bracket"></i> Cerrar todas las sesiones</a>
+                        <a href="#" class="list-group-item list-group-item-action disabled"><i class="fa-solid fa-bell"></i> Ajustar notificaciones de inicio de sesión</a>
+                        <a href="#" class="list-group-item list-group-item-action disabled"><i class="fa-solid fa-face-sad-cry"></i> Solicitar eliminación de cuenta</a>
+                    </div>
+                </div>
+            </div>
+    
+            <div class="card mb-3">
+                <h5 class="card-header"><i class="fa-solid fa-eye"></i> Privacidad</h5>
+                <div class="card-body d-flex flex-column">
+                    <div class="list-group list-group-flush">
+                        <a asp-page="/SettingsPages/PrivacySettings" class="list-group-item list-group-item-action"><i class="fa-solid fa-eye"></i> Configura la privacidad</a>
+                        <a class="list-group-item list-group-item-action" asp-page="/Profile" asp-route-id="@ViewData["userId"]" asp-route-noRedirect="True"><i class="fa-solid fa-eye"></i> Ver tu perfil desde afuera</a>
+                    </div>
+                </div>
+            </div>
+            @* <div class="card mb-3"> *@
+            @*     <h5 class="card-header"><i class="fa-solid fa-database"></i> Tus datos</h5> *@
+            @*     <div class="card-body d-flex flex-column"> *@
+            @*         <div class="list-group list-group-flush"> *@
+            @*             <a asp-page="/SettingsPages/UserData" class="list-group-item list-group-item-action"><i class="fa-solid fa-box-archive"></i> Consulta y descarga tus datos</a> *@
+            @*         </div> *@
+            @*     </div> *@
+            @* </div> *@
+    
+            <div class="card mb-3">
+                <h5 class="card-header"><i class="fa-solid fa-newspaper"></i> Contenido</h5>
+                <div class="card-body d-flex flex-column">
+                    <div class="list-group list-group-flush">
+                        <a asp-page="/SettingsPages/FeedSettingsContent" class="list-group-item list-group-item-action"><i class="fa-solid fa-newspaper"></i> Gestiona el contenido de tu feed</a>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <div class="card mb-3">
-            <h5 class="card-header"><i class="fa-solid fa-eye"></i> Privacidad</h5>
-            <div class="card-body d-flex flex-column">
-                <div class="list-group list-group-flush">
-                    <a asp-page="/SettingsPages/PrivacySettings" class="list-group-item list-group-item-action"><i class="fa-solid fa-eye"></i> Configura la privacidad</a>
-                    <a class="list-group-item list-group-item-action" asp-page="/Profile" asp-route-id="@ViewData["userId"]" asp-route-noRedirect="True"><i class="fa-solid fa-eye"></i> Ver tu perfil desde afuera</a>
-                </div>
-            </div>
-        </div>
-        <div class="card mb-3">
-            <h5 class="card-header"><i class="fa-solid fa-database"></i> Tus datos</h5>
-            <div class="card-body d-flex flex-column">
-                <div class="list-group list-group-flush">
-                    <a asp-page="/SettingsPages/UserData" class="list-group-item list-group-item-action"><i class="fa-solid fa-box-archive"></i> Consulta y descarga tus datos</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="card mb-3">
-            <h5 class="card-header"><i class="fa-solid fa-newspaper"></i> Contenido</h5>
-            <div class="card-body d-flex flex-column">
-                <div class="list-group list-group-flush">
-                    <a asp-page="/SettingsPages/FeedSettingsContent" class="list-group-item list-group-item-action"><i class="fa-solid fa-newspaper"></i> Gestiona el contenido de tu feed</a>
-                </div>
-            </div>
-        </div>
+        <div class="col-lg-3 col-md-2"></div>
     </div>
-    <div class="col-lg-3 col-md-2"></div>
 </div>
 
 @section Scripts

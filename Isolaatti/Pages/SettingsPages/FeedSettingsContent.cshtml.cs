@@ -20,6 +20,7 @@ public class FeedSettingsContent : PageModel
     }
 
     [BindProperty] public bool ShowOwnPostsOnFeed { get; set; }
+    [BindProperty] public bool PreferencesUpdated { get; set; }
 
     public async Task<IActionResult> OnGet()
     {
@@ -47,7 +48,8 @@ public class FeedSettingsContent : PageModel
 
         if (_db.FollowerRelations.Any(fr => fr.TargetUserId == user.Id && fr.UserId == user.Id) == ShowOwnPostsOnFeed)
         {
-            return RedirectToPage("/SettingsPages/FeedSettingsContent");
+            PreferencesUpdated = true;
+            return Page();
         }
 
         if (ShowOwnPostsOnFeed)
@@ -66,7 +68,9 @@ public class FeedSettingsContent : PageModel
             _db.FollowerRelations.Remove(frToDelete);
         }
 
+        PreferencesUpdated = true;
+
         await _db.SaveChangesAsync();
-        return RedirectToPage("/SettingsPages/FeedSettingsContent");
+        return Page();
     }
 }

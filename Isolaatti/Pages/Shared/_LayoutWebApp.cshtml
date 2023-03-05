@@ -51,22 +51,7 @@
     <section class="notifications-stack" id="notifications">
 
     </section>
-
-           @* Server rendered alerts *@
-            @foreach (var (key, value) in _RenderedAlerts.Alerts)
-            {
-                <div class="row">
-                    <div class="col-12">
-                        <div class="alert alert-@key alert-dismissible">
-                            @value
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            }
-            <nav class="d-flex custom-nav sticky-top pr-2 pl-2" id="isolaatti-top-bar">
+    <nav class="d-flex custom-nav sticky-top pr-2 pl-2" id="isolaatti-top-bar">
                 <a href="/" class="nav-link custom-nav-link mr-md-auto" id="isolaatti_brand" v-show="!showingMobileSearch"></a>
                 <div class="container-md container-fluid" id="top-bar-content">
     
@@ -187,7 +172,7 @@
                 </div>
             </div>
         </noscript>
-        <div class="p-0" style="margin-bottom: 200px">@RenderBody()</div>
+        @RenderBody()
             <footer class="mt-auto p-1">
                     <p class="text-center">
                         <span class="isolaatti-name-footer">Isolaatti</span> <br/> 
