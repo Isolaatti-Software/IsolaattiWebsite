@@ -50,6 +50,11 @@ namespace Isolaatti.Controllers
             account.FollowingThisUser =
                 await _db.FollowerRelations.AnyAsync(fr => fr.UserId == user.Id && fr.TargetUserId == account.Id);
 
+            if (!account.ShowEmail && account.Id != user.Id)
+            {
+                account.Email = null;
+            }
+
             
             return Ok(account);
         }
