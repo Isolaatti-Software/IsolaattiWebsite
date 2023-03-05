@@ -49,6 +49,9 @@
                 return "/res/imgs/avatar.svg";
             }
             return `/api/images/image/${imageId}?mode=small`;
+        },
+        onDeletedPost: function(){
+            window.location = "/";
         }
     },
     mounted: async function () {
@@ -99,6 +102,7 @@
                                :post="post"
                                :key="postId"
                                @details="putPostDetails"
+                               @postDeleted="onDeletedPost"
                                :is-full-page="true">
                 </post-template>
           

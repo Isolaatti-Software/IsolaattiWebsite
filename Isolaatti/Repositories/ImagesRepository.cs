@@ -69,25 +69,13 @@ public class ImagesRepository
         await _images.DeleteOneAsync(i => i.Id.Equals(id));
     }
 
-    public async Task DeleteAllImagesOfUser()
+    public async Task RenameImage(string id, string name)
     {
-        
+        var filter = Builders<Image>.Filter.Eq(image => image.Id, id);
+        var update = Builders<Image>.Update.Set(image => image.Name, name);
+        await _images.UpdateOneAsync(filter, update);
     }
     
-    public async Task UnrelateAllImagesOfSquad(Guid squadId)
-    {
-        
-    }
-
-    public async Task SetSquadOfImage(string id, Guid squadId)
-    {
-        
-    }
-
-    public async Task SetNullSquadOfImage(string id)
-    {
-        
-    }
 
     public async Task<List<Image>> SearchOnName(string query)
     {

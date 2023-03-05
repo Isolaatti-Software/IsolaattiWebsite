@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Threading.Tasks;
+using Google;
 using Isolaatti.Classes.ApiEndpointsResponseDataModels;
+using Isolaatti.Enums;
 using Isolaatti.Repositories;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
@@ -91,8 +93,52 @@ public class ImagesService
         return null;
     }
 
+    public async Task<ImageModificationResult> DeleteImage(string id, int userId)
+    {
+        var image = await _imagesRepository.GetImage(id);
+        if (image == null)
+        {
+            return ImageModificationResult.NotFound;
+        }
+        if (image.UserId != userId)
+        {
+            return ImageModificationResult.NotOwned;
+        }
+
+        try
+        {
+            await _storage.DeleteObject(image.IdOnFirebase);
+        }
+        catch (GoogleApiException)
+        {
+            
+        }
+
+        await _imagesRepository.DeleteImage(id);
+
+        return ImageModificationResult.Success;
+
+    }
+
     public async Task<IEnumerable<Image>> GetImagesOfUser(int userId, string lastId)
     {
         return await _imagesRepository.GetImagesOfUser(userId, lastId);
+    }
+
+    public async Task<ImageModificationResult> RenameImage(string imageId, int userId, string newName)
+    {
+        var image = await _imagesRepository.GetImage(imageId);
+        if (image == null)
+        {
+            return ImageModificationResult.NotFound;
+        }
+        if (image.UserId != userId)
+        {
+            return ImageModificationResult.NotOwned;
+        }
+
+        await _imagesRepository.RenameImage(imageId, newName);
+
+        return ImageModificationResult.Success;
     }
 }

@@ -25,8 +25,12 @@
             customHeaders: customHttpHeaders,
             images: [],
             imageSelected: undefined,
-            imagesSelected: [],
-            imageOnViewer: 0 // this is the position on the array
+            imageSelectedForContextMenu: undefined,
+            imageOnViewer: 0, // this is the position on the array
+            showDeleteImageDialog: false,
+            showChangeNameDialog: false,
+            performingRequest: false,
+            newName: ""
         }
     },
     computed: {
@@ -35,6 +39,15 @@
         },
         nextDisabled: function() {
             return this.images.length === 0 || this.imageOnViewer === this.images.length - 1;
+        },
+        newNameIsInvalid: function() {
+            return this.newName.length < 1;
+        },
+        imageBySelectedForContextMenuIndex: function() {
+            if(this.imageSelectedForContextMenu === undefined) {
+                return undefined;
+            }
+            return this.images[this.imageSelectedForContextMenu]
         }
     },
     methods: {
@@ -47,9 +60,12 @@
             })).json();
         },
         imageOnClick: function (index) {
+            if(this.performingRequest) {
+                return;
+            }
             if(!this.isForSelect) {
-                if(this.imagesSelected.length > 0) {
-                    this.showOptions(undefined, this.images[index].id);
+                if(this.imageSelectedForContextMenu !== undefined) {
+                    this.showOptions(undefined, index);
                 } else {
                     this.imageOnViewer = index;
                     $("#modal-image-viewer").modal("show");
@@ -67,17 +83,18 @@
             if(this.imageOnViewer < this.images.length - 1)
                 this.imageOnViewer += 1;
         },
-        showOptions: function(e, imageId) {
+        showOptions: function(e, imageIndex) {
             if(e !== undefined) {
                 e.preventDefault();
             }
-            console.log(imageId);
-            if(this.imagesSelected.includes(imageId)) {
-                const index = this.imagesSelected.indexOf(imageId);
-                this.imagesSelected.splice(index, 1);
-            } else {
-                this.imagesSelected.push(imageId);
+            if(this.performingRequest){
+                return;
             }
+            if(this.imageSelectedForContextMenu === imageIndex){
+                this.imageSelectedForContextMenu = undefined;
+                return;
+            }
+            this.imageSelectedForContextMenu = imageIndex;
         },
         relativeUrl: function(imageId, mode="reduced") {
             return `/api/images/image/${imageId}?mode=${mode}`;
@@ -85,6 +102,49 @@
         onUploaded: function(image) {
             this.images.push(image);
             $('#modal-upload-photo').modal('hide');
+        },
+        onShowDeleteImageDialog: function() {
+            this.showDeleteImageDialog = true;
+        },
+        hideDeleteImageDialog: function() {
+            this.showDeleteImageDialog = false;
+        },
+        onShowChangeNameDialog: function(){
+            this.newName = this.images[this.imageSelectedForContextMenu].name;
+            this.showChangeNameDialog = true;
+        },
+        onHideChangeNameDialog: function() {
+            this.newName = "";
+            this.showChangeNameDialog = false;
+        },
+        deleteImage: async function(){
+            this.performingRequest = true;
+            const response = await fetch(`/api/images/${this.imageBySelectedForContextMenuIndex.id}`,{
+                method: "delete",
+                headers: this.customHeaders
+            });
+            if(response.ok){
+                this.images.splice(this.imageSelectedForContextMenu, 1);
+                this.imageSelectedForContextMenu = undefined;
+            } 
+            this.performingRequest = false;
+            this.hideDeleteImageDialog();
+        },
+        changeAudioName: async function() {
+            this.performingRequest = true;
+            const response = await fetch(`/api/images/${this.imageBySelectedForContextMenuIndex.id}/rename`,{
+                method: "post",
+                headers: this.customHeaders,
+                body: JSON.stringify({
+                    data: this.newName
+                })
+            });
+            if(response.ok){
+                this.images[this.imageSelectedForContextMenu].name = this.newName;
+                this.imageSelectedForContextMenu = undefined;
+            }
+            this.performingRequest = false;
+            this.onHideChangeNameDialog();
         }
     },
     mounted: async function () {
@@ -97,9 +157,24 @@
           <i class="fa-solid fa-plus"></i>
         </button>
       </div>
-      <div class="d-flex mt-2 justify-content-end" v-if="imagesSelected.length > 0">
-        <span class="mr-auto">{{imagesSelected.length}} imagenes seleccionadas</span>
-        <button class="btn btn-light"><i class="fa-solid fa-trash"></i></button>
+      <div class="d-flex mt-2 justify-content-end align-items-center flex-column isolaatti-card sticky-top" v-if="imageSelectedForContextMenu !== undefined">
+        <p class="mr-auto"><strong>{{images[imageSelectedForContextMenu].name}}</strong></p>
+        
+        <div v-if="showDeleteImageDialog" class="mt-2 d-flex justify-content-end align-items-center p-1 w-100">
+            <span class="mr-auto">¿Eliminar esta imagen?</span>
+            <button class="btn btn-light mr-1" @click="hideDeleteImageDialog" :disabled="performingRequest">No</button>
+            <button class="btn btn-primary" @click="deleteImage" :disabled="performingRequest">Sí</button>
+        </div>
+        <div v-else-if="showChangeNameDialog" class="d-flex w-100">
+            <input type="text" class="form-control w-100" v-model="newName"/>
+            <button class="btn btn-primary ml-1" @click="changeAudioName" :disabled="newNameIsInvalid || performingRequest"><i class="fa-solid fa-floppy-disk"></i></button>
+            <button class="btn" @click="onHideChangeNameDialog"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="d-flex w-100 justify-content-center" v-else>
+            
+            <button class="btn btn-light btn-sm" @click="onShowChangeNameDialog"><i class="fa-solid fa-pencil"></i></button>
+            <button class="btn btn-light btn-sm" @click="onShowDeleteImageDialog"><i class="fa-solid fa-trash"></i></button>
+        </div>
       </div>
       <p class="m-2 text-center" v-if="images.length === 0"> No hay contenido que mostrar <i
           class="fa-solid fa-face-sad-cry"></i></p>
@@ -108,9 +183,9 @@
             :class="{'primary-border-2px':imageSelected===image.id}"
             v-for="(image, index) in images"
             @click="imageOnClick(index)"
-            @contextmenu="showOptions($event, image.imageId)">
+            @contextmenu="showOptions($event, index)">
           <img :src="relativeUrl(image.id)" class="w-100" />
-          <span class="image-selected" v-show="imagesSelected.includes(image.id)">
+          <span class="image-selected" v-show="imageSelectedForContextMenu === index">
             <i class="fa-solid fa-check"></i>
           </span>
         </div>

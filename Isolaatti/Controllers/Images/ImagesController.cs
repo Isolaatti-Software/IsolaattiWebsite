@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Isolaatti.Classes.ApiEndpointsRequestDataModels;
+using Isolaatti.Enums;
 using Isolaatti.Models;
 using Isolaatti.Repositories;
 using Isolaatti.Services;
@@ -113,6 +115,43 @@ public class ImagesController : ControllerBase
         await _squadsRepository.SetSquadImage(squadId, imageId);
 
         return Ok();
+    }
+
+    [HttpDelete]
+    [Route("{imageId}")]
+    public async Task<IActionResult> DeleteImages([FromHeader(Name = "sessionToken")] string sessionToken, string imageId)
+    {
+        var user = await _accounts.ValidateToken(sessionToken);
+        if (user == null) return Unauthorized("Token is not valid");
+
+        var result = await _images.DeleteImage(imageId, user.Id);
+
+        return result switch
+        {
+            ImageModificationResult.Success => Ok(new { message = "Success" }),
+            ImageModificationResult.Error => Problem("Internal error"),
+            ImageModificationResult.NotFound => NotFound(),
+            ImageModificationResult.NotOwned => Unauthorized(),
+            _ => throw new ArgumentOutOfRangeException()
+        };
+    }
+
+    [HttpPost]
+    [Route("{imageId}/rename")]
+    public async Task<IActionResult> RenameImage([FromHeader(Name = "sessionToken")] string sessionToken, string imageId, SimpleStringData payload)
+    {
+        var user = await _accounts.ValidateToken(sessionToken);
+        if (user == null) return Unauthorized("Token is not valid");
+        var result = await _images.RenameImage(imageId, user.Id, payload.Data);
+
+        return result switch
+        {
+            ImageModificationResult.Success => Ok(new { message = "Success" }),
+            ImageModificationResult.Error => Problem("Internal error"),
+            ImageModificationResult.NotFound => NotFound(),
+            ImageModificationResult.NotOwned => Unauthorized(),
+            _ => throw new ArgumentOutOfRangeException()
+        };
     }
 
 }
