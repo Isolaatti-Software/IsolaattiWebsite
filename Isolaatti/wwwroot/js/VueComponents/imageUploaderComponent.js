@@ -81,7 +81,7 @@
           </div>
           <div class="d-flex justify-content-end mt-2">
             <span v-if="uploading" class="mr-auto">Subiendo...</span>
-            <button type="button" class="btn btn-primary" @click="uploadImage" :disabled="!ableToUpload || uploading">Subir</button>
+            <button type="button" class="btn btn-primary" @click="uploadImage" :disabled="!ableToUpload || uploading">Agregar imagen</button>
           </div>
         </template>
         </div>
