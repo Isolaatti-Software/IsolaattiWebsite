@@ -67,7 +67,7 @@
         
     },
     template: `
-        <section>
+        <section class="w-100">
           <div class="container">
             <div class="row">
               <div class="col-12 d-flex justify-content-end p-2 align-items-center">
