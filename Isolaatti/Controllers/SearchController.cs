@@ -54,6 +54,7 @@ public class SearchController : ControllerBase
         // Perform basic search on profiles
         var profilesResults = from u in _db.Users
             where u.Name.ToLower().Contains(lowerCaseQ)
+            orderby u.Id
             select new UserFeed
             {
                 Id = u.Id,
@@ -73,6 +74,7 @@ public class SearchController : ControllerBase
                     profilesResults = from profileResult in profilesResults
                         from squadUser in _db.SquadUsers
                         where squadUser.SquadId.Equals(squadId) && !squadUser.UserId.Equals(profileResult.Id)
+                        orderby profileResult.Id
                         select profileResult;
                 }
             }
@@ -91,6 +93,7 @@ public class SearchController : ControllerBase
         // Perform basic search on posts
         var postsResults = from post in _db.SimpleTextPosts
             where post.TextContent.ToLower().Contains(lowerCaseQ)
+            orderby post.Id
             select new PostDto
             {
                 Post = post,
