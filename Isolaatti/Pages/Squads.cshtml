@@ -1,0 +1,32 @@
+﻿@page "/squads"
+@model Isolaatti.Pages.Squads
+
+@{
+    Layout = "Shared/_LayoutWebApp";
+    ViewData["Title"] = "Squads";
+
+    ViewData["squadsRouter"] = true;
+}
+@section Scripts
+{
+    <script>
+    function getRoutesForPage() { 
+        return [
+            { path: "/", component: squadsBelong },
+            { path: "/crear", component: createSquadComponent },
+            { path: "/tuyos", component: yourSquadsComponent },
+            { path: "/solicitudes_union", component: requestsComponent },
+            { path: "/invitaciones", component: invitationsComponent }
+        ]}
+    </script>
+    <script src="~/js/VueComponents/squads/squadInvitationsList.js"></script>
+    <script src="~/js/VueComponents/squads/squadRequestsList.js"></script>
+    <script src="~/js/VueComponents/page/squads/invitationsComponent.js"></script>
+    <script src="~/js/VueComponents/page/squads/requestsComponent.js"></script>
+    <script src="~/js/VueComponents/page/squads/squadsBelong.js"></script>
+    <script src="~/js/VueComponents/page/squads/squadsComponent.js"></script>
+    <script src="~/js/VueComponents/page/squads/createSquadComponent.js"></script>
+    <script src="~/js/VueComponents/page/squads/yourSquadsComponent.js"></script>
+    <script src="~/js/VueComponents/usersGridComponent.js"></script>
+}
+<squads-page></squads-page>

@@ -1,0 +1,18 @@
+﻿.search-box {
+    position: relative;
+    width: 100%;
+}
+.search-box-results {
+    position: absolute;
+    background: #fafafa;
+    width: 100%;
+    max-height: calc(100vh - 90px);
+    overflow: auto;
+    margin-top: 15px;
+    box-shadow: var(--primary) 0px 3px 50px 0px;
+}
+.search-box-input {
+    max-width: 300px;
+    background: rgba(0,0,0,0.3);
+    border: none;
+}

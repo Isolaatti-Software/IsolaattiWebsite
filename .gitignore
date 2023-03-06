@@ -2,3 +2,5 @@
 /obj/
 /.idea/
 /.config/
+appsettings.Development.json
+/isolaatti-firebase-adminsdk.json

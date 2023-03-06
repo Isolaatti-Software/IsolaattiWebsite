@@ -1,0 +1,43 @@
+@page "/pub/{id}"
+@model Isolaatti.Pages.Threads
+
+@{
+    Layout = "Shared/_LayoutWebApp";
+    ViewData["Title"] = "Discusión";
+}
+
+@section CSS
+{
+    <script>const pageTitle = "Discusión"</script>
+
+    <style>
+    @@media screen and (min-width: 768px)  {
+    .post-container {
+                position: sticky; 
+                top: 0.5rem; 
+                height: calc(100vh - 55px - 0.5rem);
+                overflow: auto;
+        }
+    }
+    </style>
+}
+
+<discussion-page :post-id="@Model.PostId"></discussion-page>
+
+@section Scripts
+{
+    <script src="https://unpkg.com/dompurify@2.3.5/dist/purify.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="~/js/VueComponents/profileImagesComponent.js"></script>
+    <script src="~/js/VueComponents/profileImageMakerComponent.js"></script>
+    <script src="~/js/VueComponents/audiosList.js"></script>
+    <script src="~/js/VueComponents/newCommentComponent.js"></script>
+    <script src="~/js/VueComponents/newQuickPost.js"></script>
+    <script src="~/js/VueComponents/newDiscussionComponent.js"></script>
+    <script src="~/js/VueComponents/commentsViewer.js"></script>
+    <script src="~/js/VueComponents/postComponent.js"></script>
+    <script src="~/js/VueComponents/commentComponent.js"></script>
+    <script src="~/js/VueComponents/audioRecorder.js"></script>
+    <script src="~/js/VueComponents/page/discussionComponent.js"></script>
+}

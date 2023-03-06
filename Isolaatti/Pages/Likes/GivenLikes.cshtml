@@ -1,0 +1,13 @@
+﻿@page "/perfil/{id:int}/likes_dados"
+@model Isolaatti.Pages.Likes.GivenLikes
+
+@{
+    Layout = "Shared/_LayoutWebApp";
+}
+
+<given_likes :user-id="@ViewData["profile_id"]"></given_likes>
+
+@section Scripts
+{
+    <script src="~/js/VueComponents/page/givenLikesComponent.js"></script>
+}

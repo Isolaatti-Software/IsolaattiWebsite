@@ -1,0 +1,125 @@
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Isolaatti.Classes.ApiEndpointsRequestDataModels;
+using Isolaatti.Classes.ApiEndpointsResponseDataModels;
+using Isolaatti.Models;
+using Isolaatti.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+
+namespace Isolaatti.Controllers
+{
+    [ApiController]
+    [Route("/api/Following")]
+    public class FollowingController : ControllerBase
+    {
+        private readonly DbContextApp Db;
+        private readonly IAccounts _accounts;
+
+        public FollowingController(DbContextApp dbContextApp, IAccounts accounts)
+        {
+            Db = dbContextApp;
+            _accounts = accounts;
+        }
+
+        [HttpPost]
+        [Route("Follow")]
+        public async Task<IActionResult> Index([FromHeader(Name = "sessionToken")] string sessionToken,
+            SingleIdentification identification)
+        {
+            var user = await _accounts.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
+
+            var userToFollow = await Db.Users.FindAsync(Convert.ToInt32(identification.Id));
+            if (userToFollow == null) return NotFound("User to follow was not found");
+
+            // create new relation only if there is not one already
+            if (await Db.FollowerRelations.AnyAsync(rel =>
+                    rel.UserId.Equals(user.Id) && rel.TargetUserId.Equals(userToFollow.Id)))
+            {
+                return Unauthorized("user already followed");
+            }
+
+            var followerRelation = new FollowerRelation
+            {
+                UserId = user.Id,
+                TargetUserId = userToFollow.Id
+            };
+
+            Db.FollowerRelations.Add(followerRelation);
+            await Db.SaveChangesAsync();
+            
+            return Ok("Followers updated!");
+        }
+
+        [Route("Unfollow")]
+        [HttpPost]
+        public async Task<IActionResult> Unfollow([FromHeader(Name = "sessionToken")] string sessionToken,
+            SingleIdentification identification)
+        {
+            var user = await _accounts.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
+
+            var userToUnfollow = await Db.Users.FindAsync(Convert.ToInt32(identification.Id));
+            if (userToUnfollow == null) return NotFound("User to unfollow was not found");
+
+            try
+            {
+                // finds and removes follower relation
+                var followerRelation = await Db.FollowerRelations.SingleAsync(relation =>
+                    relation.UserId.Equals(user.Id) && relation.TargetUserId.Equals(userToUnfollow.Id));
+                Db.FollowerRelations.Remove(followerRelation);
+
+                await Db.SaveChangesAsync();
+                
+                return Ok("Followers updated!");
+            }
+            catch (InvalidOperationException)
+            {
+                return Unauthorized("cannot unfollow user, not followed");
+            }
+        }
+
+        [Route("FollowingsOf/{userId:int}")]
+        [HttpGet]
+        public async Task<IActionResult> Following([FromHeader(Name = "sessionToken")] string sessionToken, int userId)
+        {
+            var user = await _accounts.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
+
+            var listOfFollowing =
+                (from _user in Db.Users
+                    from _relation in Db.FollowerRelations
+                    where _relation.UserId == userId && _user.Id == _relation.TargetUserId
+                    select new UserFeed
+                    {
+                        Id = _relation.TargetUserId, 
+                        Name = _user.Name,
+                        ImageId = _user.ProfileImageId
+                    }).ToList();
+
+            return Ok(listOfFollowing);
+        }
+
+        [Route("FollowersOf/{userId:int}")]
+        [HttpGet]
+        public async Task<IActionResult> Followers([FromHeader(Name = "sessionToken")] string sessionToken, int userId)
+        {
+            var user = await _accounts.ValidateToken(sessionToken);
+            if (user == null) return Unauthorized("Token is not valid");
+
+            var listOfFollowers =
+                (from _user in Db.Users
+                    from _relation in Db.FollowerRelations
+                    where _relation.TargetUserId == userId && _relation.UserId == _user.Id
+                    select new UserFeed
+                    {
+                        Id = _relation.UserId,
+                        Name = _user.Name,
+                        ImageId = _user.ProfileImageId
+                    }).ToList();
+            return Ok(listOfFollowers);
+        }
+    }
+}

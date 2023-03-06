@@ -1,0 +1,30 @@
+@page
+@model Isolaatti.Pages.ExternalAuthPage
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Verificando cuenta | Isolaatti</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</head>
+<body>
+<div>
+    <span id="info">Verificando autenticación...</span>
+</div>
+
+
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+@if (ViewData["then"] != null)
+{
+    <script>thenParam = "@Html.Raw(ViewData["then"])"</script>
+}
+<script src="~/js/googleAuthVerification.js"></script>
+</body>
+</html>

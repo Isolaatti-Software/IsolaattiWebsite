@@ -1,0 +1,52 @@
+@page "/editor"
+@model Isolaatti.Pages.PostEditor
+
+@{
+    Layout = "Shared/_LayoutWebApp";
+    ViewData["Title"] = "Nuevo";
+}
+
+@section CSS
+{
+    <script>const pageTitle = "Nueva discusión"</script>
+}
+
+<div id="vue-container" class="container-fluid p-0">
+    <div class="col-12">
+        <new-post></new-post>
+    </div>
+</div>
+
+
+@section Scripts
+{
+    <script src="https://www.gstatic.com/firebasejs/7.23.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.23.0/firebase-storage.js"></script>
+    <script>
+    var firebaseConfig = {
+        apiKey: "AIzaSyDZHVXLR_1imwVb2mCArnYpdbNx6XUPZBQ",
+        authDomain: "isolaatti-b6641.firebaseapp.com",
+        databaseURL: "https://isolaatti-b6641.firebaseio.com",
+        projectId: "isolaatti-b6641",
+        storageBucket: "isolaatti-b6641.appspot.com",
+        messagingSenderId: "556033448926",
+        appId: "1:556033448926:web:35759afc37d6a1585b1b4f",
+        measurementId: "G-JQV4WX75RK"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    var storage = firebase.storage();
+    </script>
+    <script src="https://unpkg.com/dompurify@2.3.5/dist/purify.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="~/js/VueComponents/profileImageMakerComponent.js"></script>
+    <script src="~/js/VueComponents/newDiscussionComponent.js"></script>
+    <script src="~/js/VueComponents/commentsViewer.js"></script>
+    <script src="~/js/VueComponents/postComponent.js"></script>
+    <script src="~/js/VueComponents/commentComponent.js"></script>
+    <script src="~/js/VueComponents/audioRecorder.js"></script>
+    <script src="~/js/VueComponents/newQuickPost.js"></script>
+    <script src="~/js/VueComponents/audiosList.js"></script>
+    
+}

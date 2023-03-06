@@ -1,0 +1,52 @@
+@page
+@model Isolaatti.Pages.Index
+
+@{
+    Layout = "Shared/_LayoutWebApp";
+    ViewData["Title"] = "Inicio";
+}
+
+<div class="container-fluid">
+    <div class="row m-0">
+        <div class="col-lg-3 col-md-2">
+            
+        </div>
+        <div class="col-lg-6 col-md-8">
+            <home-page></home-page>
+        </div>
+        <div class="col-lg-3 col-md-2">
+
+        </div>
+    </div>
+</div>
+
+
+@* 
+Load first libraries used by components inside this page, then the components used 
+inside this page and last the page component 
+*@
+
+@section Scripts
+{
+    @* Libraries *@
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://unpkg.com/dompurify@2.3.5/dist/purify.min.js"></script>
+    @* Vue.js components *@
+    <script src="~/js/VueComponents/newCommentComponent.js"></script>
+    <script src="~/js/VueComponents/newDiscussionComponent.js"></script>
+    <script src="~/js/VueComponents/commentsViewer.js"></script>
+    <script src="~/js/VueComponents/postComponent.js"></script>
+    <script src="~/js/VueComponents/commentComponent.js"></script>
+    <script src="~/js/VueComponents/audioRecorder.js"></script>
+    <script src="~/js/VueComponents/newQuickPost.js"></script>
+    <script src="~/js/VueComponents/audiosList.js"></script>
+    <script src="~/js/VueComponents/lastAudiosComponent.js"></script>
+    <script src="~/js/VueComponents/imageUploaderComponent.js"></script>
+    <script src="~/js/VueComponents/profileImagesComponent.js"></script>
+    <script src="~/js/VueComponents/profileImageMakerComponent.js"></script>
+    <script src="~/js/VueComponents/newsFeedComponent.js"></script>
+    <script src="~/js/VueComponents/shortCutsComponent.js"></script>
+    <script src="~/js/VueComponents/usersGridComponent.js"></script>
+    @* Page component *@
+    <script src="~/js/VueComponents/page/homeComponent.js"></script>
+}
