@@ -1,4 +1,8 @@
 @using Isolaatti.Services
+@using Microsoft.AspNetCore.Hosting
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Microsoft.Extensions.Hosting
+@inject IWebHostEnvironment _environment
 @inject ServerRenderedAlerts _RenderedAlerts
 <!DOCTYPE html>
 <html lang="es">
@@ -107,7 +111,14 @@
         </p>
     </footer>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+@if (_environment.IsDevelopment())
+{
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.8/dist/vue.js"></script>
+}
+else
+{
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.8"></script>
+}
 @RenderSection("Scripts", false)
 </body>
 </html>
