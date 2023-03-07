@@ -218,10 +218,8 @@ public class SquadsController : ControllerBase
     }
 
     [HttpGet]
-    [Route("{squadId:guid}/Members")]
-    public async Task<IActionResult> GetMembersOfSquad(
-        [FromHeader(Name = "sessionToken")] string sessionToken, 
-        Guid squadId)
+    [Route("{squadId:guid}/Owner")]
+    public async Task<IActionResult> GetOwnerOfSquad([FromHeader(Name = "sessionToken")] string sessionToken, Guid squadId)
     {
         var user = await _accounts.ValidateToken(sessionToken);
         if(user == null) return Unauthorized("Token is not valid");
@@ -231,7 +229,7 @@ public class SquadsController : ControllerBase
             return NotFound();
         }
 
-        var admin = (from u in _db.Users
+        var owner = (from u in _db.Users
             where u.Id == squad.UserId
             select new
             {
@@ -240,11 +238,74 @@ public class SquadsController : ControllerBase
                 ImageId = u.ProfileImageId
             }).FirstOrDefault();
 
-        return Ok(new
+        return Ok(owner);
+    }
+
+    [HttpGet]
+    [Route("{squadId:guid}/Members")]
+    public async Task<IActionResult> GetMembers([FromHeader(Name = "sessionToken")] string sessionToken, Guid squadId, int lastId = -1)
+    {
+        var user = await _accounts.ValidateToken(sessionToken);
+        if(user == null) return Unauthorized("Token is not valid");
+        var squad = await _squadsRepository.GetSquad(squadId);
+        if (squad == null)
         {
-            members = await _squadsRepository.GetMembersOfSquad(squadId),
-            admin
-        });
+            return NotFound();
+        }
+
+        var members = (from u in _db.Users
+            from su in _db.SquadUsers
+            where u.Id == su.UserId && su.SquadId == squad.Id && su.Role == SquadUserRole.User
+            orderby  u.Id
+            select new
+            {
+                Id = u.Id,
+                Name = u.Name,
+                ImageId = u.ProfileImageId
+            });
+        
+        if (lastId > 0)
+        {
+            members = members.Where(member => member.Id > lastId);
+        }
+
+        members = members.Take(20);
+
+        return Ok(members);
+
+    }
+
+    [HttpGet]
+    [Route("{squadId:guid}/Admins")]
+    public async Task<IActionResult> GetAdmins([FromHeader(Name = "sessionToken")] string sessionToken, Guid squadId, int lastId = -1)
+    {
+        var user = await _accounts.ValidateToken(sessionToken);
+        if(user == null) return Unauthorized("Token is not valid");
+        var squad = await _squadsRepository.GetSquad(squadId);
+        if (squad == null)
+        {
+            return NotFound();
+        }
+
+        var members = (from u in _db.Users
+            from su in _db.SquadUsers
+            where u.Id == su.UserId && su.SquadId == squad.Id && su.Role == SquadUserRole.Admin
+            orderby  u.Id
+            select new
+            {
+                Id = u.Id,
+                Name = u.Name,
+                ImageId = u.ProfileImageId
+            });
+        
+        if (lastId > 0)
+        {
+            members = members.Where(member => member.Id > lastId);
+        }
+
+        members = members.Take(20);
+
+        return Ok(members);
     }
 
     [HttpPost]
