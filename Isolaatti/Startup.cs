@@ -109,6 +109,12 @@ namespace Isolaatti
             services.AddControllers();
             services.AddMvcCore().AddApiExplorer();
             services.AddRazorPages().AddRazorRuntimeCompilation();
+            
+            services.AddWebOptimizer(options =>
+            {
+                options.EnableMemoryCache = true;
+            });
+
             services.AddDbContextPool<DbContextApp>((serviceProvider, options) =>
             {
          
@@ -221,8 +227,10 @@ namespace Isolaatti
             app.UseSwaggerUI();
             app.UseForwardedHeaders();
             app.UseHsts();
+            app.UseWebOptimizer();
             app.UseStaticFiles();
             
+
             app.UseRouting();
             app.UseCors("cors");
             app.UseAuthorization();
