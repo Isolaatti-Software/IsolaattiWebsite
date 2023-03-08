@@ -142,7 +142,7 @@ namespace Isolaatti.Controllers
                 requestedAuthor = await _db.Users.FindAsync(userId);
                 if (requestedAuthor == null) return NotFound();
 
-                posts = _db.SimpleTextPosts.Where(post => post.UserId == requestedAuthor.Id);
+                posts = _db.SimpleTextPosts.Where(post => post.UserId == requestedAuthor.Id && post.SquadId == null);
                  if (filter != null)
                  {
                      posts = filter.IncludeAudio switch
@@ -151,13 +151,7 @@ namespace Isolaatti.Controllers
                          "onlyNoAudio" => posts.Where(post => post.AudioId == null),
                          _ => posts
                      };
-
-                     posts = filter.IncludeFromSquads switch
-                     {
-                         "onlyFromSquads" => posts.Where(post => post.SquadId != null),
-                         "onlyNotFromSquads" => posts.Where(post => post.SquadId == null),
-                         _ => posts
-                     };
+                     
                      if (filter.DateRange.Enabled)
                      {
                          // try to parse dates

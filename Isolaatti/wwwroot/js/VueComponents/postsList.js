@@ -17,6 +17,7 @@ Vue.component("posts-list", {
     data: function () {
         return {
             customHeaders: customHttpHeaders,
+            userData: userData,
             posts: [],
             moreContent: false,
             loading: false,
@@ -145,12 +146,14 @@ Vue.component("posts-list", {
             <option value="onlyAudio">Solo con audio</option>
             <option value="onlyNoAudio">Solo sin audio</option>
           </select>
-          <h6 class="mt-1">Squad</h6>
-          <select class="custom-select" v-model="filter.includeFromSquads">
-            <option value="both">No filtrar</option>
-            <option value="onlyFromSquads">Solo de squads</option>
-            <option value="onlyNotFromSquads">Solo que no sea de squads</option>
-          </select>
+          <template v-if="userId===userData.id">
+            <h6 class="mt-1">Squad</h6>
+            <select class="custom-select" v-model="filter.includeFromSquads">
+              <option value="both">No filtrar</option>
+              <option value="onlyFromSquads">Solo de squads</option>
+              <option value="onlyNotFromSquads">Solo que no sea de squads</option>
+            </select>
+          </template>
           <h6 class="mt-2">Fecha</h6>
           <div class="form-group">
             <label for="date-filter-check" >Filtrar por fecha</label>
