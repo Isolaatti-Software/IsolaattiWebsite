@@ -11,6 +11,7 @@ using Isolaatti.Models;
 using Isolaatti.Models.MongoDB;
 using Isolaatti.Repositories;
 using Isolaatti.Services;
+using Isolaatti.Utils.ActionFilters;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
@@ -106,7 +107,10 @@ namespace Isolaatti
                             .AllowAnyHeader();
                     })
             );
-            services.AddControllers();
+            services.AddControllers(options =>
+            {
+                options.Filters.Add<AuthenticationFilter>();
+            });
             services.AddMvcCore().AddApiExplorer();
             services.AddRazorPages().AddRazorRuntimeCompilation();
             
@@ -213,7 +217,7 @@ namespace Isolaatti
             // don't allow uploading files larger than 2 MB, for security reasons
             services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = 1024 * 1024 * 10);
             services.AddSwaggerGen();
-            
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
