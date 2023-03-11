@@ -14,6 +14,7 @@
         <PackageReference Include="EFCoreSecondLevelCacheInterceptor" Version="3.7.0" />
         <PackageReference Include="FirebaseAdmin" Version="2.3.0" />
         <PackageReference Include="Google.Cloud.Storage.V1" Version="4.1.0" />
+        <PackageReference Include="LigerShark.WebOptimizer.Core" Version="3.0.380" />
 
         <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.9" />
         <PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" Version="6.0.12" />

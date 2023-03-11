@@ -25,7 +25,7 @@
     <link rel="icon" type="image/png" sizes="64x64" href="~/favicon-64.png">
     <link rel="icon" type="image/png" sizes="32x32" href="~/favicon-32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="~/favicon-16.png">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css"/>
     
     @RenderSection("CSS", required: false)
     
@@ -220,13 +220,13 @@ else
 <script>const events = new Vue();</script>
 <script>const realtimeServer = "@_servers.Value.RealtimeServerUrl"</script>
 @* This script exposes socket variable, which is globally accessible *@
-<script src="~/js/realtime-notifications.js"></script>
-<script src="~/js/audioService.js"></script>
+<script inline src="~/js/realtime-notifications.js"></script>
+<script inline src="~/js/audioService.js"></script>
 
 @* Add here global Vue.js components files. Components used in pages should not be added here *@
-<script src="~/js/VueComponents/audioPlayerComponent.js"></script>
-<script src="~/js/VueComponents/audioAttachmentComponent.js"></script>
-<script src="~/js/VueComponents/quickSearchComponent.js"></script>
+<script inline src="~/js/VueComponents/audioPlayerComponent.js"></script>
+<script inline src="~/js/VueComponents/audioAttachmentComponent.js"></script>
+<script inline src="~/js/VueComponents/quickSearchComponent.js"></script>
 
 @* This scripts are added only for specific pages *@
 @await RenderSectionAsync("Scripts", required: false)
@@ -234,7 +234,7 @@ else
 <script>
 const renderRouter = "@((bool?)ViewData["squadsRouter"] ?? false)" === "True";
 </script>
-<script src="~/js/VueComponents/page/global.js"></script>
+<script inline src="~/js/VueComponents/page/global.js"></script>
 <script>
 document.getElementById("app").style.height = `${window.innerHeight}px`;
 window.onresize = function() {
