@@ -9,7 +9,7 @@ WORKDIR /app
 #ENV key_database_con_string=$keysdbcon
 #ENV send_grid_api_key=$sendgrid
 
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
 COPY ["Isolaatti.csproj", "./"]
 RUN dotnet restore "Isolaatti.csproj"
