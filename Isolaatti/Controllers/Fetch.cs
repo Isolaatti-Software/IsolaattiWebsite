@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Isolaatti.Classes;
-using Isolaatti.Classes.ApiEndpointsRequestDataModels;
 using Isolaatti.Models;
 using Isolaatti.DTOs;
 using Isolaatti.Repositories;
-using Isolaatti.Services;
+using Isolaatti.Utils;
+using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,27 +16,23 @@ namespace Isolaatti.Controllers
 {
     [ApiController]
     [Route("/api/[controller]")]
-    public class Fetch : ControllerBase
+    public class Fetch : IsolaattiController
     {
         private readonly DbContextApp _db;
-        private readonly IAccounts _accounts;
         private readonly SquadsRepository _squads;
 
-        public Fetch(DbContextApp dbContextApp, IAccounts accounts, SquadsRepository squadsRepository)
+        public Fetch(DbContextApp dbContextApp, SquadsRepository squadsRepository)
         {
             _db = dbContextApp;
-            _accounts = accounts;
             _squads = squadsRepository;
         }
 
+        [IsolaattiAuth]
         [HttpPost]
         [Route("UserProfile/{userId:int}")]
-        public async Task<IActionResult> GetProfile([FromHeader(Name = "sessionToken")] string sessionToken,
-            int userId)
+        public async Task<IActionResult> GetProfile(int userId)
         {
-            var user = await _accounts.ValidateToken(sessionToken);
-            if (user == null) return Unauthorized("Token is not valid");
-
+            
             var account = await _db.Users.FindAsync(userId);
             if (account == null) return NotFound();
 
@@ -44,13 +40,13 @@ namespace Isolaatti.Controllers
             account.NumberOfFollowing = await _db.FollowerRelations.CountAsync(fr => fr.UserId == account.Id);
             account.NumberOfPosts = await _db.SimpleTextPosts.CountAsync(p => p.UserId == account.Id);
             account.NumberOfLikes = await _db.Likes.CountAsync(l => l.TargetUserId == account.Id);
-            account.IsUserItself = account.Id == user.Id;
+            account.IsUserItself = account.Id == User.Id;
             account.ThisUserIsFollowingMe =
-                await _db.FollowerRelations.AnyAsync(fr => fr.TargetUserId == user.Id && fr.UserId == account.Id);
+                await _db.FollowerRelations.AnyAsync(fr => fr.TargetUserId == User.Id && fr.UserId == account.Id);
             account.FollowingThisUser =
-                await _db.FollowerRelations.AnyAsync(fr => fr.UserId == user.Id && fr.TargetUserId == account.Id);
+                await _db.FollowerRelations.AnyAsync(fr => fr.UserId == User.Id && fr.TargetUserId == account.Id);
 
-            if (!account.ShowEmail && account.Id != user.Id)
+            if (!account.ShowEmail && account.Id != User.Id)
             {
                 account.Email = null;
             }
@@ -59,13 +55,11 @@ namespace Isolaatti.Controllers
             return Ok(account);
         }
 
+        [IsolaattiAuth]
         [HttpGet]
         [Route("PostsOfUser/{userId:int}")]
-        public async Task<IActionResult> GetPosts([FromHeader(Name = "sessionToken")] string sessionToken, int userId,
-            int length = 30, long lastId = -1, bool olderFirst = false, string filterJson = null)
+        public async Task<IActionResult> GetPosts(int userId, int length = 30, long lastId = -1, bool olderFirst = false, string filterJson = null)
         {
-            var user = await _accounts.ValidateToken(sessionToken);
-            if (user == null) return Unauthorized("Token is not valid");
             User requestedAuthor = null;
 
             PostFilterDto filter = null;
@@ -78,7 +72,7 @@ namespace Isolaatti.Controllers
             
 
             IQueryable<Post> posts;
-            if (user.Id == userId)
+            if (User.Id == userId)
             {
                 /*
                  * Composition of query
@@ -86,7 +80,7 @@ namespace Isolaatti.Controllers
                  * 2. Order
                  * 3. Paging by cursor
                  */
-                 posts = _db.SimpleTextPosts.Where(post => post.UserId == user.Id);
+                 posts = _db.SimpleTextPosts.Where(post => post.UserId == User.Id);
                  if (filter != null)
                  {
                      posts = filter.IncludeAudio switch
@@ -204,7 +198,7 @@ namespace Isolaatti.Controllers
                     UserName = u.Name,
                     NumberOfComments = post.Comments.Count,
                     NumberOfLikes = post.Likes.Count,
-                    Liked = _db.Likes.Any(l => l.UserId == user.Id && l.PostId == post.Id),
+                    Liked = _db.Likes.Any(l => l.UserId == User.Id && l.PostId == post.Id),
                     SquadName = post.Squad.Name
                 };
 
@@ -218,13 +212,11 @@ namespace Isolaatti.Controllers
             });
         }
 
+        [IsolaattiAuth]
         [HttpGet]
         [Route("Post/{postId:long}")]
-        public async Task<IActionResult> GetPost([FromHeader(Name = "sessionToken")] string sessionToken, long postId)
+        public async Task<IActionResult> GetPost(long postId)
         {
-            var user = await _accounts.ValidateToken(sessionToken);
-            if (user == null) return Unauthorized("Token is not valid");
-
             var postExists = await _db.SimpleTextPosts.AnyAsync(p => p.Id == postId);
             if (!postExists)
             {
@@ -239,7 +231,7 @@ namespace Isolaatti.Controllers
                     UserName = p.User.Name,
                     NumberOfComments = p.Comments.Count,
                     NumberOfLikes = p.Likes.Count,
-                    Liked = _db.Likes.Any(l => l.UserId == user.Id && l.PostId == p.Id),
+                    Liked = _db.Likes.Any(l => l.UserId == User.Id && l.PostId == p.Id),
                     SquadName = p.Squad.Name
                 })
                 .FirstOrDefault();
@@ -248,7 +240,7 @@ namespace Isolaatti.Controllers
             // This post seems to be from a Squad, let's verify user is authorized to see it
             if (post!.Post.SquadId != null) // at this point post should not be null
             {
-                if (!await _squads.UserBelongsToSquad(user.Id, post.Post.SquadId.Value))
+                if (!await _squads.UserBelongsToSquad(User.Id, post.Post.SquadId.Value))
                 {
                     return Unauthorized(new
                     {
@@ -261,16 +253,13 @@ namespace Isolaatti.Controllers
             return Ok(post);
         }
 
+        [IsolaattiAuth]
         [HttpGet]
         [Route("Post/{postId:long}/Comments")]
-        public async Task<IActionResult> GetComments([FromHeader(Name = "sessionToken")] string sessionToken,
-            long postId, long lastId = long.MinValue, int take = 10)
+        public async Task<IActionResult> GetComments(long postId, long lastId = long.MinValue, int take = 10)
         {
-            var user = await _accounts.ValidateToken(sessionToken);
-            if (user == null) return Unauthorized("Token is not valid");
-        
             var post = await _db.SimpleTextPosts.FindAsync(postId);
-            if (post == null || (post.Privacy == 1 && post.UserId != user.Id))
+            if (post == null || (post.Privacy == 1 && post.UserId != User.Id))
                 return Unauthorized("post does not exist or is private");
         
             IQueryable<Comment> comments = _db.Comments
@@ -295,14 +284,11 @@ namespace Isolaatti.Controllers
             });
         }
 
+        [IsolaattiAuth]
         [HttpGet]
         [Route("Comments/{commentId:long}")]
-        public async Task<IActionResult> GetComment([FromHeader(Name = "sessionToken")] string sessionToken,
-            long commentId)
+        public async Task<IActionResult> GetComment(long commentId)
         {
-            var user = await _accounts.ValidateToken(sessionToken);
-            if (user == null) return Unauthorized("Token is not valid");
-
             var comment = await _db.Comments.FindAsync(commentId);
             if (comment == null) return NotFound();
 
@@ -313,16 +299,14 @@ namespace Isolaatti.Controllers
             });
         }
 
+        [IsolaattiAuth]
         [HttpGet]
         [Route("Post/{postId:long}/LikedBy")]
-        public async Task<IActionResult> GetPostLikedBy([FromHeader(Name = "sessionToken")] string sessionToken,
-            long postId)
+        public async Task<IActionResult> GetPostLikedBy(long postId)
         {
-            var user = await _accounts.ValidateToken(sessionToken);
-            if (user == null) return Unauthorized("Token is not valid");
-
+            
             var post = await _db.SimpleTextPosts.FindAsync(postId);
-            if (post == null || (post.Privacy == 1 && post.UserId != user.Id)) return NotFound("post not found");
+            if (post == null || (post.Privacy == 1 && post.UserId != User.Id)) return NotFound("post not found");
 
             var likedBy =
                 from like in _db.Likes

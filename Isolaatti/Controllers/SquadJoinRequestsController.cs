@@ -6,13 +6,15 @@ using Isolaatti.Enums;
 using Isolaatti.Models;
 using Isolaatti.Repositories;
 using Isolaatti.Services;
+using Isolaatti.Utils;
+using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Isolaatti.Controllers;
 
 [ApiController]
 [Route("/api/Squads/JoinRequests")]
-public class SquadJoinRequestsController : ControllerBase
+public class SquadJoinRequestsController : IsolaattiController
 {
     private readonly IAccounts _accounts;
     private readonly DbContextApp _db;
@@ -30,35 +32,28 @@ public class SquadJoinRequestsController : ControllerBase
         _squadsRepository = squadsRepository;
     }
     
+    [IsolaattiAuth]
     [HttpGet]
     [Route("Search")]
-    public async Task<IActionResult> Search([FromHeader(Name = "sessionToken")] string sessionToken, Guid squadId)
+    public async Task<IActionResult> Search(Guid squadId)
     {
-        var user = await _accounts.ValidateToken(sessionToken);
-        if(user == null) return Unauthorized("Token is not valid");
-        
         return Ok(new
         {
-            request = await _joinRequestsRepository.SearchJoinRequest(squadId, user.Id)
+            request = await _joinRequestsRepository.SearchJoinRequest(squadId, User.Id)
         });
     }
 
+    [IsolaattiAuth]
     [HttpPost]
     [Route("/api/Squads/{squadId:guid}/RequestJoin")]
-    public async Task<IActionResult> Create(
-        [FromHeader(Name = "sessionToken")] string sessionToken,
-        Guid squadId,
-        CreateJoinRequest payload)
+    public async Task<IActionResult> Create(Guid squadId, CreateJoinRequest payload)
     {
-        var user = await _accounts.ValidateToken(sessionToken);
-        if(user == null) return Unauthorized("Token is not valid");
-
-        if (await _joinRequestsRepository.SameJoinRequestExists(squadId, user.Id))
+        if (await _joinRequestsRepository.SameJoinRequestExists(squadId, User.Id))
         {
             return Problem("Already sent join request. User has to wait until accepted.");
         }
 
-        await _joinRequestsRepository.CreateJoinRequest(squadId, user.Id, payload.Message);
+        await _joinRequestsRepository.CreateJoinRequest(squadId, User.Id, payload.Message);
         
         return Ok();
     }
@@ -69,20 +64,18 @@ public class SquadJoinRequestsController : ControllerBase
     /// <param name="sessionToken">Auth token</param>
     /// <param name="requestId">Join request id</param>
     /// <returns></returns>
+    [IsolaattiAuth]
     [HttpDelete]
     [Route("{requestId}/Remove")]
-    public async Task<IActionResult> Remove([FromHeader(Name = "sessionToken")] string sessionToken, string requestId)
+    public async Task<IActionResult> Remove(string requestId)
     {
-        var user = await _accounts.ValidateToken(sessionToken);
-        if(user == null) return Unauthorized("Token is not valid");
-
         var joinRequest = _joinRequestsRepository.GetJoinRequest(requestId);
         if (joinRequest == null)
         {
             return NotFound();
         }
 
-        if (joinRequest.SenderUserId != user.Id)
+        if (joinRequest.SenderUserId != User.Id)
         {
             return Unauthorized(new
             {
@@ -105,17 +98,11 @@ public class SquadJoinRequestsController : ControllerBase
     /// <param name="action">'Accept' or 'Reject' are the only valid actions</param>
     /// <param name="payload">Object containing the reason message. The string can be null but not the object.</param>
     /// <returns></returns>
+    [IsolaattiAuth]
     [HttpPost]
     [Route("{requestId}/Reject")]
-    public async Task<IActionResult> Reject(
-        [FromHeader(Name = "sessionToken")] string sessionToken, 
-        string requestId,
-        SimpleStringData payload)
+    public async Task<IActionResult> Reject(string requestId, SimpleStringData payload)
     {
-        var user = await _accounts.ValidateToken(sessionToken);
-        if(user == null) return Unauthorized("Token is not valid");
-        
-
         // Validates join request's existence
         var joinRequest = _joinRequestsRepository.GetJoinRequest(requestId);
         if (joinRequest == null)
@@ -134,7 +121,7 @@ public class SquadJoinRequestsController : ControllerBase
         }
 
         // Validates the user is admin
-        if (squad.UserId != user.Id)
+        if (squad.UserId != User.Id)
         {
             return Unauthorized(new
             {
@@ -151,7 +138,7 @@ public class SquadJoinRequestsController : ControllerBase
             request = joinRequest,
             senderName = _accounts.GetUsernameFromId(joinRequest.SenderUserId),
             squadName = _squadsRepository.GetSquadName(joinRequest.SquadId),
-            admins = squad.UserId == user.Id
+            admins = squad.UserId == User.Id
         });
     }
 
@@ -162,16 +149,11 @@ public class SquadJoinRequestsController : ControllerBase
     /// <param name="squadId">Squad id</param>
     /// <param name="lastId">Last item served for pagination</param>
     /// <returns></returns>
+    [IsolaattiAuth]
     [HttpGet]
     [Route("/api/Squads/{squadId:guid}/JoinRequests")]
-    public async Task<IActionResult> ListRequestsOfSquad(
-        [FromHeader(Name = "sessionToken")] string sessionToken, 
-        Guid squadId,
-        string lastId = null)
-    {
-        var user = await _accounts.ValidateToken(sessionToken);
-        if(user == null) return Unauthorized("Token is not valid");
-
+    public async Task<IActionResult> ListRequestsOfSquad(Guid squadId, string lastId = null)
+    { 
         var squad = await _squadsRepository.GetSquad(squadId);
         if (squad == null)
         {
@@ -181,8 +163,8 @@ public class SquadJoinRequestsController : ControllerBase
             });
         }
 
-        var userIsAdminOrMember = squad.UserId.Equals(user.Id) 
-                                  || await _squadsRepository.UserBelongsToSquad(user.Id, squadId);
+        var userIsAdminOrMember = squad.UserId.Equals(User.Id) 
+                                  || await _squadsRepository.UserBelongsToSquad(User.Id, squadId);
         if (!userIsAdminOrMember)
         {
             return Unauthorized(new
@@ -199,7 +181,7 @@ public class SquadJoinRequestsController : ControllerBase
             request,
             senderName = _db.Users.Where(u => u.Id == request.SenderUserId).Select(u => u.Name).FirstOrDefault(),
             squadName = _squadsRepository.GetSquadName(request.SquadId),
-            admins = squad.UserId == user.Id
+            admins = squad.UserId == User.Id
         }));
     }
 
@@ -209,16 +191,12 @@ public class SquadJoinRequestsController : ControllerBase
     /// <param name="sessionToken">Auth token</param>
     /// <param name="lastId">Last join request served id for pagination.</param>
     /// <returns></returns>
+    [IsolaattiAuth]
     [HttpGet]
     [Route("MyJoinRequests")]
-    public async Task<IActionResult> ListRequestsMadeOfUser(
-        [FromHeader(Name = "sessionToken")] string sessionToken, 
-        string lastId = null)
+    public async Task<IActionResult> ListRequestsMadeOfUser(string lastId = null)
     {
-        var user = await _accounts.ValidateToken(sessionToken);
-        if(user == null) return Unauthorized("Token is not valid");
-
-        var joinRequests = await _joinRequestsRepository.GetJoinRequestsOfUser(user.Id, lastId);
+        var joinRequests = await _joinRequestsRepository.GetJoinRequestsOfUser(User.Id, lastId);
         
         return Ok(joinRequests.Select(request => new
         {
@@ -234,16 +212,12 @@ public class SquadJoinRequestsController : ControllerBase
     /// <param name="sessionToken">Auth token</param>
     /// <param name="lastId">Last join request served id for pagination.</param>
     /// <returns></returns>
-    
+    [IsolaattiAuth]
     [HttpGet]
     [Route("JoinRequestsForMe")]
-    public async Task<IActionResult> ListRequestsMadeForUser([FromHeader(Name = "sessionToken")] string sessionToken, 
-        string lastId = null)
+    public async Task<IActionResult> ListRequestsMadeForUser(string lastId = null)
     {
-        var user = await _accounts.ValidateToken(sessionToken);
-        if(user == null) return Unauthorized("Token is not valid");
-
-        var joinRequests = await _joinRequestsRepository.GetJoinRequestsForUser(user.Id, lastId);
+        var joinRequests = await _joinRequestsRepository.GetJoinRequestsForUser(User.Id, lastId);
         
         return Ok(joinRequests.Select(request => new
         {
@@ -254,16 +228,11 @@ public class SquadJoinRequestsController : ControllerBase
         }));
     }
 
+    [IsolaattiAuth]
     [HttpPost]
     [Route("{requestId}/Accept")]
-
-    public async Task<IActionResult> AcceptJoinRequest([FromHeader(Name = "sessionToken")] string sessionToken,
-        string requestId, SimpleStringData message)
-
+    public async Task<IActionResult> AcceptJoinRequest(string requestId, SimpleStringData message)
     {
-        var user = await _accounts.ValidateToken(sessionToken);
-        if (user == null) return Unauthorized("Token is not valid");
-
         var joinRequest = _joinRequestsRepository.GetJoinRequest(requestId);
 
         if (joinRequest == null)
@@ -272,7 +241,7 @@ public class SquadJoinRequestsController : ControllerBase
         }
 
         var squad = await _squadsRepository.GetSquad(joinRequest.SquadId);
-        if (squad.UserId != user.Id)
+        if (squad.UserId != User.Id)
         {
             return Unauthorized();
         }
@@ -288,7 +257,7 @@ public class SquadJoinRequestsController : ControllerBase
                 request = joinRequest,
                 senderName = _accounts.GetUsernameFromId(joinRequest.SenderUserId),
                 squadName = _squadsRepository.GetSquadName(joinRequest.SquadId),
-                admins = squad.UserId == user.Id
+                admins = squad.UserId == User.Id
             });
         }
         return NotFound();

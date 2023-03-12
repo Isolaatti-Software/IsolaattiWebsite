@@ -5,6 +5,8 @@ using Isolaatti.Classes.ApiEndpointsRequestDataModels;
 using Isolaatti.DTOs;
 using Isolaatti.Models;
 using Isolaatti.Services;
+using Isolaatti.Utils;
+using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,7 +14,7 @@ namespace Isolaatti.Controllers
 {
     [ApiController]
     [Route("/api/[controller]")]
-    public class Likes : Controller
+    public class Likes : IsolaattiController
     {
         private readonly DbContextApp _db;
         private readonly IAccounts _accounts;
@@ -25,24 +27,21 @@ namespace Isolaatti.Controllers
             _notificationSender = notificationSender;
         }
 
+        [IsolaattiAuth]
         [HttpPost]
         [Route("LikePost")]
-        public async Task<IActionResult> LikePost([FromHeader(Name = "sessionToken")] string sessionToken,
-            SingleIdentification identification)
+        public async Task<IActionResult> LikePost(SingleIdentification identification)
         {
-            var user = await _accounts.ValidateToken(sessionToken);
-            if (user == null) return Unauthorized("Token is not valid");
-
             var post = await _db.SimpleTextPosts.FindAsync(identification.Id);
             if (post == null) return Unauthorized("Post does not exist");
-            if (_db.Likes.Any(element => element.UserId == user.Id && element.PostId == identification.Id))
+            if (_db.Likes.Any(element => element.UserId == User.Id && element.PostId == identification.Id))
                 return Unauthorized("Post already liked");
 
 
             _db.Likes.Add(new Like
             {
                 PostId = identification.Id,
-                UserId = user.Id,
+                UserId = User.Id,
                 TargetUserId = post.UserId
             });
             await _db.SaveChangesAsync();
@@ -62,20 +61,17 @@ namespace Isolaatti.Controllers
             return Ok(likeDto);
         }
 
+        [IsolaattiAuth]
         [HttpPost]
         [Route("UnLikePost")]
-        public async Task<IActionResult> UnLikePost([FromHeader(Name = "sessionToken")] string sessionToken,
-            SingleIdentification identification)
+        public async Task<IActionResult> UnLikePost(SingleIdentification identification)
         {
-            var user = await _accounts.ValidateToken(sessionToken);
-            if (user == null) return Unauthorized("Token is not valid");
-
             var post = await _db.SimpleTextPosts.FindAsync(identification.Id);
             if (post == null) return Unauthorized("Post does not exist");
-            if (!_db.Likes.Any(element => element.UserId == user.Id && element.PostId == identification.Id))
+            if (!_db.Likes.Any(element => element.UserId == User.Id && element.PostId == identification.Id))
                 return Unauthorized("Post cannot be unliked as it is not liked");
 
-            var like = _db.Likes.Single(element => element.PostId == identification.Id && element.UserId == user.Id);
+            var like = _db.Likes.Single(element => element.PostId == identification.Id && element.UserId == User.Id);
             _db.Likes.Remove(like);
             await _db.SaveChangesAsync();
 
@@ -93,6 +89,54 @@ namespace Isolaatti.Controllers
 
 
             return Ok(likeDto);
+        }
+
+        [IsolaattiAuth]
+        [HttpGet]
+        [Route("LikedBy/{userId:int}")]
+        public async Task<IActionResult> PostsLikedByUser(int userId, long lastId = long.MaxValue)
+        {
+            var posts =
+                from post in _db.SimpleTextPosts
+                from like in _db.Likes
+                orderby post.Id descending
+                where post.Id == like.PostId && like.UserId == userId && post.Id < lastId
+                select new PostDto
+                {
+                    Post = post,
+                    Liked = true,
+                    UserName = _db.Users.Where(u => u.Id == post.UserId).Select(u => u.Name).FirstOrDefault(),
+                    SquadName = _db.Squads.Where(s => s.Id.Equals(post.SquadId)).Select(s => s.Name).FirstOrDefault(),
+                    NumberOfComments = _db.Comments.Count(c => c.PostId == post.Id),
+                    NumberOfLikes = _db.Likes.Count(l => l.PostId == post.Id)
+                };
+            posts = posts.Take(15);
+
+            return Ok(posts);
+
+        }
+
+        [IsolaattiAuth]
+        [HttpGet]
+        [Route("PostsUser/{authorUserId:int}/LikedOf/{targetUserId:int}")]
+        public async Task<IActionResult> PostsOfUserLikedByUserWithId(int authorUserId, int targetUserId, long lastId = long.MaxValue)
+        {
+            var posts =
+                from post in _db.SimpleTextPosts
+                from like in _db.Likes
+                orderby post.Id descending
+                where post.Id == like.PostId && like.UserId == authorUserId && like.TargetUserId == targetUserId &&
+                      post.Id < lastId
+                select new PostDto
+                {
+                    Post = post,
+                    Liked = true,
+                    UserName = _db.Users.Where(u => u.Id == post.UserId).Select(u => u.Name).FirstOrDefault(),
+                    SquadName = _db.Squads.Where(s => s.Id.Equals(post.SquadId)).Select(s => s.Name).FirstOrDefault(),
+                    NumberOfComments = _db.Comments.Count(c => c.PostId == post.Id),
+                    NumberOfLikes = _db.Likes.Count(l => l.PostId == post.Id)
+                };
+            return Ok(posts);
         }
     }
 }

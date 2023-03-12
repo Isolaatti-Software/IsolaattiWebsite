@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Isolaatti.Classes.ApiEndpointsRequestDataModels;
 using Isolaatti.Enums;
-using Isolaatti.Models;
 using Isolaatti.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,12 +10,10 @@ namespace Isolaatti.Controllers
     [ApiController]
     public class SignUpController : ControllerBase
     {
-        private readonly DbContextApp _db;
         private readonly IAccounts _accounts;
 
-        public SignUpController(DbContextApp context, IAccounts accounts)
+        public SignUpController(IAccounts accounts)
         {
-            _db = context;
             _accounts = accounts;
         }
 

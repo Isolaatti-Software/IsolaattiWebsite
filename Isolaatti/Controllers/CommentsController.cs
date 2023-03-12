@@ -5,40 +5,34 @@ using Isolaatti.Classes.ApiEndpointsRequestDataModels;
 using Isolaatti.DTOs;
 using Isolaatti.Models;
 using Isolaatti.Services;
+using Isolaatti.Utils;
+using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Isolaatti.Controllers
 {
     [ApiController]
     [Route("/api/Comment")]
-    public class CommentsController : ControllerBase
+    public class CommentsController : IsolaattiController
     {
         private readonly DbContextApp _db;
-        private readonly IAccounts _accounts;
         private readonly NotificationSender _notificationSender;
 
-        public CommentsController(DbContextApp dbContextApp, IAccounts accounts, NotificationSender notificationSender)
+        public CommentsController(DbContextApp dbContextApp, NotificationSender notificationSender)
         {
             _db = dbContextApp;
-            _accounts = accounts;
             _notificationSender = notificationSender;
         }
 
+        [IsolaattiAuth]
         [Route("Delete")]
         [HttpPost]
-        public async Task<IActionResult> Delete([FromHeader(Name = "sessionToken")] string sessionToken,
-            SingleIdentification identification)
+        public async Task<IActionResult> Delete(SingleIdentification identification)
         {
-            var user = await _accounts.ValidateToken(sessionToken);
-            if (user == null)
-            {
-                return Unauthorized("Token is not valid");
-            }
-        
             var comment = await _db.Comments.FindAsync(identification.Id);
             if (comment == null) return NotFound("Comment not found");
         
-            if (comment.UserId != user.Id)
+            if (comment.UserId != User.Id)
             {
                 return Unauthorized("Access denied, cannot delete this comment, it is not yours");
             }
@@ -58,19 +52,17 @@ namespace Isolaatti.Controllers
             return Ok();
         }
         
+        [IsolaattiAuth]
         [HttpPost]
         [Route("{commentId:long}/Edit")]
-        public async Task<IActionResult> EditComment([FromHeader(Name = "sessionToken")] string sessionToken,
-            long commentId, MakeCommentModel updatedComment)
+        public async Task<IActionResult> EditComment(long commentId, MakeCommentModel updatedComment)
         {
-            var user = await _accounts.ValidateToken(sessionToken);
-            if (user == null)
-            {
-                return Unauthorized("Token is not valid");
-            }
-        
             var commentToEdit = await _db.Comments.FindAsync(commentId);
             if (commentToEdit == null) return NotFound();
+            if (commentToEdit.UserId != User.Id)
+            {
+                return Unauthorized();
+            }
             commentToEdit.AudioId = updatedComment.AudioId;
             commentToEdit.TextContent = updatedComment.Content;
         

@@ -7,13 +7,15 @@ using Isolaatti.Enums;
 using Isolaatti.Models;
 using Isolaatti.Repositories;
 using Isolaatti.Services;
+using Isolaatti.Utils;
+using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Isolaatti.Controllers;
 
 [ApiController]
 [Route("/api/Squads/Invitations/{invitationId}")]
-public class SquadInvitationsController : ControllerBase
+public class SquadInvitationsController : IsolaattiController
 {
     public class InvitationUpdatePayload
     {
@@ -37,62 +39,50 @@ public class SquadInvitationsController : ControllerBase
         _db = dbContextApp;
     }
 
+    [IsolaattiAuth]
     [HttpGet]
     [Route("/api/Users/Me/Squads/InvitationsForMe")]
-    public async Task<IActionResult> InvitationsOfUser(
-        [FromHeader(Name = "sessionToken")] string sessionToken,
-        string lastId=null)
+    public async Task<IActionResult> InvitationsOfUser(string lastId=null)
     {
-        var user = await _accounts.ValidateToken(sessionToken);
-        if(user == null) return Unauthorized("Token is not valid");
-
-        var invitations = await _squadInvitationsRepository.GetInvitationsForUser(user.Id, lastId);
+        var invitations = await _squadInvitationsRepository.GetInvitationsForUser(User.Id, lastId);
         
         return Ok(invitations.Select(inv => new InvitationInfoResponse
         {
             Invitation = inv,
             SenderName = _accounts.GetUsernameFromId(inv.SenderUserId),
-            RecipientName = user.Name,
+            RecipientName = User.Name,
             SquadName = _squadsRepository.GetSquadName(inv.SquadId)
         }));
     }
 
+    [IsolaattiAuth]
     [HttpGet]
     [Route("/api/Users/Me/Squads/MyInvitations")]
-    public async Task<IActionResult> MyInvitations([FromHeader(Name = "sessionToken")] string sessionToken,
-        string lastId=null)
+    public async Task<IActionResult> MyInvitations(string lastId=null)
     {
-        var user = await _accounts.ValidateToken(sessionToken);
-        if(user == null) return Unauthorized("Token is not valid");
-
-        var invitations = await _squadInvitationsRepository.GetInvitationsOfUser(user.Id, lastId);
+        var invitations = await _squadInvitationsRepository.GetInvitationsOfUser(User.Id, lastId);
         
         return Ok(invitations.Select(inv => new InvitationInfoResponse
         {
             Invitation = inv,
             RecipientName = _db.Users.SingleOrDefault(u => u.Id == inv.RecipientUserId)?.Name,
-            SenderName = user.Name,
+            SenderName = User.Name,
             SquadName = _squadsRepository.GetSquadName(inv.SquadId)
         }));
     }
     
-    
-
+    [IsolaattiAuth]
     [HttpDelete]
     [Route("Remove")]
-    public async Task<IActionResult> RemoveInvitation([FromHeader(Name = "sessionToken")] string sessionToken,
-        string invitationId)
+    public async Task<IActionResult> RemoveInvitation(string invitationId)
     {
-        var user = await _accounts.ValidateToken(sessionToken);
-        if(user == null) return Unauthorized("Token is not valid");
-
         var invitation = _squadInvitationsRepository.GetInvitation(invitationId);
         if (invitation == null)
         {
             return NotFound(new { error = "Invitation does not exist" });
         }
 
-        if (invitation.SenderUserId != user.Id)
+        if (invitation.SenderUserId != User.Id)
         {
             return Unauthorized(new { error = "Invitations cannot be removed by this user" });
         }
@@ -102,23 +92,18 @@ public class SquadInvitationsController : ControllerBase
         return Ok();
     }
 
+    [IsolaattiAuth]
     [HttpPost]
     [Route("Accept")]
-    public async Task<IActionResult> AcceptInvitation(
-        [FromHeader(Name = "sessionToken")] string sessionToken, 
-        string invitationId, 
-        SquadInvitationAnswer payload)
+    public async Task<IActionResult> AcceptInvitation(string invitationId, SquadInvitationAnswer payload)
     {
-        var user = await _accounts.ValidateToken(sessionToken);
-        if(user == null) return Unauthorized("Token is not valid");
-        
         var invitation = _squadInvitationsRepository.GetInvitation(invitationId);
         if (invitation == null)
         {
             return NotFound(new { error = "Invitation does not exist." });
         }
 
-        if (invitation.RecipientUserId != user.Id)
+        if (invitation.RecipientUserId != User.Id)
         {
             return Unauthorized(new { error = "This invitation cannot be accepted by this user." });
         }
@@ -139,7 +124,7 @@ public class SquadInvitationsController : ControllerBase
         }
 
         invitation = _squadInvitationsRepository.GetInvitation(invitation.Id);
-        return await _squadsRepository.AddUserToSquad(invitation.SquadId, user.Id) switch
+        return await _squadsRepository.AddUserToSquad(invitation.SquadId, User.Id) switch
         {
             AddUserToSquadResult.Success => Ok(new
             {
@@ -163,23 +148,18 @@ public class SquadInvitationsController : ControllerBase
         };
     }
 
+    [IsolaattiAuth]
     [HttpPost]
     [Route("Decline")]
-    public async Task<IActionResult> RejectInvitation(
-        [FromHeader(Name = "sessionToken")] string sessionToken, 
-        string invitationId, 
-        SimpleStringData payload)
+    public async Task<IActionResult> RejectInvitation(string invitationId, SimpleStringData payload)
     {
-        var user = await _accounts.ValidateToken(sessionToken);
-        if(user == null) return Unauthorized("Token is not valid");
-        
         var invitation = _squadInvitationsRepository.GetInvitation(invitationId);
         if (invitation == null)
         {
             return NotFound(new { error = "Invitation does not exist." });
         }
 
-        if (invitation.RecipientUserId != user.Id)
+        if (invitation.RecipientUserId != User.Id)
         {
             return Unauthorized(new { error = "This invitation cannot be declined by this user." });
         }
@@ -197,13 +177,12 @@ public class SquadInvitationsController : ControllerBase
         return Ok(updatedInvitation);
     }
 
+    [IsolaattiAuth]
     [HttpGet]
     [Route("/api/Invitations/Search")]
-    public async Task<IActionResult> SearchInvitation([FromHeader(Name = "sessionToken")] string sessionToken, Guid squadId)
+    public async Task<IActionResult> SearchInvitation(Guid squadId)
     {
-        var user = await _accounts.ValidateToken(sessionToken);
-        if(user == null) return Unauthorized("Token is not valid");
-        var invitation = _squadInvitationsRepository.SearchInvitation(user.Id, squadId);
+        var invitation = _squadInvitationsRepository.SearchInvitation(User.Id, squadId);
         string sender = null;
         if (invitation != null)
         {
@@ -216,13 +195,11 @@ public class SquadInvitationsController : ControllerBase
         });
     }
 
+    [IsolaattiAuth]
     [HttpGet]
     [Route("/api/Squads/{squadId:guid}/Invitations")]
-    public async Task<IActionResult> GetInvitationsOfSquad([FromHeader(Name = "sessionToken")] string sessionToken, Guid squadId, string lastId)
+    public async Task<IActionResult> GetInvitationsOfSquad(Guid squadId, string lastId)
     {
-        var user = await _accounts.ValidateToken(sessionToken);
-        if(user == null) return Unauthorized("Token is not valid");
-        
         return Ok(new
         {
             invitations = (await _squadInvitationsRepository.GetInvitationsOfSquad(squadId, lastId)).Select(inv => new
@@ -234,20 +211,18 @@ public class SquadInvitationsController : ControllerBase
         });
     }
 
+    [IsolaattiAuth]
     [HttpPut]
     [Route("Update")]
-    public async Task<IActionResult> UpdateInvitation([FromHeader(Name = "sessionToken")] string sessionToken, InvitationUpdatePayload invitationUpdatePayload, string invitationId)
+    public async Task<IActionResult> UpdateInvitation(InvitationUpdatePayload invitationUpdatePayload, string invitationId)
     {
-        var user = await _accounts.ValidateToken(sessionToken);
-        if(user == null) return Unauthorized("Token is not valid");
-        
         var invitation = _squadInvitationsRepository.GetInvitation(invitationId);
         if (invitation == null)
         {
             return NotFound();
         }
 
-        if (invitation.SenderUserId != user.Id)
+        if (invitation.SenderUserId != User.Id)
         {
             return Unauthorized();
         }

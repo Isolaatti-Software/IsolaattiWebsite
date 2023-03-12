@@ -8,6 +8,8 @@ using Isolaatti.Helpers;
 using Isolaatti.Models;
 using Isolaatti.Repositories;
 using Isolaatti.Services;
+using Isolaatti.Utils;
+using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,63 +17,46 @@ namespace Isolaatti.Controllers;
 
 [ApiController]
 [Route("/api/Squads")]
-public class SquadsController : ControllerBase
+public class SquadsController : IsolaattiController
 {
-    private readonly IAccounts _accounts;
     private readonly SquadsRepository _squadsRepository;
     private readonly SquadInvitationsRepository _squadInvitationsRepository;
-    private readonly SquadJoinRequestsRepository _squadJoinRequestsRepository;
     private readonly DbContextApp _db;
 
     public SquadsController(
-        IAccounts accounts, 
         SquadsRepository squadsRepository, 
         SquadInvitationsRepository squadInvitationsRepository,
         SquadJoinRequestsRepository squadJoinRequestsRepository,
         DbContextApp dbContextApp)
     {
-        _accounts = accounts;
         _squadsRepository = squadsRepository;
         _squadInvitationsRepository = squadInvitationsRepository;
-        _squadJoinRequestsRepository = squadJoinRequestsRepository;
         _db = dbContextApp;
     }
 
+    [IsolaattiAuth]
     [HttpPost]
     [Route("Create")]
-    public async Task<IActionResult> MakeSquad(
-        [FromHeader(Name = "sessionToken")] string sessionToken, 
-        SquadCreationRequest payload)
+    public async Task<IActionResult> MakeSquad(SquadCreationRequest payload)
     {
-        var user = await _accounts.ValidateToken(sessionToken);
-        if(user == null) return Unauthorized("Token is not valid");
-        
-        var creationResult = await _squadsRepository.MakeSquad(user.Id, payload);
+        var creationResult = await _squadsRepository.MakeSquad(User.Id, payload);
         return Ok(creationResult);
     }
     
+    [IsolaattiAuth]
     [HttpGet]
     [Route("{squadId:guid}")]
-    public async Task<IActionResult> GetSquad(
-        [FromHeader(Name = "sessionToken")] string sessionToken, 
-        Guid squadId)
+    public async Task<IActionResult> GetSquad(Guid squadId)
     {
-        var user = await _accounts.ValidateToken(sessionToken);
-        if(user == null) return Unauthorized("Token is not valid");
-        
-        
         return Ok(await _squadsRepository.GetSquad(squadId));
     }
     
+    [IsolaattiAuth]
     [HttpDelete]
     [Route("{squadId:guid}")]
-    public async Task<IActionResult> RemoveSquad(
-        [FromHeader(Name = "sessionToken")] string sessionToken, 
-        Guid squadId)
+    public async Task<IActionResult> RemoveSquad(Guid squadId)
     {
-        var user = await _accounts.ValidateToken(sessionToken);
-        if(user == null) return Unauthorized("Token is not valid");
-        if (!await _squadsRepository.ValidateSquadOwner(squadId, user.Id))
+        if (!await _squadsRepository.ValidateSquadOwner(squadId, User.Id))
         {
             return Unauthorized(new { error = "This squad cannot by deleted by this user." });
         }
@@ -83,16 +68,11 @@ public class SquadsController : ControllerBase
         return Ok();
     }
     
+    [IsolaattiAuth]
     [HttpPost]
     [Route("{squadId:guid}/Invite")]
-    public async Task<IActionResult> MakeInvitation(
-        [FromHeader(Name = "sessionToken")] string sessionToken, 
-        Guid squadId, 
-        SquadInvitationCreationRequest payload)
+    public async Task<IActionResult> MakeInvitation(Guid squadId, SquadInvitationCreationRequest payload)
     {
-        var user = await _accounts.ValidateToken(sessionToken);
-        if(user == null) return Unauthorized("Token is not valid");
-
         var squad = await _squadsRepository.GetSquad(squadId);
         if (squad == null)
         {
@@ -105,26 +85,21 @@ public class SquadsController : ControllerBase
             return NotFound(new { error = "User does not exist." });
         }
 
-        if (await _squadInvitationsRepository.SameInvitationExists(squad.Id, user.Id, recipientUser.Id))
+        if (await _squadInvitationsRepository.SameInvitationExists(squad.Id, User.Id, recipientUser.Id))
         {
             return Ok(new { error = "Invitation had already been sent." });
         }
         await _squadInvitationsRepository
-            .CreateInvitation(squadId, user.Id, payload.UserId, payload.Message);
+            .CreateInvitation(squadId, User.Id, payload.UserId, payload.Message);
 
         return Ok(new { result = "Invitation sent." });
     }
 
+    [IsolaattiAuth]
     [HttpPost]
     [Route("{squadId:guid}/InviteMany")]
-    public async Task<IActionResult> MakeInvitations(
-        [FromHeader(Name = "sessionToken")] string sessionToken, 
-        Guid squadId,
-        SquadInvitationsCreationRequest payload)
+    public async Task<IActionResult> MakeInvitations(Guid squadId, SquadInvitationsCreationRequest payload)
     {
-        var user = await _accounts.ValidateToken(sessionToken);
-        if(user == null) return Unauthorized("Token is not valid");
-        
         var squad = await _squadsRepository.GetSquad(squadId);
         if (squad == null)
         {
@@ -155,7 +130,7 @@ public class SquadsController : ControllerBase
             return NotFound(new { error = "No invitations were sent, the passed ids are fake." });
         }
 
-        await _squadInvitationsRepository.CreateInvitations(squadId, user.Id, realUserIds, payload.Message);
+        await _squadInvitationsRepository.CreateInvitations(squadId, User.Id, realUserIds, payload.Message);
         return Ok(new { result = "Invitations send. Fake ids or ids that had already been used, if any, were omitted."});
     }
 
@@ -191,38 +166,27 @@ public class SquadsController : ControllerBase
     //     });
     // }
 
-    
+    [IsolaattiAuth]
     [HttpGet]
     [Route("MySquads")]
-    public async Task<IActionResult> GetSquadOfUserAdmins(
-        [FromHeader(Name = "sessionToken")] 
-        string sessionToken, 
-        Guid lastId)
+    public async Task<IActionResult> GetSquadOfUserAdmins(string sessionToken, Guid lastId)
     {
-        var user = await _accounts.ValidateToken(sessionToken);
-        if(user == null) return Unauthorized("Token is not valid");
-
-        return Ok(await _squadsRepository.GetSquadsUserAdmins(user.Id, lastId).ToListAsync());
+        return Ok(await _squadsRepository.GetSquadsUserAdmins(User.Id, lastId).ToListAsync());
     }
 
+    [IsolaattiAuth]
     [HttpGet]
     [Route("SquadsBelong")]
-    public async Task<IActionResult> GetSquadsOfUser(
-        [FromHeader(Name = "sessionToken")] string sessionToken, 
-        Guid lastId)
+    public async Task<IActionResult> GetSquadsOfUser(Guid lastId)
     {
-        var user = await _accounts.ValidateToken(sessionToken);
-        if(user == null) return Unauthorized("Token is not valid");
-
-        return Ok(_squadsRepository.GetSquadUserBelongs(user.Id, lastId));
+        return Ok(_squadsRepository.GetSquadUserBelongs(User.Id, lastId));
     }
 
+    [IsolaattiAuth]
     [HttpGet]
     [Route("{squadId:guid}/Owner")]
-    public async Task<IActionResult> GetOwnerOfSquad([FromHeader(Name = "sessionToken")] string sessionToken, Guid squadId)
+    public async Task<IActionResult> GetOwnerOfSquad(Guid squadId)
     {
-        var user = await _accounts.ValidateToken(sessionToken);
-        if(user == null) return Unauthorized("Token is not valid");
         var squad = await _squadsRepository.GetSquad(squadId);
         if (squad == null)
         {
@@ -241,12 +205,11 @@ public class SquadsController : ControllerBase
         return Ok(owner);
     }
 
+    [IsolaattiAuth]
     [HttpGet]
     [Route("{squadId:guid}/Members")]
-    public async Task<IActionResult> GetMembers([FromHeader(Name = "sessionToken")] string sessionToken, Guid squadId, int lastId = -1)
+    public async Task<IActionResult> GetMembers(Guid squadId, int lastId = -1)
     {
-        var user = await _accounts.ValidateToken(sessionToken);
-        if(user == null) return Unauthorized("Token is not valid");
         var squad = await _squadsRepository.GetSquad(squadId);
         if (squad == null)
         {
@@ -275,12 +238,11 @@ public class SquadsController : ControllerBase
 
     }
 
+    [IsolaattiAuth]
     [HttpGet]
     [Route("{squadId:guid}/Admins")]
-    public async Task<IActionResult> GetAdmins([FromHeader(Name = "sessionToken")] string sessionToken, Guid squadId, int lastId = -1)
+    public async Task<IActionResult> GetAdmins(Guid squadId, int lastId = -1)
     {
-        var user = await _accounts.ValidateToken(sessionToken);
-        if(user == null) return Unauthorized("Token is not valid");
         var squad = await _squadsRepository.GetSquad(squadId);
         if (squad == null)
         {
@@ -308,23 +270,18 @@ public class SquadsController : ControllerBase
         return Ok(members);
     }
 
+    [IsolaattiAuth]
     [HttpPost]
     [Route("{squadId:guid}/Update")]
-    public async Task<IActionResult> UpdateSquad(
-        [FromHeader(Name = "sessionToken")] string sessionToken, 
-        Guid squadId, 
-        SquadUpdateInfoRequest payload)
+    public async Task<IActionResult> UpdateSquad(Guid squadId, SquadUpdateInfoRequest payload)
     {
-        var user = await _accounts.ValidateToken(sessionToken);
-        if(user == null) return Unauthorized("Token is not valid");
-
         var squad = await _squadsRepository.GetSquad(squadId);
         if (squad == null)
         {
             return NotFound(new { error = "Squad does not exist" });
         }
 
-        if (!squad.UserId.Equals(user.Id))
+        if (!squad.UserId.Equals(User.Id))
         {
             return Unauthorized(new { error = "Squad cannot be updated by this user" });
         }
@@ -336,11 +293,10 @@ public class SquadsController : ControllerBase
         });
     }
 
+    [IsolaattiAuth]
     [HttpPost]
     [Route("{squadId:guid}/UpdatePrivacyTo/{privacy}")]
-    public async Task<IActionResult> UpdatePrivacy(
-        [FromHeader(Name = "sessionToken")] string sessionToken,
-        Guid squadId, string privacy)
+    public async Task<IActionResult> UpdatePrivacy(Guid squadId, string privacy)
     {
         SquadPrivacy squadPrivacy;
         try 
@@ -355,16 +311,13 @@ public class SquadsController : ControllerBase
             });
         }
 
-        var user = await _accounts.ValidateToken(sessionToken);
-        if(user == null) return Unauthorized("Token is not valid");
-
         var squad = await _squadsRepository.GetSquad(squadId);
         if (squad == null)
         {
             return NotFound(new { error = "Squad does not exist" });
         }
 
-        if (!squad.UserId.Equals(user.Id))
+        if (!squad.UserId.Equals(User.Id))
         {
             return Unauthorized(new { error = "Squad cannot be updated by this user" });
         }

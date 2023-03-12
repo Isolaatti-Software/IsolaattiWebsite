@@ -6,13 +6,15 @@ using Isolaatti.Classes.ApiEndpointsRequestDataModels;
 using Isolaatti.isolaatti_lib;
 using Isolaatti.Models;
 using Isolaatti.Services;
+using Isolaatti.Utils;
+using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Isolaatti.Controllers;
 
 [ApiController]
-public class UserLinksController : ControllerBase
+public class UserLinksController : IsolaattiController
 {
     private readonly DbContextApp _db;
     private readonly IAccounts _accounts;
@@ -23,17 +25,15 @@ public class UserLinksController : ControllerBase
         _accounts = accounts;
     }
 
+    [IsolaattiAuth]
     [HttpPost]
     [Route("/api/UserLinks/Create")]
-    public async Task<IActionResult> CreateLink([FromHeader(Name = "sessionToken")] string sessionToken)
+    public async Task<IActionResult> CreateLink()
     {
-        var user = await _accounts.ValidateToken(sessionToken);
-        if (user == null) return Unauthorized("Token is not valid");
-
         var userProfileLink = new UserProfileLink
         {
-            Id = $"{QueryNormalization.ReplaceAccents(user.Name).Replace(" ", ".")}.{user.Id}",
-            UserId = user.Id
+            Id = $"{QueryNormalization.ReplaceAccents(User.Name).Replace(" ", ".")}.{User.Id}",
+            UserId = User.Id
         };
 
         _db.UserProfileLinks.Add(userProfileLink);
@@ -41,27 +41,23 @@ public class UserLinksController : ControllerBase
         return Ok(userProfileLink);
     }
 
+    [IsolaattiAuth]
     [HttpPost]
     [Route("/api/UserLinks/Delete")]
-    public async Task<IActionResult> DeleteLink([FromHeader(Name = "sessionToken")] string sessionToken)
+    public async Task<IActionResult> DeleteLink()
     {
-        var user = await _accounts.ValidateToken(sessionToken);
-        if (user == null) return Unauthorized("Token is not valid");
-
-        var userProfileLink = _db.UserProfileLinks.Single(upl => upl.UserId == user.Id);
+        var userProfileLink = _db.UserProfileLinks.Single(upl => upl.UserId == User.Id);
         _db.UserProfileLinks.Remove(userProfileLink);
         await _db.SaveChangesAsync();
 
         return Ok();
     }
 
+    [IsolaattiAuth]
     [HttpGet]
     [Route("/api/UserLinks/Get/{userId:int}")]
-    public async Task<IActionResult> GetUserLink([FromHeader(Name = "sessionToken")] string sessionToken, int userId)
+    public async Task<IActionResult> GetUserLink(int userId)
     {
-        var user = await _accounts.ValidateToken(sessionToken);
-        if (user == null) return Unauthorized("Token is not valid");
-
         var requestedUser = await _db.Users.FindAsync(userId);
         if (requestedUser == null) return NotFound(new { error = "Requested user not found" });
 
@@ -84,18 +80,16 @@ public class UserLinksController : ControllerBase
         }
     }
 
+    [IsolaattiAuth]
     [HttpPost]
     [Route("/api/UserLinks/ChangeUserLink")]
-    public async Task<IActionResult> ChangeUserLink([FromHeader(Name = "sessionToken")] string sessionToken,
-        SimpleStringData newId)
+    public async Task<IActionResult> ChangeUserLink(SimpleStringData newId)
     {
-        var user = await _accounts.ValidateToken(sessionToken);
-        if (user == null) return Unauthorized("Token is not valid");
 
-        if (!_db.UserProfileLinks.Any(upl => upl.UserId == user.Id))
+        if (!_db.UserProfileLinks.Any(upl => upl.UserId == User.Id))
             return Unauthorized(new { error = "Must create link first" });
 
-        var userProfileLink = await _db.UserProfileLinks.SingleAsync(upl => upl.UserId == user.Id);
+        var userProfileLink = await _db.UserProfileLinks.SingleAsync(upl => upl.UserId == User.Id);
 
         if (userProfileLink.Id.Equals(newId.Data)) return Ok();
 
@@ -113,13 +107,13 @@ public class UserLinksController : ControllerBase
         var newUserProfileLink = new UserProfileLink
         {
             Id = newId.Data,
-            UserId = user.Id
+            UserId = User.Id
         };
         await _db.UserProfileLinks.AddAsync(newUserProfileLink);
         await _db.SaveChangesAsync();
         return Ok(newUserProfileLink);
     }
-
+    
     [HttpGet]
     [Route("/{userIdentifier}")]
     public async Task<IActionResult> RedirectToProfile(string userIdentifier)

@@ -2,42 +2,38 @@ using System.Linq;
 using System.Threading.Tasks;
 using Isolaatti.DTOs;
 using Isolaatti.Repositories;
-using Isolaatti.Services;
+using Isolaatti.Utils;
+using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Isolaatti.Controllers;
 
 [ApiController]
 [Route("/api/badges")]
-public class BadgesController : ControllerBase
+public class BadgesController : IsolaattiController
 {
-    private readonly IAccounts _accounts;
     private readonly SquadJoinRequestsRepository _joinRequestsRepository;
     private readonly SquadInvitationsRepository _squadInvitationsRepository;
     private readonly SquadsRepository _squadsRepository;
 
-    public BadgesController(IAccounts accounts, 
-        SquadJoinRequestsRepository joinRequestsRepository,
+    public BadgesController(SquadJoinRequestsRepository joinRequestsRepository,
         SquadsRepository squadsRepository,
         SquadInvitationsRepository squadInvitationsRepository)
     {
-        _accounts = accounts;
         _joinRequestsRepository = joinRequestsRepository;
         _squadsRepository = squadsRepository;
         _squadInvitationsRepository = squadInvitationsRepository;
     }
     
+    [IsolaattiAuth]
     [HttpGet]
     [Route("squads")]
-    public async Task<IActionResult> Index([FromHeader(Name = "sessionToken")] string sessionToken)
+    public async Task<IActionResult> OfSquads()
     {
-        var user = await _accounts.ValidateToken(sessionToken);
-        if (user == null) return Unauthorized("Token is not valid");
-        
-        var squadsOfUser = _squadsRepository.GetSquadsUserAdmins(user.Id).Select(squad => squad.Id).ToArray();
+        var squadsOfUser = _squadsRepository.GetSquadsUserAdmins(User.Id).Select(squad => squad.Id).ToArray();
         var response = new SquadsBadgesStatusDto
         {
-            UnseenInvitations = await _squadInvitationsRepository.GetUnseenInvitationsForUser(user.Id),
+            UnseenInvitations = await _squadInvitationsRepository.GetUnseenInvitationsForUser(User.Id),
             UnseenRequests = await _joinRequestsRepository.GetUnseenRequestsForUser(squadsOfUser)
         };
         

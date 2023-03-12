@@ -6,13 +6,15 @@ using Isolaatti.DTOs;
 using Isolaatti.Models;
 using Isolaatti.Repositories;
 using Isolaatti.Services;
+using Isolaatti.Utils;
+using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Isolaatti.Controllers;
 
 [ApiController]
 [Route("/api/Squads/{squadId:guid}/Posting")]
-public class SquadsPosting : ControllerBase
+public class SquadsPosting : IsolaattiController
 {
     private readonly DbContextApp _db;
     private readonly IAccounts _accounts;
@@ -25,6 +27,7 @@ public class SquadsPosting : ControllerBase
         _squads = squadsRepository;
     }
     
+    [IsolaattiAuth]
     [HttpGet]
     [Route("Posts")]
     public async Task<IActionResult> GetPostsOfSquad([FromHeader(Name = "sessionToken")] string sessionToken, 

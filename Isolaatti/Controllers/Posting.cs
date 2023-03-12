@@ -7,6 +7,8 @@ using Isolaatti.DTOs;
 using Isolaatti.Models;
 using Isolaatti.Repositories;
 using Isolaatti.Services;
+using Isolaatti.Utils;
+using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,7 +16,7 @@ namespace Isolaatti.Controllers
 {
     [ApiController]
     [Route("/api/Posting")]
-    public class PostingController : ControllerBase
+    public class PostingController : IsolaattiController
     {
         private readonly DbContextApp _db;
         private readonly IAccounts _accounts;
@@ -29,14 +31,11 @@ namespace Isolaatti.Controllers
             _squads = squadsRepository;
         }
 
+        [IsolaattiAuth]
         [HttpPost]
         [Route("Make")]
-        public async Task<IActionResult> Index([FromHeader(Name = "sessionToken")] string sessionToken,
-            MakePostModel post)
+        public async Task<IActionResult> Index(MakePostModel post)
         {
-            var user = await _accounts.ValidateToken(sessionToken);
-            if (user == null) return Unauthorized("Token is not valid");
-            
             // Let's verify if Squad exists and that user is authorized to post
             if (post.SquadId.HasValue)
             {
@@ -49,7 +48,7 @@ namespace Isolaatti.Controllers
                     });
                 }
 
-                if (!await _squads.UserBelongsToSquad(user.Id, post.SquadId.Value))
+                if (!await _squads.UserBelongsToSquad(User.Id, post.SquadId.Value))
                 {
                     return NotFound(new
                     {
@@ -62,7 +61,7 @@ namespace Isolaatti.Controllers
             // Yep, here I can create the post
             var newPost = new Post()
             {
-                UserId = user.Id,
+                UserId = User.Id,
                 TextContent = post.Content,
                 Privacy = post.Privacy,
                 AudioId = post.AudioId,
@@ -84,20 +83,17 @@ namespace Isolaatti.Controllers
             });
         }
 
+        [IsolaattiAuth]
         [HttpPost]
         [Route("Edit")]
-        public async Task<IActionResult> EditPost([FromHeader(Name = "sessionToken")] string sessionToken,
-            EditPostModel editedPost)
+        public async Task<IActionResult> EditPost(EditPostModel editedPost)
         {
-            var user = await _accounts.ValidateToken(sessionToken);
-            if (user == null) return Unauthorized("Token is not valid");
-
             var existingPost = await _db.SimpleTextPosts.FindAsync(editedPost.PostId);
             if (existingPost == null)
             {
                 return NotFound("Post not found");
             }
-            if (existingPost.UserId != user.Id)
+            if (existingPost.UserId != User.Id)
             {
                 return Unauthorized("Post is not yours, cannot edit");
             }
@@ -117,7 +113,7 @@ namespace Isolaatti.Controllers
                 UserName = _db.Users.FirstOrDefault(u => u.Id == existingPost.UserId)?.Name,
                 NumberOfComments = await _db.Comments.CountAsync(c => c.PostId == existingPost.Id),
                 NumberOfLikes = await _db.Likes.CountAsync(l => l.PostId == existingPost.Id),
-                Liked = _db.Likes.Any(l => l.UserId == user.Id && l.PostId == existingPost.Id),
+                Liked = _db.Likes.Any(l => l.UserId == User.Id && l.PostId == existingPost.Id),
                 SquadName = existingPost.SquadId == null ? null : _squads.GetSquadName(existingPost.SquadId)
             };
 
@@ -130,24 +126,18 @@ namespace Isolaatti.Controllers
             return Ok(updatedPost);
         }
 
+        [IsolaattiAuth]
         [HttpPost]
         [Route("Delete")]
-        public async Task<IActionResult> DeletePost([FromHeader(Name = "sessionToken")] string sessionToken,
-            SingleIdentification identification)
+        public async Task<IActionResult> DeletePost(SingleIdentification identification)
         {
-            var user = await _accounts.ValidateToken(sessionToken);
-            if (user == null)
-            {
-                return Unauthorized("Token is not valid");
-            }        
-            
             var post = await _db.SimpleTextPosts.FindAsync(identification.Id);
             if (post == null)
             {
                 return NotFound();
             }
 
-            if (!post.UserId.Equals(user.Id))
+            if (!post.UserId.Equals(User.Id))
             {
                 return Unauthorized("You cannot delete a post that is not yours");
             }
@@ -173,31 +163,25 @@ namespace Isolaatti.Controllers
             });
         }
         
+        [IsolaattiAuth]
         [HttpPost]
         [Route("Post/{postId:long}/Comment")]
-        public async Task<IActionResult> MakeComment([FromHeader(Name = "sessionToken")] string sessionToken,
-            long postId, MakeCommentModel commentModel)
+        public async Task<IActionResult> MakeComment(long postId, MakeCommentModel commentModel)
         {
-            var user = await _accounts.ValidateToken(sessionToken);
-            if (user == null)
-            {
-                return Unauthorized("Token is not valid");
-            }
-        
             var post = await _db.SimpleTextPosts.FindAsync(postId);
             if (post == null)
             {
                 return Unauthorized("Post does not exist");
             }        
             
-            if (!post.UserId.Equals(user.Id) && post.Privacy == 1)
+            if (!post.UserId.Equals(User.Id) && post.Privacy == 1)
             {
                 return Unauthorized("Post is private");
             }        
             var commentToMake = new Comment
             {
                 TextContent = commentModel.Content,
-                UserId = user.Id,
+                UserId = User.Id,
                 PostId = post.Id,
                 TargetUser = post.UserId, 
                 AudioId = commentModel.AudioId

@@ -7,6 +7,8 @@ using Isolaatti.Helpers;
 using Isolaatti.Models;
 using Isolaatti.Repositories;
 using Isolaatti.Services;
+using Isolaatti.Utils;
+using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,34 +16,25 @@ namespace Isolaatti.Controllers;
 
 [ApiController]
 [Route("/api/Search")]
-public class SearchController : ControllerBase
+public class SearchController : IsolaattiController
 {
     private readonly DbContextApp _db;
-    private readonly IAccounts _accounts;
     private readonly AudiosRepository _audios;
     private readonly ImagesRepository _imagesRepository;
 
-    public SearchController(DbContextApp db,
-        IAccounts accounts,
-        AudiosRepository audios,
-        ImagesRepository imagesRepository)
+    public SearchController(DbContextApp db, AudiosRepository audios, ImagesRepository imagesRepository)
     {
         _db = db;
         _audios = audios;
-        _accounts = accounts;
         _imagesRepository = imagesRepository;
     }
 
+    [IsolaattiAuth]
     [Route("Quick")]
     [HttpGet]
-    public async Task<IActionResult> QuickSearch([FromHeader(Name = "sessionToken")] string sessionToken,
-        [FromQuery] string q, [FromQuery] string contextType = "global", string contextValue = null,
-        [FromQuery] bool onlyProfile = false)
+    public async Task<IActionResult> QuickSearch([FromQuery] string q, [FromQuery] string contextType = "global", 
+        string contextValue = null, [FromQuery] bool onlyProfile = false)
     {
-        var user = await _accounts.ValidateToken(sessionToken);
-        if (user == null) return Unauthorized("Token is not valid");
-
-
         var results = new SearchResult();
         if (q.IsNullOrWhiteSpace())
         {
@@ -97,7 +90,7 @@ public class SearchController : ControllerBase
             select new PostDto
             {
                 Post = post,
-                Liked = _db.Likes.Any(l => l.UserId == user.Id && l.PostId == post.Id),
+                Liked = _db.Likes.Any(l => l.UserId == User.Id && l.PostId == post.Id),
                 NumberOfComments = _db.Comments.Count(c => c.PostId == post.Id),
                 NumberOfLikes = _db.Likes.Count(l => l.PostId == post.Id),
                 SquadName = _db.Squads.Where(s => s.Id.Equals(post.SquadId)).Select(s => s.Name).FirstOrDefault(),

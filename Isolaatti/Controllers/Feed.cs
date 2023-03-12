@@ -1,44 +1,38 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Isolaatti.Classes;
 using Isolaatti.DTOs;
 using Isolaatti.Models;
-using Isolaatti.Services;
+using Isolaatti.Utils;
+using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Isolaatti.Controllers
 {
     [ApiController]
     [Route("/api/[controller]")]
-    public class Feed : ControllerBase
+    public class Feed : IsolaattiController
     {
         private readonly DbContextApp Db;
-        private readonly IAccounts _accounts;
 
-        public Feed(DbContextApp dbContextApp, IAccounts accounts)
+        public Feed(DbContextApp dbContextApp)
         {
             Db = dbContextApp;
-            _accounts = accounts;
         }
 
+        [IsolaattiAuth]
         [HttpGet]
-        public async Task<IActionResult> Index([FromHeader(Name = "sessionToken")] string sessionToken, long lastId = 0,
-            int length = 10)
+        public async Task<IActionResult> Index(long lastId = 0, int length = 10)
         {
-            var user = await _accounts.ValidateToken(sessionToken);
-            if (user == null) return Unauthorized("Token is not valid");
-            
             IQueryable<Post> postsQuery;
-            
-            
+
             // For now, I am only returning posts that are not from squads
             if (lastId <= 0)
             {
                 postsQuery =
                     from post in Db.SimpleTextPosts
                     from following in Db.FollowerRelations
-                    where following.UserId == user.Id
+                    where following.UserId == User.Id
                           && post.UserId == following.TargetUserId
                           && post.Privacy != 1
                           && post.SquadId == null
@@ -50,7 +44,7 @@ namespace Isolaatti.Controllers
                 postsQuery =
                     from post in Db.SimpleTextPosts
                     from following in Db.FollowerRelations
-                    where following.UserId == user.Id
+                    where following.UserId == User.Id
                           && post.UserId == following.TargetUserId
                           && post.Privacy != 1
                           && post.Id < lastId
@@ -72,7 +66,7 @@ namespace Isolaatti.Controllers
                     UserName = Db.Users.FirstOrDefault(u => u.Id == post.UserId).Name,
                     NumberOfComments = post.Comments.Count,
                     NumberOfLikes = post.Likes.Count,
-                    Liked = Db.Likes.Any(l => l.UserId == user.Id && l.PostId == post.Id),
+                    Liked = Db.Likes.Any(l => l.UserId == User.Id && l.PostId == post.Id),
                     SquadName = post.Squad.Name
                 };
             
