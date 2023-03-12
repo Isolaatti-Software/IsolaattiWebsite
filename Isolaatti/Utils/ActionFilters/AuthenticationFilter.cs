@@ -41,5 +41,9 @@ public class AuthenticationFilter : IAsyncActionFilter
 
             await next();
         }
+        else
+        {
+            await next();
+        }
     }
 }
