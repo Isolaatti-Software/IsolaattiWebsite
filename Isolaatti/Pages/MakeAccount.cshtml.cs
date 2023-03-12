@@ -17,12 +17,12 @@ namespace Isolaatti.Pages
     public class MakeAccount : PageModel
     {
         private readonly IAccounts _accounts;
-        private readonly IOptions<ReCaptchaConfig> _recaptchaConfig;
+        private readonly RecaptchaValidation _recaptchaValidation;
 
-        public MakeAccount(IAccounts accounts, IOptions<ReCaptchaConfig> recaptchaConfig)
+        public MakeAccount(IAccounts accounts, RecaptchaValidation recaptchaValidation)
         {
             _accounts = accounts;
-            _recaptchaConfig = recaptchaConfig;
+            _recaptchaValidation = recaptchaValidation;
         }
         
         [BindProperty]
@@ -56,23 +56,12 @@ namespace Isolaatti.Pages
 
         public async Task<IActionResult> OnPost([FromForm(Name = "g-recaptcha-response")] string recaptchaResponse, [FromQuery] string then = "")
         {
-            var httpClient = new HttpClient();
-            var recaptchaValidationResponseMessage = await httpClient.PostAsync("https://www.google.com/recaptcha/api/siteverify",
-                new FormUrlEncodedContent(new[]
-                {
-                    new KeyValuePair<string, string>("secret", _recaptchaConfig.Value.Secret),
-                    new KeyValuePair<string, string>("response", recaptchaResponse)
-                }));
-
-            var recaptchaValidation =
-                await recaptchaValidationResponseMessage.Content.ReadFromJsonAsync<RecaptchaResponse>();
-            if (!recaptchaValidation.Success)
+            if (!(await _recaptchaValidation.ValidateRecaptcha(recaptchaResponse)))
             {
                 RecaptchaError = true;
                 return Page();
             }
-
-
+            
             if (Name == null || Email == null || Password == null || PasswordConfirmation == null)
             {
                 return Page();

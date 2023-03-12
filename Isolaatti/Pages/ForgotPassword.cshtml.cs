@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Web;
 using Isolaatti.isolaatti_lib;
 using Isolaatti.Models;
+using Isolaatti.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using SendGrid;
@@ -18,11 +19,15 @@ namespace Isolaatti.Pages
         public bool EmailFound;
         private User Account;
         private ISendGridClient _sendGridClient;
+        private readonly RecaptchaValidation _recaptchaValidation;
+        
+        public bool RecaptchaError { get; set; }
 
-        public ForgotPassword(DbContextApp dbContextApp, ISendGridClient sendGridClient)
+        public ForgotPassword(DbContextApp dbContextApp, ISendGridClient sendGridClient, RecaptchaValidation recaptchaValidation)
         {
             Db = dbContextApp;
             _sendGridClient = sendGridClient;
+            _recaptchaValidation = recaptchaValidation;
         }
 
         public IActionResult OnGet()
@@ -30,8 +35,14 @@ namespace Isolaatti.Pages
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync([FromForm] string email)
+        public async Task<IActionResult> OnPostAsync([FromForm] string email, [FromForm(Name = "g-recaptcha-response")] string recaptchaResponse)
         {
+            if (!await _recaptchaValidation.ValidateRecaptcha(recaptchaResponse))
+            {
+                RecaptchaError = true;
+                return Page();
+            }
+            
             Post = true;
             try
             {

@@ -181,6 +181,8 @@ namespace Isolaatti
                 services.Configure<Servers>(Configuration.GetSection("Servers"));
                 services.Configure<ReCaptchaConfig>(Configuration.GetSection("ReCaptcha"));
             }
+
+            services.AddSingleton<HttpClientSingleton>();
             services.AddScoped<AudiosRepository>();
             services.AddScoped<SquadInvitationsRepository>();
             services.AddScoped<SquadsRepository>();
@@ -214,6 +216,7 @@ namespace Isolaatti
             services.AddScoped<AudiosService>();
             services.AddScoped<ImagesRepository>();
             services.AddScoped<ImagesService>();
+            services.AddScoped<RecaptchaValidation>();
             // don't allow uploading files larger than 2 MB, for security reasons
             services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = 1024 * 1024 * 10);
             services.AddSwaggerGen();
