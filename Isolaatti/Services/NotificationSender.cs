@@ -16,18 +16,20 @@ public class NotificationSender
     private readonly SocketIoServiceKeysRepository _keysRepository;
     private readonly Servers _servers;
     private readonly ILogger<NotificationSender> _logger;
+    private readonly HttpClientSingleton _httpClientSingleton;
 
-    public NotificationSender(IOptions<Servers> servers,SocketIoServiceKeysRepository keysRepository, ILogger<NotificationSender> logger)
+    public NotificationSender(IOptions<Servers> servers,SocketIoServiceKeysRepository keysRepository, ILogger<NotificationSender> logger, HttpClientSingleton httpClientSingleton)
     {
         _keysRepository = keysRepository;
         _servers = servers.Value;
         _logger = logger;
+        _httpClientSingleton = httpClientSingleton;
     }
     
     public async Task NotifyUser(int userId, SocialNotification notification)
     {
         var secret = await _keysRepository.CreateKey();
-        var httpClient = new HttpClient();
+        
         var content = JsonContent.Create(new
         {
             secret = secret.Key,
@@ -37,7 +39,7 @@ public class NotificationSender
 
         try
         {
-            await httpClient.PostAsync($"{_servers.RealtimeServerUrl}/send_notification", content);
+            await _httpClientSingleton.Client.PostAsync($"{_servers.RealtimeServerUrl}/send_notification", content);
         }
         catch (HttpRequestException) { }
     }
@@ -51,7 +53,6 @@ public class NotificationSender
     public async Task SendNewCommentEvent(CommentDto comment, Guid clientId)
     {
         var secret = await _keysRepository.CreateKey();
-        var httpClient = new HttpClient();
         var content = JsonContent.Create(new
         {
             secret = secret.Key,
@@ -66,7 +67,7 @@ public class NotificationSender
     
         try
         {
-            await httpClient.PostAsync($"{_servers.RealtimeServerUrl}/event", content);
+            await _httpClientSingleton.Client.PostAsync($"{_servers.RealtimeServerUrl}/event", content);
         }
         catch(HttpRequestException){ }
     }
@@ -80,7 +81,6 @@ public class NotificationSender
     public async Task SendPostUpdate(long postId, Guid clientId)
     {
         var secret = await _keysRepository.CreateKey();
-        var httpClient = new HttpClient();
         var content = JsonContent.Create(new
         {
             secret = secret.Key,
@@ -95,7 +95,7 @@ public class NotificationSender
 
         try
         {
-            await httpClient.PostAsync($"{_servers.RealtimeServerUrl}/event", content);
+            await _httpClientSingleton.Client.PostAsync($"{_servers.RealtimeServerUrl}/event", content);
         }
         catch (HttpRequestException e)
         {
@@ -106,7 +106,6 @@ public class NotificationSender
     public async Task SendDeleteCommentEvent(long postId, long commentId, Guid clientId)
     {
         var secret = await _keysRepository.CreateKey();
-        var httpClient = new HttpClient();
         var content = JsonContent.Create(new
         {
             secret = secret.Key,
@@ -121,7 +120,7 @@ public class NotificationSender
     
         try
         {
-            await httpClient.PostAsync($"{_servers.RealtimeServerUrl}/event", content);
+            await _httpClientSingleton.Client.PostAsync($"{_servers.RealtimeServerUrl}/event", content);
         }
         catch(HttpRequestException){ }
     }
@@ -129,7 +128,6 @@ public class NotificationSender
     public async Task SendCommentModifiedEvent(CommentDto updatedComment, Guid clientId)
     {
         var secret = await _keysRepository.CreateKey();
-        var httpClient = new HttpClient();
         var content = JsonContent.Create(new
         {
             secret = secret.Key,
@@ -144,7 +142,7 @@ public class NotificationSender
     
         try
         {
-            await httpClient.PostAsync($"{_servers.RealtimeServerUrl}/event", content);
+            await _httpClientSingleton.Client.PostAsync($"{_servers.RealtimeServerUrl}/event", content);
         }
         catch(HttpRequestException){ }
     }
