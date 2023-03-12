@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Isolaatti.Classes.ApiEndpointsResponseDataModels;
+﻿namespace Isolaatti.Classes.ApiEndpointsResponseDataModels;
 
 public class UserFeed
 {

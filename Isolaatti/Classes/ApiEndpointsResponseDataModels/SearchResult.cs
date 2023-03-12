@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using Isolaatti.DTOs;
-using Isolaatti.Enums;
 using Isolaatti.Models;
-using Isolaatti.Models.MongoDB;
 
 namespace Isolaatti.Classes.ApiEndpointsResponseDataModels;
 

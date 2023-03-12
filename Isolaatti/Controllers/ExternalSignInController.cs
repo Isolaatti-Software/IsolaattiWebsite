@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Isolaatti.Classes.ApiEndpointsResponseDataModels;
 using Isolaatti.Models;
 using Isolaatti.Services;
 using Microsoft.AspNetCore.Http;
@@ -52,7 +53,7 @@ namespace Isolaatti.Controllers
             var sessionToken = await _accounts.CreateTokenForGoogleUser(googleIdToken);
 
             
-            return Ok(new Classes.ApiEndpointsResponseDataModels.SessionToken
+            return Ok(new SessionToken
             {
                 Created = DateTime.Now,
                 Expires = DateTime.Now.AddMonths(12),

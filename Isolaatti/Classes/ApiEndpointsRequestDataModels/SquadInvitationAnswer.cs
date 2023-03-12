@@ -1,6 +1,4 @@
-﻿using Isolaatti.Enums;
-
-namespace Isolaatti.Classes.ApiEndpointsRequestDataModels;
+﻿namespace Isolaatti.Classes.ApiEndpointsRequestDataModels;
 
 public class SquadInvitationAnswer
 {

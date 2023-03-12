@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Isolaatti.Enums;
 using Isolaatti.Models.MongoDB;
 using Microsoft.Extensions.Options;
-using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Isolaatti.Repositories;

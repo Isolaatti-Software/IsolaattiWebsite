@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Google;
@@ -7,7 +6,6 @@ using Isolaatti.Classes.ApiEndpointsResponseDataModels;
 using Isolaatti.Enums;
 using Isolaatti.Models.MongoDB;
 using Isolaatti.Repositories;
-using Object = Google.Apis.Storage.v1.Data.Object;
 
 namespace Isolaatti.Services;
 

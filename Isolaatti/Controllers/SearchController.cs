@@ -6,7 +6,6 @@ using Isolaatti.DTOs;
 using Isolaatti.Helpers;
 using Isolaatti.Models;
 using Isolaatti.Repositories;
-using Isolaatti.Services;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;

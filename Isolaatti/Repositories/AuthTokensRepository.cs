@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Isolaatti.Classes.Authentication;
 using Isolaatti.Models.MongoDB;
 using Isolaatti.Services;
 using Microsoft.Extensions.Options;

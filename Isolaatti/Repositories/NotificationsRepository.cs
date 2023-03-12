@@ -1,5 +1,4 @@
-﻿using Isolaatti.Models;
-using Isolaatti.Models.MongoDB;
+﻿using Isolaatti.Models.MongoDB;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 

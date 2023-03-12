@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Http;
-
 namespace Isolaatti.Utils
 {
     public class UrlGenerators

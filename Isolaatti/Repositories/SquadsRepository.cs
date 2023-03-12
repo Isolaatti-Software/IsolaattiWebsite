@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 using Isolaatti.Classes.ApiEndpointsRequestDataModels;
 using Isolaatti.Classes.ApiEndpointsResponseDataModels;
 using Isolaatti.Enums;
-using Isolaatti.Models;
-using Microsoft.EntityFrameworkCore;
 using Isolaatti.Helpers;
+using Isolaatti.Models;
 using Isolaatti.Models.MongoDB;
+using Microsoft.EntityFrameworkCore;
 
 namespace Isolaatti.Repositories;
 

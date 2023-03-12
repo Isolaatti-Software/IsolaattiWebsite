@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using Isolaatti.Classes.Authentication;
-using Isolaatti.Models;
 using Isolaatti.Services;
 using Microsoft.AspNetCore.Mvc;
 
