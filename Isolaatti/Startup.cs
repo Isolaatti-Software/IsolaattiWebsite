@@ -5,6 +5,7 @@ using EFCoreSecondLevelCacheInterceptor;
 // using EFCoreSecondLevelCacheInterceptor;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
+using Isolaatti.Auth.Config;
 using Isolaatti.Config;
 using Isolaatti.Middleware;
 using Isolaatti.Models;
@@ -217,10 +218,10 @@ namespace Isolaatti
             services.AddScoped<ImagesRepository>();
             services.AddScoped<ImagesService>();
             services.AddScoped<RecaptchaValidation>();
-            // don't allow uploading files larger than 2 MB, for security reasons
+            // don't allow uploading files larger than 10 MB, for security reasons
             services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = 1024 * 1024 * 10);
+            services.Configure<JwtKeyConfig>(Configuration.GetSection("Jwt")); 
             services.AddSwaggerGen();
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

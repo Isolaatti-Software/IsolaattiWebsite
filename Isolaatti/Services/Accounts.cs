@@ -3,15 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FirebaseAdmin.Auth;
-using Isolaatti.Classes.Authentication;
+using Isolaatti.Auth;
+using Isolaatti.Auth.Config;
 using Isolaatti.Enums;
 using Isolaatti.isolaatti_lib;
 using Isolaatti.Models;
 using Isolaatti.Models.MongoDB;
 using Isolaatti.Repositories;
+using Jose;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 
@@ -24,18 +27,21 @@ public class Accounts : IAccounts
     private readonly ISendGridClient _sendGridClient;
     private readonly AuthTokensRepository _authTokensRepository;
     private readonly KeyGenService _keyGenService;
+    private readonly IOptions<JwtKeyConfig> _configurationJwt;
 
     public Accounts(DbContextApp db,
         ISendGridClient sendGridClient,
         ScopedHttpContext scopedHttpContext,
         AuthTokensRepository authTokensRepository,
-        KeyGenService keyGenService)
+        KeyGenService keyGenService,
+        IOptions<JwtKeyConfig> configurationJwt)
     {
         this.db = db;
         _sendGridClient = sendGridClient;
         _httpContext = scopedHttpContext.HttpContext;
         _authTokensRepository = authTokensRepository;
         _keyGenService = keyGenService;
+        _configurationJwt = configurationJwt;
     }
 
     public async Task<AccountMakingResult> MakeAccountAsync(string username, string email, string password)
@@ -99,7 +105,7 @@ public class Accounts : IAccounts
     }
 
 
-    public async Task<AuthenticationTokenSerializable> CreateNewToken(int userId, string plainTextPassword)
+    public async Task<string> CreateNewToken(int userId, string plainTextPassword)
     {
         var user = await db.Users.FindAsync(userId);
         if (user == null) return null;
@@ -108,57 +114,27 @@ public class Accounts : IAccounts
             passwordHasher.VerifyHashedPassword(user.Email, user.Password, plainTextPassword);
         if (passwordVerificationResult == PasswordVerificationResult.Failed) return null;
 
-        var token = _keyGenService.GenerateKeyAndHash();
-
-
-        // This object is stored. It includes only the hashed key
-        var authToken = new AuthToken()
-        {
-            Guid = token.Item1,
-            HashedKey = passwordHasher.HashPassword(token.Item1, token.Item2),
-            UserAgent = _httpContext.Request.Headers.UserAgent,
-            IpAddress = GetIpAddress(),
-            CreationDate = DateTime.Now.ToUniversalTime(),
-            UserId = userId
-        };
-
-        var result = await _authTokensRepository.StoreToken(authToken);
-
-        // This object is given to the user. Call ToString()
-        var tokenSerializable = new AuthenticationTokenSerializable()
-        {
-            Id = result.Id,
-            Guid = result.Guid,
-            Secret = token.Item2
-        };
-
         
+        var payload = new JwtPayload()
+        {
+            UserId = user.Id
+        };
+
+        var jwt = JWT.Encode(payload, _configurationJwt.Value.ToByteArray(), JwsAlgorithm.HS256);
         
         await SendJustLoginEmail(user.Email, user.Name,GetIpAddress());
 
-        return tokenSerializable;
+        return jwt;
     }
 
     public async Task<User> ValidateToken(string token)
     {
         if (token == null) return null;
-        var serializableToken = AuthenticationTokenSerializable.FromString(token);
-        var foundToken = await _authTokensRepository.FindToken(serializableToken.Id);
-        if (foundToken == null)
-        {
-            return null;
-        }
 
-        // Secret validation
-        var passwordHasher = new PasswordHasher<string>();
-        var validationResult = passwordHasher.VerifyHashedPassword(serializableToken.Guid.ToString(),
-            foundToken.HashedKey, serializableToken.Secret);
-        if (validationResult == PasswordVerificationResult.Failed)
-        {
-            return null;
-        }
+        var decoded = JWT.Decode<JwtPayload>(token, _configurationJwt.Value.ToByteArray(), JwsAlgorithm.HS256);
+        
 
-        var user = await db.Users.FindAsync(foundToken.UserId);
+        var user = await db.Users.FindAsync(decoded.UserId);
         return user;
     }
 
@@ -214,7 +190,7 @@ public class Accounts : IAccounts
         await db.SaveChangesAsync();
     }
 
-    public async Task<AuthenticationTokenSerializable> CreateTokenForGoogleUser(string accessToken)
+    public async Task<string> CreateTokenForGoogleUser(string accessToken)
     {
         var decodedTokenTask = FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(accessToken);
         var uid = (await decodedTokenTask).Uid;
@@ -223,38 +199,16 @@ public class Accounts : IAccounts
 
         if (user == null) return null;
 
-        var passwordHasher = new PasswordHasher<string>();
-
-        var token = _keyGenService.GenerateKeyAndHash();
-        
-        
-
-        // This object is stored. It includes only the hashed key
-        var authToken = new AuthToken()
+        var payload = new JwtPayload()
         {
-            Guid = token.Item1,
-            HashedKey = passwordHasher.HashPassword(token.Item1, token.Item2),
-            UserAgent = _httpContext.Request.Headers.UserAgent,
-            IpAddress = GetIpAddress(),
-            CreationDate = DateTime.Now.ToUniversalTime(),
             UserId = user.Id
         };
 
-        var result = await _authTokensRepository.StoreToken(authToken);
-
-        // This object is given to the user. Call ToString()
-        var tokenSerializable = new AuthenticationTokenSerializable()
-        {
-            Id = result.Id,
-            Guid = result.Guid,
-            Secret = token.Item2
-        };
-        
-        
+        var jwt = JWT.Encode(payload, _configurationJwt.Value.ToByteArray(), JwsAlgorithm.HS256);
         
         await SendJustLoginEmail(user.Email, user.Name,GetIpAddress());
 
-        return tokenSerializable;
+        return jwt;
     }
 
     public string GetUsernameFromId(int userId)

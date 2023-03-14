@@ -12,13 +12,13 @@ public interface IAccounts
     Task<AccountMakingResult> MakeAccountAsync(string username, string email, string password);
     Task<bool> IsUserEmailVerified(int userId);
     Task<bool> ChangeAPassword(int userId, string currentPassword, string newPassword);
-    Task<AuthenticationTokenSerializable> CreateNewToken(int userId, string plainTextPassword);
+    Task<string> CreateNewToken(int userId, string plainTextPassword);
     Task<User> ValidateToken(string token);
     string GetUsernameFromId(int userId);
     Task RemoveAToken(int userId, string id);
     Task RemoveAllUsersTokens(int userId);
     Task MakeAccountFromGoogleAccount(string accessToken);
-    Task<AuthenticationTokenSerializable> CreateTokenForGoogleUser(string accessToken);
+    Task<string> CreateTokenForGoogleUser(string accessToken);
     Task SendJustLoginEmail(string email, string name, string ipAddress);
     IEnumerable<AuthToken> GetTokenOfUser(int userId);
     string GetIpAddress();
