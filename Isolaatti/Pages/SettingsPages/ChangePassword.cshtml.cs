@@ -69,7 +69,6 @@ namespace Isolaatti.Pages
                 });
             }
 
-            await _accounts.RemoveAllUsersTokens(user.Id);
             return Redirect("/WebLogOut");
         }
     }

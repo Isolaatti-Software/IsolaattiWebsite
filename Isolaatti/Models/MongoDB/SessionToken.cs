@@ -5,17 +5,11 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Isolaatti.Models.MongoDB
 {
-    public class AuthToken
+    public class Session
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
-        
-        [Required]
-        public string Guid { get; set; }
-        
-        [Required]
-        public string HashedKey { get; set; }
         
         [Required]
         public int UserId { get; set; }

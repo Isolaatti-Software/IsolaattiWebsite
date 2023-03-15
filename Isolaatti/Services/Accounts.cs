@@ -25,21 +25,21 @@ public class Accounts : IAccounts
     private readonly DbContextApp db;
     private readonly HttpContext _httpContext;
     private readonly ISendGridClient _sendGridClient;
-    private readonly AuthTokensRepository _authTokensRepository;
+    private readonly SessionsRepository _sessionsRepository;
     private readonly KeyGenService _keyGenService;
     private readonly IOptions<JwtKeyConfig> _configurationJwt;
 
     public Accounts(DbContextApp db,
         ISendGridClient sendGridClient,
         ScopedHttpContext scopedHttpContext,
-        AuthTokensRepository authTokensRepository,
+        SessionsRepository sessionsRepository,
         KeyGenService keyGenService,
         IOptions<JwtKeyConfig> configurationJwt)
     {
         this.db = db;
         _sendGridClient = sendGridClient;
         _httpContext = scopedHttpContext.HttpContext;
-        _authTokensRepository = authTokensRepository;
+        _sessionsRepository = sessionsRepository;
         _keyGenService = keyGenService;
         _configurationJwt = configurationJwt;
     }
@@ -121,7 +121,14 @@ public class Accounts : IAccounts
         };
 
         var jwt = JWT.Encode(payload, _configurationJwt.Value.ToByteArray(), JwsAlgorithm.HS256);
-        
+
+        await _sessionsRepository.InsertSession(new Session()
+        {
+            UserId = user.Id,
+            CreationDate = DateTime.Now.ToUniversalTime(),
+            IpAddress = GetIpAddress(),
+            UserAgent = GetUserAgent()
+        });
         await SendJustLoginEmail(user.Email, user.Name,GetIpAddress());
 
         return jwt;
@@ -137,27 +144,8 @@ public class Accounts : IAccounts
         var user = await db.Users.FindAsync(decoded.UserId);
         return user;
     }
-
-    public async Task RemoveAToken(int userId, string id)
-    {
-        var foundToken = await _authTokensRepository.FindToken(id);
-        if (foundToken == null)
-        {
-            return;
-        }
-
-        if (foundToken.UserId != userId)
-        {
-            return;
-        }
-
-        await _authTokensRepository.RemoveToken(foundToken.Id);
-    }
-
-    public async Task RemoveAllUsersTokens(int userId)
-    {
-        await _authTokensRepository.RemoveTokenOfUser(userId);
-    }
+    
+    
 
     public async Task MakeAccountFromGoogleAccount(string accessToken)
     {
@@ -206,6 +194,13 @@ public class Accounts : IAccounts
 
         var jwt = JWT.Encode(payload, _configurationJwt.Value.ToByteArray(), JwsAlgorithm.HS256);
         
+        await _sessionsRepository.InsertSession(new Session()
+        {
+            UserId = user.Id,
+            CreationDate = DateTime.Now.ToUniversalTime(),
+            IpAddress = GetIpAddress(),
+            UserAgent = GetUserAgent()
+        });
         await SendJustLoginEmail(user.Email, user.Name,GetIpAddress());
 
         return jwt;
@@ -249,9 +244,9 @@ public class Accounts : IAccounts
         await _sendGridClient.SendEmailAsync(htmlBody);
     }
 
-    public IEnumerable<AuthToken> GetTokenOfUser(int userId)
+    public IEnumerable<Session> GetSessionsOfUser(int userId)
     {
-        return _authTokensRepository.FindTokenOfUser(userId);
+        return _sessionsRepository.FindSessionsOfUser(userId);
     }
 
     public string GetIpAddress()
@@ -260,5 +255,10 @@ public class Accounts : IAccounts
         return xForwardedForHeaderValue.Count == 0 
                 ? _httpContext.Request.HttpContext.Connection.RemoteIpAddress?.ToString() 
                 : _httpContext.Request.Headers["X-Forwarded-For"][0].Split(",")[0].Trim();
+    }
+
+    public string GetUserAgent()
+    {
+        return _httpContext.Request.Headers.UserAgent.ToString();
     }
 }

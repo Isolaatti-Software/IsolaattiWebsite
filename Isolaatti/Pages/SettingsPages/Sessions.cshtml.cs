@@ -14,7 +14,7 @@ namespace Isolaatti.Pages
     public class Sessions : PageModel
     {
         private readonly IAccounts _accounts;
-        public IEnumerable<AuthToken> SessionTokens;
+        public IEnumerable<Models.MongoDB.Session> SessionTokens;
         public AuthenticationTokenSerializable CurrentToken;
 
         public Sessions(IAccounts accounts)
@@ -37,7 +37,7 @@ namespace Isolaatti.Pages
                 : UrlGenerators.GenerateProfilePictureUrl(user.Id, Request.Cookies["isolaatti_user_session_token"]);
             
             CurrentToken = AuthenticationTokenSerializable.FromString(Request.Cookies["isolaatti_user_session_token"]);
-            SessionTokens = _accounts.GetTokenOfUser(user.Id);
+            SessionTokens = _accounts.GetSessionsOfUser(user.Id);
 
             return Page();
         }

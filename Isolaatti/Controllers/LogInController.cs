@@ -56,15 +56,5 @@ namespace Isolaatti.Controllers
                 UserId = user.Id
             });
         }
-
-
-        [Route("SignOut")]
-        [HttpGet]
-        public async Task<IActionResult> SignOut([FromHeader(Name = "sessionToken")] string sessionToken)
-        {
-            var user = await _accounts.ValidateToken(sessionToken);
-            await _accounts.RemoveAToken(user.Id, AuthenticationTokenSerializable.FromString(sessionToken).Id);
-            return Ok();
-        }
     }
 }

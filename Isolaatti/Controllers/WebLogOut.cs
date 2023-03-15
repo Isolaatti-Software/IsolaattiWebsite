@@ -25,10 +25,7 @@ namespace Isolaatti.Controllers
             }
             var user = await _accounts.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
             if (user == null) return NotFound();
-            
-            
-            var decodedToken = AuthenticationTokenSerializable.FromString(tokenCookie);
-            await _accounts.RemoveAToken(user.Id, decodedToken.Id);
+
             Response.Cookies.Delete("isolaatti_user_session_token");
             return RedirectToPage("/Index");
         }
@@ -39,7 +36,6 @@ namespace Isolaatti.Controllers
         {
             var user = await _accounts.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
             if (user == null) return NotFound();
-            await _accounts.RemoveAllUsersTokens(user.Id);
             return RedirectToPage("/Index");
         }
     }

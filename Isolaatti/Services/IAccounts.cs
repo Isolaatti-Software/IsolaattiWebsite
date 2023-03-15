@@ -15,11 +15,9 @@ public interface IAccounts
     Task<string> CreateNewToken(int userId, string plainTextPassword);
     Task<User> ValidateToken(string token);
     string GetUsernameFromId(int userId);
-    Task RemoveAToken(int userId, string id);
-    Task RemoveAllUsersTokens(int userId);
     Task MakeAccountFromGoogleAccount(string accessToken);
     Task<string> CreateTokenForGoogleUser(string accessToken);
     Task SendJustLoginEmail(string email, string name, string ipAddress);
-    IEnumerable<AuthToken> GetTokenOfUser(int userId);
+    IEnumerable<Session> GetSessionsOfUser(int userId);
     string GetIpAddress();
 }
