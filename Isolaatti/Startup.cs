@@ -175,12 +175,15 @@ namespace Isolaatti
                     config.Site = recaptchaConfig.Site;
                     config.Secret = recaptchaConfig.Secret;
                 });
+                var key = Environment.GetEnvironmentVariable("auth_key");
+                services.Configure<JwtKeyConfig>(config => config.JwtSigningKey = key);
             }
             else
             {
                 services.Configure<MongoDatabaseConfiguration>(Configuration.GetSection("MongoDb"));
                 services.Configure<Servers>(Configuration.GetSection("Servers"));
                 services.Configure<ReCaptchaConfig>(Configuration.GetSection("ReCaptcha"));
+                services.Configure<JwtKeyConfig>(Configuration.GetSection("Jwt")); 
             }
 
             services.AddSingleton<HttpClientSingleton>();
@@ -220,7 +223,7 @@ namespace Isolaatti
             services.AddScoped<RecaptchaValidation>();
             // don't allow uploading files larger than 10 MB, for security reasons
             services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = 1024 * 1024 * 10);
-            services.Configure<JwtKeyConfig>(Configuration.GetSection("Jwt")); 
+            
             services.AddSwaggerGen();
         }
 
