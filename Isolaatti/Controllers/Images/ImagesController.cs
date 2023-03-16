@@ -6,6 +6,8 @@ using Isolaatti.Enums;
 using Isolaatti.Models;
 using Isolaatti.Repositories;
 using Isolaatti.Services;
+using Isolaatti.Utils;
+using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +17,7 @@ namespace Isolaatti.Controllers.Images;
 
 [ApiController]
 [Route("/api/images")]
-public class ImagesController : ControllerBase
+public class ImagesController : IsolaattiController
 {
     private readonly IAccounts _accounts;
     private readonly ImagesService _images;
@@ -39,13 +41,11 @@ public class ImagesController : ControllerBase
         return url != null ? Redirect(url) : NotFound();
     }
 
+    [IsolaattiAuth]
     [HttpPost]
     [Route("create")]
-    public async Task<IActionResult> CreateImage([FromHeader(Name = "sessionToken")] string sessionToken, [FromForm] IFormFile file, [FromForm] string name, [FromQuery] bool setAsProfile, [FromForm] Guid? squadId)
+    public async Task<IActionResult> CreateImage([FromForm] IFormFile file, [FromForm] string name, [FromQuery] bool setAsProfile, [FromForm] Guid? squadId)
     {
-        var user = await _accounts.ValidateToken(sessionToken);
-        if (user == null) return Unauthorized("Token is not valid");
-
         if (squadId != null)
         {
             var squad = await _squadsRepository.GetSquad(squadId.Value);
@@ -54,13 +54,13 @@ public class ImagesController : ControllerBase
                 return BadRequest(new { error = "Squad doesn't exist, image not created" });
             }
 
-            if (!await _squadsRepository.UserBelongsToSquad(user.Id, squad.Id))
+            if (!await _squadsRepository.UserBelongsToSquad(User.Id, squad.Id))
             {
                 return Unauthorized(new { error = "User cannot set image to squad" });
             }
         }
 
-        var image = await _images.CreateImage(file.OpenReadStream(), user.Id, name, squadId);
+        var image = await _images.CreateImage(file.OpenReadStream(), User.Id, name, squadId);
         if (!setAsProfile) return Ok(image);
         if (squadId != null)
         {
@@ -68,8 +68,8 @@ public class ImagesController : ControllerBase
         }
         else
         {
-            user.ProfileImageId = image.Id;
-            _db.Users.Update(user);
+            User.ProfileImageId = image.Id;
+            _db.Users.Update(User);
             await _db.SaveChangesAsync();
         }
         return Ok(image);
@@ -99,13 +99,11 @@ public class ImagesController : ControllerBase
         return Ok(await _squadsRepository.GetImagesOfSquad(squadId, lastId));
     }
 
+    [IsolaattiAuth]
     [HttpPost]
     [Route("set_image_of_squad/{squadId:guid}")]
-    public async Task<IActionResult> SetSquadImage([FromHeader(Name = "sessionToken")] string sessionToken, Guid squadId, [FromQuery] string imageId)
+    public async Task<IActionResult> SetSquadImage(Guid squadId, [FromQuery] string imageId)
     {
-        var user = await _accounts.ValidateToken(sessionToken);
-        if (user == null) return Unauthorized("Token is not valid");
-        
         var image = await _images.GetImage(imageId);
         if (image == null)
         {
@@ -117,14 +115,12 @@ public class ImagesController : ControllerBase
         return Ok();
     }
 
+    [IsolaattiAuth]
     [HttpDelete]
     [Route("{imageId}")]
-    public async Task<IActionResult> DeleteImages([FromHeader(Name = "sessionToken")] string sessionToken, string imageId)
+    public async Task<IActionResult> DeleteImages(string imageId)
     {
-        var user = await _accounts.ValidateToken(sessionToken);
-        if (user == null) return Unauthorized("Token is not valid");
-
-        var result = await _images.DeleteImage(imageId, user.Id);
+        var result = await _images.DeleteImage(imageId, User.Id);
 
         return result switch
         {
