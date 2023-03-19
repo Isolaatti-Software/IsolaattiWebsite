@@ -28,10 +28,12 @@
               </button>
             </div>
           </div>
-          <posts-list :user-id="userData.id" v-if="currentSection==='discussions'" class="max-640"></posts-list>
-          <audios-list :user-id="userData.id" v-if="currentSection==='audios'" class="max-640"></audios-list>
-          <profile-images :user-id="userData.id" v-if="currentSection==='profile-pictures'"
-                          class="max-640"></profile-images>
+          <div style="min-height: 500px">
+            <posts-list :user-id="userData.id" v-if="currentSection==='discussions'" class="max-640"></posts-list>
+            <audios-list :user-id="userData.id" v-if="currentSection==='audios'" class="max-640"></audios-list>
+            <profile-images :user-id="userData.id" v-if="currentSection==='profile-pictures'"
+                            class="max-640"></profile-images>
+          </div>
 </div>
     `
 }

@@ -34,7 +34,7 @@ Vue.component('squad-view', {
                 <router-link :to="{path: '/miembros', query: {opcion: 'members'}}" active-class="btn-primary" class="btn">Personas</router-link>
                 <router-link :to="{path: '/imagenes'}" active-class="btn-primary" class="btn">Imágenes</router-link>
               </div>
-              <router-view :squadId="squadId"></router-view>
+              <router-view :squadId="squadId" style="min-height: 500px"></router-view>
             </div>
           </div>
         
