@@ -33,6 +33,7 @@ function mounted() {
     events.$on('backdrop-toggle', function(value){
         that.renderBackdrop = value;
     })
+    that.$refs.footer.style.display = '';
 }
 
 if(!renderRouter) {
