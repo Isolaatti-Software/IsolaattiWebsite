@@ -132,13 +132,12 @@ public class ImagesController : IsolaattiController
         };
     }
 
+    [IsolaattiAuth]
     [HttpPost]
     [Route("{imageId}/rename")]
-    public async Task<IActionResult> RenameImage([FromHeader(Name = "sessionToken")] string sessionToken, string imageId, SimpleStringData payload)
+    public async Task<IActionResult> RenameImage(string imageId, SimpleStringData payload)
     {
-        var user = await _accounts.ValidateToken(sessionToken);
-        if (user == null) return Unauthorized("Token is not valid");
-        var result = await _images.RenameImage(imageId, user.Id, payload.Data);
+        var result = await _images.RenameImage(imageId, User.Id, payload.Data);
 
         return result switch
         {
