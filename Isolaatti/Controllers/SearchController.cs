@@ -84,7 +84,7 @@ public class SearchController : IsolaattiController
 
         // Perform basic search on posts
         var postsResults = from post in _db.SimpleTextPosts
-            where post.TextContent.ToLower().Contains(lowerCaseQ)
+            where post.TextContent.ToLower().Contains(lowerCaseQ) && post.SquadId == null
             orderby post.Id
             select new PostDto
             {
