@@ -177,13 +177,21 @@ namespace Isolaatti
                 });
                 var key = Environment.GetEnvironmentVariable("auth_key");
                 services.Configure<JwtKeyConfig>(config => config.JwtSigningKey = key);
+                var isolaattiServicesKeysJsonEnvVar = Environment.GetEnvironmentVariable("IsolaattiServicesKeys");
+                services.Configure<IsolaattiServicesKeys>(config =>
+                {
+                    var isolaattiServiceKeys =
+                        JsonSerializer.Deserialize<IsolaattiServicesKeys>(isolaattiServicesKeysJsonEnvVar);
+                    config.RealtimeService = isolaattiServiceKeys.RealtimeService;
+                });
             }
             else
             {
                 services.Configure<MongoDatabaseConfiguration>(Configuration.GetSection("MongoDb"));
                 services.Configure<Servers>(Configuration.GetSection("Servers"));
                 services.Configure<ReCaptchaConfig>(Configuration.GetSection("ReCaptcha"));
-                services.Configure<JwtKeyConfig>(Configuration.GetSection("Jwt")); 
+                services.Configure<JwtKeyConfig>(Configuration.GetSection("Jwt"));
+                services.Configure<IsolaattiServicesKeys>(Configuration.GetSection("IsolaattiServicesKeys"));
             }
 
             services.AddSingleton<HttpClientSingleton>();

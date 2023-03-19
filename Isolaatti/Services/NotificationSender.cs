@@ -13,27 +13,25 @@ namespace Isolaatti.Services;
 
 public class NotificationSender
 {
-    private readonly SocketIoServiceKeysRepository _keysRepository;
     private readonly Servers _servers;
     private readonly ILogger<NotificationSender> _logger;
     private readonly HttpClientSingleton _httpClientSingleton;
+    private readonly IOptions<IsolaattiServicesKeys> _keys;
 
-    public NotificationSender(IOptions<Servers> servers,SocketIoServiceKeysRepository keysRepository, ILogger<NotificationSender> logger, HttpClientSingleton httpClientSingleton)
+    public NotificationSender(IOptions<Servers> servers,IOptions<IsolaattiServicesKeys> serviceKeys, ILogger<NotificationSender> logger, HttpClientSingleton httpClientSingleton)
     {
-        _keysRepository = keysRepository;
         _servers = servers.Value;
         _logger = logger;
         _httpClientSingleton = httpClientSingleton;
+        _keys = serviceKeys;
     }
     
     public async Task NotifyUser(int userId, SocialNotification notification)
     {
-        var secret = await _keysRepository.CreateKey();
-        
         var content = JsonContent.Create(new
         {
-            secret = secret.Key,
-            userId = userId,
+            secret = _keys.Value.RealtimeService,
+            userId,
             data = notification
         });
 
@@ -52,10 +50,10 @@ public class NotificationSender
 
     public async Task SendNewCommentEvent(CommentDto comment, Guid clientId)
     {
-        var secret = await _keysRepository.CreateKey();
+        
         var content = JsonContent.Create(new
         {
-            secret = secret.Key,
+            secret = _keys.Value.RealtimeService,
             eventData = new RealtimeEventDto<long>()
             {
                 Type = EventType.CommentAdded,
@@ -80,10 +78,9 @@ public class NotificationSender
     /// <param name="clientId"></param>
     public async Task SendPostUpdate(long postId, Guid clientId)
     {
-        var secret = await _keysRepository.CreateKey();
         var content = JsonContent.Create(new
         {
-            secret = secret.Key,
+            secret = _keys.Value.RealtimeService,
             eventData = new RealtimeEventDto<long>()
             {
                 Type = EventType.PostUpdate,
@@ -105,10 +102,9 @@ public class NotificationSender
 
     public async Task SendDeleteCommentEvent(long postId, long commentId, Guid clientId)
     {
-        var secret = await _keysRepository.CreateKey();
         var content = JsonContent.Create(new
         {
-            secret = secret.Key,
+            secret = _keys.Value.RealtimeService,
             eventData = new RealtimeEventDto<long>()
             {
                 Type = EventType.CommentRemoved,
@@ -127,10 +123,9 @@ public class NotificationSender
 
     public async Task SendCommentModifiedEvent(CommentDto updatedComment, Guid clientId)
     {
-        var secret = await _keysRepository.CreateKey();
         var content = JsonContent.Create(new
         {
-            secret = secret.Key,
+            secret = _keys.Value.RealtimeService,
             eventData = new RealtimeEventDto<long>()
             {
                 Type = EventType.CommentModified,
