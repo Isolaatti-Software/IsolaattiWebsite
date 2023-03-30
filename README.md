@@ -9,7 +9,7 @@ Bienvenid@
 El proyecto puede funcionar en Windows, Linux o Mac.
 
 ## Cosas a instalar
-* Microsoft .NET 6 https://dotnet.microsoft.com/en-us/download/dotnet/6.0
+* Microsoft .NET 7 https://dotnet.microsoft.com/en-us/download/dotnet/7.0
 * PostgreSQL
 * MongoDB
 
