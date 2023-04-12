@@ -1,23 +1,21 @@
 @using Isolaatti.Config
 @using Isolaatti.isolaatti_lib
-@using Isolaatti.Services
+@using Isolaatti.Utils
 @using Microsoft.AspNetCore.Hosting
 @using Microsoft.Extensions.Hosting
 @using Microsoft.Extensions.Options
-@inject IWebHostEnvironment _environment
-@inject ServerRenderedAlerts _RenderedAlerts
-@inject IOptions<Servers> _servers
+@inject IWebHostEnvironment Environment
+@inject IOptions<Servers> Servers
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>@ViewData["Title"] | Isolaatti</title>
-    <!--This is bootstrap sass files compiled with variables changed to create the isolaatti theme-->
+    @* This is bootstrap sass files compiled with variables changed to create the isolaatti theme *@
     <link rel="stylesheet" href="https://recursos-estaticos.isolaatti.com/css/custom-bootstrap.css"/>
     <link rel="stylesheet" href="~/css/isolaatti.css"/>
     <link rel="stylesheet" href="~/css/search-box.css"/>
-
     <link rel="shortcut icon" href="~/favicon.ico">
     <link rel="icon" type="image/png" sizes="196x196" href="~/favicon-192.png">
     <link rel="icon" type="image/png" sizes="160x160" href="~/favicon-160.png">
@@ -26,16 +24,15 @@
     <link rel="icon" type="image/png" sizes="32x32" href="~/favicon-32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="~/favicon-16.png">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css"/>
-    
-    @RenderSection("CSS", required: false)
-    
+    @await RenderSectionAsync("CSS", required: false)
+
     @*Server defined constants*@
     <script>
-    const userData = {id:@ViewData["userId"],name:"@ViewData["name"]",email:"@ViewData["email"]"};
-    const sessionToken = '@Html.Raw(Context.Request.Cookies["isolaatti_user_session_token"])';
+    const userData = { id:@ViewData[IsolaattiPageModel.ViewDataUserIdKey], name:"@ViewData[IsolaattiPageModel.ViewDataNameKey]", email:"@ViewData[IsolaattiPageModel.ViewDataEmailKey]"};
+    const authorization = '@Html.Raw(ViewData[IsolaattiPageModel.ViewDataJwtTokenKey])';
     const clientId = "@Guid.NewGuid()";
     const customHttpHeaders = new Headers();
-    customHttpHeaders.append("sessionToken",sessionToken);
+    customHttpHeaders.append("Authorization",authorization);
     customHttpHeaders.append("Content-Type", "application/json")
     customHttpHeaders.append("client-id", clientId)
     </script>
@@ -62,10 +59,10 @@
                         <button class="btn mobile-only custom-nav-link disappear-on-search" v-if="showingMobileSearch" v-on:click="closeMobileSearch"><i class="fa-solid fa-xmark"></i></button>
                         <quick-search :class="{'desktop-only':!showingMobileSearch}"></quick-search>
                         <button class="btn mobile-only custom-nav-link disappear-on-search" v-if="!showingMobileSearch" v-on:click="mobileSearchToggle"><i class="fa-solid fa-magnifying-glass"></i></button>
-                        <a class="btn custom-nav-link mr-1 ml-1 desktop-only" type="button" asp-page="/Squads">
+                        <a class="btn custom-nav-link mr-1 ml-1 desktop-only" type="button" asp-page="/SquadsPages/Squads">
                             <i class="fa-solid fa-people-group"></i>
                         </a>
-    
+
                         <div class="dropdown" v-show="!showingMobileSearch">
                             <a class="nav-link custom-nav-link mr-1 dropdown-toggle"
                                href="#"
@@ -135,7 +132,7 @@
                                 </a>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item"
-                                   href="/WebLogOut">
+                                   href="/LogOutPage">
                                     <i class="fas fa-sign-out-alt"></i>@Languages.Spanish[Languages.SignOut]
                                 </a>
                             </div>
@@ -143,12 +140,31 @@
                     </div>
                 </div>
             </nav>
-            <section class="mobile-only" v-if="showTopBarMobileMenu">
-                <div class="d-flex flex-column">
-                    
-                    <a class="btn" type="button" asp-page="/Squads">
+            <section class="mobile-only top-options" v-if="showTopBarMobileMenu">
+                <div class="d-flex flex-column isolaatti-card m-1">
+                    <h5>Menu</h5>
+                    <a class="btn btn-outline-primary" type="button" asp-page="/SquadsPages/Squads">
                         <i class="fa-solid fa-people-group"></i> Squads
                     </a>
+                    <hr/>
+                    <footer class="mt-auto p-1">
+                        <p class="text-center">
+                            <span class="isolaatti-name-footer">Isolaatti</span> <br/> 
+                            Derechos reservados ©  Erik Cavazos 2023
+                        </p>
+                        <p class="text-center footer-font-color font-weight-lighter">
+                            <a href="https://github.com/Isolaatti-Software/IsolaattiWebsite" class="link">Código fuente</a>
+                            <a href="https://play.google.com/store/apps/details?id=com.erik.isolaatti" class="link">App</a>
+                            <a href="https://isolaattisoftware.com.mx/isolaatti" class="link">Acerca de</a>
+                            <a asp-page="/s/Legal/PrivacyPolicy" class="link">Política de privacidad y cookies</a>
+                            <a asp-page="/s/Legal/TermsOfUse" class="link">Términos de uso</a>
+                            <a href="https://ayuda.isolaatti.com/" class="link">Ayuda</a>
+                            <a href="https://blog.isolaattisoftware.com.mx/" target="_blank" class="link">Blog</a>
+                        </p>
+                        <p class="text-center text-white-50">
+                                
+                        </p>
+                    </footer>
                 </div>
             </section>
     <main style=" overflow: auto;" id="app-main">
@@ -173,7 +189,7 @@
             </div>
         </noscript>
         @RenderBody()
-            <footer ref="footer" class="mt-auto p-1" style="display: none">
+            <footer ref="footer" class="mt-auto p-1 desktop-only" style="display: none">
                     <p class="text-center">
                         <span class="isolaatti-name-footer">Isolaatti</span> <br/> 
                         Derechos reservados ©  Erik Cavazos 2023
@@ -207,7 +223,7 @@
 <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
 
-@if (_environment.IsDevelopment())
+@if (Environment.IsDevelopment())
 {
     <script src="https://cdn.jsdelivr.net/npm/vue@2.7.8/dist/vue.js"></script>
     <script src="https://unpkg.com/vue-router@2.0.0/dist/vue-router.js"></script>
@@ -218,7 +234,7 @@ else
     <script src="https://unpkg.com/vue-router@2.0.0/dist/vue-router.min.js"></script>
 }
 <script>const events = new Vue();</script>
-<script>const realtimeServer = "@_servers.Value.RealtimeServerUrl"</script>
+<script>const realtimeServer = "@Servers.Value.RealtimeServerUrl"</script>
 @* This script exposes socket variable, which is globally accessible *@
 <script inline src="~/js/realtime-notifications.js"></script>
 <script inline src="~/js/audioService.js"></script>
@@ -231,15 +247,7 @@ else
 @* This scripts are added only for specific pages *@
 @await RenderSectionAsync("Scripts", required: false)
 
-<script>
-const renderRouter = "@((bool?)ViewData["squadsRouter"] ?? false)" === "True";
-</script>
+<script> const renderRouter = "@((bool?)ViewData["squadsRouter"] ?? false)" === "True"; </script>
 <script inline src="~/js/VueComponents/page/global.js"></script>
-<script>
-document.getElementById("app").style.height = `${window.innerHeight}px`;
-window.onresize = function() {
-    document.getElementById("app").style.height = `${window.innerHeight}px`;
-}
-</script>
 </body>
 </html>

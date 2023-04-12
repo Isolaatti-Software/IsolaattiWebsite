@@ -14,12 +14,19 @@
         },
         navigateToProfile: function (profileId) {
             window.location = `/perfil/${profileId}`;
+        },
+        onItemClick: function(user) {
+            if(this.$listeners["itemClick"]) {
+                this.$emit("itemClick", user)
+            } else {
+                this.navigateToProfile(user.id)
+            }
         }
     },
     template: `
       <div>
       <div class="users-grid">
-        <div class="user-profile-card" v-for="user in users" @click="navigateToProfile(user.id)">
+        <div class="user-profile-card" v-for="user in users" @click="onItemClick(user)">
           <img :src="imageUrl(user.imageId)" class="profile-pic"/>
           <p class="text-ellipsis mw-100 m-0">{{ user.name }}</p>
         </div>

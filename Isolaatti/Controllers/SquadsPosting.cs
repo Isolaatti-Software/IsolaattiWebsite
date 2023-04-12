@@ -30,12 +30,8 @@ public class SquadsPosting : IsolaattiController
     [IsolaattiAuth]
     [HttpGet]
     [Route("Posts")]
-    public async Task<IActionResult> GetPostsOfSquad([FromHeader(Name = "sessionToken")] string sessionToken, 
-        Guid squadId, long lastId, int length, bool olderFirst)
+    public async Task<IActionResult> GetPostsOfSquad(Guid squadId, long lastId, int length, bool olderFirst)
     {
-        var user = await _accounts.ValidateToken(sessionToken);
-        if (user == null) return Unauthorized("Token is not valid");
-
         var squad = await _squads.GetSquad(squadId);
         if (squad == null)
         {
@@ -45,7 +41,7 @@ public class SquadsPosting : IsolaattiController
             });
         }
 
-        if (!await _squads.UserBelongsToSquad(user.Id, squad.Id))
+        if (!await _squads.UserBelongsToSquad(User.Id, squad.Id))
         {
             return Unauthorized(new
             {
@@ -77,7 +73,7 @@ public class SquadsPosting : IsolaattiController
                 UserName = _db.Users.FirstOrDefault(u => u.Id == post.UserId).Name,
                 NumberOfComments = post.Comments.Count,
                 NumberOfLikes = post.Likes.Count,
-                Liked = _db.Likes.Any(l => l.UserId == user.Id && l.PostId == post.Id),
+                Liked = _db.Likes.Any(l => l.UserId == User.Id && l.PostId == post.Id),
                 SquadName = post.Squad.Name
             };
         

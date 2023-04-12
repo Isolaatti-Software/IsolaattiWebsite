@@ -1,20 +1,18 @@
 ﻿using System.Threading.Tasks;
-using Isolaatti.Models;
 using Isolaatti.Services;
 using Isolaatti.Utils;
+using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Isolaatti.Pages
 {
-    public class ChangePassword : PageModel
+    [IsolaattiAuth]
+    public class ChangePassword : IsolaattiPageModel
     {
-        private readonly DbContextApp _db;
         private readonly IAccounts _accounts;
 
-        public ChangePassword(DbContextApp dbContextApp, IAccounts accounts)
+        public ChangePassword(IAccounts accounts)
         {
-            _db = dbContextApp;
             _accounts = accounts;
         }
 
@@ -22,19 +20,8 @@ namespace Isolaatti.Pages
 
         [BindProperty] public string NewPassword { get; set; }
 
-        public async Task<IActionResult> OnGet()
+        public IActionResult OnGet()
         {
-            var user = await _accounts.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
-            if (user == null) return RedirectToPage("LogIn");
-
-            // here it's know that account is correct. Data binding!
-            ViewData["name"] = user.Name;
-            ViewData["email"] = user.Email;
-            ViewData["userId"] = user.Id;
-            ViewData["password"] = user.Password;
-            ViewData["profilePicUrl"] = user.ProfileImageId == null
-                ? null
-                : UrlGenerators.GenerateProfilePictureUrl(user.Id, Request.Cookies["isolaatti_user_session_token"]);
             return Page();
         }
 
@@ -47,21 +34,8 @@ namespace Isolaatti.Pages
                     errorChangingPass = true
                 });
             }
-
-
-            var user = await _accounts.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
-            if (user == null) return RedirectToPage("LogIn");
-
-            // here it's know that account is correct. Data binding!
-            ViewData["name"] = user.Name;
-            ViewData["email"] = user.Email;
-            ViewData["userId"] = user.Id;
-            ViewData["password"] = user.Password;
-            ViewData["profilePicUrl"] = user.ProfileImageId == null
-                ? null
-                : UrlGenerators.GenerateProfilePictureUrl(user.Id, Request.Cookies["isolaatti_user_session_token"]);
-
-            if (!await _accounts.ChangeAPassword(user.Id, CurrentPassword, NewPassword))
+            
+            if (!await _accounts.ChangeAPassword(User.Id, CurrentPassword, NewPassword))
             {
                 return RedirectToPage("MyProfile", new
                 {
@@ -69,7 +43,7 @@ namespace Isolaatti.Pages
                 });
             }
 
-            return Redirect("/WebLogOut");
+            return Redirect("/LogOutPage");
         }
     }
 }

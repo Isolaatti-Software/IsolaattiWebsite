@@ -42,7 +42,8 @@ namespace Isolaatti.Controllers
             {
                 PostId = identification.Id,
                 UserId = User.Id,
-                TargetUserId = post.UserId
+                TargetUserId = post.UserId,
+                SquadId = post.SquadId
             });
             await _db.SaveChangesAsync();
 

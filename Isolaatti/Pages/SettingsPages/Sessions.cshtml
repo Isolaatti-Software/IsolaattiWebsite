@@ -1,5 +1,5 @@
 ﻿@page "/ajustes/sesiones_recordadas"
-@model Isolaatti.Pages.Sessions
+@model Isolaatti.Pages.SettingsPages.Sessions
 
 @{
     Layout = "Shared/_LayoutWebApp";
@@ -34,8 +34,7 @@
             }
         </div>
         <div class="list-group list-group-flush mt-2">
-            <a class="list-group-item list-group-item-action" asp-controller="WebLogOut" asp-action="Index">Cerrar sesión</a>
-            <a class="list-group-item list-group-item-action" asp-controller="WebLogOut" asp-action="CloseAllSessions">Cerrar todas las sesiones</a>
+            <a class="list-group-item list-group-item-action" asp-page="/LogOutPage">Cerrar sesión</a>
         </div>
     </div>
     <div class="col-lg-3 col-md-2"></div>

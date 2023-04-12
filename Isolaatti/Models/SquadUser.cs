@@ -11,6 +11,8 @@ public class SquadUser
     public int UserId { get; set; }
     public SquadUserRole Role { get; set; }
     public DateTime JoinedAt { get; set; }
+    public DateTime LastInteractionDateTime { get; set; }
+    public double Ranking { get; set; }
     
     [JsonIgnore] public virtual User User { get; set; }
     [JsonIgnore] public virtual Squad Squad { get; set; }

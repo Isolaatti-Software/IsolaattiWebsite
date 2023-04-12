@@ -87,6 +87,11 @@ public class SquadsRepository
         return await _db.Squads.FindAsync(id);
     }
 
+    public async Task<bool> SquadExists(Guid squadId)
+    {
+        return await _db.Squads.AnyAsync(s => s.Id.Equals(squadId));
+    }
+
     public async Task RemoveSquad(Guid id)
     {
         var squad = await GetSquad(id);
@@ -150,7 +155,7 @@ public class SquadsRepository
 
         var userWasAddedAlready = 
             await  _db.SquadUsers.AnyAsync(squadUser => squadUser.SquadId == squad.Id && squadUser.UserId == userId);
-        if (userWasAddedAlready)
+        if (userWasAddedAlready || squad.UserId == userId)
         {
             return AddUserToSquadResult.AlreadyInSquad;
         }
@@ -291,13 +296,47 @@ public class SquadsRepository
         await _db.SaveChangesAsync();
     }
 
-    public List<int> GetAdminsOfSquad(Guid squadId)
+    public async Task SetSquadOwner(Guid squadId, int userId)
     {
-        // For now just returning a single admin, but in the future there will be more than one
-        var admin =
-            _db.Squads.Where(s => s.Id.Equals(squadId)).Select(s => s.UserId).FirstOrDefault();
-        return new List<int>() {admin};
+        var squad = await _db.Squads.FindAsync(squadId);
+        if (squad == null)
+        {
+            return;
+        }
+
+        squad.UserId = userId;
+        _db.Squads.Update(squad);
+        await _db.SaveChangesAsync();
     }
 
+    public async Task<bool> SetUserAsAdmin(int userId, Guid squadId)
+    {
+        var squad = await _db.Squads.FindAsync(squadId);
+        if (squad == null)
+        {
+            return false;
+        }
 
+        var squadUser = await _db.SquadUsers.FindAsync(userId);
+        if (squadUser == null)
+        {
+            return false;
+        }
+
+        squadUser.Role = SquadUserRole.Admin;
+
+        _db.SquadUsers.Update(squadUser);
+
+        try
+        {
+            await _db.SaveChangesAsync();
+            return true;
+        }
+        catch (Exception e)
+        {
+            // TODO Log this
+            return false;
+        }
+    }
+    
 }

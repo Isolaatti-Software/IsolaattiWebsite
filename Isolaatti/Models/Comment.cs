@@ -13,6 +13,7 @@ namespace Isolaatti.Models
         public int TargetUser { get; set; }
         public string AudioId { get; set; }
         public DateTime Date { get; set; }
+        public Guid? SquadId { get; set; }
         
         // [JsonIgnore]
         // public virtual User User { get; set; }

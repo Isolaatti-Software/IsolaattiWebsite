@@ -1,0 +1,44 @@
+﻿@page "/squads/{squadId:guid}/gestion_miembros/administradores"
+@model Isolaatti.Pages.SquadsPages.ManageSquadAdmins
+
+@{
+    Layout = "Shared/_LayoutSquadMembersManager";
+    ViewData["Title"] = "Administradores de Squad";
+    ViewData["PageName"] = "admins";
+}
+
+<div class="col-lg-4 col-md-5">
+    <h5>Administradores actuales</h5>
+    <users-grid :users="[
+    @foreach (var admin in Model.Admins)
+    {
+      @Html.Raw($@"{{name:'{admin.Name}', imageId: '{admin.ImageId}', id: {admin.Id}}},")
+    }
+    ]"/>
+    
+</div>
+<div class="col-lg-8 col-md-7">
+  @if (Model.Squad.UserId == Model.User.Id)
+  {
+    <h5>Agregar administrador</h5>
+    <p>Un administrador puede bla bla bla...</p>
+    <button class="btn btn-primary btn-sm" data-target="#modal-choose-owner" data-toggle="modal">Agregar</button>
+  }
+  
+</div>
+
+<div class="modal" id="modal-choose-owner">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Elegir nuevo propietario</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          &times;
+        </button>
+      </div>
+      <div class="modal-body">
+        <change-squad-owner-modal-dialog squad-id="@Model.Squad.Id"/>
+      </div>
+    </div>
+  </div>
+</div>

@@ -184,7 +184,8 @@ namespace Isolaatti.Controllers
                 UserId = User.Id,
                 PostId = post.Id,
                 TargetUser = post.UserId, 
-                AudioId = commentModel.AudioId
+                AudioId = commentModel.AudioId,
+                SquadId = post.SquadId
             };
         
             _db.Comments.Add(commentToMake);
