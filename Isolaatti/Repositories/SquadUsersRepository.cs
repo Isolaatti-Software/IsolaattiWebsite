@@ -48,12 +48,13 @@ public class SquadUsersRepository
         };
     }
 
-    public async Task<UserSearchFeed> GetRankedSuggestions(Guid squadId)
+    public async Task<UserSearchFeed> GetRankedSuggestions(Guid squadId, bool admins, bool normalMembers)
     {
         var query = (from user in _db.Users
             from squadUser in _db.SquadUsers
             where user.Id == squadUser.UserId
                   && squadUser.SquadId.Equals(squadId)
+                  && ((squadUser.Role == SquadUserRole.Admin && admins) || (squadUser.Role == SquadUserRole.User && normalMembers))
             orderby squadUser.Ranking
             select new RankedSquadUser
             {

@@ -317,7 +317,7 @@ public class SquadsRepository
             return false;
         }
 
-        var squadUser = await _db.SquadUsers.FindAsync(userId);
+        var squadUser = await _db.SquadUsers.FirstOrDefaultAsync(su => su.UserId == userId);
         if (squadUser == null)
         {
             return false;

@@ -176,7 +176,7 @@ public class SearchController : IsolaattiController
     [IsolaattiAuth]
     [Route("{squadId:guid}/SearchSuggestions")]
     [HttpGet]
-    public async Task<IActionResult> GetSuggestionsSquadRankedUsers(Guid squadId)
+    public async Task<IActionResult> GetSuggestionsSquadRankedUsers(Guid squadId, [FromQuery] bool admins = true, [FromQuery] bool members = true)
     {
         var squadExists = await _squadsRepository.SquadExists(squadId);
 
@@ -187,7 +187,7 @@ public class SearchController : IsolaattiController
             return NotFound();
         }
 
-        var result = await _squadUsersRepository.GetRankedSuggestions(squadId);
+        var result = await _squadUsersRepository.GetRankedSuggestions(squadId, admins, members);
         return Ok(result);
     }
 }

@@ -7,7 +7,7 @@
     },
     methods: {
         imageUrl: function(imageId){
-            if(imageId === null) {
+            if(imageId === null || imageId === "") {
                 return "/res/imgs/avatar.svg";
             }
             return `/api/images/image/${imageId}?mode=reduced`

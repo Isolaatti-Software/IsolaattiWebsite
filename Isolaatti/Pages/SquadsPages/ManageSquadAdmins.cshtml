@@ -7,37 +7,29 @@
     ViewData["PageName"] = "admins";
 }
 
-<div class="col-lg-4 col-md-5">
-    <h5>Administradores actuales</h5>
-    <users-grid :users="[
-    @foreach (var admin in Model.Admins)
-    {
-      @Html.Raw($@"{{name:'{admin.Name}', imageId: '{admin.ImageId}', id: {admin.Id}}},")
-    }
-    ]"/>
-    
-</div>
-<div class="col-lg-8 col-md-7">
+<div class="col-12">
   @if (Model.Squad.UserId == Model.User.Id)
   {
     <h5>Agregar administrador</h5>
     <p>Un administrador puede bla bla bla...</p>
-    <button class="btn btn-primary btn-sm" data-target="#modal-choose-owner" data-toggle="modal">Agregar</button>
+    <button class="btn btn-primary btn-sm mb-2" data-target="#modal-add-admin" data-toggle="modal">Agregar</button>
   }
-  
+
+  <squad-admins-page :users="[@foreach (var admin in Model.Admins) { @Html.Raw($@"{{name:'{admin.Name}', imageId: '{admin.ImageId}', id: {admin.Id}}},") }]"/>
+
 </div>
 
-<div class="modal" id="modal-choose-owner">
+<div class="modal" id="modal-add-admin">
   <div class="modal-dialog modal-dialog-scrollable modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Elegir nuevo propietario</h5>
+        <h5 class="modal-title">Agregar administrador</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           &times;
         </button>
       </div>
       <div class="modal-body">
-        <change-squad-owner-modal-dialog squad-id="@Model.Squad.Id"/>
+        <add-squad-admin-modal-dialog squad-id="@Model.Squad.Id"/>
       </div>
     </div>
   </div>
