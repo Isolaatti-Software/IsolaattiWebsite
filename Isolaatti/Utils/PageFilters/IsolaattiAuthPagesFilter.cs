@@ -44,6 +44,7 @@ public class IsolaattiAuthPagesFilter : IAsyncPageFilter
 
             if (context.HandlerInstance is IsolaattiPageModel pageModel)
             {
+                pageModel.HideNav = context.HttpContext.Request.Cookies["isolaatti_hidenav"] == "yes";
                 pageModel.User = user;
                 pageModel.ViewData[IsolaattiPageModel.ViewDataNameKey] = user.Name;
                 pageModel.ViewData[IsolaattiPageModel.ViewDataEmailKey] = user.Email;

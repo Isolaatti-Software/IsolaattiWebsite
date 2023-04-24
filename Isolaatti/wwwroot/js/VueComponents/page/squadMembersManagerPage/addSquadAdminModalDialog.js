@@ -92,6 +92,11 @@
                 })
             });
             this.sendingChangeOwnerRequest = true;
+            if(response.ok) {
+                window.location.reload();
+                return;
+            }
+            
         }
     },
     mounted: async function() {
@@ -126,7 +131,7 @@
           </div>
           <p>Esto es lo que ocurrirá:</p>
           <ul>
-            <li><strong>{{selectedUser.name}}</strong> será un administrador, pudiendo hacer las acciones que designes a continuación.</li>
+            <li><strong>{{selectedUser.name}}</strong> será un administrador. Más adelante podrás asignarle permisos.</li>
           </ul>
           <div class="d-flex flex-column align-items-center mb-3">
             <img class="profile-pic" :src="profileImageLink(selectedUser.imageId)"/>

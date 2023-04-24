@@ -48,5 +48,16 @@
       <_ContentIncludedByDefault Remove="Pages\Likes\GivenLikes.cshtml" />
       <_ContentIncludedByDefault Remove="Pages\Likes\ReceivedLikes.cshtml" />
     </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Pages\Audaliv\Audaliv.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Audaliv\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Likes\GivenLikes.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Likes\ReceivedLikes.cshtml" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Remove="Pages\Boot\Boot.cshtml" />
+    </ItemGroup>
     
 </Project>

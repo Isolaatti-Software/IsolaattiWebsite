@@ -7,6 +7,8 @@ namespace Isolaatti.Utils;
 public class IsolaattiPageModel : PageModel
 {
     public new User User { get; set; }
+    
+    public bool HideNav { get; set; }
 
     public const string ViewDataNameKey = "name";
     public const string ViewDataEmailKey = "email";

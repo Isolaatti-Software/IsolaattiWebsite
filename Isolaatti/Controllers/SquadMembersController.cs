@@ -6,8 +6,10 @@ using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using Isolaatti.Classes.ApiEndpointsRequestDataModels;
+using Isolaatti.DTOs;
 using Isolaatti.Enums;
 using Isolaatti.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Isolaatti.Controllers;
 
@@ -194,5 +196,83 @@ public class SquadMembersController : IsolaattiController
         var result = await _squadsRepository.SetUserAsAdmin(userId.Id, squadId);
 
         return result ? Ok() : Problem("Internal error saving to database.");
+    }
+
+    [IsolaattiAuth]
+    [HttpPost]
+    [Route("User/{userId:int}/SetPermissions")]
+    public async Task<IActionResult> SetPermissions(Guid squadId, int userId, PermissionDto permissionDto)
+    {
+        var squad = await _squadsRepository.GetSquad(squadId);
+        if (squad.UserId != User.Id)
+        {
+            return Unauthorized();
+        }
+        
+        var squadUser = await _db.SquadUsers
+            .FirstOrDefaultAsync(su => su.UserId == userId && su.SquadId.Equals(squadId));
+        if (squadUser == null)
+        {
+            return NotFound();
+        }
+
+        if (squadUser.Role != SquadUserRole.Admin)
+        {
+            return BadRequest(new
+            {
+                error = $"User ${squadUser.UserId} is not admin"
+            });
+        }
+
+        if (!permissionDto.Validate())
+        {
+            return BadRequest(new
+            {
+                error = $"Invalid permissions were specified. Permission can be: {PermissionDto.Permissions}"
+            });
+        }   
+        
+
+        squadUser.Permissions = permissionDto.PermissionsList.Distinct().ToList();
+        _db.SquadUsers.Update(squadUser);
+        await _db.SaveChangesAsync();
+        
+        return Ok();
+    }
+
+    [IsolaattiAuth]
+    [HttpGet]
+    [Route("User/{userId:int}/GetPermissions")]
+    public async Task<IActionResult> GetPermissions(Guid squadId, int userId)
+    {
+        var squad = await _squadsRepository.GetSquad(squadId);
+        if (squad.UserId != User.Id)
+        {
+            return Unauthorized();
+        }
+        var squadUser = await _db.SquadUsers
+            .FirstOrDefaultAsync(su => su.UserId == userId && su.SquadId.Equals(squadId));
+        if (squadUser == null)
+        {
+            return NotFound();
+        }
+        if (squadUser.Role != SquadUserRole.Admin)
+        {
+            return BadRequest(new
+            {
+                error = $"User ${squadUser.UserId} is not admin"
+            });
+        }
+        
+
+        return Ok(squadUser.Permissions);
+    }
+
+    [IsolaattiAuth]
+    [HttpGet]
+    [Route("/Squads/AvailablePermissions")]
+    public IActionResult AvailablePermissions()
+    {
+        return Ok(PermissionDto.Permissions);
     }
 }

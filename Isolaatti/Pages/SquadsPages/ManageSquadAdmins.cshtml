@@ -11,11 +11,11 @@
   @if (Model.Squad.UserId == Model.User.Id)
   {
     <h5>Agregar administrador</h5>
-    <p>Un administrador puede bla bla bla...</p>
+    <p>Podrás definir los permisos para el administrador que agregues</p>
     <button class="btn btn-primary btn-sm mb-2" data-target="#modal-add-admin" data-toggle="modal">Agregar</button>
   }
 
-  <squad-admins-page :users="[@foreach (var admin in Model.Admins) { @Html.Raw($@"{{name:'{admin.Name}', imageId: '{admin.ImageId}', id: {admin.Id}}},") }]"/>
+  <squad-admins-page squad-id="@Model.Squad.Id" :users="[@foreach (var admin in Model.Admins) { @Html.Raw($@"{{name:'{admin.Name}', imageId: '{admin.ImageId}', id: {admin.Id}}},") }]"/>
 
 </div>
 

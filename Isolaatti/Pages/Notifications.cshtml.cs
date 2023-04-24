@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Isolaatti.Pages;
 
-public class Notifications : PageModel
+public class Notifications : IsolaattiPageModel
 {
     private readonly IAccounts _accounts;
 

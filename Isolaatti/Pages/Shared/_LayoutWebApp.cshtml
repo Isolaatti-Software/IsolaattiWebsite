@@ -39,7 +39,7 @@
 </head>
 <body>
 
-      
+
 
 @* All the content of this div with id app can host Vue.js components. Do not create new instances of Vue.js inside *@
 <div id="app" class="position-relative overflow-hidden">
@@ -49,51 +49,79 @@
 
     </section>
     <nav class="d-flex custom-nav sticky-top pr-2 pl-2" id="isolaatti-top-bar">
-                <a href="/" class="nav-link custom-nav-link mr-md-auto" id="isolaatti_brand" v-show="!showingMobileSearch"></a>
-                <div class="container-md container-fluid" id="top-bar-content">
-    
-                    <div class="d-flex w-100 align-items-center">
-                        <button class="btn nav-link custom-nav-link mr-auto ml-1 mobile-only" v-if="!showingMobileSearch" v-on:click="toggleTopBarShowMenu">
-                            <i class="fa-solid fa-bars"></i>
-                        </button>
-                        <button class="btn mobile-only custom-nav-link disappear-on-search" v-if="showingMobileSearch" v-on:click="closeMobileSearch"><i class="fa-solid fa-xmark"></i></button>
-                        <quick-search :class="{'desktop-only':!showingMobileSearch}"></quick-search>
-                        <button class="btn mobile-only custom-nav-link disappear-on-search" v-if="!showingMobileSearch" v-on:click="mobileSearchToggle"><i class="fa-solid fa-magnifying-glass"></i></button>
-                        <a class="btn custom-nav-link mr-1 ml-1 desktop-only" type="button" asp-page="/SquadsPages/Squads">
-                            <i class="fa-solid fa-people-group"></i>
-                        </a>
+        <a href="/" class="nav-link custom-nav-link mr-md-auto" id="isolaatti_brand" v-show="!showingMobileSearch"></a>
+        <div class="container-md container-fluid" id="top-bar-content">
 
-                        <div class="dropdown" v-show="!showingMobileSearch">
-                            <a class="nav-link custom-nav-link mr-1 dropdown-toggle"
-                               href="#"
-                               role="button"
-                               id="dropdownNotificationsMenuLink"
-                               aria-haspopup="true" aria-expanded="false"
-                               data-toggle="dropdown">
-                                
-                                <span class="fa-layers fa-fw">
-                                    <i class="fas fa-bell"></i>
-                                </span>
-                            </a>
-                            <div class="dropdown-menu" v-show="!showingMobileSearch">
-                                <div class="dropdown-header">
-                                    Notificaciones
-                                </div>
-                                <div class="dropdown-divider"></div>
-                                <a asp-page="/Notifications" class="dropdown-item">
-                                    Ver todo
-                                </a>
+            <div class="d-flex w-100 align-items-center">
+                @if (!Model.HideNav)
+                {
+                    <button class="btn nav-link custom-nav-link mr-auto ml-1 mobile-only" v-if="!showingMobileSearch" v-on:click="toggleTopBarShowMenu">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                }
+                
+                <button class="btn mobile-only custom-nav-link disappear-on-search" v-if="showingMobileSearch" v-on:click="closeMobileSearch">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+                <quick-search :class="{'desktop-only':!showingMobileSearch}"></quick-search>
+                <button class="btn mobile-only ml-auto custom-nav-link disappear-on-search" v-if="!showingMobileSearch" v-on:click="mobileSearchToggle">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+
+                @if (!Model.HideNav)
+                {
+                    <a class="btn custom-nav-link mr-1 ml-1 desktop-only" type="button" asp-page="/SquadsPages/Squads">
+                        <i class="fa-solid fa-people-group"></i>
+                    </a>
+
+                    <div class="dropdown" v-show="!showingMobileSearch">
+                        <a class="nav-link custom-nav-link mr-1 dropdown-toggle"
+                           href="#"
+                           role="button"
+                           id="dropdownNotificationsMenuLink"
+                           aria-haspopup="true" aria-expanded="false"
+                           data-toggle="dropdown">
+
+                            <span class="fa-layers fa-fw">
+                                <i class="fas fa-bell"></i>
+                            </span>
+                        </a>
+                        <div class="dropdown-menu" v-show="!showingMobileSearch">
+                            <div class="dropdown-header">
+                                Notificaciones
                             </div>
+                            <div class="dropdown-divider"></div>
+                            <a asp-page="/Notifications" class="dropdown-item">
+                                Ver todo
+                            </a>
                         </div>
-    
-                        <div class="dropdown" v-show="!showingMobileSearch">
-                            <a class="nav-link custom-nav-link nav-link mr-1 dropdown-toggle"
-                               href="#"
-                               role="button"
-                               id="dropdownMenuLink"
-                               data-toggle="dropdown"
-                               aria-haspopup="true"
-                               aria-expanded="false">
+                    </div>
+
+                    <div class="dropdown" v-show="!showingMobileSearch">
+                        <a class="nav-link custom-nav-link nav-link mr-1 dropdown-toggle"
+                           href="#"
+                           role="button"
+                           id="dropdownMenuLink"
+                           data-toggle="dropdown"
+                           aria-haspopup="true"
+                           aria-expanded="false">
+                            @if (ViewData["profilePicUrl"] == null)
+                            {
+                                <i class="fas fa-user-circle"></i>
+                            }
+                            else
+                            {
+                                <img width="40" height="40" src="@ViewData["profilePicUrl"]" class="user-avatar"/>
+                            }
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right"
+                             aria-labelledby="dropdownMenuLink">
+                            <div class="dropdown-header">
+                                @ViewData["name"]
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <a asp-page="/MyProfile"
+                               class="dropdown-item">
                                 @if (ViewData["profilePicUrl"] == null)
                                 {
                                     <i class="fas fa-user-circle"></i>
@@ -102,71 +130,57 @@
                                 {
                                     <img width="40" height="40" src="@ViewData["profilePicUrl"]" class="user-avatar"/>
                                 }
+                                Mi perfil
                             </a>
-                            <div class="dropdown-menu dropdown-menu-right"
-                                 aria-labelledby="dropdownMenuLink">
-                                <div class="dropdown-header">
-                                    @ViewData["name"]
-                                </div>
-                                <div class="dropdown-divider"></div>
-                                <a asp-page="/MyProfile"
-                                   class="dropdown-item">
-                                    @if (ViewData["profilePicUrl"] == null)
-                                    {
-                                        <i class="fas fa-user-circle"></i>
-                                    }
-                                    else
-                                    {
-                                        <img width="40" height="40" src="@ViewData["profilePicUrl"]" class="user-avatar"/>
-                                    }
-                                    Mi perfil
-                                </a>
-                                <a class="dropdown-item"
-                                   asp-page="/Settings">
-                                    <i class="fas fa-cog"></i>Ajustes
-                                </a>
-                                <a class="dropdown-item"
-                                   href="https://isolaattisoftware.com.mx/isolaatti"
-                                   target="_blank">
-                                    <i class="fas fa-info"></i>Acerca de
-                                </a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item"
-                                   href="/LogOutPage">
-                                    <i class="fas fa-sign-out-alt"></i>@Languages.Spanish[Languages.SignOut]
-                                </a>
-                            </div>
+                            <a class="dropdown-item"
+                               asp-page="/Settings">
+                                <i class="fas fa-cog"></i>Ajustes
+                            </a>
+                            <a class="dropdown-item"
+                               href="https://isolaattisoftware.com.mx/isolaatti"
+                               target="_blank">
+                                <i class="fas fa-info"></i>Acerca de
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item"
+                               href="/LogOutPage">
+                                <i class="fas fa-sign-out-alt"></i>@Languages.Spanish[Languages.SignOut]
+                            </a>
                         </div>
                     </div>
-                </div>
-            </nav>
-            <section class="mobile-only top-options" v-if="showTopBarMobileMenu">
-                <div class="d-flex flex-column isolaatti-card m-1">
-                    <h5>Menu</h5>
-                    <a class="btn btn-outline-primary" type="button" asp-page="/SquadsPages/Squads">
-                        <i class="fa-solid fa-people-group"></i> Squads
-                    </a>
-                    <hr/>
-                    <footer class="mt-auto p-1">
-                        <p class="text-center">
-                            <span class="isolaatti-name-footer">Isolaatti</span> <br/> 
-                            Derechos reservados ©  Erik Cavazos 2023
-                        </p>
-                        <p class="text-center footer-font-color font-weight-lighter">
-                            <a href="https://github.com/Isolaatti-Software/IsolaattiWebsite" class="link">Código fuente</a>
-                            <a href="https://play.google.com/store/apps/details?id=com.erik.isolaatti" class="link">App</a>
-                            <a href="https://isolaattisoftware.com.mx/isolaatti" class="link">Acerca de</a>
-                            <a asp-page="/s/Legal/PrivacyPolicy" class="link">Política de privacidad y cookies</a>
-                            <a asp-page="/s/Legal/TermsOfUse" class="link">Términos de uso</a>
-                            <a href="https://ayuda.isolaatti.com/" class="link">Ayuda</a>
-                            <a href="https://blog.isolaattisoftware.com.mx/" target="_blank" class="link">Blog</a>
-                        </p>
-                        <p class="text-center text-white-50">
-                                
-                        </p>
-                    </footer>
-                </div>
-            </section>
+                }
+
+
+            </div>
+        </div>
+    </nav>
+    <section class="mobile-only top-options" v-if="showTopBarMobileMenu">
+        <div class="d-flex flex-column isolaatti-card m-1">
+            <h5>Menu</h5>
+            <a class="btn btn-outline-primary" type="button" asp-page="/SquadsPages/Squads">
+                <i class="fa-solid fa-people-group"></i> Squads
+            </a>
+            <hr/>
+            <footer class="mt-auto p-1">
+                <p class="text-center">
+                    <span class="isolaatti-name-footer">Isolaatti</span> <br/>
+                    Derechos reservados © Erik Cavazos 2023
+                </p>
+                <p class="text-center footer-font-color font-weight-lighter">
+                    <a href="https://github.com/Isolaatti-Software/IsolaattiWebsite" class="link">Código fuente</a>
+                    <a href="https://play.google.com/store/apps/details?id=com.erik.isolaatti" class="link">App</a>
+                    <a href="https://isolaattisoftware.com.mx/isolaatti" class="link">Acerca de</a>
+                    <a asp-page="/s/Legal/PrivacyPolicy" class="link">Política de privacidad y cookies</a>
+                    <a asp-page="/s/Legal/TermsOfUse" class="link">Términos de uso</a>
+                    <a href="https://ayuda.isolaatti.com/" class="link">Ayuda</a>
+                    <a href="https://blog.isolaattisoftware.com.mx/" target="_blank" class="link">Blog</a>
+                </p>
+                <p class="text-center text-white-50">
+
+                </p>
+            </footer>
+        </div>
+    </section>
     <main style=" overflow: auto;" id="app-main">
         <noscript>
             <div class="container">
@@ -174,7 +188,9 @@
                     <div class="col-md-2 col-lg-3"></div>
                     <div class="col-md-8 col-lg-6">
                         <div class="d-flex flex-column p-4">
-                            <h1 class="display-1"><i class="fa-brands fa-js"></i></h1>
+                            <h1 class="display-1">
+                                <i class="fa-brands fa-js"></i>
+                            </h1>
                             <h2>Esta aplicación necesita JavaScript. Por favor, habilítalo.</h2>
                             <h3>¿Por qué deberías habilitarlo?</h3>
                             <p>
@@ -189,24 +205,24 @@
             </div>
         </noscript>
         @RenderBody()
-            <footer ref="footer" class="mt-auto p-1 desktop-only" style="display: none">
-                    <p class="text-center">
-                        <span class="isolaatti-name-footer">Isolaatti</span> <br/> 
-                        Derechos reservados ©  Erik Cavazos 2023
-                    </p>
-                    <p class="text-center footer-font-color font-weight-lighter">
-                        <a href="https://github.com/Isolaatti-Software/IsolaattiWebsite" class="link">Código fuente</a>
-                        <a href="https://play.google.com/store/apps/details?id=com.erik.isolaatti" class="link">App</a>
-                        <a href="https://isolaattisoftware.com.mx/isolaatti" class="link">Acerca de</a>
-                        <a asp-page="/s/Legal/PrivacyPolicy" class="link">Política de privacidad y cookies</a>
-                        <a asp-page="/s/Legal/TermsOfUse" class="link">Términos de uso</a>
-                        <a href="https://ayuda.isolaatti.com/" class="link">Ayuda</a>
-                        <a href="https://blog.isolaattisoftware.com.mx/" target="_blank" class="link">Blog</a>
-                    </p>
-                    <p class="text-center text-white-50">
-            
-                    </p>
-                </footer>
+        <footer ref="footer" class="mt-auto p-1 desktop-only" style="display: none">
+            <p class="text-center">
+                <span class="isolaatti-name-footer">Isolaatti</span> <br/>
+                Derechos reservados © Erik Cavazos 2023
+            </p>
+            <p class="text-center footer-font-color font-weight-lighter">
+                <a href="https://github.com/Isolaatti-Software/IsolaattiWebsite" class="link">Código fuente</a>
+                <a href="https://play.google.com/store/apps/details?id=com.erik.isolaatti" class="link">App</a>
+                <a href="https://isolaattisoftware.com.mx/isolaatti" class="link">Acerca de</a>
+                <a asp-page="/s/Legal/PrivacyPolicy" class="link">Política de privacidad y cookies</a>
+                <a asp-page="/s/Legal/TermsOfUse" class="link">Términos de uso</a>
+                <a href="https://ayuda.isolaatti.com/" class="link">Ayuda</a>
+                <a href="https://blog.isolaattisoftware.com.mx/" target="_blank" class="link">Blog</a>
+            </p>
+            <p class="text-center text-white-50">
+
+            </p>
+        </footer>
     </main>
     <div class="d-flex justify-content-center">
         <audio-player></audio-player>
