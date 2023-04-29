@@ -6,6 +6,7 @@ using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using Isolaatti.Classes.ApiEndpointsRequestDataModels;
+using Isolaatti.Classes.ApiEndpointsResponseDataModels;
 using Isolaatti.DTOs;
 using Isolaatti.Enums;
 using Isolaatti.Models;
@@ -266,6 +267,38 @@ public class SquadMembersController : IsolaattiController
         
 
         return Ok(squadUser.Permissions);
+    }
+
+    [IsolaattiAuth]
+    [HttpGet]
+    [Route("User/{userId:int}")]
+    public async Task<IActionResult> GetSquadUserProfile(Guid squadId, int userId)
+    {
+        var squad = await _squadsRepository.GetSquad(squadId);
+        if (squad.UserId != User.Id)
+        {
+            return Unauthorized();
+        }
+
+        var squadUser = await _db.SquadUsers
+            .Include(squadUser => squadUser.User)
+            .FirstOrDefaultAsync(su => su.UserId == userId && su.SquadId.Equals(squadId));
+        if (squadUser == null)
+        {
+            return NotFound();
+        }
+        
+        return Ok(new SquadUserDto()
+        {
+            User = new UserFeed()
+            {
+                Id = squadUser.UserId,
+                Name = squadUser.User.Name,
+                ImageId = squadUser.User.ProfileImageId
+            },
+            Permissions = squadUser.Permissions,
+            IsAdmin = squadUser.Role == SquadUserRole.Admin
+        });
     }
 
     [IsolaattiAuth]
