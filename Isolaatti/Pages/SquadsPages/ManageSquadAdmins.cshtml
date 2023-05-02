@@ -15,7 +15,10 @@
     <button class="btn btn-primary btn-sm mb-2" data-target="#modal-add-admin" data-toggle="modal">Agregar</button>
   }
 
-  <squad-admins-page squad-id="@Model.Squad.Id" :users="[@foreach (var admin in Model.Admins) { @Html.Raw($@"{{name:'{admin.Name}', imageId: '{admin.ImageId}', id: {admin.Id}}},") }]"/>
+  <squad-admins-page 
+    squad-id="@Model.Squad.Id" 
+    :users="[@foreach (var admin in Model.Admins) { @Html.Raw($@"{{name:'{admin.Name}', imageId: '{admin.ImageId}', id: {admin.Id}}},") }]" 
+    :initial-state="{isOwner: @if(Model.Squad.UserId == Model.User.Id) { @Html.Raw("true") } else { @Html.Raw("false") }}"/>
 
 </div>
 

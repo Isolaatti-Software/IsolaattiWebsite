@@ -275,10 +275,6 @@ public class SquadMembersController : IsolaattiController
     public async Task<IActionResult> GetSquadUserProfile(Guid squadId, int userId)
     {
         var squad = await _squadsRepository.GetSquad(squadId);
-        if (squad.UserId != User.Id)
-        {
-            return Unauthorized();
-        }
 
         var squadUser = await _db.SquadUsers
             .Include(squadUser => squadUser.User)
@@ -287,7 +283,7 @@ public class SquadMembersController : IsolaattiController
         {
             return NotFound();
         }
-        
+
         return Ok(new SquadUserDto()
         {
             User = new UserFeed()
@@ -297,7 +293,10 @@ public class SquadMembersController : IsolaattiController
                 ImageId = squadUser.User.ProfileImageId
             },
             Permissions = squadUser.Permissions,
-            IsAdmin = squadUser.Role == SquadUserRole.Admin
+            IsAdmin = squadUser.Role == SquadUserRole.Admin,
+            Joined = squadUser.JoinedAt,
+            LastInteraction = squadUser.LastInteractionDateTime,
+            Ranking = squadUser.Ranking
         });
     }
 

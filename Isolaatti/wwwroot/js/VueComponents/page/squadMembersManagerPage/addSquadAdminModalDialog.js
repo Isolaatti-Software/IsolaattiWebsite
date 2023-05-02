@@ -14,7 +14,7 @@
                 lastId: 0
             },
             suggestions: undefined,
-            error: false,
+            error: undefined,
             errorLoadingSuggestions: false,
             loadingSuggestions: false,
             query: "",
@@ -36,7 +36,7 @@
                 headers: this.customHeaders
             });
             if(!response.ok){
-                this.error = true;
+                
                 return;
             }
             try {
@@ -84,6 +84,7 @@
         },
         sendChangeOwnerRequest: async function() {
             this.sendingChangeOwnerRequest = true;
+            this.error = undefined;
             const response = await fetch(`/api/squads/${this.squadId}/AddAdmin`,{
                 method: "post",
                 headers: this.customHeaders,
@@ -91,10 +92,16 @@
                     id: this.selectedUser.id
                 })
             });
-            this.sendingChangeOwnerRequest = true;
+            this.sendingChangeOwnerRequest = false;
             if(response.ok) {
-                window.location.reload();
                 return;
+            }
+            try {
+                this.error = await response.json();
+            } catch(e) {
+                this.error = {
+                    result: "unknown_server_error"
+                }
             }
             
         }
@@ -138,7 +145,15 @@
             <a :href="userProfileLink(selectedUser.id)" target="_blank">{{selectedUser.name}}</a>
           </div>
           <div class="d-flex justify-content-end">
-            <button class="btn btn-primary btn-sm w-100" @click="sendChangeOwnerRequest" :disabled="sendingChangeOwnerRequest">Continuar</button>
+            <button class="btn btn-primary btn-sm w-100" @click="sendChangeOwnerRequest" :disabled="sendingChangeOwnerRequest">
+              <div class="spinner-border text-light spinner-border-sm" role="status" v-if="sendingChangeOwnerRequest">
+                <span class="sr-only">Loading...</span>
+              </div>
+              Continuar
+            </button>
+          </div>
+          <div class="alert alert-danger mt-1" v-if="error !== undefined">
+            Ocurrió un error en el servidor "{{ error.result }}"
           </div>
         </template>
         
