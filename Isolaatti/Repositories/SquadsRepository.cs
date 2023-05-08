@@ -338,5 +338,35 @@ public class SquadsRepository
             return false;
         }
     }
+
+    public async Task<bool> SetUserAsNormalUser(int userId, Guid squadId)
+    {
+        var squad = await _db.Squads.FindAsync(squadId);
+        if (squad == null)
+        {
+            return false;
+        }
+
+        var squadUser = await _db.SquadUsers.FirstOrDefaultAsync(su => su.UserId == userId);
+        if (squadUser == null)
+        {
+            return false;
+        }
+
+        squadUser.Role = SquadUserRole.User;
+
+        _db.SquadUsers.Update(squadUser);
+
+        try
+        {
+            await _db.SaveChangesAsync();
+            return true;
+        }
+        catch (Exception e)
+        {
+            // TODO Log this
+            return false;
+        }
+    }
     
 }

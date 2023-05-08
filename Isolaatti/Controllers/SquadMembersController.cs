@@ -198,6 +198,32 @@ public class SquadMembersController : IsolaattiController
 
         return result ? Ok() : Problem("Internal error saving to database.");
     }
+    
+    [IsolaattiAuth]
+    [HttpPost]
+    [Route("RemoveAdmin")]
+
+    public async Task<IActionResult> RemoveAdmin(Guid squadId, SingleIdentification<int> userId)
+    {
+        var squad = await _squadsRepository.GetSquad(squadId);
+        if (squad == null)
+        {
+            return NotFound(new { result = "squad_not_found" });
+        }
+        if (squad.UserId == userId.Id)
+        {
+            return BadRequest(new { result = "owner_cannot_be_user" });
+        }
+
+        if (!await _squadsRepository.UserBelongsToSquad(userId.Id, squadId))
+        {
+            return BadRequest(new {result = "user_is_not_member"});
+        }
+
+        var result = await _squadsRepository.SetUserAsNormalUser(userId.Id, squadId);
+
+        return result ? Ok() : Problem("Internal error saving to database.");
+    }
 
     [IsolaattiAuth]
     [HttpPost]
