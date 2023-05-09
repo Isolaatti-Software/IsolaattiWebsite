@@ -52,7 +52,7 @@ public class SquadUsersRepository
     {
         var query = (from user in _db.Users
             from squadUser in _db.SquadUsers
-            where (user.Id == squadUser.UserId && owner)
+            where (user.Id == squadUser.UserId)
                   && squadUser.SquadId.Equals(squadId)
                   && ((squadUser.Role == SquadUserRole.Admin && admins) || (squadUser.Role == SquadUserRole.User && normalMembers))
             orderby squadUser.Ranking

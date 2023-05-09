@@ -317,7 +317,7 @@ public class SquadsRepository
             return false;
         }
 
-        var squadUser = await _db.SquadUsers.FirstOrDefaultAsync(su => su.UserId == userId);
+        var squadUser = await _db.SquadUsers.FirstOrDefaultAsync(su => su.UserId == userId && su.SquadId.Equals(squadId));
         if (squadUser == null)
         {
             return false;
@@ -347,7 +347,7 @@ public class SquadsRepository
             return false;
         }
 
-        var squadUser = await _db.SquadUsers.FirstOrDefaultAsync(su => su.UserId == userId);
+        var squadUser = await _db.SquadUsers.FirstOrDefaultAsync(su => su.UserId == userId && su.SquadId.Equals(squadId));
         if (squadUser == null)
         {
             return false;
