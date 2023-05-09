@@ -94,7 +94,7 @@
             });
             this.sendingChangeOwnerRequest = false;
             if(response.ok) {
-                return;
+                window.location.reload();
             }
             try {
                 this.error = await response.json();
