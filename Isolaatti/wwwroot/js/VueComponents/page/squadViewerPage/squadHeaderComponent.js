@@ -15,6 +15,7 @@
             customHeaders: customHttpHeaders,
             userData: userData,
             squadInfo: undefined,
+            squadState: undefined,
             squadHeaderEditMode: false, // this should only be toggled by squad admin
             squadExtendedDescriptionCutContent: true,
             errorUpdating: false,
@@ -59,8 +60,9 @@
             const response = await fetch(`/api/Squads/${this.squadId}`, {
                 headers: this.customHeaders
             });
-
-            this.squadInfo = await response.json();
+            const parsedResponse = await response.json()
+            this.squadInfo = parsedResponse.squad;
+            this.squadState = parsedResponse.state;
             this.$emit("description", this.squadInfo.extendedDescription);
         },
         updateSquad: async function() {

@@ -52,10 +52,10 @@
               </button>
             </div>
             <div class="modal-body" v-if="selectedUser !== undefined">
-              <div class="alert alert-danger">
+              <div class="alert alert-danger" v-if="error">
                 {{error}}
               </div>
-              <p>Al hacer esto, {{selectedUser.name}} dejará de ser administrador para ser miembro normal</p>
+              <p>Al hacer esto, <strong>{{selectedUser.name}}</strong> dejará de ser administrador para ser miembro normal</p>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-dismiss="modal" :disabled="sending">No, cancelar</button>

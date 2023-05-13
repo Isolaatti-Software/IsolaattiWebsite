@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Isolaatti.Classes.ApiEndpointsRequestDataModels;
+using Isolaatti.DTOs;
 using Isolaatti.Enums;
 using Isolaatti.Models;
 using Isolaatti.Repositories;
@@ -45,7 +46,23 @@ public class SquadsController : IsolaattiController
     [Route("{squadId:guid}")]
     public async Task<IActionResult> GetSquad(Guid squadId)
     {
-        return Ok(await _squadsRepository.GetSquad(squadId));
+        var squad = await _squadsRepository.GetSquad(squadId);
+        return Ok(new
+        {
+            squad = squad,
+            state = new SquadStateDto()
+            {
+                IsOwner = squad.UserId == User.Id
+            }
+        });
+    }
+
+    [IsolaattiAuth]
+    [HttpGet]
+    [Route("{squadId:guid}/MyState")]
+    public async Task<IActionResult> GetSquadState(Guid squadId)
+    {
+        return Ok(await _squadsRepository.GetSquadState(squadId, User.Id));
     }
     
     [IsolaattiAuth]

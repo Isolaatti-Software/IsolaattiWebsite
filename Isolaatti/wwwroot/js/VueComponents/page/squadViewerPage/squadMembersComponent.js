@@ -10,7 +10,8 @@
             customHeaders: customHttpHeaders,
             members: [],
             owner: [],
-            admins: []
+            admins: [],
+            moreMembers: false
         }
     },
     methods: {
@@ -40,9 +41,10 @@
             });
             
             if(response.ok){
-                this.members = await response.json();
+                const incomingMembers = await response.json();
+                this.members = this.members.concat(incomingMembers)
+                this.moreMembers = incomingMembers.length === 20;
             }
-            
         },
         fetchAdmins: async function(refresh) {
             let url = `/api/Squads/${this.squadId}/Admins`;
@@ -88,6 +90,7 @@
         <a class="btn btn-sm btn-link ml-auto" :href="squadMembersManagerPageUrl('owner')">Editar</a>
       </div>
       <users-grid :users="owner"></users-grid>
+      
       <div class="d-flex w-100">
         <h5>Administradores</h5>
         <a class="btn btn-sm btn-link ml-auto" :href="squadMembersManagerPageUrl('admins')">Editar</a>
@@ -98,6 +101,9 @@
         <a class="btn btn-sm btn-link ml-auto" :href="squadMembersManagerPageUrl('members')">Editar</a>
       </div>
       <users-grid :users="members"></users-grid>
+      <div class="d-flex justify-content-center">
+        <button class="btn btn-outline-primary" v-if="moreMembers" @click="fetchMembers(false)">Cargar más</button>
+      </div>
     </section>
     `
 });

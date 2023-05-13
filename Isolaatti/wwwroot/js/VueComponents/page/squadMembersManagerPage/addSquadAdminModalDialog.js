@@ -82,7 +82,7 @@
         userProfileLink: function(userId) {
             return `/perfil/${userId}`
         },
-        sendChangeOwnerRequest: async function() {
+        sendAddAdminRequest: async function() {
             this.sendingChangeOwnerRequest = true;
             this.error = undefined;
             const response = await fetch(`/api/squads/${this.squadId}/AddAdmin`,{
@@ -145,7 +145,7 @@
             <a :href="userProfileLink(selectedUser.id)" target="_blank">{{selectedUser.name}}</a>
           </div>
           <div class="d-flex justify-content-end">
-            <button class="btn btn-primary btn-sm w-100" @click="sendChangeOwnerRequest" :disabled="sendingChangeOwnerRequest">
+            <button class="btn btn-primary btn-sm w-100" @click="sendAddAdminRequest" :disabled="sendingChangeOwnerRequest">
               <div class="spinner-border text-light spinner-border-sm" role="status" v-if="sendingChangeOwnerRequest">
                 <span class="sr-only">Loading...</span>
               </div>

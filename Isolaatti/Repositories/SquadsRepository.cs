@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Isolaatti.Classes.ApiEndpointsRequestDataModels;
 using Isolaatti.Classes.ApiEndpointsResponseDataModels;
+using Isolaatti.DTOs;
 using Isolaatti.Enums;
 using Isolaatti.Helpers;
 using Isolaatti.Models;
@@ -85,6 +86,17 @@ public class SquadsRepository
     public async Task<Squad> GetSquad(Guid id)
     {
         return await _db.Squads.FindAsync(id);
+    }
+
+    public async Task<SquadStateDto> GetSquadState(Guid squadId, int userId)
+    {
+        return await _db.Squads
+            .Where(s => s.Id.Equals(squadId))
+            .Select(s => new SquadStateDto
+            {
+                IsOwner = s.UserId == userId
+            })
+            .FirstOrDefaultAsync();
     }
 
     public async Task<bool> SquadExists(Guid squadId)
@@ -199,17 +211,25 @@ public class SquadsRepository
             .AnyAsync(squadUser => squadUser.UserId.Equals(userId) && squadUser.SquadId.Equals(squadId)) || squad.UserId == userId;
     }
 
-    public async Task RemoveAUserFromASquad(Guid squadId, int userId)
+    public async Task<bool> RemoveAUserFromASquad(Guid squadId, int userId)
     {
         var squadUser = await _db.SquadUsers
             .Where(squadUser => squadUser.SquadId.Equals(squadId) && squadUser.UserId == userId)
             .SingleOrDefaultAsync();
         
         if (squadUser == null)
-            return;
+            return false;
         
         _db.SquadUsers.Remove(squadUser);
-        await _db.SaveChangesAsync();
+        try
+        {
+            await _db.SaveChangesAsync();
+            return true;
+        }
+        catch (Exception)
+        {
+            return true;
+        }
     }
 
     public async Task RemoveAllUsersFromASquad(Guid squadId)
@@ -367,6 +387,17 @@ public class SquadsRepository
             // TODO Log this
             return false;
         }
+    }
+
+    public async Task<bool> CheckOwner(int userId, Guid squadId)
+    {
+        var squad = await _db.Squads.FindAsync(squadId);
+        if (squad == null)
+        {
+            return false;
+        }
+
+        return squad.UserId == userId;
     }
     
 }

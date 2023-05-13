@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Isolaatti.Repositories;
 using Isolaatti.Utils;
@@ -210,6 +211,11 @@ public class SquadMembersController : IsolaattiController
         {
             return NotFound(new { result = "squad_not_found" });
         }
+
+        if (squad.UserId != User.Id)
+        {
+            return Unauthorized(new { result = "not_owner"});
+        }
         if (squad.UserId == userId.Id)
         {
             return BadRequest(new { result = "owner_cannot_be_user" });
@@ -300,7 +306,10 @@ public class SquadMembersController : IsolaattiController
     [Route("User/{userId:int}")]
     public async Task<IActionResult> GetSquadUserProfile(Guid squadId, int userId)
     {
-        var squad = await _squadsRepository.GetSquad(squadId);
+        if (!await _squadsRepository.UserBelongsToSquad(User.Id, squadId))
+        {
+            return Unauthorized();
+        }
 
         var squadUser = await _db.SquadUsers
             .Include(squadUser => squadUser.User)
@@ -318,12 +327,26 @@ public class SquadMembersController : IsolaattiController
                 Name = squadUser.User.Name,
                 ImageId = squadUser.User.ProfileImageId
             },
-            Permissions = squadUser.Permissions,
+            Permissions = squadUser.Permissions ?? new List<string>(),
             IsAdmin = squadUser.Role == SquadUserRole.Admin,
             Joined = squadUser.JoinedAt,
             LastInteraction = squadUser.LastInteractionDateTime,
             Ranking = squadUser.Ranking
         });
+    }
+
+    [HttpDelete]
+    [IsolaattiAuth]
+    [Route("RemoveUser")]
+    public async Task<IActionResult> RemoveUserFromSquad(Guid squadId, SingleIdentification<int> userId)
+    {
+        if (!await _squadsRepository.CheckOwner(User.Id, squadId))
+        {
+            return Unauthorized(new { result = "not_owner"});
+        }
+
+        var result = await _squadsRepository.RemoveAUserFromASquad(squadId, userId.Id);
+        return result ? Ok(new { result = "success" }) : Problem("Error on saving data");
     }
 
     [IsolaattiAuth]
