@@ -222,6 +222,30 @@
                  :disabled="!initialState.isOwner">
           <label class="custom-control-label" for="customSwitch4">Modificar imagen del squad</label>
         </div>
+        <div class="custom-control custom-switch">
+          <input type="checkbox" class="custom-control-input" id="customSwitch5"
+                 v-model="selectedUserData.permissions.modifyImage.value"
+                 :disabled="!initialState.isOwner">
+          <label class="custom-control-label" for="customSwitch4">Eliminar miembros</label>
+        </div>
+        <div class="custom-control custom-switch">
+          <input type="checkbox" class="custom-control-input" id="customSwitch6"
+                 v-model="selectedUserData.permissions.modifyImage.value"
+                 :disabled="!initialState.isOwner">
+          <label class="custom-control-label" for="customSwitch4">Agregar administradores</label>
+        </div>
+        <div class="custom-control custom-switch">
+          <input type="checkbox" class="custom-control-input" id="customSwitch7"
+                 v-model="selectedUserData.permissions.modifyImage.value"
+                 :disabled="!initialState.isOwner">
+          <label class="custom-control-label" for="customSwitch4">Moderar contenido</label>
+        </div>
+        <div class="custom-control custom-switch">
+          <input type="checkbox" class="custom-control-input" id="customSwitch8"
+                 v-model="selectedUserData.permissions.modifyImage.value"
+                 :disabled="!initialState.isOwner">
+          <label class="custom-control-label" for="customSwitch4">Editar permisos de administradores</label>
+        </div>
         <div class="alert-danger alert mt-1 alert-dismissible fade show" role="alert" v-if="selectedUserData.errorSettingPermissions">
           Error al guardar ajustes
           <button type="button" class="close" data-dismiss="alert" aria-label="Close">

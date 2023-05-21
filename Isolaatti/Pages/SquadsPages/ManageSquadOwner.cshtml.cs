@@ -32,6 +32,11 @@ public class ManageSquadOwner : IsolaattiPageModel
         {
             return NotFound();
         }
+        
+        if (!await _squadsRepository.UserBelongsToSquad(User.Id, squadId))
+        {
+            return NotFound();
+        }
 
         Owner = _db.Users.Where(u => u.Id == Squad.UserId).Select(u => new UserFeed()
         {

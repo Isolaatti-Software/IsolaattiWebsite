@@ -32,6 +32,11 @@ public class ManageSquadAdmins : IsolaattiPageModel
         {
             return NotFound();
         }
+        
+        if (!await _squadsRepository.UserBelongsToSquad(User.Id, squadId))
+        {
+            return NotFound();
+        }
 
         Admins = await _squadUsersRepository.GetAdminsOfSquad(squadId);
 

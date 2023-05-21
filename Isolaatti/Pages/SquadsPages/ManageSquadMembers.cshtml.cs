@@ -27,6 +27,11 @@ public class ManageSquadMembers : IsolaattiPageModel
             return NotFound();
         }
 
+        if (!await _squadsRepository.UserBelongsToSquad(User.Id, squadId))
+        {
+            return NotFound();
+        }
+
         return Page();
     }
 }

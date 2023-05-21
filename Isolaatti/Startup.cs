@@ -202,6 +202,7 @@ namespace Isolaatti
             services.AddScoped<SquadInvitationsRepository>();
             services.AddScoped<SquadsRepository>();
             services.AddScoped<SquadUsersRepository>();
+            services.AddScoped<SquadPermissionsRepository>();
             services.AddScoped<SquadJoinRequestsRepository>();
             services.AddScoped<SocketIoServiceKeysRepository>();
             services.AddScoped<KeyGenService>();
