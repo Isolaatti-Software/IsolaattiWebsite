@@ -22,11 +22,11 @@ public class AudiosService
         _accounts = accounts;
     }
 
-    public async Task<Audio> CreateAudio(Stream file, int userId, string name, string contentType)
+    public async Task<Audio> CreateAudio(Stream file, int userId, string name, string contentType, int duration)
     {
         var objectName = $"audios/{Guid.NewGuid()}";
         await _storage.CreateObject(file, contentType, objectName);
-        return await _audiosRepository.InsertAudio(userId, name, objectName);
+        return await _audiosRepository.InsertAudio(userId, name, objectName, duration);
     }
 
     public async Task<FeedAudio> GetAudio(string id)

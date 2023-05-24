@@ -70,14 +70,15 @@ public class AudiosRepository
         return await _audios.Find(filter).Limit(50).ToListAsync();
     }
 
-    public async Task<Audio> InsertAudio(int userId, string name, string firestorePath)
+    public async Task<Audio> InsertAudio(int userId, string name, string firestorePath, int duration)
     {
         var audio = new Audio()
         {
             FirestoreObjectPath = firestorePath,
             UserId = userId,
             Name = name,
-            CreationTime = DateTime.Now.ToUniversalTime()
+            CreationTime = DateTime.Now.ToUniversalTime(),
+            DurationSeconds = duration
         };
         await _audios.InsertOneAsync(audio);
         return audio;

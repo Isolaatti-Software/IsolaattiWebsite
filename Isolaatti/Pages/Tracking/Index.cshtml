@@ -1,0 +1,50 @@
+﻿@page "/estadisticas_audios"
+@model Isolaatti.Pages.Tracking.Index
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+    <title>Estadisticas de audios de la plataforma</title>
+</head>
+<body>
+<h1>Estadisticas de audio</h1>
+<p>Duracion de audios</p>
+<div style="width: 400px; height: 400px">
+  <canvas id="myChart"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  const ctx = document.getElementById('myChart');
+  fetch("/tracking/getStats").then(function(response) {
+    if(response.ok) {
+      response.json().then(function(data) {
+        setupGraph([data.lessThanOneMinute, data.betweenOneMinuteAndTwoMinutes, data.moreThanTwoMinutes])
+      })
+    }
+  })
+  
+  function setupGraph(dataArray) {
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['menos de 1 min', 'de 1 min a 2 min', '3 min o mas'],
+          datasets: [{
+            data: dataArray,
+            borderWidth: 1
+          }]
+        }
+      });
+  }
+
+  
+</script>
+
+</body>
+</html>
