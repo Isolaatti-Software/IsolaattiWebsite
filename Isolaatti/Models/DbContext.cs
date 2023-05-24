@@ -10,6 +10,7 @@ namespace Isolaatti.Models
             
         }
         
+        
         public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
         
         public DbSet<User> Users { get; set; }
@@ -23,5 +24,6 @@ namespace Isolaatti.Models
         public DbSet<FollowerRelation> FollowerRelations { get; set; }
         public DbSet<Squad> Squads { get; set; }
         public DbSet<SquadUser> SquadUsers { get; set; }
+        public DbSet<TrackingUserInteraction> TrackingUserInteractions { get; set; }
     }
 }

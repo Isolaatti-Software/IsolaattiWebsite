@@ -33,12 +33,23 @@
             newName: "",
             performingDeletion: false,
             errorDeleting: false,
-            performingNameChange: false
+            performingNameChange: false,
+            trackingRequestSent: false
         }
     },
     methods: {
+        sendTrackingRequest: async function() {
+            const response = await fetch(`/tracking/register?audioId=${this.audioObject.id}`,{
+                headers: this.customHeaders,
+                method: "GET"
+            });
+            this.trackingRequestSent = response.ok;
+        },
         play: async function () {
             await audioService.playPause(this.id);
+            if(!this.trackingRequestSent) {
+                await this.sendTrackingRequest();
+            }
         },
         showChangeNameDialog: function() {
             this.changingName = true;

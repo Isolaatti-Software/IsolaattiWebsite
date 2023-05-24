@@ -35,14 +35,14 @@ public class AudiosController : IsolaattiController
     [IsolaattiAuth]
     [HttpPost]
     [Route("Create")]
-    public async Task<IActionResult> PostAudio([FromForm] IFormFile audioFile, [FromForm] string name)
+    public async Task<IActionResult> PostAudio([FromForm] IFormFile audioFile, [FromForm] string name, [FromForm] int duration)
     {
         if (string.IsNullOrWhiteSpace(name))
         {
             return BadRequest("name parameter was not provided, is empty or white spaces");
         }
 
-        var createdDoc = await _audios.CreateAudio(audioFile.OpenReadStream(), User.Id, name, audioFile.ContentType);
+        var createdDoc = await _audios.CreateAudio(audioFile.OpenReadStream(), User.Id, name, audioFile.ContentType, duration);
 
         return Ok(createdDoc);
     }

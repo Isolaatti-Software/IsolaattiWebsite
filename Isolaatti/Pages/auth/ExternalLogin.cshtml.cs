@@ -4,13 +4,14 @@ using System.Web;
 using Isolaatti.Models;
 using Isolaatti.Services;
 using Isolaatti.Utils;
+using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Isolaatti.Pages.auth
 {
-    public class ExternalLogin : PageModel
+    [IsolaattiAuth]
+    public class ExternalLogin : IsolaattiPageModel
     {
         private readonly DbContextApp _db;
         private readonly IAccounts _accounts;
@@ -26,21 +27,8 @@ namespace Isolaatti.Pages.auth
             _accounts = accounts;
         }
 
-        public async Task<IActionResult> OnGet(string canonicalUrl = "", string tokenParamName = "")
+        public IActionResult OnGet(string canonicalUrl = "", string tokenParamName = "")
         {
-            var token = Request.Cookies["isolaatti_user_session_token"];
-            var user = await _accounts.ValidateToken(token);
-            if (user == null) return RedirectToPage("/LogIn", new { then = Request.GetEncodedUrl() });
-
-            // here it's know that account is correct. Data binding!
-            ViewData["name"] = user.Name;
-            ViewData["email"] = user.Email;
-            ViewData["userId"] = user.Id;
-            ViewData["password"] = user.Password;
-            ViewData["profilePicUrl"] = user.ProfileImageId == null
-                ? null
-                : UrlGenerators.GenerateProfilePictureUrl(user.Id, Request.Cookies["isolaatti_user_session_token"]);
-
             try
             {
                 var url = new Uri(canonicalUrl);
@@ -58,10 +46,6 @@ namespace Isolaatti.Pages.auth
         public async Task<IActionResult> OnPost([FromQuery] string canonicalUrl = "",
             [FromQuery] string tokenParamName = "")
         {
-            var token = Request.Cookies["isolaatti_user_session_token"];
-            var user = await _accounts.ValidateToken(token);
-            if (user == null) return RedirectToPage("/LogIn", new { then = Request.GetEncodedUrl() });
-
             try
             {
                 var url = new Uri(canonicalUrl);
@@ -78,6 +62,7 @@ namespace Isolaatti.Pages.auth
                 return NotFound();
             }
 
+            var token = (string)ViewData["token"];
             return Redirect($"{canonicalUrl}?{tokenParamName}={HttpUtility.UrlEncode(token)}");
         }
     }

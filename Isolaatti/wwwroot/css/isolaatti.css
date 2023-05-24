@@ -156,6 +156,10 @@ button.isolaatti-btn:hover {
   padding: 15px;
   cursor: pointer;
 }
+.user-profile-card.selected {
+  background-color: #dcdcdc;
+  border: 2px solid var(--primary);
+}
 
 .profile-pic {
   width: 100px;
@@ -601,4 +605,11 @@ blockquote {
   display: flex;
   align-items: center;
   flex-direction: column;
+}
+.top-options {
+  position: absolute;
+  width: 100%;
+  background: #fafafa;
+  top: 55px;
+  z-index: 2000;
 }

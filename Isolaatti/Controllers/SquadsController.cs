@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Isolaatti.Classes.ApiEndpointsRequestDataModels;
+using Isolaatti.DTOs;
 using Isolaatti.Enums;
 using Isolaatti.Models;
 using Isolaatti.Repositories;
@@ -46,7 +46,23 @@ public class SquadsController : IsolaattiController
     [Route("{squadId:guid}")]
     public async Task<IActionResult> GetSquad(Guid squadId)
     {
-        return Ok(await _squadsRepository.GetSquad(squadId));
+        var squad = await _squadsRepository.GetSquad(squadId);
+        return Ok(new
+        {
+            squad = squad,
+            state = new SquadStateDto()
+            {
+                IsOwner = squad.UserId == User.Id
+            }
+        });
+    }
+
+    [IsolaattiAuth]
+    [HttpGet]
+    [Route("{squadId:guid}/MyState")]
+    public async Task<IActionResult> GetSquadState(Guid squadId)
+    {
+        return Ok(await _squadsRepository.GetSquadState(squadId, User.Id));
     }
     
     [IsolaattiAuth]
@@ -131,38 +147,7 @@ public class SquadsController : IsolaattiController
         await _squadInvitationsRepository.CreateInvitations(squadId, User.Id, realUserIds, payload.Message);
         return Ok(new { result = "Invitations send. Fake ids or ids that had already been used, if any, were omitted."});
     }
-
-    // [HttpPost]
-    // [Route("{squadId:guid}/RequestJoin")]
-    // public async Task<IActionResult> RequestJoin(
-    //     [FromHeader(Name = "sessionToken")] string sessionToken, 
-    //     Guid squadId,
-    //     SquadJoinRequestCreationRequest payload)
-    // {
-    //     var user = await _accounts.ValidateToken(sessionToken);
-    //     if(user == null) return Unauthorized("Token is not valid");
-    //
-    //     var squad = await _squadsRepository.GetSquad(squadId);
-    //     if (squad == null)
-    //     {
-    //         return NotFound(new { error = "Squad does not exist." });
-    //     }
-    //
-    //     if (await _squadJoinRequestsRepository.SameJoinRequestExists(squadId, user.Id))
-    //     {
-    //         return Ok(new
-    //         {
-    //             error = "Cannot request joining again. Manually delete the previous request before sending a new one"
-    //         });
-    //     }
-    //
-    //     await _squadJoinRequestsRepository.CreateJoinRequest(squadId, user.Id, payload.Message);
-    //
-    //     return Ok(new
-    //     {
-    //         result = "Join request sent"
-    //     });
-    // }
+    
 
     [IsolaattiAuth]
     [HttpGet]
@@ -178,94 +163,6 @@ public class SquadsController : IsolaattiController
     public async Task<IActionResult> GetSquadsOfUser(Guid lastId)
     {
         return Ok(_squadsRepository.GetSquadUserBelongs(User.Id, lastId));
-    }
-
-    [IsolaattiAuth]
-    [HttpGet]
-    [Route("{squadId:guid}/Owner")]
-    public async Task<IActionResult> GetOwnerOfSquad(Guid squadId)
-    {
-        var squad = await _squadsRepository.GetSquad(squadId);
-        if (squad == null)
-        {
-            return NotFound();
-        }
-
-        var owner = (from u in _db.Users
-            where u.Id == squad.UserId
-            select new
-            {
-                Id = u.Id,
-                Name = u.Name,
-                ImageId = u.ProfileImageId
-            }).FirstOrDefault();
-
-        return Ok(owner);
-    }
-
-    [IsolaattiAuth]
-    [HttpGet]
-    [Route("{squadId:guid}/Members")]
-    public async Task<IActionResult> GetMembers(Guid squadId, int lastId = -1)
-    {
-        var squad = await _squadsRepository.GetSquad(squadId);
-        if (squad == null)
-        {
-            return NotFound();
-        }
-
-        var members = (from u in _db.Users
-            from su in _db.SquadUsers
-            where u.Id == su.UserId && su.SquadId == squad.Id && su.Role == SquadUserRole.User
-            orderby  u.Id
-            select new
-            {
-                Id = u.Id,
-                Name = u.Name,
-                ImageId = u.ProfileImageId
-            });
-        
-        if (lastId > 0)
-        {
-            members = members.Where(member => member.Id > lastId);
-        }
-
-        members = members.Take(20);
-
-        return Ok(members);
-
-    }
-
-    [IsolaattiAuth]
-    [HttpGet]
-    [Route("{squadId:guid}/Admins")]
-    public async Task<IActionResult> GetAdmins(Guid squadId, int lastId = -1)
-    {
-        var squad = await _squadsRepository.GetSquad(squadId);
-        if (squad == null)
-        {
-            return NotFound();
-        }
-
-        var members = (from u in _db.Users
-            from su in _db.SquadUsers
-            where u.Id == su.UserId && su.SquadId == squad.Id && su.Role == SquadUserRole.Admin
-            orderby  u.Id
-            select new
-            {
-                Id = u.Id,
-                Name = u.Name,
-                ImageId = u.ProfileImageId
-            });
-        
-        if (lastId > 0)
-        {
-            members = members.Where(member => member.Id > lastId);
-        }
-
-        members = members.Take(20);
-
-        return Ok(members);
     }
 
     [IsolaattiAuth]

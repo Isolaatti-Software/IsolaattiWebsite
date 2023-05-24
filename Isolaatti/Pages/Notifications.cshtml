@@ -5,5 +5,18 @@
     Layout = "Shared/_LayoutWebApp";
     ViewData["Title"] = "Notificaciones";
 }
+<div class="container">
+    <div class="row">
+        <div class="col-lg-3 col-md-2"></div>
+        <div class="col-lg-6 col-md-8">
+            <notifications-page/>
+        </div>
+        <div class="col-lg-3 col-md-2"></div>
+    </div>
+</div>
 
-<p>Notificaciones funciona</p>
+@section Scripts
+{
+    <script inline src="~/js/VueComponents/page/notifications/notificationsPage.js"></script>
+    <script inline src="~/js/VueComponents/notificationComponent.js"></script>
+}

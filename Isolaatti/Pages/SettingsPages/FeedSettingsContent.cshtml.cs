@@ -1,24 +1,19 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Isolaatti.Models;
-using Isolaatti.Services;
 using Isolaatti.Utils;
+using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Isolaatti.Pages.SettingsPages;
-
-public class FeedSettingsContent : PageModel
+[IsolaattiAuth]
+public class FeedSettingsContent : IsolaattiPageModel
 {
     private readonly DbContextApp _db;
-    private readonly IAccounts _accounts;
 
-    public FeedSettingsContent(DbContextApp dbContextApp, IAccounts accounts)
+    public FeedSettingsContent(DbContextApp dbContextApp)
     {
         _db = dbContextApp;
-        _accounts = accounts;
-        
-        
     }
 
     [BindProperty] public bool ShowOwnPostsOnFeed { get; set; }
@@ -26,37 +21,13 @@ public class FeedSettingsContent : PageModel
 
     public async Task<IActionResult> OnGet()
     {
-        var user = await _accounts.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
-        if (user == null) return RedirectToPage("LogIn");
-
-        // here it's know that account is correct. Data binding!
-        ViewData["name"] = user.Name;
-        ViewData["email"] = user.Email;
-        ViewData["userId"] = user.Id;
-        ViewData["password"] = user.Password;
-        ViewData["profilePicUrl"] = user.ProfileImageId == null
-            ? null
-            : UrlGenerators.GenerateProfilePictureUrl(user.Id, Request.Cookies["isolaatti_user_session_token"]);
-
-        ShowOwnPostsOnFeed = _db.FollowerRelations.Any(fr => fr.TargetUserId == user.Id && fr.UserId == user.Id);
-
+        ShowOwnPostsOnFeed = _db.FollowerRelations.Any(fr => fr.TargetUserId == User.Id && fr.UserId == User.Id);
         return Page();
     }
 
     public async Task<IActionResult> OnPostShowOwnPostsSet()
     {
-        var user = await _accounts.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
-        if (user == null) return RedirectToPage("LogIn");
-        
-        // here it's know that account is correct. Data binding!
-        ViewData["name"] = user.Name;
-        ViewData["email"] = user.Email;
-        ViewData["userId"] = user.Id;
-        ViewData["profilePicUrl"] = user.ProfileImageId == null
-            ? null
-            : UrlGenerators.GenerateProfilePictureUrl(user.Id, Request.Cookies["isolaatti_user_session_token"]);
-
-        if (_db.FollowerRelations.Any(fr => fr.TargetUserId == user.Id && fr.UserId == user.Id) == ShowOwnPostsOnFeed)
+        if (_db.FollowerRelations.Any(fr => fr.TargetUserId == User.Id && fr.UserId == User.Id) == ShowOwnPostsOnFeed)
         {
             PreferencesUpdated = true;
             return Page();
@@ -66,14 +37,14 @@ public class FeedSettingsContent : PageModel
         {
             _db.FollowerRelations.Add(new FollowerRelation
             {
-                UserId = user.Id,
-                TargetUserId = user.Id
+                UserId = User.Id,
+                TargetUserId = User.Id
             });
         }
         else
         {
             var frToDelete = _db.FollowerRelations
-                .Single(fr => fr.UserId == user.Id && fr.TargetUserId == user.Id);
+                .Single(fr => fr.UserId == User.Id && fr.TargetUserId == User.Id);
 
             _db.FollowerRelations.Remove(frToDelete);
         }

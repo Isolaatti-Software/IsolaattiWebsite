@@ -20,7 +20,7 @@ public class AuthenticationFilter : IAsyncActionFilter
         var attrs = context.ActionDescriptor.EndpointMetadata.OfType<IsolaattiAuth>();
         if (attrs.Any())
         {
-            var header = context.HttpContext.Request.Headers["sessionToken"].FirstOrDefault();
+            var header = context.HttpContext.Request.Headers["Authorization"].FirstOrDefault();
             if (header == null)
             {
                 context.Result = new UnauthorizedObjectResult("Unauthorized");
@@ -31,7 +31,6 @@ public class AuthenticationFilter : IAsyncActionFilter
             if (user == null)
             {
                 context.Result = new UnauthorizedObjectResult("Unauthorized");
-                await next();
             }
 
             if (context.Controller is IsolaattiController controller)

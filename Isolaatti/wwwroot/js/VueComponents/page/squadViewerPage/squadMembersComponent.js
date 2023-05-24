@@ -10,7 +10,8 @@
             customHeaders: customHttpHeaders,
             members: [],
             owner: [],
-            admins: []
+            admins: [],
+            moreMembers: false
         }
     },
     methods: {
@@ -40,9 +41,10 @@
             });
             
             if(response.ok){
-                this.members = await response.json();
+                const incomingMembers = await response.json();
+                this.members = this.members.concat(incomingMembers)
+                this.moreMembers = incomingMembers.length === 20;
             }
-            
         },
         fetchAdmins: async function(refresh) {
             let url = `/api/Squads/${this.squadId}/Admins`;
@@ -64,6 +66,16 @@
         },
         pictureUrl: function(picId) {
             return `/api/Fetch/ProfileImages/${picId}.png`;
+        },
+        squadMembersManagerPageUrl: function(tab) {
+            let url = `/squads/${this.squadId}/gestion_miembros`;
+            switch(tab) {
+                case "owner": url += "/propietario"; break;
+                case "admins": url += "/administradores"; break;
+                case "members": url += "/miembros"; break;
+            }
+            
+            return url;
         }
     },
     mounted: async function() {
@@ -75,16 +87,23 @@
     <section class="isolaatti-card">
       <div class="d-flex w-100">
         <h5>Propietario</h5>
-        <button class="btn btn-sm btn-link ml-auto">Cambiar</button>
+        <a class="btn btn-sm btn-link ml-auto" :href="squadMembersManagerPageUrl('owner')">Editar</a>
       </div>
       <users-grid :users="owner"></users-grid>
+      
       <div class="d-flex w-100">
         <h5>Administradores</h5>
-        <button class="btn btn-sm btn-link ml-auto">Agregar</button>
+        <a class="btn btn-sm btn-link ml-auto" :href="squadMembersManagerPageUrl('admins')">Editar</a>
       </div>
       <users-grid :users="admins"></users-grid>
-      <h5>Miembros</h5>
+      <div class="d-flex w-100">
+        <h5>Miembros</h5>
+        <a class="btn btn-sm btn-link ml-auto" :href="squadMembersManagerPageUrl('members')">Editar</a>
+      </div>
       <users-grid :users="members"></users-grid>
+      <div class="d-flex justify-content-center">
+        <button class="btn btn-outline-primary" v-if="moreMembers" @click="fetchMembers(false)">Cargar más</button>
+      </div>
     </section>
     `
 });

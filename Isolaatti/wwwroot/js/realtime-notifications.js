@@ -2,7 +2,8 @@
 const socket = io(realtimeServer ,{
     withCredentials: true,
     auth: {
-        sessionToken
+        authorization,
+        clientId
     }
 });
 

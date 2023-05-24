@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Isolaatti.Classes.ApiEndpointsResponseDataModels;
@@ -20,12 +21,16 @@ public class SearchController : IsolaattiController
     private readonly DbContextApp _db;
     private readonly AudiosRepository _audios;
     private readonly ImagesRepository _imagesRepository;
+    private readonly SquadUsersRepository _squadUsersRepository;
+    private readonly SquadsRepository _squadsRepository;
 
-    public SearchController(DbContextApp db, AudiosRepository audios, ImagesRepository imagesRepository)
+    public SearchController(DbContextApp db, AudiosRepository audios, ImagesRepository imagesRepository, SquadUsersRepository squadUsersRepository, SquadsRepository squadsRepository)
     {
         _db = db;
         _audios = audios;
         _imagesRepository = imagesRepository;
+        _squadUsersRepository = squadUsersRepository;
+        _squadsRepository = squadsRepository;
     }
 
     [IsolaattiAuth]
@@ -143,5 +148,46 @@ public class SearchController : IsolaattiController
             }
         }
         return Ok(results);
+    }
+
+    [IsolaattiAuth]
+    [Route("{squadId:guid}/RankedUserSearch")]
+    [HttpGet]
+    public async Task<IActionResult> RankedSearchOnSquads([FromQuery] string q, Guid squadId, [FromQuery] int lastId = 0)
+    {
+        if (q.IsNullOrWhiteSpace())
+        {
+            return NoContent();
+        }
+
+        var squadExists = await _squadsRepository.SquadExists(squadId);
+
+        var userBelongs = await _squadsRepository.UserBelongsToSquad(User.Id, squadId);
+
+        if (!squadExists || !userBelongs)
+        {
+            return NotFound();
+        }
+        
+        var result = await _squadUsersRepository.SearchOnUsers(q, squadId, lastId);
+        return Ok(result);
+    }
+
+    [IsolaattiAuth]
+    [Route("{squadId:guid}/SearchSuggestions")]
+    [HttpGet]
+    public async Task<IActionResult> GetSuggestionsSquadRankedUsers(Guid squadId,[FromQuery] bool owner = false, [FromQuery] bool admins = true, [FromQuery] bool members = true)
+    {
+        var squadExists = await _squadsRepository.SquadExists(squadId);
+
+        var userBelongs = await _squadsRepository.UserBelongsToSquad(User.Id, squadId);
+
+        if (!squadExists || !userBelongs)
+        {
+            return NotFound();
+        }
+
+        var result = await _squadUsersRepository.GetRankedSuggestions(squadId, owner, admins, members);
+        return Ok(result);
     }
 }

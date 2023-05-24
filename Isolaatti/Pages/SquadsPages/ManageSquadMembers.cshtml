@@ -1,0 +1,12 @@
+﻿@page "/squads/{squadId:guid}/gestion_miembros/miembros"
+@model Isolaatti.Pages.SquadsPages.ManageSquadMembers
+
+@{
+    Layout = "Shared/_LayoutSquadMembersManager";
+    ViewData["Title"] = "Administración de miembros";
+    ViewData["PageName"] = "members";
+}
+
+<div class="col-12">
+    <squad-members-page squad-id="@Model.Squad.Id"/>
+</div>

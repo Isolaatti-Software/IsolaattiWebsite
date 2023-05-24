@@ -1,0 +1,52 @@
+﻿@{
+    Layout = "_LayoutWebApp";
+    var currentPage = (string)ViewData["PageName"];
+}
+@section Scripts
+{
+    
+    <script inline src="~/js/VueComponents/page/squadMembersManagerPage/changeSquadOwnerModalDialog.js"></script>
+    <script inline src="~/js/VueComponents/page/squadMembersManagerPage/addSquadAdminModalDialog.js"></script>
+    <script inline src="~/js/VueComponents/page/squadMembersManagerPage/removeUserFromSquadModalContent.js"></script>
+    <script inline src="~/js/VueComponents/page/squadMembersManagerPage/removeAdminFromSquadModalContent.js"></script>
+    <script inline src="~/js/VueComponents/page/squadMembersManagerPage/turnIntoAdminModalDialog.js"></script>
+    <script inline src="~/js/VueComponents/page/squadMembersManagerPage/squadAdminsPage.js"></script>
+    <script inline src="~/js/VueComponents/page/squadMembersManagerPage/squadMembersPage.js"></script>
+    <script inline src="~/js/VueComponents/page/squadMembersManagerPage/squadUserProfileComponent.js"></script>
+    <script inline src="~/js/VueComponents/usersGridComponent.js"></script>
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 jumbotron p-3 pl-5">
+            
+            <div class="d-flex align-items-center">
+                
+                <img class="profile-pic mr-1" src="@Url.ActionLink("GetImage", "Images", new { imageId = Model.Squad.ImageId, mode = "reduced" })"/>
+                <div class="d-flex align-content-center flex-column">
+                    <a asp-page="SquadViewer" asp-route-squadId="@Model.Squad.Id" class="btn btn-sm btn-outline-primary mb-1">
+                        <i class="fa-solid fa-arrow-left"></i> Regresar al squad
+                    </a>
+                    <h1>@Model.Squad.Name</h1>
+                    <h2 class="lead">Gestion de miembros</h2>
+                </div>
+
+            </div>
+            <ul class="nav p-4 sticky-top">
+                <li class="nav-item">
+                    <a class="btn btn-sm mr-1 @(currentPage == "members" ? "btn-primary" : "")" asp-page="ManageSquadMembers" asp-route-squadId="@Model.Squad.Id">Miembros</a>
+                </li>
+                <li class="nav-item">
+                    <a class="btn btn-sm mr-1 @(currentPage == "admins" ? "btn-primary" : "")" asp-page="ManageSquadAdmins" asp-route-squadId="@Model.Squad.Id">Administradores</a>
+                </li>
+                <li class="nav-item">
+                    <a class="btn btn-sm @(currentPage == "owner" ? "btn-primary" : "")" asp-page="ManageSquadOwner" asp-route-squadId="@Model.Squad.Id">Propietario</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="row">
+        @RenderBody()
+    </div>
+</div>

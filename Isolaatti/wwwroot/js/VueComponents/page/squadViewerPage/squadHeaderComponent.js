@@ -15,6 +15,7 @@
             customHeaders: customHttpHeaders,
             userData: userData,
             squadInfo: undefined,
+            squadState: undefined,
             squadHeaderEditMode: false, // this should only be toggled by squad admin
             squadExtendedDescriptionCutContent: true,
             errorUpdating: false,
@@ -24,7 +25,14 @@
                 description: "",
                 extendedDescription: ""
             },
-            squadImageEdition: false
+            squadImageEdition: false,
+            leaveSquad:{
+                requestInProgress: false,
+                ownerCannotLeaveError: false,
+                squadNotFound: false,
+                userDoesNotBelong: false,
+                unknownError: true
+            }
         }
     },
     computed:  {
@@ -52,8 +60,9 @@
             const response = await fetch(`/api/Squads/${this.squadId}`, {
                 headers: this.customHeaders
             });
-
-            this.squadInfo = await response.json();
+            const parsedResponse = await response.json()
+            this.squadInfo = parsedResponse.squad;
+            this.squadState = parsedResponse.state;
             this.$emit("description", this.squadInfo.extendedDescription);
         },
         updateSquad: async function() {
@@ -77,6 +86,54 @@
         onImageUpdated: function(imageId) {
             this.squadInfo.imageId = imageId;
             $('#modal-edit-photo').modal('hide');
+        },
+        leave: async function() {
+            this.resetLeaveModal();
+            this.leaveSquad.requestInProgress = true;
+            const response = await fetch(`/api/Squads/${this.squadId}/Leave`, {
+                method: "post",
+                headers: this.customHeaders
+            });
+            this.leaveSquad.requestInProgress = false;
+            
+            if(response.ok){
+                const result = await response.json();
+                switch(result.result) {
+                    case "left_squad": 
+                        window.location = "/squads";
+                        break;
+                    
+                }
+            } else {
+                if(response.status >= 500) {
+                    this.leaveSquad.unknownError = true;
+                    return;
+                }
+                
+                const result = await response.json();
+                switch(result.result) {
+                    case "user_does_not_belong":
+                        this.leaveSquad.error = true;
+                        this.leaveSquad.userDoesNotBelong = true;
+                        break;
+                    case "squad_not_found":
+                        this.leaveSquad.error = true;
+                        this.leaveSquad.squadNotFound = true;
+                        break;
+                    case "owner_cannot_leave":
+                        this.leaveSquad.error = true;
+                        this.leaveSquad.ownerCannotLeaveError = true;
+                        break;
+                }
+            }
+            
+        },
+        resetLeaveModal: function() {
+            this.leaveSquad.ownerCannotLeaveError = false;
+            this.leaveSquad.squadNotFound = false;
+            this.leaveSquad.userDoesNotBelong = false;
+            this.leaveSquad.unknownError = false;
+            this.leaveSquad.requestInProgress = false;
         }
     },
     mounted: async function() {
@@ -174,9 +231,20 @@
           </div>
           <div class="modal-body">
             <p>¿Estás seguro de que quieres dejar el squad?</p>
+            <div class="alert alert-danger" v-if="leaveSquad.ownerCannotLeaveError">
+              No es posible salir del squad si eres el propietario. Antes, designa a un nuevo propietario.
+            </div>
             <div class="d-flex justify-content-end">
-              <button class="btn btn-light btn-sm mr-1">No, cancelar</button>
-              <button class="btn btn-primary btn-sm">Sí, salir</button>
+              <button class="btn btn-light btn-sm mr-1" data-dismiss="modal" @click="resetLeaveModal">No, cancelar</button>
+              <button class="btn btn-primary btn-sm" :disabled="leaveSquad.requestInProgress" @click="leave">
+                <span v-if="!leaveSquad.requestInProgress">Sí, salir</span>
+                <span v-else>
+                  <div class="spinner-border spinner-border-sm" role="status">
+                    <span class="sr-only">Loading...</span>
+                  </div> 
+                  Saliendo
+                </span>
+              </button>
             </div>
           </div>
         </div>

@@ -60,3 +60,8 @@ if(!renderRouter) {
         mounted
     });
 }
+
+document.getElementById("app").style.height = `${window.innerHeight}px`;
+window.onresize = function() {
+    document.getElementById("app").style.height = `${window.innerHeight}px`;
+}

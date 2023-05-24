@@ -172,10 +172,11 @@ Vue.component('audio-recorder', {
             }
 
             request.open("POST", "/api/Audios/Create");
-            request.setRequestHeader("sessionToken", sessionToken);
+            request.setRequestHeader("Authorization", authorization);
             const formData = new FormData();
             formData.append("name", this.audioName);
             formData.append("audioFile", this.recorder.resultantBlob);
+            formData.append("duration", this.recorder.timeInSeconds);
             request.send(formData);
         }
     },

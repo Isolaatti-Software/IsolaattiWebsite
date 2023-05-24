@@ -13,6 +13,7 @@ using Isolaatti.Models.MongoDB;
 using Isolaatti.Repositories;
 using Isolaatti.Services;
 using Isolaatti.Utils.ActionFilters;
+using Isolaatti.Utils.PageFilters;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
@@ -113,7 +114,9 @@ namespace Isolaatti
                 options.Filters.Add<AuthenticationFilter>();
             });
             services.AddMvcCore().AddApiExplorer();
-            services.AddRazorPages().AddRazorRuntimeCompilation();
+            services.AddRazorPages()
+                .AddMvcOptions(options => options.Filters.Add<IsolaattiAuthPagesFilter>())
+                .AddRazorRuntimeCompilation();
             
             services.AddWebOptimizer(options =>
             {
@@ -198,6 +201,8 @@ namespace Isolaatti
             services.AddScoped<AudiosRepository>();
             services.AddScoped<SquadInvitationsRepository>();
             services.AddScoped<SquadsRepository>();
+            services.AddScoped<SquadUsersRepository>();
+            services.AddScoped<SquadPermissionsRepository>();
             services.AddScoped<SquadJoinRequestsRepository>();
             services.AddScoped<SocketIoServiceKeysRepository>();
             services.AddScoped<KeyGenService>();

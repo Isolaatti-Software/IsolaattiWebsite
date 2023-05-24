@@ -201,7 +201,7 @@ Vue.component("posts-list", {
               </button>
             </div>
             <div class="modal-body">
-              <h6>Personas que dieron like</h6>
+              <h6>Personas que aplaudieron a esto</h6>
               <div class="list-group list-group-flush">
                 <a class="list-group-item list-group-item-action" v-for="user in postDetails.usersWhoLiked" :href="userProfileLink(user.id)">
                   <img class="user-avatar" :src="profilePictureUrl(user.profileImageId)">
