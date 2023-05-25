@@ -79,10 +79,15 @@ public class ImagesController : IsolaattiController
     [Route("profile_image/of_user/{userId:int}")]
     public async Task<IActionResult> GetProfileImageOfUserById(int userId, string mode = "original")
     {
-        var imageId = await _db.Users.Where(u => u.Id == userId).Select(u => u.ProfileImageId).FirstOrDefaultAsync();
-        var url = await _images.GetImageDownloadUrl(imageId, mode);
+        var user = await _db.Users.FindAsync(userId);
+        if (user?.ProfileImageId == null)
+        {
+            return Redirect(user?.ProfileImageUrl ?? "/res/imgs/avatar.svg");
+        }
         
-        return url != null ? Redirect(url) : Redirect("/res/imgs/avatar.svg");
+        var url = await _images.GetImageDownloadUrl(user?.ProfileImageId, mode);
+
+        return Redirect(url);
     }
 
     [HttpGet]

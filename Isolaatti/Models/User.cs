@@ -38,7 +38,11 @@ namespace Isolaatti.Models
         public bool FollowingThisUser { get; set; }
         [NotMapped]
         public bool ThisUserIsFollowingMe { get; set; }
-        public string? ProfileImageId { get; set; }
+        
+        // ProfileImageId is used as first option, and then try ProfileImageUrl
+        public string ProfileImageId { get; set; }
+        // ProfileImageUrl is used to save Firebase account image url. It can come from Google, Facebook, etc
+        public string ProfileImageUrl { get; set; }
         public string DescriptionText { get; set; }
         public string DescriptionAudioId { get; set; }
 

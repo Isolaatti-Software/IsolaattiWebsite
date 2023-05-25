@@ -149,12 +149,11 @@ public class Accounts : IAccounts
 
     public async Task MakeAccountFromGoogleAccount(string accessToken)
     {
-        var decodedTokenTask = FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(accessToken);
-
-        var uid = (await decodedTokenTask).Uid;
-        var userTask = FirebaseAuth.DefaultInstance.GetUserAsync(uid);
-
-        var user = await userTask;
+        var decodedToken   = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(accessToken);
+        
+        var uid = decodedToken.Uid;
+        var user = await FirebaseAuth.DefaultInstance.GetUserAsync(uid);
+        
 
         if (!db.Users.Any(u => u.Email.Equals(user.Email)))
         {
@@ -174,6 +173,13 @@ public class Accounts : IAccounts
             UserId = isolaattiUser.Id,
             GoogleUid = user.Uid
         };
+
+        var googleProfileImageUrl = user.PhotoUrl;
+        if (googleProfileImageUrl != null)
+        {
+            isolaattiUser.ProfileImageUrl = googleProfileImageUrl;
+            db.Users.Update(isolaattiUser);
+        }
         db.ExternalUsers.Add(googleUser);
         await db.SaveChangesAsync();
     }

@@ -49,8 +49,7 @@
             return this.newDescription?.trim().length < 350 || this.newDescription === null;
         },
         profileImageUrl: function () {
-            if (this.profile.profileImageId === null) return "/res/imgs/avatar.svg";
-            return `/api/images/image/${this.profile.profileImageId}?mode=reduced`;
+            return `/api/images/profile_image/of_user/${this.userId}?mode=reduced`;
         },
         receivedLikesPageUrl: function () {
             return `/perfil/${this.userId}/likes_recibidos`;

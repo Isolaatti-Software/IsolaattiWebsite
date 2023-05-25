@@ -49,9 +49,7 @@ public class IsolaattiAuthPagesFilter : IAsyncPageFilter
                 pageModel.ViewData[IsolaattiPageModel.ViewDataNameKey] = user.Name;
                 pageModel.ViewData[IsolaattiPageModel.ViewDataEmailKey] = user.Email;
                 pageModel.ViewData[IsolaattiPageModel.ViewDataUserIdKey] = user.Id;
-                pageModel.ViewData[IsolaattiPageModel.ViewDataProfilePicUrlKey] = user.ProfileImageId == null
-                    ? null
-                    : UrlGenerators.GenerateProfilePictureUrl(user.Id, null);
+                pageModel.ViewData[IsolaattiPageModel.ViewDataProfilePicUrlKey] = UrlGenerators.GenerateProfilePictureUrl(user.Id, null);
                 pageModel.ViewData[IsolaattiPageModel.ViewDataJwtTokenKey] = cookie;
             }
 
