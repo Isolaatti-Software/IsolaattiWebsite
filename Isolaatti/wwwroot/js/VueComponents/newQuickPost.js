@@ -27,10 +27,10 @@
                     v-on:click="mode='discussion'">
               <i class="far fa-newspaper"></i> Discusión
             </button>
-            <button class="btn" :class="[mode==='article' ? 'btn-primary' : 'btn-outline-primary']"
-                    v-on:click="mode='article'">
-              <i class="fa-solid fa-pen"></i> Artículo
-            </button>
+<!--            <button class="btn" :class="[mode==='article' ? 'btn-primary' : 'btn-outline-primary']"-->
+<!--                    v-on:click="mode='article'">-->
+<!--              <i class="fa-solid fa-pen"></i> Artículo-->
+<!--            </button>-->
             <button class="btn" :class="[mode==='audio' ? 'btn-primary' : 'btn-outline-primary']"
                     v-on:click="mode='audio'">
               <i class="fa-solid fa-ear-listen"></i> Audio
