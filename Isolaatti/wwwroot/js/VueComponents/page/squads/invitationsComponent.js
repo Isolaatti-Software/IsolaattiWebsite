@@ -63,6 +63,7 @@
     },
     template: `
     <section class="isolaatti-card">
+      
       <h5>Invitaciones</h5>
       <div class="btn-group btn-group-sm w-100">
         <button class="btn" :class="{'btn-primary':overallMode==='forMe'}" @click="overallMode='forMe'">

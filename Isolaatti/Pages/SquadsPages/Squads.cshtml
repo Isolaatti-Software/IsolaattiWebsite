@@ -12,9 +12,8 @@
     <script minify>
     function getRoutesForPage() { 
         return [
-            { path: "/", component: squadsBelong },
+            { path: "/", component: squadLists },
             { path: "/crear", component: createSquadComponent },
-            { path: "/tuyos", component: yourSquadsComponent },
             { path: "/solicitudes_union", component: requestsComponent },
             { path: "/invitaciones", component: invitationsComponent }
         ]}
@@ -23,6 +22,7 @@
     <script inline src="~/js/VueComponents/squads/squadRequestsList.js"></script>
     <script inline src="~/js/VueComponents/page/squads/invitationsComponent.js"></script>
     <script inline src="~/js/VueComponents/page/squads/requestsComponent.js"></script>
+    <script inline src="~/js/VueComponents/page/squads/squadsList.js"></script>
     <script inline src="~/js/VueComponents/page/squads/squadsBelong.js"></script>
     <script inline src="~/js/VueComponents/page/squads/squadsComponent.js"></script>
     <script inline src="~/js/VueComponents/page/squads/createSquadComponent.js"></script>

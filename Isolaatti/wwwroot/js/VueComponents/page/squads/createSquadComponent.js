@@ -34,6 +34,10 @@
                 })
             });
             this.makingSquad = false;
+            if(!squadCreationResponse.ok) {
+                console.error(await squadCreationResponse.text())
+                return;
+            }
             const squadCreationParsedResponse = await squadCreationResponse.json();
             this.makingInvitations = true;
             this.justCreatedSquadId = squadCreationParsedResponse.squad.id;

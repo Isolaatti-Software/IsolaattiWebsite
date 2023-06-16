@@ -26,8 +26,7 @@
     },
     template: `
     <section class="isolaatti-card">
-        <h5>Squads donde eres miembro</h5>
-        <p>Squads donde eres miembro, no administrador.</p>
+        
         <div class="alert alert-info" v-if="mySquads.length === 0 && !loading">No eres miembro de ningún squad.</div>
         <div class="d-flex justify-content-center w-100">
           <div class="spinner-border" v-if="loading"></div>
