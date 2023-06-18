@@ -1,9 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Isolaatti.Utils;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace Isolaatti.Models;
+namespace Isolaatti.RealtimeInteraction.Entity;
 
 public class SocketIoServiceKey
 {

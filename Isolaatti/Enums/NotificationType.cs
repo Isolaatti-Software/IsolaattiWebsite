@@ -2,5 +2,5 @@
 
 public enum NotificationType
 {
-    NewComment, NewFollower
+    NewComment, NewFollower, NewLike
 }

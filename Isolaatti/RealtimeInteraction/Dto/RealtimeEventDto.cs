@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Isolaatti.DTOs;
+namespace Isolaatti.RealtimeInteraction.Dto;
 
 public enum EventType
 {

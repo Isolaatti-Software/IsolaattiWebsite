@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Isolaatti.Classes.ApiEndpointsRequestDataModels;
 using Isolaatti.DTOs;
 using Isolaatti.Models;
+using Isolaatti.RealtimeInteraction.Service;
 using Isolaatti.Services;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;

@@ -4,12 +4,13 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Isolaatti.Config;
 using Isolaatti.DTOs;
-using Isolaatti.Models.MongoDB;
-using Isolaatti.Repositories;
+using Isolaatti.Notifications.Entity;
+using Isolaatti.RealtimeInteraction.Dto;
+using Isolaatti.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Isolaatti.Services;
+namespace Isolaatti.RealtimeInteraction.Service;
 
 public class NotificationSender
 {

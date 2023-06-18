@@ -5,6 +5,7 @@ using Isolaatti.Classes.ApiEndpointsRequestDataModels;
 using Isolaatti.Classes.ApiEndpointsResponseDataModels;
 using Isolaatti.DTOs;
 using Isolaatti.Models;
+using Isolaatti.RealtimeInteraction.Service;
 using Isolaatti.Repositories;
 using Isolaatti.Services;
 using Isolaatti.Utils;

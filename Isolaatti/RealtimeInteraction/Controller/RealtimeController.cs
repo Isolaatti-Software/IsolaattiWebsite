@@ -1,9 +1,10 @@
 ﻿using System.Threading.Tasks;
 using Isolaatti.Models;
+using Isolaatti.RealtimeInteraction.Entity;
 using Isolaatti.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Isolaatti.Controllers;
+namespace Isolaatti.RealtimeInteraction.Controller;
 
 [ApiController]
 public class RealtimeController : ControllerBase

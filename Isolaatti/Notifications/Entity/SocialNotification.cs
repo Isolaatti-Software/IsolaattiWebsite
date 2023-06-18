@@ -1,7 +1,7 @@
 using System;
 using Isolaatti.Enums;
 
-namespace Isolaatti.Models.MongoDB
+namespace Isolaatti.Notifications.Entity
 {
     public class SocialNotification
     {
