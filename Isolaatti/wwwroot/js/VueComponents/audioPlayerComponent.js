@@ -37,6 +37,11 @@ Vue.component('audio-player', {
             return `${Math.trunc(minutes)}:${seconds}`;
         }
     },
+    watch: {
+        volume: function(newValue, old) {
+            audioService.setGain(newValue);
+        }
+    },
     mounted: async function() {
         const that = this;
         
