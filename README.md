@@ -2,6 +2,7 @@
 Sitio web de Isolaatti
 
 [![.NET](https://github.com/Isolaatti-Software/IsolaattiWebsite/actions/workflows/dotnet.yml/badge.svg)](https://github.com/Isolaatti-Software/IsolaattiWebsite/actions/workflows/dotnet.yml)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FIsolaatti-Software%2FIsolaattiWebsite.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FIsolaatti-Software%2FIsolaattiWebsite?ref=badge_shield)
 
 Bienvenid@
 
@@ -86,3 +87,7 @@ Información más a detalle acerca del CLI de Entity Framework: https://learn.mi
 5. Ejecuta con el botón de tu IDE, o si estás en linea de comandos, ejecuta `dotnet run`.
 
 Si hay algún problema. erik10cavazos@gmail.com
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FIsolaatti-Software%2FIsolaattiWebsite.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FIsolaatti-Software%2FIsolaattiWebsite?ref=badge_large)
