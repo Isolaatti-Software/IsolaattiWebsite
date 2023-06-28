@@ -33,7 +33,9 @@ namespace Isolaatti.Controllers
             // let's put this token on cookies
             Response.Cookies.Append("isolaatti_user_session_token", sessionToken.ToString(), new CookieOptions()
             {
-                Expires = DateTimeOffset.Now.AddMonths(1)
+                Expires = DateTimeOffset.Now.AddMonths(1),
+                HttpOnly = false,
+                SameSite = SameSiteMode.Strict
             });
             if (!then.Equals(""))
             {

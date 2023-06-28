@@ -1,20 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using FirebaseAdmin.Auth;
-using Isolaatti.Auth;
-using Isolaatti.Auth.Config;
+using Isolaatti.DTOs;
 using Isolaatti.Enums;
 using Isolaatti.isolaatti_lib;
 using Isolaatti.Models;
 using Isolaatti.Models.MongoDB;
 using Isolaatti.Repositories;
-using Jose;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 
@@ -26,22 +24,18 @@ public class Accounts : IAccounts
     private readonly HttpContext _httpContext;
     private readonly ISendGridClient _sendGridClient;
     private readonly SessionsRepository _sessionsRepository;
-    private readonly KeyGenService _keyGenService;
-    private readonly IOptions<JwtKeyConfig> _configurationJwt;
+
+    public const string SessionCookieName = "isolaatti_user_session_token";
 
     public Accounts(DbContextApp db,
         ISendGridClient sendGridClient,
         ScopedHttpContext scopedHttpContext,
-        SessionsRepository sessionsRepository,
-        KeyGenService keyGenService,
-        IOptions<JwtKeyConfig> configurationJwt)
+        SessionsRepository sessionsRepository)
     {
         this.db = db;
         _sendGridClient = sendGridClient;
         _httpContext = scopedHttpContext.HttpContext;
         _sessionsRepository = sessionsRepository;
-        _keyGenService = keyGenService;
-        _configurationJwt = configurationJwt;
     }
 
     public async Task<AccountMakingResult> MakeAccountAsync(string username, string email, string password)
@@ -105,7 +99,7 @@ public class Accounts : IAccounts
     }
 
 
-    public async Task<string> CreateNewToken(int userId, string plainTextPassword)
+    public async Task<string> CreateNewSession(int userId, string plainTextPassword)
     {
         var user = await db.Users.FindAsync(userId);
         if (user == null) return null;
@@ -114,37 +108,29 @@ public class Accounts : IAccounts
             passwordHasher.VerifyHashedPassword(user.Email, user.Password, plainTextPassword);
         if (passwordVerificationResult == PasswordVerificationResult.Failed) return null;
 
-        
-        var payload = new JwtPayload()
-        {
-            UserId = user.Id
-        };
-
-        var jwt = JWT.Encode(payload, _configurationJwt.Value.ToByteArray(), JwsAlgorithm.HS256);
-
-        await _sessionsRepository.InsertSession(new Session()
+        var sessionInserted = await _sessionsRepository.InsertSession(new Session()
         {
             UserId = user.Id,
-            CreationDate = DateTime.Now.ToUniversalTime(),
             IpAddress = GetIpAddress(),
             UserAgent = GetUserAgent()
         });
         await SendJustLoginEmail(user.Email, user.Name,GetIpAddress());
 
-        return jwt;
+        return sessionInserted.ToString();
     }
 
-    public async Task<User> ValidateToken(string token)
+    public async Task<User> ValidateSession(SessionDto sessionDto)
     {
-        if (token == null) return null;
-
-        var decoded = JWT.Decode<JwtPayload>(token, _configurationJwt.Value.ToByteArray(), JwsAlgorithm.HS256);
-        
-
-        var user = await db.Users.FindAsync(decoded.UserId);
+        if (sessionDto == null) return null;   
+        var userId = await _sessionsRepository.FindUserIdFromSession(sessionDto);
+        var user = await db.Users.FindAsync(userId);
         return user;
     }
     
+    public async Task<bool> RemoveSession(SessionDto sessionDto)
+    {
+        return await _sessionsRepository.RemoveSession(sessionDto);
+    }
     
 
     public async Task MakeAccountFromGoogleAccount(string accessToken)
@@ -192,24 +178,16 @@ public class Accounts : IAccounts
         var user = await db.Users.FindAsync(relation.UserId);
 
         if (user == null) return null;
-
-        var payload = new JwtPayload()
-        {
-            UserId = user.Id
-        };
-
-        var jwt = JWT.Encode(payload, _configurationJwt.Value.ToByteArray(), JwsAlgorithm.HS256);
         
-        await _sessionsRepository.InsertSession(new Session()
+        var insertedSession = await _sessionsRepository.InsertSession(new Session()
         {
             UserId = user.Id,
-            CreationDate = DateTime.Now.ToUniversalTime(),
             IpAddress = GetIpAddress(),
             UserAgent = GetUserAgent()
         });
         await SendJustLoginEmail(user.Email, user.Name,GetIpAddress());
 
-        return jwt;
+        return insertedSession.ToString();
     }
 
     public string GetUsernameFromId(int userId)
@@ -266,5 +244,29 @@ public class Accounts : IAccounts
     public string GetUserAgent()
     {
         return _httpContext.Request.Headers.UserAgent.ToString();
+    }
+
+    public void RemoveSessionCookie()
+    {
+        _httpContext.Response.Cookies.Delete(SessionCookieName);
+    }
+
+    public async Task<Session> CurrentSession()
+    {
+        var cookie = _httpContext.Request.Cookies[SessionCookieName];
+        if (cookie == null)
+        {
+            return null;
+        }
+
+        try
+        {
+            var sessionDto = JsonSerializer.Deserialize<SessionDto>(cookie);
+            return await _sessionsRepository.FindSessionById(sessionDto);
+        }
+        catch (JsonException)
+        {
+            return null;
+        }
     }
 }

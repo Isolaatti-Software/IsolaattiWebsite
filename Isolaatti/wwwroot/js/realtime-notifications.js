@@ -1,4 +1,9 @@
 // socket is globally available
+const cookieName = 'isolaatti_user_session_token';
+const authorization = document.cookie
+    .split('; ')
+    .find(row => row.startsWith(cookieName)).split("=")[1];
+
 const socket = io(realtimeServer ,{
     withCredentials: true,
     auth: {

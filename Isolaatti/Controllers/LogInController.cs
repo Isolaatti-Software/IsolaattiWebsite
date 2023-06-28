@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Isolaatti.Classes.ApiEndpointsRequestDataModels;
 using Isolaatti.Classes.ApiEndpointsResponseDataModels;
-using Isolaatti.Classes.Authentication;
+using Isolaatti.DTOs;
 using Isolaatti.Models;
 using Isolaatti.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -29,7 +29,7 @@ namespace Isolaatti.Controllers
             var user = await _db.Users.FirstOrDefaultAsync(_user => _user.Email.Equals(data.Email));
             if (user == null) return NotFound("User not found");
 
-            var tokenObj = await _accounts.CreateNewToken(user.Id, data.Password);
+            var tokenObj = await _accounts.CreateNewSession(user.Id, data.Password);
             if (tokenObj == null) return Unauthorized("Could not get session. Password might be wrong");
             return Ok(new SessionToken
             {
@@ -43,7 +43,7 @@ namespace Isolaatti.Controllers
         [HttpPost]
         public async Task<IActionResult> GetUserData([FromHeader(Name = "sessionToken")] string sessionToken)
         {
-            var user = await _accounts.ValidateToken(sessionToken);
+            var user = await _accounts.ValidateSession(SessionDto.FromJson(sessionToken));
             if (user == null)
                 return Unauthorized(new SessionTokenValidated
                 {

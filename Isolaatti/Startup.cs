@@ -1,11 +1,8 @@
 using System;
 using System.IO;
 using System.Text.Json;
-using EFCoreSecondLevelCacheInterceptor;
-// using EFCoreSecondLevelCacheInterceptor;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
-using Isolaatti.Auth.Config;
 using Isolaatti.Config;
 using Isolaatti.Middleware;
 using Isolaatti.Models;
@@ -39,41 +36,6 @@ namespace Isolaatti
             _environment = webHostEnvironment;
         }
         
-        private string TransformMySqlInAppConnectionString(string original)
-        {
-            if (original == null)
-            {
-                return null;
-            }
-
-            var host = "";
-            var user = "";
-            var password = "";
-            var port = "";
-
-            foreach (var comp in original.Split(';'))
-            {
-                if (comp.Contains("Data Source"))
-                {
-                    var hostWithPort = comp.Split("=")[1];
-                    host = hostWithPort.Split(":")[0];
-                    port = hostWithPort.Split(":")[1];
-                }
-                if (comp.Contains("Password"))
-                {
-                    password = comp.Split("=")[1];
-                }
-
-                if (comp.Contains("User Id"))
-                {
-                    user = comp.Split("=")[1];
-                }
-            }
-
-            return $"server={host};port={port};database=localdb;user={user};password={password}";
-        }
-
-
         public IConfiguration Configuration { get; }
         private IWebHostEnvironment _environment { get; }
 
@@ -120,10 +82,7 @@ namespace Isolaatti
                 .AddMvcOptions(options => options.Filters.Add<IsolaattiAuthPagesFilter>())
                 .AddRazorRuntimeCompilation();
             
-            services.AddWebOptimizer(options =>
-            {
-                options.EnableMemoryCache = true;
-            });
+
 
             services.AddDbContextPool<DbContextApp>((serviceProvider, options) =>
             {
@@ -181,7 +140,6 @@ namespace Isolaatti
                     config.Secret = recaptchaConfig.Secret;
                 });
                 var key = Environment.GetEnvironmentVariable("auth_key");
-                services.Configure<JwtKeyConfig>(config => config.JwtSigningKey = key);
                 var isolaattiServicesKeysJsonEnvVar = Environment.GetEnvironmentVariable("IsolaattiServicesKeys");
                 services.Configure<IsolaattiServicesKeys>(config =>
                 {
@@ -195,7 +153,6 @@ namespace Isolaatti
                 services.Configure<MongoDatabaseConfiguration>(Configuration.GetSection("MongoDb"));
                 services.Configure<Servers>(Configuration.GetSection("Servers"));
                 services.Configure<ReCaptchaConfig>(Configuration.GetSection("ReCaptcha"));
-                services.Configure<JwtKeyConfig>(Configuration.GetSection("Jwt"));
                 services.Configure<IsolaattiServicesKeys>(Configuration.GetSection("IsolaattiServicesKeys"));
             }
 
@@ -255,7 +212,6 @@ namespace Isolaatti
             app.UseSwaggerUI();
             app.UseForwardedHeaders();
             app.UseHsts();
-            app.UseWebOptimizer();
             app.UseStaticFiles();
             
 

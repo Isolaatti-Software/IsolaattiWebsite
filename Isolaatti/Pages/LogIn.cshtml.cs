@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Isolaatti.DTOs;
 using Isolaatti.Models;
 using Isolaatti.Services;
 using Microsoft.AspNetCore.Http;
@@ -11,7 +12,6 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace Isolaatti.Pages
 {
     public class LogIn : PageModel
-
     {
         private DbContextApp _db;
         private readonly IAccounts _accounts;
@@ -41,7 +41,7 @@ namespace Isolaatti.Pages
             bool changedPassword = false,
             string then = "")
         {
-            var user = await _accounts.ValidateToken(Request.Cookies["isolaatti_user_session_token"]);
+            var user = await _accounts.ValidateSession(SessionDto.FromJson(Request.Cookies[Accounts.SessionCookieName]));
             if (user != null)
             {
                 return RedirectToPage("/Index");
@@ -51,9 +51,6 @@ namespace Isolaatti.Pages
             WrongCredential = badCredential;
             NotVerifiedEmail = notVerified;
             JustVerifiedEmail = justVerified;
-            // ExistingSession = Request.Cookies["isolaatti_user_name"] != null &&
-            //                   Request.Cookies["isolaatti_user_password"] != null &&
-            //                   !WrongCredential && !NotVerifiedEmail && !JustVerifiedEmail && !NewUser;
             ChangedPassword = changedPassword;
 
             if (NewUser || WrongCredential || NotVerifiedEmail || JustVerifiedEmail || ChangedPassword)
@@ -85,7 +82,7 @@ namespace Isolaatti.Pages
                     });
                 }
 
-                var sessionToken = await _accounts.CreateNewToken(user.Id, password);
+                var sessionToken = await _accounts.CreateNewSession(user.Id, password);
                 if (sessionToken == null)
                 {
                     return RedirectToPage("LogIn", new
@@ -98,21 +95,13 @@ namespace Isolaatti.Pages
                 Response.Cookies.Append("isolaatti_user_session_token", sessionToken.ToString(), new CookieOptions()
                 {
                     Expires = new DateTimeOffset(DateTime.Today.AddMonths(1)),
-                    HttpOnly = false
+                    HttpOnly = false,
+                    SameSite = SameSiteMode.Strict
                 });
                 if (then != null)
                 {
                     return LocalRedirect(then);
                 }
-
-                // var ipAddress = "Unavailable";
-                // try
-                // {
-                //     ipAddress = HttpContext.Request.Headers["X-Forwarded-For"].Last();
-                // }
-                // catch (InvalidOperationException)
-                // {
-                // }
                 
                 return RedirectToPage("Index");
             }

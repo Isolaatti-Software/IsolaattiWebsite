@@ -29,10 +29,8 @@
     @*Server defined constants*@
     <script>
     const userData = { id:@ViewData[IsolaattiPageModel.ViewDataUserIdKey], name:"@ViewData[IsolaattiPageModel.ViewDataNameKey]", email:"@ViewData[IsolaattiPageModel.ViewDataEmailKey]"};
-    const authorization = '@Html.Raw(ViewData[IsolaattiPageModel.ViewDataJwtTokenKey])';
     const clientId = "@Guid.NewGuid()";
     const customHttpHeaders = new Headers();
-    customHttpHeaders.append("Authorization",authorization);
     customHttpHeaders.append("Content-Type", "application/json")
     customHttpHeaders.append("client-id", clientId)
     </script>

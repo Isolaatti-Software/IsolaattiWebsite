@@ -1,5 +1,7 @@
 ﻿using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
+using Isolaatti.DTOs;
 using Isolaatti.Services;
 using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;
@@ -34,26 +36,38 @@ public class IsolaattiAuthPagesFilter : IAsyncPageFilter
                 context.Result = new RedirectToPageResult("LogIn");
                 return;
             }
-            
-            var user = await _accounts.ValidateToken(cookie);
-            if (user == null)
+
+            try
             {
+                var session = JsonSerializer.Deserialize<SessionDto>(cookie);
+                var user = await _accounts.ValidateSession(session);
+                if (user == null)
+                {
+                    context.Result = new RedirectToPageResult("LogIn",
+                        new { then = context.ActionDescriptor.Endpoint });
+                    return;
+                }
+
+                if (context.HandlerInstance is IsolaattiPageModel pageModel)
+                {
+                    pageModel.HideNav = context.HttpContext.Request.Cookies["isolaatti_hidenav"] == "yes";
+                    pageModel.User = user;
+                    pageModel.ViewData[IsolaattiPageModel.ViewDataNameKey] = user.Name;
+                    pageModel.ViewData[IsolaattiPageModel.ViewDataEmailKey] = user.Email;
+                    pageModel.ViewData[IsolaattiPageModel.ViewDataUserIdKey] = user.Id;
+                    pageModel.ViewData[IsolaattiPageModel.ViewDataProfilePicUrlKey] =
+                        UrlGenerators.GenerateProfilePictureUrl(user.Id, null);
+                    pageModel.ViewData[IsolaattiPageModel.ViewDataJwtTokenKey] = cookie;
+                }
+                await next.Invoke();
+            }
+            catch (JsonException)
+            {
+                _accounts.RemoveSessionCookie();
                 context.Result = new RedirectToPageResult("LogIn");
-                return;
             }
-
-            if (context.HandlerInstance is IsolaattiPageModel pageModel)
-            {
-                pageModel.HideNav = context.HttpContext.Request.Cookies["isolaatti_hidenav"] == "yes";
-                pageModel.User = user;
-                pageModel.ViewData[IsolaattiPageModel.ViewDataNameKey] = user.Name;
-                pageModel.ViewData[IsolaattiPageModel.ViewDataEmailKey] = user.Email;
-                pageModel.ViewData[IsolaattiPageModel.ViewDataUserIdKey] = user.Id;
-                pageModel.ViewData[IsolaattiPageModel.ViewDataProfilePicUrlKey] = UrlGenerators.GenerateProfilePictureUrl(user.Id, null);
-                pageModel.ViewData[IsolaattiPageModel.ViewDataJwtTokenKey] = cookie;
-            }
-
-            await next.Invoke();
+            
+            
         }
         else
         {

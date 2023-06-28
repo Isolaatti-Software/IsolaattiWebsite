@@ -23,10 +23,6 @@
             @foreach (var sessionToken in Model.SessionTokens)
             {
                 <div class="list-group-item">
-                    @if (Model.CurrentToken.Id.Equals(sessionToken.Id))
-                    {
-                        <i class="fas fa-check"></i>
-                    }
                     <h6>@sessionToken.IpAddress</h6>
                     <h6>@sessionToken.CreationDate</h6>
                     <small>@sessionToken.UserAgent</small>
