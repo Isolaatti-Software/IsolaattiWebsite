@@ -50,7 +50,7 @@ namespace Isolaatti
             }
             else
             {
-                var json = Environment.GetEnvironmentVariable("google_admin_sdk");
+                var json = Environment.GetEnvironmentVariable(Env.GoogleFirebaseAdminSdkCredential);
                 if(json != null)
                     credential = GoogleCredential.FromJson(json);
                 else
@@ -89,7 +89,7 @@ namespace Isolaatti
          
                 if (_environment.IsProduction())
                 {
-                    var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+                    var databaseUrl = Environment.GetEnvironmentVariable(Env.DatabaseUrl);
                     var databaseUri = new Uri(databaseUrl!);
                     var credentialInfo = databaseUri.UserInfo.Split(":"); // first part is user, second part is password
                     
@@ -111,7 +111,7 @@ namespace Isolaatti
                 services.AddDataProtection().PersistKeysToDbContext<DbContextApp>();
             if (_environment.IsProduction())
             {
-                var mongoConfigEnvVar = Environment.GetEnvironmentVariable("mongodb_config");
+                var mongoConfigEnvVar = Environment.GetEnvironmentVariable(Env.MongoDbConfig);
                 services.Configure<MongoDatabaseConfiguration>(config =>
                 {
                     var mongoConfig = JsonSerializer.Deserialize<MongoDatabaseConfiguration>(mongoConfigEnvVar!);
@@ -126,21 +126,20 @@ namespace Isolaatti
                     config.ImagesCollectionName = mongoConfig?.ImagesCollectionName;
                 });
                 
-                var serversConfigEnvVar = Environment.GetEnvironmentVariable("servers");
+                var serversConfigEnvVar = Environment.GetEnvironmentVariable(Env.ServersConfig);
                 services.Configure<Servers>(config =>
                 {
                     var serversConfig = JsonSerializer.Deserialize<Servers>(serversConfigEnvVar!);
                     config.RealtimeServerUrl= serversConfig?.RealtimeServerUrl;
                 });
-                var recaptchaConfigEnvVar = Environment.GetEnvironmentVariable("recaptcha");
+                var recaptchaConfigEnvVar = Environment.GetEnvironmentVariable(Env.RecaptchaConfig);
                 services.Configure<ReCaptchaConfig>(config =>
                 {
                     var recaptchaConfig = JsonSerializer.Deserialize<ReCaptchaConfig>(recaptchaConfigEnvVar);
                     config.Site = recaptchaConfig.Site;
                     config.Secret = recaptchaConfig.Secret;
                 });
-                var key = Environment.GetEnvironmentVariable("auth_key");
-                var isolaattiServicesKeysJsonEnvVar = Environment.GetEnvironmentVariable("IsolaattiServicesKeys");
+                var isolaattiServicesKeysJsonEnvVar = Environment.GetEnvironmentVariable(Env.IsolaattiServiceKeys);
                 services.Configure<IsolaattiServicesKeys>(config =>
                 {
                     var isolaattiServiceKeys =
@@ -184,7 +183,7 @@ namespace Isolaatti
             {
                 options.ApiKey = _environment.IsDevelopment()
                     ? Configuration.GetSection("ApiKeys")["SendGrid"]
-                    : Environment.GetEnvironmentVariable("send_grid_api_key");
+                    : Environment.GetEnvironmentVariable(Env.SendGridApiKeyEnvVar);
             });
             services.AddScoped<ScopedHttpContext>();
             services.AddScoped<IAccounts, Accounts>();
