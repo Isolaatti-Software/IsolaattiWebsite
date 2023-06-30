@@ -4,10 +4,12 @@ const authorization = document.cookie
     .split('; ')
     .find(row => row.startsWith(cookieName)).split("=")[1];
 
+decodeURIComponent()
+
 const socket = io(realtimeServer ,{
     withCredentials: true,
     auth: {
-        authorization,
+        authorization: decodeURIComponent(authorization),
         clientId
     }
 });
