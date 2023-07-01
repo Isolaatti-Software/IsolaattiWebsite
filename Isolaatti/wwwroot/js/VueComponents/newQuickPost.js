@@ -25,7 +25,7 @@
           <div class="btn-group btn-group-sm w-100">
             <button class="btn" :class="[mode==='discussion' ? 'btn-primary' : 'btn-outline-primary']"
                     v-on:click="mode='discussion'">
-              <i class="far fa-newspaper"></i> Discusión
+              <i class="fa-solid fa-pencil"></i> Discusión
             </button>
 <!--            <button class="btn" :class="[mode==='article' ? 'btn-primary' : 'btn-outline-primary']"-->
 <!--                    v-on:click="mode='article'">-->
@@ -33,7 +33,7 @@
 <!--            </button>-->
             <button class="btn" :class="[mode==='audio' ? 'btn-primary' : 'btn-outline-primary']"
                     v-on:click="mode='audio'">
-              <i class="fa-solid fa-ear-listen"></i> Audio
+              <i class="fa-solid fa-microphone"></i> Audio
             </button>
           </div>
         </div>
