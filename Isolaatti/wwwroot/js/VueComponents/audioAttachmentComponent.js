@@ -22,6 +22,7 @@
             userId: -1,
             audioNotFound: false,
             customHeaders: customHttpHeaders,
+            userData: userData,
             playbackStatus: {
                 selected: false,
                 playing: false,
@@ -223,8 +224,8 @@
             <div class="dropdown ml-auto" v-else-if="!audioNotFound">
                 <button type="button" class="btn" data-toggle="dropdown" aria-haspopup="true"><i class="fas fa-ellipsis-h" aria-hidden="true"></i></button>
                 <div class="dropdown-menu">
-                    <a href="#" class="dropdown-item" @click="showChangeNameDialog">Cambiar nombre</a>
-                    <a href="#" class="dropdown-item" @click="showDeleteAudioDialog">Eliminar</a>
+                    <a href="#" class="dropdown-item" @click="showChangeNameDialog" v-if="userData.id === userId">Cambiar nombre</a>
+                    <a href="#" class="dropdown-item" @click="showDeleteAudioDialog" v-if="userData.id === userId">Eliminar</a>
                     <a href="#" class="dropdown-item">Reportar</a>
                 </div>
             </div>

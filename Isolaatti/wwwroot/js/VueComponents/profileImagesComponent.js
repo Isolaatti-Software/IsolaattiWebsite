@@ -87,6 +87,9 @@
             if(e !== undefined) {
                 e.preventDefault();
             }
+            if(this.userData.id !== this.images[imageIndex].userId) {
+                return;
+            }
             if(this.performingRequest){
                 return;
             }

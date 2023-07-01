@@ -40,6 +40,12 @@
                 that.imageUrlData = fileReader.result;
             }
         },
+        reset: function() {
+            this.imageUrlData = undefined;
+            this.ableToUpload = false;
+            this.description = `Mi imagen de ${new Date().toLocaleString()}`;
+            this.imageFile = null;
+        },
         uploadImage: async function () {
             this.uploading = true;
             const that = this;
@@ -55,11 +61,12 @@
             const request = new XMLHttpRequest()
             const url = this.profile ? "/api/images/create?setAsProfile=True" : "/api/images/create"
             request.open("POST", url);
-            request.setRequestHeader("Authorization", that.customHeaders.get("Authorization"))
+            request.setRequestHeader("Authorization", decodeURIComponent(authorization))
             request.onload = function () {
                 if (request.status === 200) {
                     that.uploading = false;
                     that.$emit('uploaded', JSON.parse(request.responseText));
+                    that.reset();
                 }
             }
             request.send(formData);
