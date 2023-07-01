@@ -28,6 +28,10 @@
 
     @*Server defined constants*@
     <script>
+    const cookieName = 'isolaatti_user_session_token';
+    const authorization = document.cookie
+        .split('; ')
+        .find(row => row.startsWith(cookieName)).split("=")[1];
     const userData = { id:@ViewData[IsolaattiPageModel.ViewDataUserIdKey], name:"@ViewData[IsolaattiPageModel.ViewDataNameKey]", email:"@ViewData[IsolaattiPageModel.ViewDataEmailKey]"};
     const clientId = "@Guid.NewGuid()";
     const customHttpHeaders = new Headers();
