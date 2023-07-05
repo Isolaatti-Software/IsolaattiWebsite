@@ -22,7 +22,7 @@ namespace Isolaatti.Notifications.Dto
 
         public class LikePayloadDto : PayloadDtoBase
         {
-            public Guid LikeId { get; set; }
+            public long PostId { get; set; }
             public int MakerUserId { get; set; }
             public string MakerUserName { get; set; }
         }

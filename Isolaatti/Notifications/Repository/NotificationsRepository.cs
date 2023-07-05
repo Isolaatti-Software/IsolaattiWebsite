@@ -30,16 +30,7 @@ public class NotificationsRepository
 
     public async Task<bool> TryInsertLikeNotificationRationally(Notification notification)
     {
-        if (notification.Payload is NotificationPayload payload)
-        {
-            var filter = Builders<Notification>.Filter.Eq(n => n.Payload)
-            var existingNotification = await _notifications.FindOneAndUpdateAsync<Notification>();
-
-            return true;
-        }
-
-        return false;
-        
+        throw new NotImplementedException();
     }
 
 

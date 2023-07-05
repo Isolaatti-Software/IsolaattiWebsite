@@ -58,7 +58,7 @@ public class NotificationsService
                     LikeNotificationPayload likeNotificationPayload =>
                         new LikePayloadDto
                         {
-                            LikeId = likeNotificationPayload.LikeId,
+                            PostId = likeNotificationPayload.PostId,
                             MakerUserId = likeNotificationPayload.MakerUserId,
                             Type = likeNotificationPayload.Type,
                             MakerUserName = _usersRepository.GetUsername(likeNotificationPayload.MakerUserId)
@@ -100,7 +100,7 @@ public class NotificationsService
             UserId = like.TargetUserId,
             Payload = new LikeNotificationPayload()
             {
-                LikeId = like.LikeId,
+                PostId = like.PostId,
                 MakerUserId = like.UserId
             }
         };

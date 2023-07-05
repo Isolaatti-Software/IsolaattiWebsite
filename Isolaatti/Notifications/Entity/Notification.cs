@@ -22,6 +22,31 @@ namespace Isolaatti.Notifications.Entity
             Read = false;
         }
 
+        public bool ReSend()
+        {
+            return DateTime.Now.ToUniversalTime() - TimeStamp > TimeSpan.FromMinutes(10);
+        }
+
+        public bool ShouldReinsert(Notification notification)
+        {
+            var payload = notification.Payload;
+
+            if(payload == null)
+            {
+                return false;
+            }
+
+            return payload switch
+            {
+                LikeNotificationPayload likeNotificationPayload => 
+                    likeNotificationPayload.PostId == (payload as LikeNotificationPayload).PostId && 
+                    likeNotificationPayload.MakerUserId == (payload as LikeNotificationPayload).MakerUserId,
+                FollowerNotificationPayload followerNotificationPayload =>
+                    followerNotificationPayload.NewFollowerUserId == (payload as FollowerNotificationPayload).NewFollowerUserId,
+                _ => false
+            } && notification.UserId == UserId;
+        }
+
        
 
     }
