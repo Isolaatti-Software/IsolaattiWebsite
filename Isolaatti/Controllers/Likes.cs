@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Isolaatti.Classes.ApiEndpointsRequestDataModels;
 using Isolaatti.DTOs;
 using Isolaatti.Models;
+using Isolaatti.Notifications.Services;
 using Isolaatti.RealtimeInteraction.Service;
 using Isolaatti.Services;
 using Isolaatti.Utils;
@@ -20,12 +21,14 @@ namespace Isolaatti.Controllers
         private readonly DbContextApp _db;
         private readonly IAccounts _accounts;
         private readonly NotificationSender _notificationSender;
+        private readonly NotificationsService _notifications;
 
-        public Likes(DbContextApp dbContextApp, IAccounts accounts, NotificationSender notificationSender)
+        public Likes(DbContextApp dbContextApp, IAccounts accounts, NotificationSender notificationSender, NotificationsService notifications)
         {
             _db = dbContextApp;
             _accounts = accounts;
             _notificationSender = notificationSender;
+            _notifications = notifications;
         }
 
         [IsolaattiAuth]
@@ -39,13 +42,16 @@ namespace Isolaatti.Controllers
                 return Unauthorized("Post already liked");
 
 
-            _db.Likes.Add(new Like
+
+            var likeEntity = new Like
             {
                 PostId = identification.Id,
                 UserId = User.Id,
                 TargetUserId = post.UserId,
                 SquadId = post.SquadId
-            });
+            };
+            _db.Likes.Add(likeEntity);
+
             await _db.SaveChangesAsync();
 
             var likeDto = new LikeDto
@@ -59,7 +65,12 @@ namespace Isolaatti.Controllers
                 var clientId = Guid.Parse(Request.Headers["client-id"]);
                 await _notificationSender.SendPostUpdate(post.Id, clientId);
             } catch(FormatException) {}
-            
+
+            if(post.UserId != User.Id)
+            {
+                await _notifications.InsertNewLikeNotification(likeEntity);
+            }
+
             return Ok(likeDto);
         }
 

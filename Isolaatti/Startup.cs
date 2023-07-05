@@ -7,10 +7,13 @@ using Isolaatti.Config;
 using Isolaatti.Middleware;
 using Isolaatti.Models;
 using Isolaatti.Models.MongoDB;
+using Isolaatti.Notifications.Entity;
 using Isolaatti.Notifications.Repository;
+using Isolaatti.Notifications.Services;
 using Isolaatti.RealtimeInteraction.Service;
 using Isolaatti.Repositories;
 using Isolaatti.Services;
+using Isolaatti.Users;
 using Isolaatti.Utils.ActionFilters;
 using Isolaatti.Utils.PageFilters;
 using Microsoft.AspNetCore.Builder;
@@ -23,6 +26,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MongoDB.Bson.Serialization;
 using Npgsql;
 using SendGrid.Extensions.DependencyInjection;
 
@@ -185,6 +189,8 @@ namespace Isolaatti
                     ? Configuration.GetSection("ApiKeys")["SendGrid"]
                     : Environment.GetEnvironmentVariable(Env.SendGridApiKeyEnvVar);
             });
+            services.AddDistributedMemoryCache();
+            services.AddScoped<UsersRepository>();
             services.AddScoped<ScopedHttpContext>();
             services.AddScoped<IAccounts, Accounts>();
             services.AddScoped<NotificationSender>();
@@ -203,6 +209,8 @@ namespace Isolaatti
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DbContextApp dbContext)
         {
+
+            BsonClassMap.RegisterClassMap<LikeNotificationPayload>();
 
             // Stop using this on production when app is for public use
             app.UseDeveloperExceptionPage();

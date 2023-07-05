@@ -27,7 +27,7 @@ public class NotificationSender
         _keys = serviceKeys;
     }
     
-    public async Task NotifyUser(int userId, SocialNotification notification)
+    public async Task NotifyUser(int userId, Notification notification)
     {
         var content = JsonContent.Create(new
         {
