@@ -22,11 +22,14 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.CodeAnalysis.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using MongoDB.Bson.Serialization;
+using MongoDB.Driver;
 using Npgsql;
 using SendGrid.Extensions.DependencyInjection;
 
@@ -50,7 +53,9 @@ namespace Isolaatti
             GoogleCredential credential;
             if (File.Exists(filePath))
             {
-                credential = GoogleCredential.FromStream(File.Open(filePath, FileMode.Open));
+                var file = File.Open(filePath, FileMode.Open);
+                credential = GoogleCredential.FromStream(file);
+                file.Close();
             }
             else
             {
@@ -88,7 +93,7 @@ namespace Isolaatti
             
 
 
-            services.AddDbContextPool<DbContextApp>((serviceProvider, options) =>
+            services.AddDbContext<DbContextApp>((serviceProvider, options) =>
             {
          
                 if (_environment.IsProduction())
@@ -159,6 +164,7 @@ namespace Isolaatti
                 services.Configure<IsolaattiServicesKeys>(Configuration.GetSection("IsolaattiServicesKeys"));
             }
 
+            services.AddSingleton<MongoDatabase>();
             services.AddSingleton<HttpClientSingleton>();
             services.AddScoped<AudiosRepository>();
             services.AddScoped<SquadInvitationsRepository>();
@@ -170,7 +176,7 @@ namespace Isolaatti
             services.AddScoped<NotificationsService>();
             services.AddScoped<SocketIoServiceKeysRepository>();
             services.AddScoped<KeyGenService>();
-            services.AddScoped<SessionsRepository>();
+            services.AddSingleton<SessionsRepository>();
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // No consent check needed here
@@ -195,11 +201,11 @@ namespace Isolaatti
             services.AddScoped<IAccounts, Accounts>();
             services.AddScoped<NotificationSender>();
             services.AddScoped<ServerRenderedAlerts>();
-            services.AddScoped<GoogleCloudStorageService>();
+            services.AddSingleton<GoogleCloudStorageService>();
             services.AddScoped<AudiosService>();
             services.AddScoped<ImagesRepository>();
             services.AddScoped<ImagesService>();
-            services.AddScoped<RecaptchaValidation>();
+            services.AddSingleton<RecaptchaValidation>();
             // don't allow uploading files larger than 10 MB, for security reasons
             services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = 1024 * 1024 * 10);
             

@@ -12,15 +12,11 @@ namespace Isolaatti.Repositories;
 public class SquadJoinRequestsRepository
 {
     private readonly IMongoCollection<SquadJoinRequest> _joinRequests;
-    private readonly MongoDatabaseConfiguration _settings;
     private readonly SquadsRepository _squads;
     
-    public SquadJoinRequestsRepository(IOptions<MongoDatabaseConfiguration> settings, SquadsRepository squads)
+    public SquadJoinRequestsRepository(MongoDatabase mongoDatabase, SquadsRepository squads)
     {
-        _settings = settings.Value;
-        var client = new MongoClient(_settings.ConnectionString);
-        var database = client.GetDatabase(_settings.DatabaseName);
-        _joinRequests = database.GetCollection<SquadJoinRequest>(_settings.SquadsJoinRequestsCollectionName);
+        _joinRequests = mongoDatabase.GetSquadJoinRequestsCollection();
         _squads = squads;
     }
 

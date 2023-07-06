@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Isolaatti.Enums;
 using Isolaatti.Models.MongoDB;
-using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
 namespace Isolaatti.Repositories;
@@ -12,14 +11,11 @@ namespace Isolaatti.Repositories;
 public class SquadInvitationsRepository
 {
     private readonly IMongoCollection<SquadInvitation> _invitations;
-    private readonly MongoDatabaseConfiguration _settings;
 
-    public SquadInvitationsRepository(IOptions<MongoDatabaseConfiguration> settings)
+    public SquadInvitationsRepository(MongoDatabase mongoDatabase)
     {
-        _settings = settings.Value;
-        var client = new MongoClient(_settings.ConnectionString);
-        var database = client.GetDatabase(_settings.DatabaseName);
-        _invitations = database.GetCollection<SquadInvitation>(_settings.SquadsInvitationsCollectionName);
+        
+        _invitations = mongoDatabase.GetSquadInvitationsCollection();
     }
 
     /// <summary>

@@ -11,14 +11,10 @@ namespace Isolaatti.Repositories;
 public class SocketIoServiceKeysRepository
 {
     private readonly IMongoCollection<SocketIoServiceKey> _socketIoKeys;
-    private readonly MongoDatabaseConfiguration _settings;
 
-    public SocketIoServiceKeysRepository(IOptions<MongoDatabaseConfiguration> settings)
+    public SocketIoServiceKeysRepository(MongoDatabase mongoDatabase)
     {
-        _settings = settings.Value;
-        var client = new MongoClient(_settings.ConnectionString);
-        var database = client.GetDatabase(_settings.DatabaseName);
-        _socketIoKeys = database.GetCollection<SocketIoServiceKey>(_settings.RealtimeServiceKeysCollectionName);
+        _socketIoKeys = mongoDatabase.GetSocketIoServiceKeysCollection();
     }
 
     public async Task<SocketIoServiceKey> CreateKey()

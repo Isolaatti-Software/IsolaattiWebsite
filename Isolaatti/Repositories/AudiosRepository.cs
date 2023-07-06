@@ -14,15 +14,12 @@ namespace Isolaatti.Repositories;
 public class AudiosRepository
 {
     private readonly IMongoCollection<Audio> _audios;
-    private readonly MongoDatabaseConfiguration _settings;
     private readonly DbContextApp _db;
 
-    public AudiosRepository(IOptions<MongoDatabaseConfiguration> settings, DbContextApp db)
+    public AudiosRepository(MongoDatabase mongoDatabase, DbContextApp db)
     {
-        _settings = settings.Value;
-        var client = new MongoClient(_settings.ConnectionString);
-        var database = client.GetDatabase(_settings.DatabaseName);
-        _audios = database.GetCollection<Audio>(_settings.AudiosCollectionName);
+
+        _audios = mongoDatabase.GetAudiosCollection();
         _audios.Indexes.CreateOne(new CreateIndexModel<Audio>(Builders<Audio>.IndexKeys.Text(x => x.Name)));
 
         _db = db;

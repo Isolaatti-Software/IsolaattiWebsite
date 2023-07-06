@@ -11,7 +11,7 @@ namespace Isolaatti.Utils.PageFilters;
 
 public class IsolaattiAuthPagesFilter : IAsyncPageFilter
 {
-    private readonly IAccounts _accounts;
+    private IAccounts _accounts;
     
     public IsolaattiAuthPagesFilter(IAccounts accounts)
     {
@@ -34,6 +34,7 @@ public class IsolaattiAuthPagesFilter : IAsyncPageFilter
             if (cookie == null)
             {
                 context.Result = new RedirectToPageResult("LogIn");
+                _accounts = null;
                 return;
             }
 
@@ -45,6 +46,7 @@ public class IsolaattiAuthPagesFilter : IAsyncPageFilter
                 {
                     context.Result = new RedirectToPageResult("LogIn",
                         new { then = context.ActionDescriptor.Endpoint });
+                    _accounts = null;
                     return;
                 }
 

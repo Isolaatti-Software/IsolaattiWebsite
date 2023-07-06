@@ -19,7 +19,9 @@ public class GoogleCloudStorageService
         GoogleCredential credential;
         if (File.Exists(filePath))
         {
-            credential = GoogleCredential.FromStream(File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read));
+            var file = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            credential = GoogleCredential.FromStream(file);
+            file.Close();
         }
         else
         {

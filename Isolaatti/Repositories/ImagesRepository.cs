@@ -11,14 +11,10 @@ namespace Isolaatti.Repositories;
 public class ImagesRepository
 {
     private readonly IMongoCollection<Image> _images;
-    private readonly MongoDatabaseConfiguration _settings;
 
-    public ImagesRepository(IOptions<MongoDatabaseConfiguration> settings)
+    public ImagesRepository(MongoDatabase mongoDatabase)
     {
-        _settings = settings.Value;
-        var client = new MongoClient(_settings.ConnectionString);
-        var database = client.GetDatabase(_settings.DatabaseName);
-        _images = database.GetCollection<Image>(_settings.ImagesCollectionName);
+        _images = mongoDatabase.GetImagesCollection();
         _images.Indexes.CreateOne(new CreateIndexModel<Image>(Builders<Image>.IndexKeys.Text(i => i.Name)));
     }
 
