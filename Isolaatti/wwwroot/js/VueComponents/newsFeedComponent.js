@@ -13,9 +13,23 @@
             }
         }
     },
+    computed: {
+        newestPostId: function () {
+            if (this.posts.length < 1) {
+                return 0;
+            }
+            return this.posts.reduce(function (max, current) {
+                if (current.post.id > max) {
+                    return current.post.id;
+                }
+
+                return max;
+            }, 0)
+        }
+    },
     methods: {
         fetchFeed: async function () {
-            const response = await fetch(`/api/Feed?lastId=${this.lastPostGotten}&length=20`, {
+            const response = await fetch(`/api/Feed?lastId=${this.lastPostGotten}&newestPostId=${this.newestPostId}&length=20`, {
                 method: "GET",
                 headers: this.customHeaders
             });
@@ -68,7 +82,7 @@
     },
     mounted: async function () {
         await this.fetchFeed();
-        events.$on("posted", this.concatPost);
+        //events.$on("posted", this.concatPost);
         events.$on("postDeleted", this.removePost);
     },
     template: `
