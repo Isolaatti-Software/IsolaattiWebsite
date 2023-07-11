@@ -13,7 +13,7 @@ using Isolaatti.Notifications.Services;
 using Isolaatti.RealtimeInteraction.Service;
 using Isolaatti.Repositories;
 using Isolaatti.Services;
-using Isolaatti.Users;
+using Isolaatti.Users.Repository;
 using Isolaatti.Utils.ActionFilters;
 using Isolaatti.Utils.PageFilters;
 using Microsoft.AspNetCore.Builder;

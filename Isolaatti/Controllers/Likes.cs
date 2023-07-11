@@ -19,14 +19,12 @@ namespace Isolaatti.Controllers
     public class Likes : IsolaattiController
     {
         private readonly DbContextApp _db;
-        private readonly IAccounts _accounts;
         private readonly NotificationSender _notificationSender;
         private readonly NotificationsService _notifications;
 
-        public Likes(DbContextApp dbContextApp, IAccounts accounts, NotificationSender notificationSender, NotificationsService notifications)
+        public Likes(DbContextApp dbContextApp, NotificationSender notificationSender, NotificationsService notifications)
         {
             _db = dbContextApp;
-            _accounts = accounts;
             _notificationSender = notificationSender;
             _notifications = notifications;
         }

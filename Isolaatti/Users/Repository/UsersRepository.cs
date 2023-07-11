@@ -4,7 +4,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Isolaatti.Users
+namespace Isolaatti.Users.Repository
 {
     public class UsersRepository
     {
@@ -21,7 +21,7 @@ namespace Isolaatti.Users
         private const string FollowersCountPrefix = "follower_counts";
         private const string UserImageIdPrefix = "user_profile_images";
 
-        private static string GetKeyForUsername(int userId) 
+        private static string GetKeyForUsername(int userId)
         {
             return $"{UsernamePrefix}.{userId}";
         }
@@ -36,14 +36,14 @@ namespace Isolaatti.Users
             return $"{UserImageIdPrefix}.{userId}";
         }
 
-        public string GetUsername(int userId)
+        public string GetUsernameById(int userId)
         {
             string value = _cache.GetString(GetKeyForUsername(userId));
 
-            if(value == null)
+            if (value == null)
             {
                 value = _db.Users.Where(u => u.Id == userId).Select(u => u.Name).FirstOrDefault();
-                if(value == null)
+                if (value == null)
                 {
                     return null;
                 }
@@ -58,7 +58,7 @@ namespace Isolaatti.Users
         {
             string value = _cache.GetString(GetKeyForFollowersCount(userId));
 
-            if(value == null) 
+            if (value == null)
             {
                 value = _db.FollowerRelations.Count(fr => fr.TargetUserId == userId).ToString();
 
@@ -73,7 +73,7 @@ namespace Isolaatti.Users
         {
             string value = _cache.GetString(GetKeyForUserImageId(userId));
 
-            if(value == null)
+            if (value == null)
             {
                 value = _db.Users.Where(u => u.Id == userId).Select(u => u.ProfileImageId).FirstOrDefault();
             }

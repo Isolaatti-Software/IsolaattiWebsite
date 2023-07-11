@@ -3,7 +3,7 @@ using Isolaatti.Notifications.Dto;
 using Isolaatti.Notifications.Entity;
 using Isolaatti.Notifications.Repository;
 using Isolaatti.RealtimeInteraction.Service;
-using Isolaatti.Users;
+using Isolaatti.Users.Repository;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -61,13 +61,13 @@ public class NotificationsService
                             PostId = likeNotificationPayload.PostId,
                             MakerUserId = likeNotificationPayload.MakerUserId,
                             Type = likeNotificationPayload.Type,
-                            MakerUserName = _usersRepository.GetUsername(likeNotificationPayload.MakerUserId)
+                            MakerUserName = _usersRepository.GetUsernameById(likeNotificationPayload.MakerUserId)
                         },
                     FollowerNotificationPayload followerNotificationPayload =>
                         new FollowerPayloadDto
                         {
                             NewFollowerUserId = followerNotificationPayload.NewFollowerUserId,
-                            NewFollowerName = _usersRepository.GetUsername(followerNotificationPayload.NewFollowerUserId)
+                            NewFollowerName = _usersRepository.GetUsernameById(followerNotificationPayload.NewFollowerUserId)
                         },
 
                     InformativeMessageNotificationPayload informativeMessageNotificationPayload =>

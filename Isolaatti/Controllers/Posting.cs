@@ -20,14 +20,12 @@ namespace Isolaatti.Controllers
     public class PostingController : IsolaattiController
     {
         private readonly DbContextApp _db;
-        private readonly IAccounts _accounts;
         private readonly NotificationSender _notificationSender;
         private readonly SquadsRepository _squads;
 
-        public PostingController(DbContextApp dbContextApp, IAccounts accounts, NotificationSender notificationSender, SquadsRepository squadsRepository)
+        public PostingController(DbContextApp dbContextApp, NotificationSender notificationSender, SquadsRepository squadsRepository)
         {
             _db = dbContextApp;
-            _accounts = accounts;
             _notificationSender = notificationSender;
             _squads = squadsRepository;
         }
