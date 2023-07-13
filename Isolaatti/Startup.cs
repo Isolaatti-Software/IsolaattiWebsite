@@ -93,7 +93,7 @@ namespace Isolaatti
             
 
 
-            services.AddDbContext<DbContextApp>((serviceProvider, options) =>
+            services.AddDbContextPool<DbContextApp>((serviceProvider, options) =>
             {
          
                 if (_environment.IsProduction())
