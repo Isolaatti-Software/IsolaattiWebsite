@@ -140,6 +140,7 @@ namespace Isolaatti
                 {
                     var serversConfig = JsonSerializer.Deserialize<Servers>(serversConfigEnvVar!);
                     config.RealtimeServerUrl= serversConfig?.RealtimeServerUrl;
+                    config.RealtimeServerInternalUrl = serversConfig?.RealtimeServerInternalUrl;
                 });
                 var recaptchaConfigEnvVar = Environment.GetEnvironmentVariable(Env.RecaptchaConfig);
                 services.Configure<ReCaptchaConfig>(config =>
