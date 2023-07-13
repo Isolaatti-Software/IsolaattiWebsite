@@ -38,7 +38,7 @@ public class NotificationSender
 
         try
         {
-            await _httpClientSingleton.Client.PostAsync($"{_servers.RealtimeServerUrl}/send_notification", content);
+            await _httpClientSingleton.Client.PostAsync($"{_servers.RealtimeServerInternalUrl}/send_notification", content);
         }
         catch (HttpRequestException) { }
     }
@@ -66,7 +66,7 @@ public class NotificationSender
     
         try
         {
-            await _httpClientSingleton.Client.PostAsync($"{_servers.RealtimeServerUrl}/event", content);
+            await _httpClientSingleton.Client.PostAsync($"{_servers.RealtimeServerInternalUrl}/event", content);
         }
         catch(HttpRequestException){ }
     }
@@ -93,7 +93,7 @@ public class NotificationSender
 
         try
         {
-            await _httpClientSingleton.Client.PostAsync($"{_servers.RealtimeServerUrl}/event", content);
+            await _httpClientSingleton.Client.PostAsync($"{_servers.RealtimeServerInternalUrl}/event", content);
         }
         catch (HttpRequestException e)
         {
@@ -117,7 +117,7 @@ public class NotificationSender
     
         try
         {
-            await _httpClientSingleton.Client.PostAsync($"{_servers.RealtimeServerUrl}/event", content);
+            await _httpClientSingleton.Client.PostAsync($"{_servers.RealtimeServerInternalUrl}/event", content);
         }
         catch(HttpRequestException){ }
     }
@@ -138,7 +138,7 @@ public class NotificationSender
     
         try
         {
-            await _httpClientSingleton.Client.PostAsync($"{_servers.RealtimeServerUrl}/event", content);
+            await _httpClientSingleton.Client.PostAsync($"{_servers.RealtimeServerInternalUrl}/event", content);
         }
         catch(HttpRequestException){ }
     }
