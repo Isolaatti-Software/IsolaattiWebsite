@@ -80,12 +80,21 @@ public class ImagesController : IsolaattiController
     public async Task<IActionResult> GetProfileImageOfUserById(int userId, string mode = "original")
     {
         var user = await _db.Users.FindAsync(userId);
+        string url;
         if (user?.ProfileImageId == null)
         {
             return Redirect(user?.ProfileImageUrl ?? "/res/imgs/avatar.svg");
         }
         
-        var url = await _images.GetImageDownloadUrl(user?.ProfileImageId, mode);
+        if(user.ProfileImageId == null && user.ProfileImageUrl != null)
+        {
+            url = user.ProfileImageUrl;
+        } 
+        else
+        {
+            url = await _images.GetImageDownloadUrl(user?.ProfileImageId, mode);
+        }
+        
 
         return Redirect(url);
     }
