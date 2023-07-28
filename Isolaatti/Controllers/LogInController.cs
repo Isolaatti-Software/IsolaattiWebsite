@@ -35,7 +35,8 @@ namespace Isolaatti.Controllers
             {
                 Created = DateTime.Now,
                 Expires = DateTime.Now.AddMonths(12),
-                Token = tokenObj.ToString()
+                Token = tokenObj.ToString(),
+                UserId = user.Id
             });
         }
 

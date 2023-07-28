@@ -7,5 +7,6 @@ namespace Isolaatti.Classes.ApiEndpointsResponseDataModels
         public DateTime Expires { get; set; }
         public DateTime Created { get; set; }
         public string Token { get; set; }
+        public int UserId { get; set; }
     }
 }
