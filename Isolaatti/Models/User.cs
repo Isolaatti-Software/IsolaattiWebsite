@@ -5,6 +5,7 @@
 * erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
 */
 
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -16,6 +17,7 @@ namespace Isolaatti.Models
     public class User
     {
         public int Id { get; set; }
+        public string UniqueUsername { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
         [JsonIgnore] 
