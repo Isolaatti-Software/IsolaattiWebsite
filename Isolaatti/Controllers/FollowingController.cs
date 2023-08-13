@@ -101,7 +101,7 @@ namespace Isolaatti.Controllers
         [IsolaattiAuth]
         [Route("FollowingsOf/{userId:int}")]
         [HttpGet]
-        public async Task<IActionResult> Following(int userId, int lastId)
+        public IActionResult Following(int userId, int lastId)
         {
             var listOfFollowing =
                 (from _user in Db.Users
@@ -117,7 +117,7 @@ namespace Isolaatti.Controllers
                  })
                     .OrderBy(u => u.Id)
                     .Take(10)
-                    .ToList().Select(u => { u.Following = UserFollowsUser(u.Id, userId); return u; });
+                    .ToList().Select(u => { u.Following = UserFollowsUser(u.Id, User.Id); return u; });
 
             return Ok(listOfFollowing);
         }
@@ -125,7 +125,7 @@ namespace Isolaatti.Controllers
         [IsolaattiAuth]
         [Route("FollowersOf/{userId:int}")]
         [HttpGet]
-        public async Task<IActionResult> Followers(int userId, int lastId)
+        public IActionResult Followers(int userId, int lastId)
         {
             var listOfFollowers =
                 (from _user in Db.Users
@@ -140,8 +140,8 @@ namespace Isolaatti.Controllers
                     })
                     .OrderBy(u => u.Id)
                     .Take(10)
-                    .ToListAsync();
-            return Ok(await listOfFollowers);
+                    .ToList().Select(u => { u.Following = UserFollowsUser(u.Id, User.Id); return u; });
+            return Ok(listOfFollowers);
         }
     }
 }
