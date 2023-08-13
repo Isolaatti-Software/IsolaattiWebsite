@@ -8,6 +8,7 @@ using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace Isolaatti.Controllers
 {
@@ -16,10 +17,12 @@ namespace Isolaatti.Controllers
     public class FollowingController : IsolaattiController
     {
         private readonly DbContextApp Db;
+        private readonly IDistributedCache _cache;
 
-        public FollowingController(DbContextApp dbContextApp)
+        public FollowingController(DbContextApp dbContextApp, IDistributedCache cache)
         {
             Db = dbContextApp;
+            _cache = cache;
         }
 
         [IsolaattiAuth]
@@ -74,6 +77,27 @@ namespace Isolaatti.Controllers
             }
         }
 
+        private bool UserFollowsUser(int userId, int targetUserId)
+        {
+            var rawValue = _cache.GetString($"user_{userId}_follows_${targetUserId}");
+            if(rawValue != null)
+            {
+                if(rawValue.Equals("1"))
+                {
+                    return true;
+                } 
+                else if(rawValue.Equals("0"))
+                {
+                    return false;
+                }
+            }
+            var value = Db.FollowerRelations.Any(fr => fr.UserId == userId && fr.TargetUserId == targetUserId);
+
+            _cache.SetString($"user_{userId}_follows_${targetUserId}", value ? "1" : "0");
+
+            return value;
+        }
+
         [IsolaattiAuth]
         [Route("FollowingsOf/{userId:int}")]
         [HttpGet]
@@ -81,19 +105,21 @@ namespace Isolaatti.Controllers
         {
             var listOfFollowing =
                 (from _user in Db.Users
-                    from _relation in Db.FollowerRelations
-                    where _relation.UserId == userId && _user.Id == _relation.TargetUserId && _relation.TargetUserId > lastId
-                    select new UserFeed
-                    {
-                        Id = _relation.TargetUserId, 
-                        Name = _user.Name,
-                        ImageId = _user.ProfileImageId
-                    })
+                 from _relation in Db.FollowerRelations
+                 where _relation.UserId == userId && _user.Id == _relation.TargetUserId && _relation.TargetUserId > lastId
+                 select new UserFeed
+                 {
+                     Id = _relation.TargetUserId,
+                     Name = _user.Name,
+                     ImageId = _user.ProfileImageId,
+                     Following = false
+
+                 })
                     .OrderBy(u => u.Id)
                     .Take(10)
-                    .ToListAsync();
+                    .ToList().Select(u => { u.Following = UserFollowsUser(u.Id, userId); return u; });
 
-            return Ok(await listOfFollowing);
+            return Ok(listOfFollowing);
         }
 
         [IsolaattiAuth]
@@ -109,7 +135,8 @@ namespace Isolaatti.Controllers
                     {
                         Id = _relation.UserId,
                         Name = _user.Name,
-                        ImageId = _user.ProfileImageId
+                        ImageId = _user.ProfileImageId,
+                        Following = true
                     })
                     .OrderBy(u => u.Id)
                     .Take(10)
