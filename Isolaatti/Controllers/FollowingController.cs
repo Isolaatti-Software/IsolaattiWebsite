@@ -77,38 +77,44 @@ namespace Isolaatti.Controllers
         [IsolaattiAuth]
         [Route("FollowingsOf/{userId:int}")]
         [HttpGet]
-        public async Task<IActionResult> Following(int userId)
+        public async Task<IActionResult> Following(int userId, int lastId)
         {
             var listOfFollowing =
                 (from _user in Db.Users
                     from _relation in Db.FollowerRelations
-                    where _relation.UserId == userId && _user.Id == _relation.TargetUserId
+                    where _relation.UserId == userId && _user.Id == _relation.TargetUserId && _relation.TargetUserId > lastId
                     select new UserFeed
                     {
                         Id = _relation.TargetUserId, 
                         Name = _user.Name,
                         ImageId = _user.ProfileImageId
-                    }).ToList();
+                    })
+                    .OrderBy(u => u.Id)
+                    .Take(10)
+                    .ToListAsync();
 
-            return Ok(listOfFollowing);
+            return Ok(await listOfFollowing);
         }
 
         [IsolaattiAuth]
         [Route("FollowersOf/{userId:int}")]
         [HttpGet]
-        public async Task<IActionResult> Followers(int userId)
+        public async Task<IActionResult> Followers(int userId, int lastId)
         {
             var listOfFollowers =
                 (from _user in Db.Users
                     from _relation in Db.FollowerRelations
-                    where _relation.TargetUserId == userId && _relation.UserId == _user.Id
+                    where _relation.TargetUserId == userId && _relation.UserId == _user.Id && _relation.UserId > lastId
                     select new UserFeed
                     {
                         Id = _relation.UserId,
                         Name = _user.Name,
                         ImageId = _user.ProfileImageId
-                    }).ToList();
-            return Ok(listOfFollowers);
+                    })
+                    .OrderBy(u => u.Id)
+                    .Take(10)
+                    .ToListAsync();
+            return Ok(await listOfFollowers);
         }
     }
 }
