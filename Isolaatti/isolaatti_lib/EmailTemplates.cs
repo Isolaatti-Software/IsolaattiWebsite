@@ -18,7 +18,8 @@ namespace Isolaatti.isolaatti_lib
         public const string WelcomeEmail = @"<html><body>
             <h1>¡Hola, {0}!</h1>
             <p>Me complace darte la bienvenida a Isolaatti, gracias por crear una cuenta.</p>
-            <p>Erik Cavazos, Isolaatti Software</p>
+            <p>Saludos.</p>
+            <p>Erik Cavazos</p>
         </body></html>";
 
         public const string WelcomeEmailExternal = @"<html><body>
@@ -26,14 +27,16 @@ namespace Isolaatti.isolaatti_lib
             <p>Dado que creaste tu cuenta con un medio externo (Google, Facebook o Microsoft), también te hemos creado una contraseña aleatoria.</p>
             <p>Puedes optar por siempre iniciar sesión con el medio que usaste, pero si lo deseas puedes usar las siguientes credenciales</p>
             <p>Email: <strong>{1}</strong> Password: <strong>{2}</strong></p>
-            <p>Erik Cavazos, Isolaatti Software</p>
+            <p>Saludos.</p>
+            <p>Erik Cavazos</p>
         </body>";
 
         public const string LoginEmail = @"<html><body>
             <h1>¡Hola, {0}!</h1>
-            <p>Solo para informarte que acabas de iniciar sesión. Si no lo hiciste, entonces alguien conoce tu contraseña</p>
+            <p>De parte de Isolaatti. Solo para informarte que acabas de iniciar sesión. Si no lo hiciste, entonces alguien conoce tu contraseña</p>
             <p>Origen: {1}</p>
-            <p>Erik Cavazos, Isolaatti Software</p>
+            <p>Saludos.</p>
+            <p>Erik Cavazos</p>
         </body>";
     }
 }
