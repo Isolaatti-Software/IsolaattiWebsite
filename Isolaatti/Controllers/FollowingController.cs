@@ -25,6 +25,11 @@ namespace Isolaatti.Controllers
             _cache = cache;
         }
 
+        private string FollowStateCacheKey(int userId, int targetUserId)
+        {
+            return $"user_{userId}_follows_${targetUserId}";
+        }
+
         [IsolaattiAuth]
         [HttpPost]
         [Route("Follow")]
@@ -48,6 +53,8 @@ namespace Isolaatti.Controllers
 
             Db.FollowerRelations.Add(followerRelation);
             await Db.SaveChangesAsync();
+
+            _cache.SetString(FollowStateCacheKey(User.Id, userToFollow.Id), "1");
             
             return Ok("Followers updated!");
         }
@@ -68,6 +75,7 @@ namespace Isolaatti.Controllers
                 Db.FollowerRelations.Remove(followerRelation);
 
                 await Db.SaveChangesAsync();
+                _cache.SetString(FollowStateCacheKey(User.Id, userToUnfollow.Id), "0");
                 
                 return Ok("Followers updated!");
             }
@@ -79,7 +87,7 @@ namespace Isolaatti.Controllers
 
         private bool UserFollowsUser(int userId, int targetUserId)
         {
-            var rawValue = _cache.GetString($"user_{userId}_follows_${targetUserId}");
+            var rawValue = _cache.GetString(FollowStateCacheKey(userId, targetUserId));
             if(rawValue != null)
             {
                 if(rawValue.Equals("1"))
@@ -93,7 +101,7 @@ namespace Isolaatti.Controllers
             }
             var value = Db.FollowerRelations.Any(fr => fr.UserId == userId && fr.TargetUserId == targetUserId);
 
-            _cache.SetString($"user_{userId}_follows_${targetUserId}", value ? "1" : "0");
+            _cache.SetString(FollowStateCacheKey(userId, targetUserId), value ? "1" : "0");
 
             return value;
         }
