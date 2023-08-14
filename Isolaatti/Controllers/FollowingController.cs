@@ -125,7 +125,7 @@ namespace Isolaatti.Controllers
                  })
                     .OrderBy(u => u.Id)
                     .Take(10)
-                    .ToList().Select(u => { u.Following = UserFollowsUser(u.Id, User.Id); return u; });
+                    .ToList().Select(u => { u.Following = UserFollowsUser(User.Id, u.Id); return u; });
 
             return Ok(listOfFollowing);
         }
