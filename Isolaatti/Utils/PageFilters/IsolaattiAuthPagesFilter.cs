@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Isolaatti.DTOs;
 using Isolaatti.Services;
 using Isolaatti.Utils.Attributes;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
@@ -45,7 +46,7 @@ public class IsolaattiAuthPagesFilter : IAsyncPageFilter
                 if (user == null)
                 {
                     context.Result = new RedirectToPageResult("LogIn",
-                        new { then = context.ActionDescriptor.Endpoint });
+                        new { then = context.HttpContext.Request.GetEncodedUrl() });
                     _accounts = null;
                     return;
                 }

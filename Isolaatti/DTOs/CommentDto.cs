@@ -1,4 +1,4 @@
-using Isolaatti.Models;
+using Isolaatti.Comments.Entity;
 
 namespace Isolaatti.DTOs;
 

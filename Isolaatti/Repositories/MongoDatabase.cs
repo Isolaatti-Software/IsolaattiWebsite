@@ -1,4 +1,5 @@
-﻿using Isolaatti.Models.MongoDB;
+﻿using Isolaatti.Comments.Entity;
+using Isolaatti.Models.MongoDB;
 using Isolaatti.RealtimeInteraction.Entity;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
@@ -47,6 +48,11 @@ namespace Isolaatti.Repositories
         public IMongoCollection<SquadJoinRequest> GetSquadJoinRequestsCollection()
         {
             return _database.GetCollection<SquadJoinRequest>(_settings.SquadsJoinRequestsCollectionName);
+        }
+
+        public IMongoCollection<CommentModificationHistory> GetCommentModificationHistoryCollection()
+        {
+            return _database.GetCollection<CommentModificationHistory>(_settings.CommentModificationHistoryCollectionName);
         }
     }
 }

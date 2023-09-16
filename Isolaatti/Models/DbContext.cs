@@ -1,3 +1,4 @@
+using Isolaatti.Comments.Entity;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 

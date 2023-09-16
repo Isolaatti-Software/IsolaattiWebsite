@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Isolaatti.Classes.ApiEndpointsRequestDataModels;
 using Isolaatti.Classes.ApiEndpointsResponseDataModels;
+using Isolaatti.DTOs;
 using Isolaatti.Models;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
@@ -56,7 +57,7 @@ namespace Isolaatti.Controllers
 
             _cache.SetString(FollowStateCacheKey(User.Id, userToFollow.Id), "1");
             
-            return Ok("Followers updated!");
+            return Ok(await GetFollowingInfo(userToFollow.Id));
         }
 
         [IsolaattiAuth]
@@ -77,7 +78,7 @@ namespace Isolaatti.Controllers
                 await Db.SaveChangesAsync();
                 _cache.SetString(FollowStateCacheKey(User.Id, userToUnfollow.Id), "0");
                 
-                return Ok("Followers updated!");
+                return Ok(await GetFollowingInfo(userToUnfollow.Id));
             }
             catch (InvalidOperationException)
             {
@@ -150,6 +151,15 @@ namespace Isolaatti.Controllers
                     .Take(10)
                     .ToList().Select(u => { u.Following = UserFollowsUser(u.Id, User.Id); return u; });
             return Ok(listOfFollowers);
+        }
+
+        private async Task<FollowDto> GetFollowingInfo(int userId)
+        {
+            return new FollowDto() 
+            {
+                ThisUserIsFollowingMe = await Db.FollowerRelations.AnyAsync(fr => fr.TargetUserId == User.Id && fr.UserId == userId),
+                FollowingThisUser = await Db.FollowerRelations.AnyAsync(fr => fr.UserId == User.Id && fr.TargetUserId == userId)
+            };
         }
     }
 }

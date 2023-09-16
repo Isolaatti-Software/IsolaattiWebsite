@@ -65,7 +65,7 @@ Vue.component("posts-list", {
                     this.lastId = this.posts[this.posts.length - 1].id;
             } else {
                 const response = await fetch(
-                    `/api/Fetch/PostsOfUser/${this.userId}?lastId=${this.lastId}&length=25&olderFirst=${this.sortingData.ascending === "1" ? "True" : "False"}&filterJson=${decodeURIComponent(JSON.stringify(this.filter))}`, 
+                    `/api/Fetch/PostsOfUser/${this.userId}?lastId=${this.lastId}&length=25&olderFirst=${this.sortingData.ascending === "1" ? "True" : "False"}&filterJson=${encodeURIComponent(JSON.stringify(this.filter))}`, 
                     {
                         headers: this.customHeaders
                     });

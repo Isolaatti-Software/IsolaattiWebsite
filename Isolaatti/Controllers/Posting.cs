@@ -162,47 +162,6 @@ namespace Isolaatti.Controllers
             });
         }
         
-        [IsolaattiAuth]
-        [HttpPost]
-        [Route("Post/{postId:long}/Comment")]
-        public async Task<IActionResult> MakeComment(long postId, MakeCommentModel commentModel)
-        {
-            var post = await _db.SimpleTextPosts.FindAsync(postId);
-            if (post == null)
-            {
-                return Unauthorized("Post does not exist");
-            }        
-            
-            if (!post.UserId.Equals(User.Id) && post.Privacy == 1)
-            {
-                return Unauthorized("Post is private");
-            }        
-            var commentToMake = new Comment
-            {
-                TextContent = commentModel.Content,
-                UserId = User.Id,
-                PostId = post.Id,
-                TargetUser = post.UserId, 
-                AudioId = commentModel.AudioId,
-                SquadId = post.SquadId
-            };
         
-            _db.Comments.Add(commentToMake);
-            await _db.SaveChangesAsync();
-            
-            var commentDto = new CommentDto
-            {
-                Comment = commentToMake,
-                Username = _db.Users.FirstOrDefault(u => u.Id == commentToMake.UserId)?.Name
-            };
-            
-            try
-            {
-                var clientId = Guid.Parse(Request.Headers["client-id"]);
-                await _notificationSender.SendNewCommentEvent(commentDto, clientId);
-            } catch(FormatException) {}
-            
-            return Ok(commentDto);
-        }
     }
 }

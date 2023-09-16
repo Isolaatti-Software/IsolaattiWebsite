@@ -1,32 +1,61 @@
-using System.Threading.Tasks;
-using Isolaatti.Classes.ApiEndpointsRequestDataModels;
+﻿using Isolaatti.Classes.ApiEndpointsRequestDataModels;
 using Isolaatti.Models;
+using Isolaatti.Models.MongoDB;
 using Isolaatti.Repositories;
 using Isolaatti.Services;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
-namespace Isolaatti.Controllers
+namespace Isolaatti.Profiles.Controller
 {
-    [Route("/api/[controller]")]
-    [ApiController]
-    public class EditProfile : IsolaattiController
+    public class ProfileController : IsolaattiController
     {
         private readonly DbContextApp _db;
         private readonly AudiosRepository _audios;
         private readonly ImagesService _images;
 
-        public EditProfile(DbContextApp dbContextApp, AudiosRepository audios, ImagesService images)
+        public ProfileController(DbContextApp db, AudiosRepository audios, ImagesService images)
         {
-            _db = dbContextApp;
+            _db = db;
             _audios = audios;
             _images = images;
         }
 
+
         [IsolaattiAuth]
         [HttpPost]
-        [Route("UpdateProfile")]
+        [Route("/api/Fetch/UserProfile/{userId:int}")]
+        public async Task<IActionResult> GetProfile(int userId)
+        {
+
+            var account = await _db.Users.FindAsync(userId);
+            if (account == null) return NotFound();
+
+            account.NumberOfFollowers = await _db.FollowerRelations.CountAsync(fr => fr.TargetUserId == account.Id);
+            account.NumberOfFollowing = await _db.FollowerRelations.CountAsync(fr => fr.UserId == account.Id);
+            account.NumberOfPosts = await _db.SimpleTextPosts.CountAsync(p => p.UserId == account.Id);
+            account.NumberOfLikes = await _db.Likes.CountAsync(l => l.TargetUserId == account.Id);
+            account.IsUserItself = account.Id == User.Id;
+            account.ThisUserIsFollowingMe =
+                await _db.FollowerRelations.AnyAsync(fr => fr.TargetUserId == User.Id && fr.UserId == account.Id);
+            account.FollowingThisUser =
+                await _db.FollowerRelations.AnyAsync(fr => fr.UserId == User.Id && fr.TargetUserId == account.Id);
+
+            if (!account.ShowEmail && account.Id != User.Id)
+            {
+                account.Email = null;
+            }
+
+
+            return Ok(account);
+        }
+
+        [IsolaattiAuth]
+        [HttpPost]
+        [Route("/api/EditProfile/UpdateProfile")]
         public async Task<IActionResult> EditProfileInfo(EditProfileDataModel payload)
         {
             if (payload.NewUsername.Trim().Length is < 1 or > 20)
@@ -35,10 +64,10 @@ namespace Isolaatti.Controllers
                     error = "Name must be between 1 and 20 characters. String is trimmed."
                 });
 
-            
-            if(payload.NewUsername != null)
+
+            if (payload.NewUsername != null)
                 User.Name = payload.NewUsername.Trim();
-            if(payload.NewDescription != null)
+            if (payload.NewDescription != null)
                 User.DescriptionText = payload.NewDescription.Trim();
 
             _db.Users.Update(User);
@@ -51,10 +80,10 @@ namespace Isolaatti.Controllers
                 NewDescription = User.DescriptionText
             });
         }
-        
+
         [IsolaattiAuth]
         [HttpPost]
-        [Route("UpdateAudioDescription")]
+        [Route("/api/EditProfile/UpdateAudioDescription")]
         public async Task<IActionResult> UpdateAudioDescription(SimpleStringData payload)
         {
             if (await _audios.GetAudio(payload.Data) == null)
@@ -71,7 +100,7 @@ namespace Isolaatti.Controllers
 
         [IsolaattiAuth]
         [HttpPost]
-        [Route("SetProfilePhoto")]
+        [Route("/api/EditProfile/SetProfilePhoto")]
         public async Task<IActionResult> UpdateProfileImageWithImageId([FromQuery] string imageId)
         {
             var selectedImage = await _images.GetImage(imageId);
@@ -84,11 +113,11 @@ namespace Isolaatti.Controllers
             {
                 return Unauthorized();
             }
-            
+
             User.ProfileImageId = selectedImage.Id;
             _db.Users.Update(User);
             await _db.SaveChangesAsync();
-            
+
             return Ok();
         }
 

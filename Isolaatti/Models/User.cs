@@ -47,6 +47,9 @@ namespace Isolaatti.Models
         public string ProfileImageUrl { get; set; }
         public string DescriptionText { get; set; }
         public string DescriptionAudioId { get; set; }
+        public string Genre { get; set; }
+        public string CountryCode { get; set; }
+        public DateTime Birthday { get; set; }
 
     }
 }

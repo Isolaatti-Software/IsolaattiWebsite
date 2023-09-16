@@ -2,7 +2,7 @@ using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
-namespace Isolaatti.Models
+namespace Isolaatti.Comments.Entity
 {
     public class Comment
     {
@@ -14,20 +14,18 @@ namespace Isolaatti.Models
         public string AudioId { get; set; }
         public DateTime Date { get; set; }
         public Guid? SquadId { get; set; }
-        
-        // [JsonIgnore]
-        // public virtual User User { get; set; }
-        // [JsonIgnore]
-        // public virtual Post Post { get; set; }
+
 
         // Response in the same discussion
         public long? ResponseForCommentId { get; set; }
-        
+
         // Other discussions
         public long? LinkedDiscussionId { get; set; }
         public long? LinkedCommentId { get; set; }
-        
-        
+
+        public bool Modified { get; set; }
+
+
         public Comment()
         {
             Date = DateTime.Now.ToUniversalTime();

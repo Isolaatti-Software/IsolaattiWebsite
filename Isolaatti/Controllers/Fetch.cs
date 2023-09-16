@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Isolaatti.Classes;
+using Isolaatti.Comments.Entity;
 using Isolaatti.DTOs;
 using Isolaatti.Models;
 using Isolaatti.Repositories;
@@ -27,33 +28,7 @@ namespace Isolaatti.Controllers
             _squads = squadsRepository;
         }
 
-        [IsolaattiAuth]
-        [HttpPost]
-        [Route("UserProfile/{userId:int}")]
-        public async Task<IActionResult> GetProfile(int userId)
-        {
-            
-            var account = await _db.Users.FindAsync(userId);
-            if (account == null) return NotFound();
-
-            account.NumberOfFollowers = await _db.FollowerRelations.CountAsync(fr => fr.TargetUserId == account.Id);
-            account.NumberOfFollowing = await _db.FollowerRelations.CountAsync(fr => fr.UserId == account.Id);
-            account.NumberOfPosts = await _db.SimpleTextPosts.CountAsync(p => p.UserId == account.Id);
-            account.NumberOfLikes = await _db.Likes.CountAsync(l => l.TargetUserId == account.Id);
-            account.IsUserItself = account.Id == User.Id;
-            account.ThisUserIsFollowingMe =
-                await _db.FollowerRelations.AnyAsync(fr => fr.TargetUserId == User.Id && fr.UserId == account.Id);
-            account.FollowingThisUser =
-                await _db.FollowerRelations.AnyAsync(fr => fr.UserId == User.Id && fr.TargetUserId == account.Id);
-
-            if (!account.ShowEmail && account.Id != User.Id)
-            {
-                account.Email = null;
-            }
-
-            
-            return Ok(account);
-        }
+        
 
         [IsolaattiAuth]
         [HttpGet]
@@ -253,51 +228,7 @@ namespace Isolaatti.Controllers
             return Ok(post);
         }
 
-        [IsolaattiAuth]
-        [HttpGet]
-        [Route("Post/{postId:long}/Comments")]
-        public async Task<IActionResult> GetComments(long postId, long lastId = long.MinValue, int take = 10)
-        {
-            var post = await _db.SimpleTextPosts.FindAsync(postId);
-            if (post == null || (post.Privacy == 1 && post.UserId != User.Id))
-                return Unauthorized("post does not exist or is private");
-        
-            IQueryable<Comment> comments = _db.Comments
-                .Where(comment => comment.PostId.Equals(post.Id) && comment.Id > lastId)
-                .OrderBy(c => c.Id);
-        
-            var total = await comments.CountAsync();
-        
-            var commentsList = comments
-                .Take(take)
-                .Select(co => 
-                    new CommentDto { 
-                        Comment = co, 
-                        Username = _db.Users.FirstOrDefault(u => u.Id == co.UserId).Name 
-                    })
-                .ToList();
-        
-            return Ok(new ContentListWrapper<CommentDto>
-            {
-                Data = commentsList,
-                MoreContent = total > commentsList.Count
-            });
-        }
 
-        [IsolaattiAuth]
-        [HttpGet]
-        [Route("Comments/{commentId:long}")]
-        public async Task<IActionResult> GetComment(long commentId)
-        {
-            var comment = await _db.Comments.FindAsync(commentId);
-            if (comment == null) return NotFound();
-
-            return Ok(new CommentDto
-            {
-                Comment = comment,
-                Username = _db.Users.FirstOrDefault(u => u.Id == comment.UserId)?.Name
-            });
-        }
 
         [IsolaattiAuth]
         [HttpGet]
