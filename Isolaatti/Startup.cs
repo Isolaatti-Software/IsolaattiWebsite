@@ -134,6 +134,7 @@ namespace Isolaatti
                     config.RealtimeServiceKeysCollectionName = mongoConfig?.RealtimeServiceKeysCollectionName;
                     config.AuthTokensCollectionName = mongoConfig?.AuthTokensCollectionName;
                     config.ImagesCollectionName = mongoConfig?.ImagesCollectionName;
+                    config.CommentModificationHistoryCollectionName = mongoConfig?.CommentModificationHistoryCollectionName;
                 });
                 
                 var serversConfigEnvVar = Environment.GetEnvironmentVariable(Env.ServersConfig);
