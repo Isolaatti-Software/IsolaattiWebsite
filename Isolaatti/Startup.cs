@@ -3,6 +3,7 @@ using System.IO;
 using System.Text.Json;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
+using Isolaatti.Comments.Repository;
 using Isolaatti.Config;
 using Isolaatti.Middleware;
 using Isolaatti.Models;
@@ -177,6 +178,7 @@ namespace Isolaatti
             services.AddScoped<NotificationsService>();
             services.AddScoped<SocketIoServiceKeysRepository>();
             services.AddScoped<KeyGenService>();
+            services.AddScoped<CommentHistoryRepository>();
             services.AddSingleton<SessionsRepository>();
             services.Configure<CookiePolicyOptions>(options =>
             {
