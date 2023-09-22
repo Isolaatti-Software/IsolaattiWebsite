@@ -2,13 +2,12 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using Isolaatti.EmailSender;
 using Isolaatti.isolaatti_lib;
 using Isolaatti.Models;
 using Isolaatti.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using SendGrid;
-using SendGrid.Helpers.Mail;
 
 namespace Isolaatti.Pages
 {
@@ -18,15 +17,15 @@ namespace Isolaatti.Pages
         public bool Post = false;
         public bool EmailFound;
         private User Account;
-        private ISendGridClient _sendGridClient;
+        private EmailSenderMessaging _emailSender;
         private readonly RecaptchaValidation _recaptchaValidation;
         
         public bool RecaptchaError { get; set; }
 
-        public ForgotPassword(DbContextApp dbContextApp, ISendGridClient sendGridClient, RecaptchaValidation recaptchaValidation)
+        public ForgotPassword(DbContextApp dbContextApp, EmailSenderMessaging emailSender, RecaptchaValidation recaptchaValidation)
         {
             Db = dbContextApp;
-            _sendGridClient = sendGridClient;
+            _emailSender = emailSender;
             _recaptchaValidation = recaptchaValidation;
         }
 
@@ -51,10 +50,6 @@ namespace Isolaatti.Pages
             catch (InvalidOperationException)
             {
                 EmailFound = false;
-                // Using delay to simulate that email was sent. This may not be necessary, but users
-                // could realize that the email they entered is not in the system and use this to find
-                // out what email addresses are registered and which not.
-                await Task.Delay(1500);
                 return Page();
             }
 
@@ -85,13 +80,10 @@ namespace Isolaatti.Pages
         {
             var link =
                 $"https://{Request.HttpContext.Request.Host.Value}/RecoverPassword?id={id}&value={HttpUtility.UrlEncode(token)}";
-            var from = new EmailAddress("no-reply@isolaatti.com", "Isolaatti");
-            var to = new EmailAddress(Account.Email, Account.Name);
             var subject = "Restablecimiento de contraseña de Isolaatti";
-            var htmlBody = MailHelper.CreateSingleEmail(from, to, subject,
-                $"Abre el enlace para restablecer tu contraseña. {link}",
-                string.Format(EmailTemplates.PasswordRecoveryEmail, link, username));
-            await _sendGridClient.SendEmailAsync(htmlBody);
+            var htmlBody = string.Format(EmailTemplates.PasswordRecoveryEmail, link, username);
+            _emailSender.SendEmail("no-reply@isolaatti.com","Isolaatti", Account.Email, Account.Name, subject, htmlBody );
+            
         }
     }
 }

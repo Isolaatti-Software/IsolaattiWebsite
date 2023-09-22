@@ -5,6 +5,8 @@ using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Isolaatti.Comments.Repository;
 using Isolaatti.Config;
+using Isolaatti.EmailSender;
+using Isolaatti.Messaging;
 using Isolaatti.Middleware;
 using Isolaatti.Models;
 using Isolaatti.Models.MongoDB;
@@ -23,16 +25,13 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.CodeAnalysis.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 using MongoDB.Bson.Serialization;
-using MongoDB.Driver;
 using Npgsql;
-using SendGrid.Extensions.DependencyInjection;
+
 
 namespace Isolaatti
 {
@@ -165,6 +164,7 @@ namespace Isolaatti
                 services.Configure<Servers>(Configuration.GetSection("Servers"));
                 services.Configure<ReCaptchaConfig>(Configuration.GetSection("ReCaptcha"));
                 services.Configure<IsolaattiServicesKeys>(Configuration.GetSection("IsolaattiServicesKeys"));
+                services.Configure<RabbitmqConfig>(Configuration.GetSection("RabbitMQ"));
             }
 
             services.AddSingleton<MongoDatabase>();
@@ -192,13 +192,6 @@ namespace Isolaatti
                 options.ForwardedHeaders = ForwardedHeaders.XForwardedProto |
                                            ForwardedHeaders.XForwardedHost;
             });
-            // send-grid-api-key env variable must be set on production
-            services.AddSendGrid(options =>
-            {
-                options.ApiKey = _environment.IsDevelopment()
-                    ? Configuration.GetSection("ApiKeys")["SendGrid"]
-                    : Environment.GetEnvironmentVariable(Env.SendGridApiKeyEnvVar);
-            });
             services.AddDistributedMemoryCache();
             services.AddScoped<UsersRepository>();
             services.AddScoped<ScopedHttpContext>();
@@ -210,6 +203,8 @@ namespace Isolaatti
             services.AddScoped<ImagesRepository>();
             services.AddScoped<ImagesService>();
             services.AddSingleton<RecaptchaValidation>();
+            services.AddSingleton<Rabbitmq>();
+            services.AddSingleton<EmailSenderMessaging>();
             // don't allow uploading files larger than 10 MB, for security reasons
             services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = 1024 * 1024 * 10);
             

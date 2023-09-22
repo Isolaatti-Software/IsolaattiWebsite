@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Isolaatti.DTOs;
 using Isolaatti.Enums;
@@ -19,7 +19,7 @@ public interface IAccounts
     string GetUsernameFromId(int userId);
     Task MakeAccountFromGoogleAccount(string accessToken);
     Task<string> CreateTokenForGoogleUser(string accessToken);
-    Task SendJustLoginEmail(string email, string name, string ipAddress);
+    void SendJustLoginEmail(string email, string name, string ipAddress);
     IEnumerable<Session> GetSessionsOfUser(int userId);
     string GetIpAddress();
     void RemoveSessionCookie();

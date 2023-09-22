@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using FirebaseAdmin.Auth;
 using Isolaatti.DTOs;
+using Isolaatti.EmailSender;
 using Isolaatti.Enums;
 using Isolaatti.isolaatti_lib;
 using Isolaatti.Models;
@@ -13,8 +14,6 @@ using Isolaatti.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using SendGrid;
-using SendGrid.Helpers.Mail;
 
 namespace Isolaatti.Services;
 
@@ -22,18 +21,22 @@ public class Accounts : IAccounts
 {
     private readonly DbContextApp db;
     private readonly HttpContext _httpContext;
-    private readonly ISendGridClient _sendGridClient;
+    private readonly EmailSenderMessaging _emailSender;
     private readonly SessionsRepository _sessionsRepository;
 
     public const string SessionCookieName = "isolaatti_user_session_token";
+    private const string FromAddress = "cuentas@isolaatti.com";
+    private const string FromName = "Isolaatti cuentas";
+    private const string WelcomeSubject = "Te damos la bienvenida a Isolaatti";
+    private const string JustLoggedInSubject = "Iniciaste sesión en Isolaatti";
 
     public Accounts(DbContextApp db,
-        ISendGridClient sendGridClient,
+        EmailSenderMessaging emailSender,
         ScopedHttpContext scopedHttpContext,
         SessionsRepository sessionsRepository)
     {
         this.db = db;
-        _sendGridClient = sendGridClient;
+        _emailSender = emailSender;
         _httpContext = scopedHttpContext.HttpContext;
         _sessionsRepository = sessionsRepository;
     }
@@ -67,7 +70,7 @@ public class Accounts : IAccounts
         {
             db.Users.Add(newUser);
             await db.SaveChangesAsync();
-            await SendWelcomeEmail(newUser.Email, newUser.Name);
+            SendWelcomeEmail(newUser.Email, newUser.Name);
             return AccountMakingResult.Ok;
         }
         catch (Exception)
@@ -114,7 +117,7 @@ public class Accounts : IAccounts
             IpAddress = GetIpAddress(),
             UserAgent = GetUserAgent()
         });
-        await SendJustLoginEmail(user.Email, user.Name,GetIpAddress());
+        SendJustLoginEmail(user.Email, user.Name,GetIpAddress());
 
         return sessionInserted.ToString();
     }
@@ -145,7 +148,7 @@ public class Accounts : IAccounts
         {
             var randomPassword = Utils.RandomData.GenerateRandomPassword();
             await MakeAccountAsync(user.DisplayName, user.Email, randomPassword);
-            await SendWelcomeEmailForExternal(user.Email, user.DisplayName, randomPassword);
+            SendWelcomeEmailForExternal(user.Email, user.DisplayName, randomPassword);
         }
 
         var isolaattiUser = db.Users.Single(u => u.Email.Equals(user.Email));
@@ -185,7 +188,7 @@ public class Accounts : IAccounts
             IpAddress = GetIpAddress(),
             UserAgent = GetUserAgent()
         });
-        await SendJustLoginEmail(user.Email, user.Name,GetIpAddress());
+        SendJustLoginEmail(user.Email, user.Name,GetIpAddress());
 
         return insertedSession.ToString();
     }
@@ -195,37 +198,23 @@ public class Accounts : IAccounts
         return db.Users.Where(u => u.Id == userId).Select(u => u.Name).FirstOrDefault();
     }
 
-    private async Task SendWelcomeEmail(string email, string name)
+    private void SendWelcomeEmail(string email, string name)
     {
-        var from = new EmailAddress("cuentas@isolaatti.com", "Isolaatti");
-        var to = new EmailAddress(email, name);
-        var subject = "Te damos la bienvenida a Isolaatti";
-        var htmlBody = MailHelper.CreateSingleEmail(from, to, subject,
-            "Bienvenid@ a Isolaatti",
-            string.Format(EmailTemplates.WelcomeEmail, name));
-        await _sendGridClient.SendEmailAsync(htmlBody);
+        var htmlBody = string.Format(EmailTemplates.WelcomeEmail, name);
+        _emailSender.SendEmail(FromAddress,FromName,email, name, WelcomeSubject, htmlBody);
     }
 
-    private async Task SendWelcomeEmailForExternal(string email, string name, string generatedPassword)
+    private void SendWelcomeEmailForExternal(string email, string name, string generatedPassword)
     {
-        var from = new EmailAddress("cuentas@isolaatti.com", "Isolaatti");
-        var to = new EmailAddress(email, name);
-        var subject = "Te damos la bienvenida a Isolaatti";
-        var htmlBody = MailHelper.CreateSingleEmail(from, to, subject,
-            "Bienvenid@ a Isolaatti",
-            string.Format(EmailTemplates.WelcomeEmailExternal, name, email, generatedPassword));
-        await _sendGridClient.SendEmailAsync(htmlBody);
+        
+        var htmlBody = string.Format(EmailTemplates.WelcomeEmailExternal, name, email, generatedPassword);
+        _emailSender.SendEmail(FromAddress,FromName,email, name, WelcomeSubject, htmlBody);
     }
 
-    public async Task SendJustLoginEmail(string email, string name, string ipAddress)
+    public void SendJustLoginEmail(string email, string name, string ipAddress)
     {
-        var from = new EmailAddress("cuentas@isolaatti.com", "Isolaatti");
-        var to = new EmailAddress(email, name);
-        var subject = "Iniciaste sesión en Isolaatti";
-        var htmlBody = MailHelper.CreateSingleEmail(from, to, subject,
-            "Iniciaste sesión en Isolaatti...",
-            string.Format(EmailTemplates.LoginEmail, name, ipAddress));
-        await _sendGridClient.SendEmailAsync(htmlBody);
+        var htmlBody = string.Format(EmailTemplates.LoginEmail, name, ipAddress);
+        _emailSender.SendEmail(FromAddress, FromName, email, name, JustLoggedInSubject, htmlBody);
     }
 
     public IEnumerable<Session> GetSessionsOfUser(int userId)
