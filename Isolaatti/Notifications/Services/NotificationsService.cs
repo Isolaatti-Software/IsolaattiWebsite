@@ -44,53 +44,7 @@ public class NotificationsService
     {
         var notifications = await _notificationsRepository.GetNotificationsForUser(userId, after);
 
-        return notifications.Select(n =>
-        {
-            var notificationDto = new NotificationDto
-            {
-                Id = n.Id,
-                Date = n.TimeStamp,
-                UserId = n.UserId,
-                ImageId = _usersRepository.GetUserImageId(n.UserId),
-                Read = n.Read,
-                Payload = n.Payload switch
-                {
-                    LikeNotificationPayload likeNotificationPayload =>
-                        new LikePayloadDto
-                        {
-                            PostId = likeNotificationPayload.PostId,
-                            MakerUserId = likeNotificationPayload.MakerUserId,
-                            Type = likeNotificationPayload.Type,
-                            MakerUserName = _usersRepository.GetUsernameById(likeNotificationPayload.MakerUserId)
-                        },
-                    FollowerNotificationPayload followerNotificationPayload =>
-                        new FollowerPayloadDto
-                        {
-                            NewFollowerUserId = followerNotificationPayload.NewFollowerUserId,
-                            NewFollowerName = _usersRepository.GetUsernameById(followerNotificationPayload.NewFollowerUserId)
-                        },
-
-                    InformativeMessageNotificationPayload informativeMessageNotificationPayload =>
-                        new InformativeMessageNotificationPayload
-                        {
-                            Url = informativeMessageNotificationPayload.Url,
-                            ImageUrl = informativeMessageNotificationPayload.ImageUrl,
-                            Text = informativeMessageNotificationPayload.Text,
-                            Type = informativeMessageNotificationPayload.Type
-                        },
-
-
-                    NewActivityOnPost newActivityOnPostPayload => new NewActivityOnPostDto { },
-                    NewActivityOfUser newActivityOfUserPayload => new NewActivityOfUserDto { },
-                    NewSquadJoinRequest newSquadJoinRequestPayload => new NewSquadJoinRequestDto { },
-                    NewSquadInvitation newSquadInvitationPayload => new InformativeMessageNotificationPayload { },
-                    NewActivityOnSquad newActivityOnSquadPayload => new InformativeMessageNotificationPayload { },
-                    _ => n.Payload
-                }
-            };
-
-            return notificationDto;
-        });
+        return notifications.Select(FromEntity);
     }
 
     public async Task InsertNewLikeNotification(Like like)
