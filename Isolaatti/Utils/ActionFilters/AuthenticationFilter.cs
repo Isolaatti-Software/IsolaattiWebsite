@@ -55,6 +55,7 @@ public class AuthenticationFilter : IAsyncActionFilter
             if (context.Controller is IsolaattiController controller)
             {
                 controller.User = user;
+                controller.SessionId = session.SessionId;
             }
             await next();
         }

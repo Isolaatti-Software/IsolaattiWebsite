@@ -68,7 +68,7 @@ namespace Isolaatti.Comments.Controller
             try
             {
                 var clientId = Guid.Parse(Request.Headers["client-id"]);
-                await _notificationSender.SendNewCommentEvent(commentDto, clientId);
+                _notificationSender.SendNewCommentEvent(commentDto, clientId);
             }
             catch (FormatException) { }
 
@@ -144,7 +144,7 @@ namespace Isolaatti.Comments.Controller
             try
             {
                 var clientId = Guid.Parse(Request.Headers["client-id"]);
-                await _notificationSender.SendDeleteCommentEvent(comment.PostId, comment.Id, clientId);
+                _notificationSender.SendDeleteCommentEvent(comment.PostId, comment.Id, clientId);
             }
             catch (FormatException) { }
 
@@ -182,7 +182,7 @@ namespace Isolaatti.Comments.Controller
             try
             {
                 var clientId = Guid.Parse(Request.Headers["client-id"]);
-                await _notificationSender.SendCommentModifiedEvent(commentDto, clientId);
+                _notificationSender.SendCommentModifiedEvent(commentDto, clientId);
             }
             catch (FormatException) { }
 

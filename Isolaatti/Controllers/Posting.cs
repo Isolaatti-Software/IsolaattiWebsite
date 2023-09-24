@@ -119,7 +119,7 @@ namespace Isolaatti.Controllers
             try
             {
                 var clientId = Guid.Parse(Request.Headers["client-id"]);
-                await _notificationSender.SendPostUpdate(editedPost.PostId, clientId);
+                _notificationSender.SendPostUpdate(editedPost.PostId, clientId);
             } catch(FormatException) {}
 
             return Ok(updatedPost);

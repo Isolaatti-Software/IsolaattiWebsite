@@ -1,46 +1,49 @@
 ﻿using System;
-using System.Net.Http;
-using System.Net.Http.Json;
-using System.Threading.Tasks;
-using Isolaatti.Config;
+using System.Text;
+using System.Text.Json;
 using Isolaatti.DTOs;
+using Isolaatti.Messaging;
 using Isolaatti.Notifications.Entity;
 using Isolaatti.RealtimeInteraction.Dto;
-using Isolaatti.Services;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+using RabbitMQ.Client;
 
 namespace Isolaatti.RealtimeInteraction.Service;
 
 public class NotificationSender
 {
-    private readonly Servers _servers;
-    private readonly ILogger<NotificationSender> _logger;
-    private readonly HttpClientSingleton _httpClientSingleton;
-    private readonly IOptions<IsolaattiServicesKeys> _keys;
+    private readonly IModel _channel;
 
-    public NotificationSender(IOptions<Servers> servers,IOptions<IsolaattiServicesKeys> serviceKeys, ILogger<NotificationSender> logger, HttpClientSingleton httpClientSingleton)
+    private const string Exchange = "default_exchange";
+    private const string QueueName = "realtime_queue";
+    private const string RoutingKey = "routing_realtime";
+    
+    public NotificationSender(Rabbitmq rabbitmq)
     {
-        _servers = servers.Value;
-        _logger = logger;
-        _httpClientSingleton = httpClientSingleton;
-        _keys = serviceKeys;
+        _channel = rabbitmq.GetConnection().CreateModel();
+        _channel.ExchangeDeclare(Exchange, ExchangeType.Direct, true);
+        _channel.QueueDeclare(QueueName, true, false, false);
+        _channel.QueueBind(QueueName, Exchange, RoutingKey);
     }
     
-    public async Task NotifyUser(int userId, Notification notification)
+    public void NotifyUser(int userId, Notification notification)
     {
-        var content = JsonContent.Create(new
+        var dto = new RealtimeUnicastEventDto
         {
-            secret = _keys.Value.RealtimeService,
-            userId,
-            data = notification
-        });
+            UserId = userId,
+            Notification = notification
+        };
+        
+        var props = _channel.CreateBasicProperties();
 
-        try
-        {
-            await _httpClientSingleton.Client.PostAsync($"{_servers.RealtimeServerInternalUrl}/send_notification", content);
-        }
-        catch (HttpRequestException) { }
+        props.ContentType = "application/json";
+        props.DeliveryMode = 2;
+        _channel.BasicPublish(Exchange, RoutingKey, props, Encoding.UTF8.GetBytes(JsonSerializer.Serialize(dto,
+            new JsonSerializerOptions()
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            })));
+
+
     }
     
     /// <summary>
@@ -49,26 +52,26 @@ public class NotificationSender
     /// <param name="comment"></param>
     /// <param name="clientId"></param>
 
-    public async Task SendNewCommentEvent(CommentDto comment, Guid clientId)
+    public void SendNewCommentEvent(CommentDto comment, Guid clientId)
     {
+
+        var dto = new RealtimeMulticastEventDto<long>()
+        {
+            Type = EventType.CommentAdded,
+            RelatedId = comment.Comment.PostId,
+            Payload = comment,
+            ClientId = clientId
+        };
         
-        var content = JsonContent.Create(new
-        {
-            secret = _keys.Value.RealtimeService,
-            eventData = new RealtimeEventDto<long>()
+        var props = _channel.CreateBasicProperties();
+
+        props.ContentType = "application/json";
+        props.DeliveryMode = 2;
+        _channel.BasicPublish(Exchange, RoutingKey, props, Encoding.UTF8.GetBytes(JsonSerializer.Serialize(dto,
+            new JsonSerializerOptions()
             {
-                Type = EventType.CommentAdded,
-                RelatedId = comment.Comment.PostId,
-                Payload = comment,
-                ClientId = clientId
-            }
-        });
-    
-        try
-        {
-            await _httpClientSingleton.Client.PostAsync($"{_servers.RealtimeServerInternalUrl}/event", content);
-        }
-        catch(HttpRequestException){ }
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            })));
     }
 
     /// <summary>
@@ -77,69 +80,69 @@ public class NotificationSender
     /// </summary>
     /// <param name="postId"></param>
     /// <param name="clientId"></param>
-    public async Task SendPostUpdate(long postId, Guid clientId)
+    public void SendPostUpdate(long postId, Guid clientId)
     {
-        var content = JsonContent.Create(new
+        var dto = new RealtimeMulticastEventDto<long>()
         {
-            secret = _keys.Value.RealtimeService,
-            eventData = new RealtimeEventDto<long>()
-            {
-                Type = EventType.PostUpdate,
-                Payload = null,
-                ClientId = clientId,
-                RelatedId = postId
-            }
-        });
+            Type = EventType.PostUpdate,
+            Payload = null,
+            ClientId = clientId,
+            RelatedId = postId
+        };
+        
+        var props = _channel.CreateBasicProperties();
 
-        try
-        {
-            await _httpClientSingleton.Client.PostAsync($"{_servers.RealtimeServerInternalUrl}/event", content);
-        }
-        catch (HttpRequestException e)
-        {
-            _logger.Log(LogLevel.Error,"Error making request");
-        }
+        props.ContentType = "application/json";
+        props.DeliveryMode = 2;
+        _channel.BasicPublish(Exchange, RoutingKey, props, Encoding.UTF8.GetBytes(JsonSerializer.Serialize(dto,
+            new JsonSerializerOptions()
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            })));
+
     }
 
-    public async Task SendDeleteCommentEvent(long postId, long commentId, Guid clientId)
+    public void SendDeleteCommentEvent(long postId, long commentId, Guid clientId)
     {
-        var content = JsonContent.Create(new
+        var dto = new RealtimeMulticastEventDto<long>()
         {
-            secret = _keys.Value.RealtimeService,
-            eventData = new RealtimeEventDto<long>()
+            Type = EventType.CommentRemoved,
+            ClientId = clientId,
+            RelatedId = postId,
+            Payload = commentId
+        };
+        
+        var props = _channel.CreateBasicProperties();
+
+        props.ContentType = "application/json";
+        props.DeliveryMode = 2;
+        _channel.BasicPublish(Exchange, RoutingKey, props, Encoding.UTF8.GetBytes(JsonSerializer.Serialize(dto,
+            new JsonSerializerOptions()
             {
-                Type = EventType.CommentRemoved,
-                ClientId = clientId,
-                RelatedId = postId,
-                Payload = commentId
-            }
-        });
-    
-        try
-        {
-            await _httpClientSingleton.Client.PostAsync($"{_servers.RealtimeServerInternalUrl}/event", content);
-        }
-        catch(HttpRequestException){ }
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            })));
+
     }
 
-    public async Task SendCommentModifiedEvent(CommentDto updatedComment, Guid clientId)
+    public void SendCommentModifiedEvent(CommentDto updatedComment, Guid clientId)
     {
-        var content = JsonContent.Create(new
+        var dto = new RealtimeMulticastEventDto<long>()
         {
-            secret = _keys.Value.RealtimeService,
-            eventData = new RealtimeEventDto<long>()
+            Type = EventType.CommentModified,
+            ClientId = clientId,
+            RelatedId = updatedComment.Comment.PostId,
+            Payload = updatedComment
+        };
+        
+        var props = _channel.CreateBasicProperties();
+
+        props.ContentType = "application/json";
+        props.DeliveryMode = 2;
+        _channel.BasicPublish(Exchange, RoutingKey, props, Encoding.UTF8.GetBytes(JsonSerializer.Serialize(dto,
+            new JsonSerializerOptions()
             {
-                Type = EventType.CommentModified,
-                ClientId = clientId,
-                RelatedId = updatedComment.Comment.PostId,
-                Payload = updatedComment
-            }
-        });
-    
-        try
-        {
-            await _httpClientSingleton.Client.PostAsync($"{_servers.RealtimeServerInternalUrl}/event", content);
-        }
-        catch(HttpRequestException){ }
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            })));
+        
     }
 }

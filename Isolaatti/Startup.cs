@@ -11,6 +11,7 @@ using Isolaatti.Middleware;
 using Isolaatti.Models;
 using Isolaatti.Models.MongoDB;
 using Isolaatti.Notifications.Entity;
+using Isolaatti.Notifications.PushNotifications;
 using Isolaatti.Notifications.Repository;
 using Isolaatti.Notifications.Services;
 using Isolaatti.RealtimeInteraction.Service;
@@ -181,17 +182,6 @@ namespace Isolaatti
             services.AddScoped<KeyGenService>();
             services.AddScoped<CommentHistoryRepository>();
             services.AddSingleton<SessionsRepository>();
-            services.Configure<CookiePolicyOptions>(options =>
-            {
-                // No consent check needed here
-                options.CheckConsentNeeded = context => false;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
-            });
-            services.Configure<ForwardedHeadersOptions>(options =>
-            {
-                options.ForwardedHeaders = ForwardedHeaders.XForwardedProto |
-                                           ForwardedHeaders.XForwardedHost;
-            });
             services.AddDistributedMemoryCache();
             services.AddScoped<UsersRepository>();
             services.AddScoped<ScopedHttpContext>();
@@ -205,6 +195,21 @@ namespace Isolaatti
             services.AddSingleton<RecaptchaValidation>();
             services.AddSingleton<Rabbitmq>();
             services.AddSingleton<EmailSenderMessaging>();
+            services.AddSingleton<PushNotificationsSenderMessaging>();
+            services.AddSingleton<RegisterDeviceMessaging>();
+            
+            services.Configure<CookiePolicyOptions>(options =>
+            {
+                // No consent check needed here
+                options.CheckConsentNeeded = context => false;
+                options.MinimumSameSitePolicy = SameSiteMode.None;
+            });
+            services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders = ForwardedHeaders.XForwardedProto |
+                                           ForwardedHeaders.XForwardedHost;
+            });
+            
             // don't allow uploading files larger than 10 MB, for security reasons
             services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = 1024 * 1024 * 10);
             

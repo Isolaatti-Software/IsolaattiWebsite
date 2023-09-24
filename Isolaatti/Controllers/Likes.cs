@@ -61,7 +61,7 @@ namespace Isolaatti.Controllers
             try
             {
                 var clientId = Guid.Parse(Request.Headers["client-id"]);
-                await _notificationSender.SendPostUpdate(post.Id, clientId);
+                _notificationSender.SendPostUpdate(post.Id, clientId);
             } catch(FormatException) {}
 
             if(post.UserId != User.Id)
@@ -95,7 +95,7 @@ namespace Isolaatti.Controllers
             try
             {
                 var clientId = Guid.Parse(Request.Headers["client-id"]);
-                await _notificationSender.SendPostUpdate(post.Id, clientId);
+                _notificationSender.SendPostUpdate(post.Id, clientId);
             } catch(FormatException) {}
 
 

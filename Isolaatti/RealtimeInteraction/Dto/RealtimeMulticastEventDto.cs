@@ -30,7 +30,7 @@ public enum EventType
 /// Represents a realtime event that is sent through the web sockets service.
 /// T is the type of the related id. Example: a post with a int Id
 /// </summary>
-public class RealtimeEventDto<T>
+public class RealtimeMulticastEventDto<T>
 {
 
     /// <summary>
