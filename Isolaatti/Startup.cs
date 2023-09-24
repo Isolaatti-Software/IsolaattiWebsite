@@ -158,6 +158,16 @@ namespace Isolaatti
                         JsonSerializer.Deserialize<IsolaattiServicesKeys>(isolaattiServicesKeysJsonEnvVar);
                     config.RealtimeService = isolaattiServiceKeys.RealtimeService;
                 });
+                var rabbitmqConfigJsonEnvVar = Environment.GetEnvironmentVariable(Env.RabbitmqConfig);
+                services.Configure<RabbitmqConfig>(config =>
+                {
+                    var rabbitmqConfig = JsonSerializer.Deserialize<RabbitmqConfig>(rabbitmqConfigJsonEnvVar);
+                    config.Host = rabbitmqConfig.Host;
+                    config.Password = rabbitmqConfig.Password;
+                    config.Port = rabbitmqConfig.Port;
+                    config.Username = rabbitmqConfig.Username;
+                    config.VirtualHost = rabbitmqConfig.VirtualHost;
+                });
             }
             else
             {

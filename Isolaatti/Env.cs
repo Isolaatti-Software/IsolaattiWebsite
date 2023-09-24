@@ -9,4 +9,5 @@ public class Env
     public const string MongoDbConfig = "mongodb_config";
     public const string DatabaseUrl = "DATABASE_URL";
     public const string GoogleFirebaseAdminSdkCredential = "google_admin_sdk";
+    public const string RabbitmqConfig = "RABBITMQ";
 }
