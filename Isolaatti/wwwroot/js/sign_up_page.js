@@ -1,6 +1,11 @@
 ﻿new Vue({
     el: "#sign-up",
     data: {
+        usernameField: {
+            value: username, //server rendered
+            hadValue: false,
+            isAvailable: undefined
+        },
         nameField: {
             value: name, // server rendered
             hadInput: false
@@ -18,7 +23,21 @@
             hadInput: false
         }
     },
+    methods: {
+        queryNameAvailability: async function(e) {
+            e.preventDefault();
+            const result = await fetch(`/api/usernames/check?username=${this.usernameField.value}`);
+            if(!result.ok) {
+                this.usernameField.isAvailable = undefined;
+            }
+            const availability = await result.json();
+            this.usernameField.isAvailable = availability.available;
+        }
+    },
     computed: {
+        usernameIsInvalid: function() {
+            return this.usernameField.value.length < 3 || this.usernameField.value.length > 20;
+        },
         nameIsInvalid: function () {
             return this.nameField.value.length < 1 || this.nameField.value.length > 20;
         },
@@ -37,6 +56,10 @@
         }
     },
     watch: {
+        "usernameField.value": function() {
+            this.usernameField.hadInput = true
+            this.usernameField.isAvailable = undefined;
+        },
         "nameField.value": function() {
             this.nameField.hadInput = true;
         },

@@ -9,7 +9,7 @@ namespace Isolaatti.Services;
 
 public interface IAccounts
 {
-    Task<AccountMakingResult> MakeAccountAsync(string username, string email, string password);
+    Task<AccountMakingResult> MakeAccountAsync(string username, string displayName, string email, string password);
     Task<bool> IsUserEmailVerified(int userId);
     Task<bool> ChangeAPassword(int userId, string currentPassword, string newPassword);
     Task<string> CreateNewSession(int userId, string plainTextPassword);

@@ -41,9 +41,10 @@ public class Accounts : IAccounts
         _sessionsRepository = sessionsRepository;
     }
 
-    public async Task<AccountMakingResult> MakeAccountAsync(string username, string email, string password)
+    public async Task<AccountMakingResult> MakeAccountAsync(string username, string displayName, string email,
+        string password)
     {
-        // Now I don't care about usernames availability
+        
 
 
         if (await db.Users.AnyAsync(user => user.Email.Equals(email)))
@@ -51,17 +52,20 @@ public class Accounts : IAccounts
             return AccountMakingResult.EmailNotAvailable;
         }
 
-        if (username == "" || password == "" || email == "")
+        if (username == "" || password == "" || email == "" || displayName == "")
         {
             return AccountMakingResult.EmptyFields;
         }
+        
+        
 
         var passwordHasher = new PasswordHasher<string>();
         var hashedPassword = "";
         await Task.Run(() => { hashedPassword = passwordHasher.HashPassword(email, password); });
         var newUser = new User
         {
-            Name = username,
+            UniqueUsername = username,
+            Name = displayName,
             Email = email,
             Password = hashedPassword,
             EmailValidated = true
@@ -147,7 +151,7 @@ public class Accounts : IAccounts
         if (!db.Users.Any(u => u.Email.Equals(user.Email)))
         {
             var randomPassword = Utils.RandomData.GenerateRandomPassword();
-            await MakeAccountAsync(user.DisplayName, user.Email, randomPassword);
+            await MakeAccountAsync(user.DisplayName, user.DisplayName + Utils.RandomData.GenerateRandomKey(6), user.Email, randomPassword);
             SendWelcomeEmailForExternal(user.Email, user.DisplayName, randomPassword);
         }
 

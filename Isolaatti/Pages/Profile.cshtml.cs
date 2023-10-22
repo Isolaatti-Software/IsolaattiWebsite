@@ -4,6 +4,7 @@ using Isolaatti.Services;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Isolaatti.Pages
 {
@@ -19,11 +20,11 @@ namespace Isolaatti.Pages
             _accounts = accounts;
         }
 
-        public async Task<IActionResult> OnGet(int id, [FromQuery] bool noRedirect = false)
+        public async Task<IActionResult> OnGet(string id, int numericId, [FromQuery] bool noRedirect = false)
         {
             ViewData["no-redirect"] = noRedirect;
             // get profile with id
-            var profile = await _db.Users.FindAsync(id);
+            var profile = await _db.Users.FirstOrDefaultAsync(u => u.UniqueUsername == id || u.Id == numericId);
             if (profile == null) return NotFound();
             if (profile.Id == User.Id && !noRedirect)
             {

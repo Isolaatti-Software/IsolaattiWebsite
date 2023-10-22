@@ -26,6 +26,8 @@ namespace Isolaatti.Pages
         }
         
         [BindProperty]
+        public string Username { get; set; }
+        [BindProperty]
         public string Name { get; set; }
         [BindProperty]
         public string Email { get; set; }
@@ -38,6 +40,8 @@ namespace Isolaatti.Pages
         public bool EmailPrevUsed { get; set; }
         [BindProperty]
         public bool RecaptchaError { get; set; }
+        [BindProperty]
+        public bool UsernameUnavailable { get; set; }
 
         public async Task<IActionResult> OnGet(string then = "")
         {
@@ -67,7 +71,7 @@ namespace Isolaatti.Pages
                 return Page();
             }
 
-            var result = await _accounts.MakeAccountAsync(Name, Email, Password);
+            var result = await _accounts.MakeAccountAsync(Username, Name, Email, Password);
             switch (result)
             {
                 case AccountMakingResult.Ok:
@@ -83,6 +87,9 @@ namespace Isolaatti.Pages
                     });
                 case AccountMakingResult.EmailNotAvailable:
                     EmailPrevUsed = true;
+                    return Page();
+                case AccountMakingResult.UsernameUnavailable:
+                    UsernameUnavailable = true;
                     return Page();
                 default:
                     return Page();

@@ -9,49 +9,6 @@
     ViewData["Title"] = "Regístrate";
 }
 
-@section scripts_google
-{
-<script src="https://www.google.com/recaptcha/api.js" async defer></script>
-<script>
-    
-        var firebaseConfig = {
-            apiKey: "AIzaSyDZHVXLR_1imwVb2mCArnYpdbNx6XUPZBQ",
-            authDomain: "isolaatti-b6641.firebaseapp.com",
-            databaseURL: "https://isolaatti-b6641.firebaseio.com",
-            projectId: "isolaatti-b6641",
-            storageBucket: "isolaatti-b6641.appspot.com",
-            messagingSenderId: "556033448926",
-            appId: "1:556033448926:web:35759afc37d6a1585b1b4f",
-            measurementId: "G-JQV4WX75RK"
-        };
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        
-        // if sign up page was opened from somewhere else than front page, user may want to be redirected back
-        const thenParam = "@Html.Raw(ViewData["then"])"
-        const queryParam = `?then=${encodeURIComponent(thenParam)}`;
-                              
-        var uiConfig = {
-                signInSuccessUrl: `ExternalAuth${queryParam}`,
-                signInOptions: [
-                  // Leave the lines as is for the providers you want to offer your users.
-                  firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-                  "microsoft.com"
-                ],
-                // tosUrl and privacyPolicyUrl accept either url string or a callback
-                // function.
-                // Terms of service url/callback.
-                tosUrl: '/terminos_de_uso',
-                // Privacy policy url/callback.
-                privacyPolicyUrl: '/politica_de_privacidad'
-              };
-        
-              // Initialize the FirebaseUI Widget using Firebase.
-              var ui = new firebaseui.auth.AuthUI(firebase.auth());
-              // The start method will wait until the DOM is loaded.
-              ui.start('#firebaseui-auth-container', uiConfig);
-        </script>
-}
 
 @section metadata
 {
@@ -78,7 +35,23 @@
             </p>
             <div class="form-group">
                 <label for="username_form_control">Nombre de usuario</label>
-                <input type="text"  id="username_form_control" class="form-control"
+                <div class="input-group">
+                    <input type="text"  id="username_form_control" class="form-control" asp-for="Username" v-model="usernameField.value" :class="{'is-invalid': usernameIsInvalid && usernameField.hadInput, 'is-valid': usernameField.isAvailable}">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" v-on:click="queryNameAvailability" :disabled="usernameIsInvalid">Verificar</button>
+                    </div>
+                    <div class="invalid-feedback">
+                        El nombre no es válido. Debe tener al menos 3 caracteres y máximo 20.
+                    </div>
+                    <div class="valid-feedback">
+                        El nombre es válido y está disponible
+                    </div>
+                </div>
+                
+            </div>
+            <div class="form-group">
+                <label for="displayname_form_control">Nombre para mostrar</label>
+                <input type="text"  id="displayname_form_control" class="form-control"
                        asp-for="Name" v-model="nameField.value" :class="{ 'is-invalid': nameIsInvalid && nameField.hadInput}">
                 <div class="invalid-feedback">
                     El nombre no es válido. Debe tener al menos un caracter y máximo 20.
@@ -118,20 +91,17 @@
                 <button class="btn btn-primary" type="submit" :disabled="!canSignUp">Regístrate</button>
             </div>
         </form>
-        <hr/>
-        <div class="sign-in-up-form">
-            <div id="firebaseui-auth-container"></div>
-
-        </div>
     </div>
 </div>
 <div class="col-md-3 flex-column"></div>
 
 @section Scripts
 {
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <script>
     const name = "@Model.Name";
     const email = "@Model.Email";
+    const username = "@Model.Username";
     </script>
     <script src="~/js/sign_up_page.js"></script>
 }

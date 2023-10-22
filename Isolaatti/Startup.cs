@@ -89,7 +89,11 @@ namespace Isolaatti
             });
             services.AddMvcCore().AddApiExplorer();
             services.AddRazorPages()
-                .AddMvcOptions(options => options.Filters.Add<IsolaattiAuthPagesFilter>())
+                .AddMvcOptions(options =>
+                {
+                    options.Filters.Add<IsolaattiAuthPagesFilter>();
+                })
+                .AddRazorPagesOptions(options => options.Conventions.AddPageRoute("/Profile", "/perfil/{numericId:int}"))
                 .AddRazorRuntimeCompilation();
             
 

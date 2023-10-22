@@ -5,5 +5,6 @@ public enum AccountMakingResult
     EmailNotAvailable,
     EmptyFields,
     Ok,
-    Error
+    Error,
+    UsernameUnavailable
 }
