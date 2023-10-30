@@ -2,6 +2,8 @@
 using System.IO;
 using System.Threading.Tasks;
 using Google;
+using Isolaatti.Accounts;
+using Isolaatti.Accounts.Service;
 using Isolaatti.Classes.ApiEndpointsResponseDataModels;
 using Isolaatti.Enums;
 using Isolaatti.Models.MongoDB;
@@ -13,9 +15,9 @@ public class AudiosService
 {
     private readonly GoogleCloudStorageService _storage;
     private readonly AudiosRepository _audiosRepository;
-    private readonly IAccounts _accounts;
+    private readonly IAccountsService _accounts;
     
-    public AudiosService(GoogleCloudStorageService googleFirebaseStorageService, AudiosRepository audiosRepository, IAccounts accounts)
+    public AudiosService(GoogleCloudStorageService googleFirebaseStorageService, AudiosRepository audiosRepository, IAccountsService accounts)
     {
         _storage = googleFirebaseStorageService;
         _audiosRepository = audiosRepository;

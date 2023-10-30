@@ -1,3 +1,4 @@
+using Isolaatti.Accounts.Data.Entity;
 using Isolaatti.Comments.Entity;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +24,7 @@ namespace Isolaatti.Models
         public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
         
         public DbSet<User> Users { get; set; }
+        public DbSet<AccountPrecreate> AccountPrecreates { get; set; }
         public DbSet<ChangePasswordToken> ChangePasswordTokens { get; set; }
         public DbSet<ExternalUser> ExternalUsers { get; set; }
         public DbSet<UserSeenPostHistory> UserSeenPostHistories { get; set; }

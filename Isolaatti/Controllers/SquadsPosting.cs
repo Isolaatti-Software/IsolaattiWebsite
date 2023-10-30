@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Isolaatti.Accounts;
+using Isolaatti.Accounts.Service;
 using Isolaatti.Classes;
 using Isolaatti.DTOs;
 using Isolaatti.Models;
@@ -17,10 +19,10 @@ namespace Isolaatti.Controllers;
 public class SquadsPosting : IsolaattiController
 {
     private readonly DbContextApp _db;
-    private readonly IAccounts _accounts;
+    private readonly IAccountsService _accounts;
     private readonly SquadsRepository _squads;
 
-    public SquadsPosting(DbContextApp dbContextApp, IAccounts accounts, SquadsRepository squadsRepository)
+    public SquadsPosting(DbContextApp dbContextApp, IAccountsService accounts, SquadsRepository squadsRepository)
     {
         _db = dbContextApp;
         _accounts = accounts;

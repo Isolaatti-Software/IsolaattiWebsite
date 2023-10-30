@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Isolaatti.Accounts;
+using Isolaatti.Accounts.Service;
 using Isolaatti.DTOs;
 using Isolaatti.Models;
 using Isolaatti.Services;
@@ -14,7 +16,7 @@ namespace Isolaatti.Pages
     public class LogIn : PageModel
     {
         private DbContextApp _db;
-        private readonly IAccounts _accounts;
+        private readonly IAccountsService _accounts;
         private readonly ServerRenderedAlerts _renderedAlerts;
 
         public bool WrongCredential = false;
@@ -24,7 +26,7 @@ namespace Isolaatti.Pages
         public bool ExistingSession = false;
         public bool ChangedPassword = false;
 
-        public LogIn(DbContextApp dbContextApp, IAccounts accounts, ServerRenderedAlerts serverRenderedAlerts)
+        public LogIn(DbContextApp dbContextApp, IAccountsService accounts, ServerRenderedAlerts serverRenderedAlerts)
         {
             _db = dbContextApp;
             _accounts = accounts;
@@ -41,7 +43,7 @@ namespace Isolaatti.Pages
             bool changedPassword = false,
             string then = "")
         {
-            var user = await _accounts.ValidateSession(SessionDto.FromJson(Request.Cookies[Accounts.SessionCookieName]));
+            var user = await _accounts.ValidateSession(SessionDto.FromJson(Request.Cookies[AccountsService.SessionCookieName]));
             if (user != null)
             {
                 return RedirectToPage("/Index");

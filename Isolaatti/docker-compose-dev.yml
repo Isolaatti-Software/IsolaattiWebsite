@@ -34,13 +34,8 @@ services:
       ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
       
   rabbitmq:
-    image: rabbitmq
+    image: rabbitmq:3-management-alpine
     restart: always
     ports:
       - 5672:5672
-    
-  rabbitmq-managment:
-    image: rabbitmq:management
-    restart: always
-    ports:
       - 15672:15672

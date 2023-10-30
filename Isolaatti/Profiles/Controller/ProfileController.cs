@@ -8,6 +8,7 @@ using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using Isolaatti.Accounts.Data;
 
 namespace Isolaatti.Profiles.Controller
 {
@@ -56,7 +57,7 @@ namespace Isolaatti.Profiles.Controller
         [IsolaattiAuth]
         [HttpPost]
         [Route("/api/EditProfile/UpdateProfile")]
-        public async Task<IActionResult> EditProfileInfo(EditProfileDataModel payload)
+        public async Task<IActionResult> EditProfileInfo(EditProfileDto payload)
         {
             if (payload.NewUsername.Trim().Length is < 1 or > 20)
                 return BadRequest(new
@@ -74,7 +75,7 @@ namespace Isolaatti.Profiles.Controller
 
             await _db.SaveChangesAsync();
 
-            return Ok(new EditProfileDataModel
+            return Ok(new EditProfileDto
             {
                 NewUsername = User.Name,
                 NewDescription = User.DescriptionText

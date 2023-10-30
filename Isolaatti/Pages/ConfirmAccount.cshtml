@@ -1,14 +1,13 @@
-@page "/registrate"
+@page "/crear_cuenta"
 @using Isolaatti.Config
 @using Microsoft.Extensions.Options
-@model Isolaatti.Pages.MakeAccount
+@model Isolaatti.Pages.ConfirmAccount
 @inject IOptions<ReCaptchaConfig> RecaptchaConfig
 
 @{
     Layout = "Shared/_LayoutWebAppOutside";
-    ViewData["Title"] = "Regístrate";
+    ViewData["Title"] = "Confirmación de cuenta";
 }
-
 
 @section metadata
 {
@@ -58,14 +57,6 @@
                 </div>
             </div>
             <div class="form-group">
-                <label for="email_form_control">Dirección de correo electrónico</label>
-                <input type="email"  id="email_form_control" class="form-control"
-                       asp-for="Email" v-model="emailField.value" :class="{'is-invalid': emailIsInvalid && emailField.hadInput}">
-                <div class="invalid-feedback">
-                    La dirección de correo no tiene la forma correcta
-                </div>
-            </div>
-            <div class="form-group">
                 <label for="password_form_control">Contraseña</label>
                 <input type="password" asp-for="Password" id="password_form_control" class="form-control"
                        v-model="passwordField.value" :class="{'is-invalid': passwordIsInvalid && passwordField.hadInput}">
@@ -103,5 +94,5 @@
     const email = "@Model.Email";
     const username = "@Model.Username";
     </script>
-    <script src="~/js/sign_up_page.js"></script>
+    <script src="~/js/confirm_account.js"></script>
 }

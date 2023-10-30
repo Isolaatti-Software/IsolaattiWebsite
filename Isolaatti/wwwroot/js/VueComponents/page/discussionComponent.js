@@ -56,15 +56,6 @@
     },
     mounted: async function () {
         await this.fetchPost();
-        socket.emit("subscribe-scope", {
-            type: 1,
-            id: this.postId
-        });
-        socket.emit("subscribe-scope", {
-            type: 0,
-            id: this.postId
-        });
-        
     },
     template: `
         <section class="w-100">

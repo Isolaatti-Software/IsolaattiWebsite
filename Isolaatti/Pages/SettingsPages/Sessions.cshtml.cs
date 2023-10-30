@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using Isolaatti.Accounts;
+using Isolaatti.Accounts.Service;
 using Isolaatti.Services;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
@@ -9,10 +11,10 @@ namespace Isolaatti.Pages.SettingsPages
     [IsolaattiAuth]
     public class Sessions : IsolaattiPageModel
     {
-        private readonly IAccounts _accounts;
+        private readonly IAccountsService _accounts;
         public IEnumerable<Models.MongoDB.Session> SessionTokens;
 
-        public Sessions(IAccounts accounts)
+        public Sessions(IAccountsService accounts)
         {
             _accounts = accounts;
         }

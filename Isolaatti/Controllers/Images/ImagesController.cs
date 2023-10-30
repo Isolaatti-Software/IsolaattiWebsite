@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Isolaatti.Accounts;
+using Isolaatti.Accounts.Service;
 using Isolaatti.Classes.ApiEndpointsRequestDataModels;
 using Isolaatti.Enums;
 using Isolaatti.Models;
@@ -19,12 +21,12 @@ namespace Isolaatti.Controllers.Images;
 [Route("/api/images")]
 public class ImagesController : IsolaattiController
 {
-    private readonly IAccounts _accounts;
+    private readonly IAccountsService _accounts;
     private readonly ImagesService _images;
     private readonly SquadsRepository _squadsRepository;
     private readonly DbContextApp _db;
 
-    public ImagesController(IAccounts accounts, ImagesService images, SquadsRepository squadsRepository, DbContextApp db)
+    public ImagesController(IAccountsService accounts, ImagesService images, SquadsRepository squadsRepository, DbContextApp db)
     {
         _accounts = accounts;
         _images = images;

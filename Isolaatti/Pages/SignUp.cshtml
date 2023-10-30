@@ -1,0 +1,65 @@
+@page "/registrate"
+@using Isolaatti.Accounts.Service
+@using Isolaatti.Config
+@using Microsoft.Extensions.Options
+@model Isolaatti.Pages.SignUp
+@inject IOptions<ReCaptchaConfig> RecaptchaConfig
+
+@{
+    Layout = "Shared/_LayoutWebAppOutside";
+    ViewData["Title"] = "Regístrate";
+}
+
+
+@section metadata
+{
+    <meta property="og:url" content="https://isolaatti.com/registrate"/>
+    <meta proerty="og-title" content="Regístrate en Isolaatti"/>
+    <style>
+    @@import url('https://fonts.googleapis.com/css2?family=Rubik+Glitch&display=swap');
+    </style>
+}
+
+<div class="col-md-3 flex-column"></div>
+
+
+<div class="col-md-6 d-flex justify-content-center align-items-center">
+    <div class="sign-in-up-form-container" id="sign-up">
+        @if (Model.Result == IAccountsService.AccountPrecreateResult.EmailUsed)
+        {
+            <div class="alert alert-danger">La dirección de correo que quieres utilizar para crear esta cuenta ya ha sido utilizada previamente.</div>
+        }
+        <form method="POST" id="make_account_form" class="sign-in-up-form mt-3">
+            <h2>Regístrate</h2>
+            <p>
+                Si ya tienes una cuenta <br><a asp-page="LogIn">Inicia sesión</a>
+            </p>
+            <p>El primer paso para crear una cuenta es que proporciones tu dirección de correo. Enviaremos instrucciones 
+                para continuar la creación de la cuenta.</p>
+            <div class="form-group">
+                <label for="email_form_control">Dirección de correo electrónico</label>
+                <input type="email"  id="email_form_control" class="form-control"
+                       asp-for="Email" v-model="emailField.value">
+                <div class="invalid-feedback">
+                    La dirección de correo no tiene la forma correcta
+                </div>
+            </div>
+            
+
+            @if (Model.RecaptchaError)
+            {
+                <div class="alert alert-danger">Por favor, completa el reCAPTCHA</div>
+            }
+            <div class="g-recaptcha" data-sitekey="@RecaptchaConfig.Value.Site"></div>
+            <div class="d-flex justify-content-center">
+                <button class="btn btn-primary" type="submit" :disabled="!canSignUp">Regístrate</button>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="col-md-3 flex-column"></div>
+
+@section Scripts
+{
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+}

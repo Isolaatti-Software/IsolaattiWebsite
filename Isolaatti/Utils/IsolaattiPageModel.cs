@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Isolaatti.Accounts.Data.Entity;
 using Isolaatti.Models;
 using Isolaatti.Models.MongoDB;
 using Isolaatti.Services;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace Isolaatti.Utils
 {
@@ -17,6 +18,23 @@ namespace Isolaatti.Utils
             var randomData = new byte[10];
             RandomNumberGenerator.Create().GetBytes(randomData);
             return Convert.ToBase64String(randomData);
+        }
+        
+        private const string AllowedCharactersForUniqueCode =
+            "ABCDEFGHIJKLMNOPKRSTUVWXYZabcdefghijklmnopkrstuvwxyz1234567890";
+
+        public static string GenerateRandomString(int lenght)
+        {
+            var stringBuilder = new StringBuilder();
+
+            for (var i = 0; i < lenght; i++)
+            {
+                stringBuilder.Append(
+                    AllowedCharactersForUniqueCode[
+                        RandomNumberGenerator.GetInt32(0, AllowedCharactersForUniqueCode.Length)]);
+            }
+
+            return stringBuilder.ToString();
         }
     }
 }

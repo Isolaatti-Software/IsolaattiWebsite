@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web;
+using Isolaatti.Accounts;
+using Isolaatti.Accounts.Service;
 using Isolaatti.Models;
 using Isolaatti.Services;
 using Isolaatti.Utils;
@@ -14,14 +16,14 @@ namespace Isolaatti.Pages.auth
     public class ExternalLogin : IsolaattiPageModel
     {
         private readonly DbContextApp _db;
-        private readonly IAccounts _accounts;
+        private readonly IAccountsService _accounts;
 
         public string HostToLink;
         public bool MalformedUrl;
         public bool IsNotSecure;
         public bool IncorrectPassword;
 
-        public ExternalLogin(DbContextApp db, IAccounts accounts)
+        public ExternalLogin(DbContextApp db, IAccountsService accounts)
         {
             _db = db;
             _accounts = accounts;

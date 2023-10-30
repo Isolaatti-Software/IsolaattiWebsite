@@ -103,37 +103,6 @@
                 this.errorSaving = true;
             }
         },
-        loadProfileLink: async function () {
-            const that = this;
-            let response = await fetch(`/api/UserLinks/Get/${this.userData.id}`, {
-                method: "GET",
-                headers: this.customHeaders
-            });
-
-            if (!response.ok) {
-                this.userLink.error = true
-                return;
-            }
-            try {
-                let parsedResponse = await response.json();
-                this.userLink.isCustom = parsedResponse.isCustom;
-                const that = this;
-                if (this.userLink.isCustom) {
-                    this.userLink.customId = parsedResponse.customId;
-                    this.userLink.url = "https://isolaatti.com/" + this.userLink.customId;
-                    new QRious({
-                        element: document.getElementById('user-profile-link-qr'),
-                        value: that.userLink.url
-                    });
-                } else {
-                    this.userLink.url = parsedResponse.url;
-                    await that.createCustomLink();
-                }
-
-            } catch (error) {
-                this.userLink.error = true;
-            }
-        },
         createCustomLink: async function () {
             let response = await fetch("/api/UserLinks/Create", {
                 method: "POST",
@@ -266,7 +235,6 @@
     },
     mounted: async function () {
         await this.fetchProfile();
-        await this.loadProfileLink();
     },
     template: `
       <div>
@@ -355,13 +323,6 @@
           </div>
 
 
-          <nav class="d-flex justify-content-center" v-if="profile.isUserItself">
-            <button class="btn btn-light btn-sm w-100 ml-1" data-target="#modal-custom-user-link"
-                    data-toggle="modal" title="Enlace personalizado">
-              <i class="fa-solid fa-link"></i> Enlace personalizado
-            </button>
-          </nav>
-
           <section class="mt-3">
             <hr>
             <div v-if="profile.descriptionAudioId!==null" class="d-flex flex-column">
@@ -422,51 +383,6 @@
             </div>
             <div class="modal-body">
               <users-grid :users="following.usersFollowing" v-if="following.usersFollowing !== undefined"></users-grid>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="modal" id="modal-custom-user-link">
-        <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title"><i class="fa-solid fa-link"></i> Enlace personalizado</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                &times;
-              </button>
-            </div>
-            <div class="modal-body">
-              <div class="d-flex justify-content-center mb-2">
-                <canvas width="140" height="140" id="user-profile-link-qr"></canvas>
-              </div>
-              <div class="alert alert-danger" v-if="userLink.error">
-                Ocurrió un error en el servidor al tratar de obtener tu enlace.
-              </div>
-              <div class="alert alert-danger" v-if="!userLink.available">
-                El nombre no está disponible, prueba con otro
-              </div>
-              <div class="alert alert-info" v-if="!userLink.isCustom">
-                Acabamos de crear un enlace para ti. Puedes dejarlo así o modificarlo.
-              </div>
-              <div class="alert alert-danger" v-if="!userLink.isValid">
-                Solo puedes usar caracteres alfanuméricos (A-Z, a-z, 0-9, _ y -)
-              </div>
-              <div class="input-group mb-2">
-                <div class="input-group-prepend">
-                  <div class="input-group-text">https://isolaatti.com/</div>
-                </div>
-                <input type="text" class="form-control" id="inlineFormInputGroup" v-model="userLink.customId"
-                       v-on:input="validateCustomLink">
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button class="btn btn-sm btn-transparent" data-dismiss="modal" aria-label="Close">
-                Cancelar
-              </button>
-              <button class="btn btn-sm btn-primary" v-on:click="modifyCustomLink" :disabled="!userLink.isValid">
-                Aceptar
-              </button>
             </div>
           </div>
         </div>

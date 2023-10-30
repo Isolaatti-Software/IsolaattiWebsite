@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Isolaatti.Accounts;
+using Isolaatti.Accounts.Service;
 using Isolaatti.Classes.ApiEndpointsRequestDataModels;
 using Isolaatti.Classes.ApiEndpointsResponseDataModels;
 using Isolaatti.Enums;
@@ -22,13 +24,13 @@ public class SquadInvitationsController : IsolaattiController
         public string Message { get; set; }
     }
     
-    private readonly IAccounts _accounts;
+    private readonly IAccountsService _accounts;
     private readonly SquadInvitationsRepository _squadInvitationsRepository;
     private readonly SquadsRepository _squadsRepository;
     private readonly DbContextApp _db;
     
     public SquadInvitationsController(
-        IAccounts accounts, 
+        IAccountsService accounts, 
         SquadInvitationsRepository squadInvitationsRepository,
         SquadsRepository squadsRepository,
         DbContextApp dbContextApp)

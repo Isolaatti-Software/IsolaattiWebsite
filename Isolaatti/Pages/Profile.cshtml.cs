@@ -1,4 +1,6 @@
 using System.Threading.Tasks;
+using Isolaatti.Accounts;
+using Isolaatti.Accounts.Service;
 using Isolaatti.Models;
 using Isolaatti.Services;
 using Isolaatti.Utils;
@@ -12,9 +14,9 @@ namespace Isolaatti.Pages
     public class Profile : IsolaattiPageModel
     {
         private readonly DbContextApp _db;
-        private readonly IAccounts _accounts;
+        private readonly IAccountsService _accounts;
         
-        public Profile(DbContextApp dbContextApp, IAccounts accounts)
+        public Profile(DbContextApp dbContextApp, IAccountsService accounts)
         {
             _db = dbContextApp;
             _accounts = accounts;

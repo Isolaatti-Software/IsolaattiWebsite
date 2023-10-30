@@ -1,18 +1,15 @@
 /*
-* Isolaatti project
-* Erik Cavazos, 2020
-* This program is not allowed to be copied or reused without explicit permission.
-* erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
-*/
+ * Isolaatti project
+ * Erik Cavazos, 2020
+ * This program is not allowed to be copied or reused without explicit permission.
+ * erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
+ */
 
-using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
 using System.Text.Json.Serialization;
 
-namespace Isolaatti.Models
+namespace Isolaatti.Accounts.Data.Entity
 {
     public class User
     {

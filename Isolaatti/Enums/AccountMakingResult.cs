@@ -3,7 +3,7 @@
 public enum AccountMakingResult
 {
     EmailNotAvailable,
-    EmptyFields,
+    ValidationProblems,
     Ok,
     Error,
     UsernameUnavailable

@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using FirebaseAdmin.Auth;
+using Isolaatti.Accounts.Data.Entity;
 using Isolaatti.DTOs;
 using Isolaatti.EmailSender;
 using Isolaatti.Enums;
@@ -11,13 +14,15 @@ using Isolaatti.isolaatti_lib;
 using Isolaatti.Models;
 using Isolaatti.Models.MongoDB;
 using Isolaatti.Repositories;
+using Isolaatti.Services;
+using Isolaatti.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace Isolaatti.Services;
+namespace Isolaatti.Accounts.Service;
 
-public class Accounts : IAccounts
+public partial class AccountsService : IAccountsService
 {
     private readonly DbContextApp db;
     private readonly HttpContext _httpContext;
@@ -29,8 +34,13 @@ public class Accounts : IAccounts
     private const string FromName = "Isolaatti cuentas";
     private const string WelcomeSubject = "Te damos la bienvenida a Isolaatti";
     private const string JustLoggedInSubject = "Iniciaste sesión en Isolaatti";
+    private const string PrecreateAccountSubject = "Continuemos con la creación de tu cuenta en Isolaatti";
+    
+    private const string AllowedCharactersForUsername = "ABCDEFGHIJKLMNOPKRSTUVWXYZabcdefghijklmnopkrstuvwxyz1234567890_-";
 
-    public Accounts(DbContextApp db,
+
+
+    public AccountsService(DbContextApp db,
         EmailSenderMessaging emailSender,
         ScopedHttpContext scopedHttpContext,
         SessionsRepository sessionsRepository)
@@ -41,23 +51,37 @@ public class Accounts : IAccounts
         _sessionsRepository = sessionsRepository;
     }
 
+    private static bool IsUsernameValid(string username)
+    {
+        return username.All(character => AllowedCharactersForUsername.Contains(character));
+    }
+    
+
+    private static bool IsPasswordValid(string password)
+    {
+        return password.Length >= 6;
+    }
+
+    private static bool IsDisplayNameValid(string displayName)
+    {
+        return displayName.Length > 1;
+    }
+    
+    
+    
     public async Task<AccountMakingResult> MakeAccountAsync(string username, string displayName, string email,
         string password)
     {
         
-
-
+        if (!IsPasswordValid(password) || !IsDisplayNameValid(displayName) || !IsUsernameValid(username))
+        {
+            return AccountMakingResult.ValidationProblems;
+        }
+        
         if (await db.Users.AnyAsync(user => user.Email.Equals(email)))
         {
             return AccountMakingResult.EmailNotAvailable;
         }
-
-        if (username == "" || password == "" || email == "" || displayName == "")
-        {
-            return AccountMakingResult.EmptyFields;
-        }
-        
-        
 
         var passwordHasher = new PasswordHasher<string>();
         var hashedPassword = "";
@@ -81,6 +105,36 @@ public class Accounts : IAccounts
         {
             return AccountMakingResult.Error;
         }
+    }
+    
+
+    public async Task<IAccountsService.AccountPrecreateResult> PreCreateAccount(string email)
+    {
+
+        if (await db.Users.AnyAsync(u => u.Email == email))
+        {
+            return IAccountsService.AccountPrecreateResult.EmailUsed;
+        }
+        
+        var precreate = new AccountPrecreate()
+        {
+            Id = RandomData.GenerateRandomString(6),
+            Email = email
+        };
+
+        await db.AccountPrecreates.AddAsync(precreate);
+
+        await db.SaveChangesAsync();
+
+        if (!new EmailAddressAttribute().IsValid(email))
+        {
+            return IAccountsService.AccountPrecreateResult.EmailValidationError;
+        }
+        
+        
+        _emailSender.SendEmail(FromAddress, FromName, email, string.Empty, PrecreateAccountSubject, string.Format(EmailTemplates.PreRegistrationEmail.Trim(), precreate.Id));
+
+        return IAccountsService.AccountPrecreateResult.Success;
     }
 
     public async Task<bool> IsUserEmailVerified(int userId)
@@ -139,63 +193,6 @@ public class Accounts : IAccounts
         return await _sessionsRepository.RemoveSession(sessionDto);
     }
     
-
-    public async Task MakeAccountFromGoogleAccount(string accessToken)
-    {
-        var decodedToken   = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(accessToken);
-        
-        var uid = decodedToken.Uid;
-        var user = await FirebaseAuth.DefaultInstance.GetUserAsync(uid);
-        
-
-        if (!db.Users.Any(u => u.Email.Equals(user.Email)))
-        {
-            var randomPassword = Utils.RandomData.GenerateRandomPassword();
-            await MakeAccountAsync(user.DisplayName, user.DisplayName + Utils.RandomData.GenerateRandomKey(6), user.Email, randomPassword);
-            SendWelcomeEmailForExternal(user.Email, user.DisplayName, randomPassword);
-        }
-
-        var isolaattiUser = db.Users.Single(u => u.Email.Equals(user.Email));
-
-        if (await db.ExternalUsers.AnyAsync(googleUser =>
-                googleUser.GoogleUid.Equals(user.Uid) && googleUser.UserId.Equals(isolaattiUser.Id))) return;
-
-        // Add relation between Isolaatti account and Google Account
-        var googleUser = new ExternalUser
-        {
-            UserId = isolaattiUser.Id,
-            GoogleUid = user.Uid
-        };
-
-        var googleProfileImageUrl = user.PhotoUrl;
-        if (googleProfileImageUrl != null)
-        {
-            isolaattiUser.ProfileImageUrl = googleProfileImageUrl;
-            db.Users.Update(isolaattiUser);
-        }
-        db.ExternalUsers.Add(googleUser);
-        await db.SaveChangesAsync();
-    }
-
-    public async Task<string> CreateTokenForGoogleUser(string accessToken)
-    {
-        var decodedTokenTask = FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(accessToken);
-        var uid = (await decodedTokenTask).Uid;
-        var relation = db.ExternalUsers.Single(u => u.GoogleUid.Equals(uid));
-        var user = await db.Users.FindAsync(relation.UserId);
-
-        if (user == null) return null;
-        
-        var insertedSession = await _sessionsRepository.InsertSession(new Session()
-        {
-            UserId = user.Id,
-            IpAddress = GetIpAddress(),
-            UserAgent = GetUserAgent()
-        });
-        SendJustLoginEmail(user.Email, user.Name,GetIpAddress());
-
-        return insertedSession.ToString();
-    }
 
     public string GetUsernameFromId(int userId)
     {

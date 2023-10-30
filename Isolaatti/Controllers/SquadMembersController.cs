@@ -6,6 +6,7 @@ using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
+using Isolaatti.Accounts.Data;
 using Isolaatti.Classes.ApiEndpointsRequestDataModels;
 using Isolaatti.Classes.ApiEndpointsResponseDataModels;
 using Isolaatti.DTOs;
@@ -321,7 +322,7 @@ public class SquadMembersController : IsolaattiController
 
         return Ok(new SquadUserDto()
         {
-            User = new UserFeed()
+            User = new UserFeedDto()
             {
                 Id = squadUser.UserId,
                 Name = squadUser.User.Name,

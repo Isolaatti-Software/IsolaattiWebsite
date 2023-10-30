@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using Isolaatti.Accounts.Data.Entity;
 using Isolaatti.EmailSender;
 using Isolaatti.isolaatti_lib;
 using Isolaatti.Models;

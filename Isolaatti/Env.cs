@@ -10,4 +10,5 @@ public class Env
     public const string DatabaseUrl = "DATABASE_URL";
     public const string GoogleFirebaseAdminSdkCredential = "google_admin_sdk";
     public const string RabbitmqConfig = "RABBITMQ";
+    public const string ClientsConfig = "CLIENTS_CONFIG";
 }

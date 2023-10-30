@@ -38,5 +38,18 @@ namespace Isolaatti.isolaatti_lib
             <p>Saludos.</p>
             <p>Erik Cavazos</p>
         </body>";
+
+        public const string PreRegistrationEmail = 
+            """
+            <html lang="es">
+            <body>
+                <h1 style="text-align: center;">Isolaatti</h1>
+                <p>Ya estás cerca de tener tu cuenta en Isolaatti, solo necesitas el siguiente código:</p>
+                <div style="background-color: #3b2d50;color: white;padding: 1em;text-align: center;font-size: larger;">{0}</div>
+                <p>Si comenzaste el registro desde el navegador web ve a <a href="https://isolaatti.com/continuar">https://isolaatti.com/continuar</a></p>
+                <p>O si lo hiciste desde la app, continua en la pantalla que te solicita el código.</p>
+            </body>
+            </html>
+            """;
     }
 }

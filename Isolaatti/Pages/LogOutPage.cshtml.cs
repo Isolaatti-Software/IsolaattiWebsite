@@ -1,5 +1,7 @@
 ﻿using System.Text.Json;
 using System.Threading.Tasks;
+using Isolaatti.Accounts;
+using Isolaatti.Accounts.Service;
 using Isolaatti.DTOs;
 using Isolaatti.Services;
 using Isolaatti.Utils;
@@ -10,8 +12,8 @@ namespace Isolaatti.Pages;
 
 public class LogOutPage : PageModel
 {
-    private readonly IAccounts _accounts;
-    public LogOutPage(IAccounts accounts)
+    private readonly IAccountsService _accounts;
+    public LogOutPage(IAccountsService accounts)
     {
     
         _accounts = accounts;

@@ -21,6 +21,7 @@ public class UsernameController : ControllerBase
     }
 
     [Route("check")]
+    [HttpGet]
     public async Task<IActionResult> CheckAvailability([FromQuery] string username)
     {
         if (username.IsNullOrWhiteSpace() || username.Trim().Length is < 3 or > 30)

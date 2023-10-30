@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Isolaatti.Accounts.Data;
 using Isolaatti.Classes.ApiEndpointsResponseDataModels;
 using Isolaatti.Models;
 using Isolaatti.Repositories;
@@ -24,7 +25,7 @@ public class ManageSquadOwner : IsolaattiPageModel
     }
     
     public Squad Squad { get; set; }
-    public UserFeed Owner { get; set; }
+    public UserFeedDto Owner { get; set; }
     public async Task<IActionResult> OnGet(Guid squadId)
     {
         Squad = await _squadsRepository.GetSquad(squadId);
@@ -38,7 +39,7 @@ public class ManageSquadOwner : IsolaattiPageModel
             return NotFound();
         }
 
-        Owner = _db.Users.Where(u => u.Id == Squad.UserId).Select(u => new UserFeed()
+        Owner = _db.Users.Where(u => u.Id == Squad.UserId).Select(u => new UserFeedDto()
         {
             Id = u.Id,
             Name = u.Name,

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Isolaatti.Accounts;
+using Isolaatti.Accounts.Service;
 using Isolaatti.Classes.ApiEndpointsRequestDataModels;
 using Isolaatti.Enums;
 using Isolaatti.Models;
@@ -16,12 +18,12 @@ namespace Isolaatti.Controllers;
 [Route("/api/Squads/JoinRequests")]
 public class SquadJoinRequestsController : IsolaattiController
 {
-    private readonly IAccounts _accounts;
+    private readonly IAccountsService _accounts;
     private readonly DbContextApp _db;
     private readonly SquadJoinRequestsRepository _joinRequestsRepository;
     private readonly SquadsRepository _squadsRepository;
     
-    public SquadJoinRequestsController(IAccounts accounts, 
+    public SquadJoinRequestsController(IAccountsService accounts, 
         DbContextApp dbContextApp, 
         SquadJoinRequestsRepository joinRequestsRepository,
         SquadsRepository squadsRepository)

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Isolaatti.Accounts.Data;
 using Isolaatti.Classes.ApiEndpointsResponseDataModels;
 using Isolaatti.DTOs;
 using Isolaatti.Enums;
@@ -30,7 +31,7 @@ public class SquadUsersRepository
             orderby user.Id
             select new RankedSquadUser
             {
-                User = new UserFeed
+                User = new UserFeedDto
                 {
                     Id = user.Id,
                     ImageId = user.ProfileImageId,
@@ -58,7 +59,7 @@ public class SquadUsersRepository
             orderby squadUser.Ranking
             select new RankedSquadUser
             {
-                User = new UserFeed
+                User = new UserFeedDto
                 {
                     Id = user.Id,
                     ImageId = user.ProfileImageId,
@@ -73,13 +74,13 @@ public class SquadUsersRepository
         };
     }
 
-    public async Task<List<UserFeed>> GetAdminsOfSquad(Guid squadId)
+    public async Task<List<UserFeedDto>> GetAdminsOfSquad(Guid squadId)
     {
         return await (from user in _db.Users
             from squadUser in _db.SquadUsers
             where user.Id == squadUser.UserId && squadUser.SquadId.Equals(squadId) &&
                   squadUser.Role == SquadUserRole.Admin
-            select new UserFeed
+            select new UserFeedDto
             {
                 Id = user.Id,
                 Name = user.Name,

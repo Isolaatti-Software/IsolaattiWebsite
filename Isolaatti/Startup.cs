@@ -1,8 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
+using Isolaatti.Accounts;
+using Isolaatti.Accounts.Service;
 using Isolaatti.Comments.Repository;
 using Isolaatti.Config;
 using Isolaatti.EmailSender;
@@ -172,6 +175,12 @@ namespace Isolaatti
                     config.Username = rabbitmqConfig.Username;
                     config.VirtualHost = rabbitmqConfig.VirtualHost;
                 });
+                var clientsConfigJsonEnv = Environment.GetEnvironmentVariable(Env.ClientsConfig);
+                services.Configure<List<Client>>(config =>
+                {
+                    var clientsConfig = JsonSerializer.Deserialize<List<Client>>(clientsConfigJsonEnv);
+                    config.AddRange(clientsConfig);
+                });
             }
             else
             {
@@ -180,6 +189,7 @@ namespace Isolaatti
                 services.Configure<ReCaptchaConfig>(Configuration.GetSection("ReCaptcha"));
                 services.Configure<IsolaattiServicesKeys>(Configuration.GetSection("IsolaattiServicesKeys"));
                 services.Configure<RabbitmqConfig>(Configuration.GetSection("RabbitMQ"));
+                services.Configure<List<Client>>(Configuration.GetSection("Clients"));
             }
 
             services.AddSingleton<MongoDatabase>();
@@ -199,7 +209,7 @@ namespace Isolaatti
             services.AddDistributedMemoryCache();
             services.AddScoped<UsersRepository>();
             services.AddScoped<ScopedHttpContext>();
-            services.AddScoped<IAccounts, Accounts>();
+            services.AddScoped<IAccountsService, AccountsService>();
             services.AddScoped<NotificationSender>();
             services.AddScoped<ServerRenderedAlerts>();
             services.AddSingleton<GoogleCloudStorageService>();

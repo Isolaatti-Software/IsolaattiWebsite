@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Isolaatti.Accounts.Data;
 using Isolaatti.Classes.ApiEndpointsRequestDataModels;
 using Isolaatti.Classes.ApiEndpointsResponseDataModels;
 using Isolaatti.DTOs;
@@ -116,7 +117,7 @@ namespace Isolaatti.Controllers
                 (from _user in Db.Users
                  from _relation in Db.FollowerRelations
                  where _relation.UserId == userId && _user.Id == _relation.TargetUserId && _relation.TargetUserId > lastId
-                 select new UserFeed
+                 select new UserFeedDto
                  {
                      Id = _relation.TargetUserId,
                      Name = _user.Name,
@@ -140,7 +141,7 @@ namespace Isolaatti.Controllers
                 (from _user in Db.Users
                     from _relation in Db.FollowerRelations
                     where _relation.TargetUserId == userId && _relation.UserId == _user.Id && _relation.UserId > lastId
-                    select new UserFeed
+                    select new UserFeedDto
                     {
                         Id = _relation.UserId,
                         Name = _user.Name,

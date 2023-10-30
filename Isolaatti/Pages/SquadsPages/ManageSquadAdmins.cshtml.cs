@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Isolaatti.Accounts.Data;
 using Isolaatti.Classes.ApiEndpointsResponseDataModels;
 using Isolaatti.Models;
 using Isolaatti.Repositories;
@@ -24,7 +25,7 @@ public class ManageSquadAdmins : IsolaattiPageModel
     }
     
     public Squad Squad { get; set; }
-    public List<UserFeed> Admins { get; set; }
+    public List<UserFeedDto> Admins { get; set; }
     public async Task<IActionResult> OnGet(Guid squadId)
     {
         Squad = await _squadsRepository.GetSquad(squadId);

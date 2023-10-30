@@ -1,6 +1,6 @@
-﻿namespace Isolaatti.Classes.ApiEndpointsResponseDataModels;
+﻿namespace Isolaatti.Accounts.Data;
 
-public class UserFeed
+public class UserFeedDto
 {
     public int Id { get; set; }
     public string Name { get; set; }

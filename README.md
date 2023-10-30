@@ -9,21 +9,41 @@ Bienvenid@
 El proyecto puede funcionar en Windows, Linux o Mac.
 
 ## Cosas a instalar
-* Microsoft .NET 7 https://dotnet.microsoft.com/en-us/download/dotnet/7.0
-* PostgreSQL
-* MongoDB
+Este proyecto es la aplicación web principal, aquí es donde el usuario final accede. Pon especial
+atención a los requerimientos que debes satisfacer antes de poder correr la aplicación
+en tu estación de trabajo.
 
-## Bases de datos con docker compose
-Puedes utilizar docker compose para levantar MongoDB y PostgreSQL. Toma este archivo como muestra. https://gist.github.com/erik-everardo/2546d2db15cf4516cc8ccea03b08e873
+### Microsoft .NET 7 SDK 
+Este componente es el más importante, es necesario para compilar el código de este proyecto. La forma de instalarlo depende
+del sistema operativo que estés usando. https://dotnet.microsoft.com/en-us/download/dotnet/7.0
 
-## Cosas que debes tener disponibles
-* Una cuenta de SendGrid. Esto se usa para enviar correos. https://sendgrid.com/free/
-* Cuenta de Google Firebase (puede ser la gratuita). Esto crea una cuenta de Google Cloud también.
+### Instancia de PostgreSQL
+https://www.postgresql.org/download/  
+Es el RDBMS que se utiliza en este proyecto. Puedes instalarlo a mano como un servicio en
+tu propia estación de trabajo o utilizar Docker, tema que más adelante se aborda.
+
+### MongoDB
+Servidor Community https://www.mongodb.com/try/download/community  
+Cluster en la nube https://www.mongodb.com/try  
+Es una base de datos de documentos, se utiliza en algunas partes de este proyecto. Puedes instalarlo en tu propia maquina utilizando
+el Community Server, utilizar un cluster gratuito de Atlas o con Docker.
+
+### RabbitMQ
+https://www.rabbitmq.com/download.html  
+Es el mensajero de eventos que se utiliza para comunicarse con otros servicios del sistema. Puedes instalarlo directamente
+o con Docker. 
+
+
+
 
 ## appsettings.Development.json
 Este archivo debe encontrarse en tu entorno local, pero no se incluye en el repositorio. Revisa el archivo y crealo. Cuida de no hacer commit a repositorios publicos,
 ya que podrías exponer secretos.
 https://gist.github.com/erik-everardo/9adcee90e7fbbb5094d380201e1ee907
+
+Revisemos las entradas que .
+
+
 
 ## isolaatti-firebase-adminsdk.json
 Este archivo no existe en el repositorio, pero deberás utilizar el proporcionado por Google Cloud.

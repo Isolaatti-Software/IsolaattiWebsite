@@ -1,4 +1,6 @@
 ﻿using System.Threading.Tasks;
+using Isolaatti.Accounts;
+using Isolaatti.Accounts.Service;
 using Isolaatti.Services;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
@@ -10,9 +12,9 @@ namespace Isolaatti.Pages;
 [IsolaattiAuth]
 public class Notifications : IsolaattiPageModel
 {
-    private readonly IAccounts _accounts;
+    private readonly IAccountsService _accounts;
 
-    public Notifications(IAccounts accounts)
+    public Notifications(IAccountsService accounts)
     {
         _accounts = accounts;
     }

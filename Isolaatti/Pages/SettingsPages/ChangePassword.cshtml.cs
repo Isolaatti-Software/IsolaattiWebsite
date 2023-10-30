@@ -1,4 +1,6 @@
 ﻿using System.Threading.Tasks;
+using Isolaatti.Accounts;
+using Isolaatti.Accounts.Service;
 using Isolaatti.Services;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
@@ -9,9 +11,9 @@ namespace Isolaatti.Pages
     [IsolaattiAuth]
     public class ChangePassword : IsolaattiPageModel
     {
-        private readonly IAccounts _accounts;
+        private readonly IAccountsService _accounts;
 
-        public ChangePassword(IAccounts accounts)
+        public ChangePassword(IAccountsService accounts)
         {
             _accounts = accounts;
         }

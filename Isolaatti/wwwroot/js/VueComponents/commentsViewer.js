@@ -78,49 +78,6 @@ Vue.component("comments-viewer", {
         events.$on("comment-edited", this.onCommentEdited);
         events.$on("comment-removed", this.onCommentRemoved);
         events.$on("comment-added", this.onCommentAdded);
-        
-        // Remote events
-        // Remote event callback is as follows (clientId, relatedId, payload)
-        // Note that payload can be null
-
-        socket.emit("subscribe-scope", {
-            type: 2,
-            id: this.postId
-        });
-
-        socket.emit("subscribe-scope", {
-            type: 3,
-            id: this.postId
-        });
-        
-        // 1. Comment added remotely
-        socket.on(1, function(clientId, postId, comingComment) {
-            // Comment is only added when it's not added by this client itself
-            if(clientId === that.clientId)
-                return;
-
-            // Check if comment is actually for this post
-            if(postId === that.postId)
-                that.onCommentAdded(comingComment);
-        });
-        
-        // 2. Comment removed remotely
-        socket.on(2, function(clientId, postId, commentId){
-            // Comment is only removed when it's not removed by this client itself
-            if(clientId === that.clientId)
-                return;
-            if(postId === that.postId)
-                that.onCommentRemoved(commentId);
-        });
-        
-        // 3. Comment modified remotely
-        socket.on(3, function(clientId, postId, commentId) {
-            // Comment is only updated when it's not modified by this client itself
-            if(clientId === that.clientId)
-                return;
-            if(postId === that.postId)
-                that.onCommentEdited(commentId);
-        })
     },
     template: `
       <div class="d-flex flex-column comments-section">

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text.Json.Serialization;
+using Isolaatti.Accounts.Data.Entity;
 using Isolaatti.Comments.Entity;
 
 namespace Isolaatti.Models

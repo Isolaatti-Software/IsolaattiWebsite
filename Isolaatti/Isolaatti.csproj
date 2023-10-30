@@ -8,6 +8,7 @@
         <RootNamespace>Isolaatti</RootNamespace>
         <Company>Isolaatti Software</Company>
         <LangVersion>11</LangVersion>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
 
 
@@ -34,6 +35,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <Folder Include="Accounts\SignIn\Dto\" />
         <Folder Include="Migrations" />
         <Folder Include="Report\Controller\" />
         <Folder Include="Resources" />

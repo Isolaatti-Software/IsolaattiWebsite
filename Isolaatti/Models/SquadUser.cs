@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using Isolaatti.Accounts.Data.Entity;
 using Isolaatti.Enums;
 
 namespace Isolaatti.Models;

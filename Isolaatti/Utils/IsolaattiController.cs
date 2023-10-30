@@ -1,4 +1,5 @@
-﻿using Isolaatti.Models;
+﻿using Isolaatti.Accounts.Data.Entity;
+using Isolaatti.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Isolaatti.Utils;

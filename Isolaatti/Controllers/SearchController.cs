@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Isolaatti.Accounts.Data;
 using Isolaatti.Classes.ApiEndpointsResponseDataModels;
 using Isolaatti.DTOs;
 using Isolaatti.Helpers;
@@ -52,7 +53,7 @@ public class SearchController : IsolaattiController
         var profilesResults = from u in _db.Users
             where u.Name.ToLower().Contains(lowerCaseQ)
             orderby u.Id
-            select new UserFeed
+            select new UserFeedDto
             {
                 Id = u.Id,
                 ImageId = u.ProfileImageId,
@@ -136,7 +137,7 @@ public class SearchController : IsolaattiController
 
         foreach (var absentUserId in absentUsers)
         {
-            var absentUser = _db.Users.Where(u => u.Id == absentUserId).Select(u => new UserFeed()
+            var absentUser = _db.Users.Where(u => u.Id == absentUserId).Select(u => new UserFeedDto()
             {
                 Id = u.Id,
                 Name = u.Name,

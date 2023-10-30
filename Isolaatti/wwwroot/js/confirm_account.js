@@ -10,10 +10,6 @@
             value: name, // server rendered
             hadInput: false
         },
-        emailField: {
-            value: email, // server rendered
-            hadInput: false
-        },
         passwordField: {
             value: "",
             hadInput: false
@@ -41,10 +37,6 @@
         nameIsInvalid: function () {
             return this.nameField.value.length < 1 || this.nameField.value.length > 20;
         },
-        emailIsInvalid: function () {
-            const emailValidationRegex = new RegExp("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$");
-            return !emailValidationRegex.test(this.emailField.value);
-        },
         passwordIsInvalid: function () {
             return this.passwordField.value.length < 8;
         },
@@ -62,9 +54,6 @@
         },
         "nameField.value": function() {
             this.nameField.hadInput = true;
-        },
-        "emailField.value": function() {
-            this.emailField.hadInput = true;
         },
         "passwordField.value": function() {
             this.passwordField.hadInput = true;

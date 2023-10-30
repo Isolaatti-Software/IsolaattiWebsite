@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Isolaatti.Accounts.Data;
 using Isolaatti.Classes.ApiEndpointsRequestDataModels;
 using Isolaatti.Classes.ApiEndpointsResponseDataModels;
 using Isolaatti.DTOs;
@@ -255,7 +256,7 @@ public class SquadsRepository
             .Where(squad => squad.UserId == userId);
     }
 
-    public async Task<IEnumerable<UserFeed>> GetMembersOfSquad(Guid squadId)
+    public async Task<IEnumerable<UserFeedDto>> GetMembersOfSquad(Guid squadId)
     {
         // return _db.SquadUsers.Where(squadUser => squadUser.SquadId.Equals(squadId)).Select(u => new UserFeed
         // {
@@ -269,7 +270,7 @@ public class SquadsRepository
             from squadUser in _db.SquadUsers
             from user in _db.Users
             where squad.Id == squadUser.SquadId && user.Id == squadUser.UserId && squad.Id == squadId
-            select new UserFeed
+            select new UserFeedDto
             {
                 Id = squadUser.UserId,
                 Name = user.Name,

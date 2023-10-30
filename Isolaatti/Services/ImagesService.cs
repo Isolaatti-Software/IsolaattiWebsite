@@ -4,6 +4,8 @@ using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Threading.Tasks;
 using Google;
+using Isolaatti.Accounts;
+using Isolaatti.Accounts.Service;
 using Isolaatti.Classes.ApiEndpointsResponseDataModels;
 using Isolaatti.Enums;
 using Isolaatti.Repositories;
@@ -17,10 +19,10 @@ public class ImagesService
 {
     private readonly GoogleCloudStorageService _storage;
     private readonly ImagesRepository _imagesRepository;
-    private readonly IAccounts _accounts;
+    private readonly IAccountsService _accounts;
 
     public ImagesService(GoogleCloudStorageService googleCloudStorageService, ImagesRepository imagesRepository,
-        IAccounts accounts)
+        IAccountsService accounts)
     {
         _storage = googleCloudStorageService;
         _imagesRepository = imagesRepository;

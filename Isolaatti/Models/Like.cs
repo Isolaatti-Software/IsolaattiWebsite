@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using Isolaatti.Accounts.Data.Entity;
 
 namespace Isolaatti.Models
 {

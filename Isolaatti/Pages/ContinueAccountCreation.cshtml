@@ -1,0 +1,28 @@
+@page "/continuar"
+@model Isolaatti.Pages.ContinueAccountCreation
+
+@{
+    Layout = "Shared/_LayoutWebAppOutside";
+}
+
+<div class="col-md-3 flex-column"></div>
+
+
+<div class="col-md-6 d-flex justify-content-center align-items-center">
+    <div class="sign-in-up-form-container">
+
+        <form method="POST" id="make_account_form" >
+            <h2>Ingresa el código que te enviamos por correo</h2>
+            <div class="form-group">
+                <input type="text" class="form-control"/>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="col-md-3 flex-column"></div>
+
+@section Scripts
+{
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+}
+

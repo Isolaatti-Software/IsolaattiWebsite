@@ -1,15 +1,26 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Isolaatti.Accounts.Data.Entity;
 using Isolaatti.DTOs;
 using Isolaatti.Enums;
 using Isolaatti.Models;
 using Isolaatti.Models.MongoDB;
+using Isolaatti.Utils;
 
-namespace Isolaatti.Services;
+namespace Isolaatti.Accounts.Service;
 
-public interface IAccounts
+public interface IAccountsService
 {
+    public enum AccountPrecreateResult
+    {
+        EmailUsed,
+        Success,
+        EmailValidationError
+    }
+    
     Task<AccountMakingResult> MakeAccountAsync(string username, string displayName, string email, string password);
+    Task<AccountPrecreateResult> PreCreateAccount(string email);
     Task<bool> IsUserEmailVerified(int userId);
     Task<bool> ChangeAPassword(int userId, string currentPassword, string newPassword);
     Task<string> CreateNewSession(int userId, string plainTextPassword);
@@ -17,9 +28,6 @@ public interface IAccounts
 
     Task<bool> RemoveSession(SessionDto sessionDto);
     string GetUsernameFromId(int userId);
-    Task MakeAccountFromGoogleAccount(string accessToken);
-    Task<string> CreateTokenForGoogleUser(string accessToken);
-    void SendJustLoginEmail(string email, string name, string ipAddress);
     IEnumerable<Session> GetSessionsOfUser(int userId);
     string GetIpAddress();
     void RemoveSessionCookie();

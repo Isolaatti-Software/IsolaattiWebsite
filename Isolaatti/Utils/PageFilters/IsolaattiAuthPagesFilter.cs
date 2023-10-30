@@ -1,6 +1,8 @@
 ﻿using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Isolaatti.Accounts;
+using Isolaatti.Accounts.Service;
 using Isolaatti.DTOs;
 using Isolaatti.Services;
 using Isolaatti.Utils.Attributes;
@@ -12,9 +14,9 @@ namespace Isolaatti.Utils.PageFilters;
 
 public class IsolaattiAuthPagesFilter : IAsyncPageFilter
 {
-    private IAccounts _accounts;
+    private IAccountsService _accounts;
     
-    public IsolaattiAuthPagesFilter(IAccounts accounts)
+    public IsolaattiAuthPagesFilter(IAccountsService accounts)
     {
         _accounts = accounts;
     }
