@@ -54,15 +54,13 @@ body {
   margin: 10px;
   border-radius: 10px;
   text-decoration: none;
-  filter: drop-shadow(16px 16px 30px #3e0063);
 }
 
 #isolaatti_brand:before {
   content: "Is";
   font-family: 'Zen Dots', cursive;
   color: white;
-  font-size: 25px;
-  text-shadow: -3px 4px #11022b;
+  font-size: 30px;
   text-decoration: none;
 }
 
@@ -612,4 +610,11 @@ blockquote {
   background: #fafafa;
   top: 55px;
   z-index: 2000;
+}
+
+#isolaatti-brand {
+  font-family: 'Zen Dots', cursive;
+  color: var(--primary);
+  font-size: 2.5em;
+  text-align: center;
 }

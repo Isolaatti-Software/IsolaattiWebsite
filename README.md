@@ -56,23 +56,6 @@ Lee lo siguiente:
 * Admin: https://firebase.google.com/docs/admin/setup?authuser=0&%3Bhl=es&hl=es
 * Cuentas de servicio Google Cloud: https://cloud.google.com/iam/docs/service-accounts y https://cloud.google.com/docs/authentication/production
 
-## Instalación de MongoDb
-Debes tener una instancia de MongoDB disponible. Es recomendado tener una dedicada para desarrollo. Normalmente se instala en local, pero podrías utilizar
-una en la nube.
-
-Para instalarlo ve a https://www.mongodb.com/try/download/community para instalar el servidor edición Community. Esto es lo mínimo necesario para
-correr el proyecto, aunque lo más común es que quieras realizar algunas cosas manualmente. Para ello deberías instalar un cliente. Puedes instalar:
-
-* Shell (línea de comandos): https://www.mongodb.com/try/download/shell
-* MongoDB (GUI) Compass: https://www.mongodb.com/try/download/compass
-
-Cuando ya tengas MongoDB configurado, verifica que puedas conectarte y con que puerto. Asegúrate de colocar correctamente el puerto y el host en el string de conexión,
-contenida en el archivo appsettings.Development.json
-
-![image](https://user-images.githubusercontent.com/43968631/193509725-25983b4a-b2f4-4b8d-9cc1-fab19d795fdf.png)
-
-También puedes instalar MongoDB con docker, revisa más arriba donde se menciona.
-
 
 ## Instrucciones para correr en tu estación de trabajo
 1. Clona el repositorio

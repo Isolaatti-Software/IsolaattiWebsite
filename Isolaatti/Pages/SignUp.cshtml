@@ -24,17 +24,20 @@
 
 
 <div class="col-md-6 d-flex justify-content-center align-items-center">
-    <div class="sign-in-up-form-container" id="sign-up">
-        <h2>Regístrate</h2>
-        @if (Model.Posted && Model.Result == IAccountsService.AccountPrecreateResult.EmailUsed)
-        {
-            <div class="alert alert-danger">La dirección de correo que quieres utilizar para crear esta cuenta ya ha sido utilizada previamente.</div>
-        }
-        @if (Model.Posted && Model.Result == IAccountsService.AccountPrecreateResult.CodesSentLimitReached)
-        {
-            <div class="alert alert-danger">No es posible enviar más códigos, has alcanzado el límite. Contacta al administrador.</div>
-        }
-        <form method="POST" id="make_account_form" class="sign-in-up-form mt-3">
+    <div  id="sign-up">
+        <form method="POST" id="make_account_form" class="isolaatti-card p-5 d-flex flex-column align-content-center">
+            <div id="isolaatti-brand">Isolaatti</div>
+            <h2>Regístrate</h2>
+            
+            @if (Model.Posted && Model.Result == IAccountsService.AccountPrecreateResult.EmailUsed)
+            {
+                <div class="alert alert-danger">La dirección de correo que quieres utilizar para crear esta cuenta ya ha sido utilizada previamente.</div>
+            }
+            @if (Model.Posted && Model.Result == IAccountsService.AccountPrecreateResult.CodesSentLimitReached)
+            {
+                <div class="alert alert-danger">No es posible enviar más códigos, has alcanzado el límite. Contacta al administrador.</div>
+            }
+            
             <p>El primer paso para crear una cuenta es que proporciones tu dirección de correo. Enviaremos un código que
                 deberás ingresar en el siguiente paso.</p>
             <div class="form-group">

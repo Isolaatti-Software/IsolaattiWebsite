@@ -38,11 +38,6 @@
     <div class="container-fluid external-content-bar">
         <div class="d-flex col-12 flex-column">
             <div class="d-flex align-items-center flex-wrap pt-4 pb-4">
-                <div class="d-flex" id="isolaatti-logo">
-                    <h1 class="d-flex justify-content-center align-items-center m-0">
-                        <a href="/" id="isolaatti-icon"></a>
-                    </h1>
-                </div>
                 <div class="d-flex ml-auto">
                     <a asp-page="/SignUp" class="btn btn-dark mr-1">Regístrate</a>
                     <a asp-page="/LogIn" class="btn btn-primary">Inicia sesión</a>
@@ -51,7 +46,7 @@
 
         </div>
     </div>
-    <div class="container mb-5">
+    <div class="container flex-shrink-1">
 
         @* Server rendered alerts *@
         @foreach (var (key, value) in _RenderedAlerts.Alerts)
@@ -67,26 +62,26 @@
 
 
         <div class="row">
-                    <noscript>
-                        <div class="container">
-                            <div class="row">
-                                <div class="col-md-2 col-lg-3"></div>
-                                <div class="col-md-8 col-lg-6">
-                                    <div class="d-flex flex-column p-4">
-                                        <h1 class="display-1"><i class="fa-brands fa-js"></i></h1>
-                                        <h2>Esta aplicación necesita JavaScript. Por favor, habilítalo.</h2>
-                                        <h3>¿Por qué deberías habilitarlo?</h3>
-                                        <p>
-                                            JavaScript es un lenguaje de programación que se ejecuta en tu navegador.
-                                            En esta aplicación se utiliza para darte una experiencia mucho mejor que simples enlaces entre páginas.
-                                            Permite esas operaciones asíncronas, por ejemplo, que des clic en el botón de like sin que la página refresque.
-                                        </p>
-                                    </div>
-                                </div>
-                                <div class="col-md-2 col-lg-3"></div>
+            <noscript>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-2 col-lg-3"></div>
+                        <div class="col-md-8 col-lg-6">
+                            <div class="d-flex flex-column p-4">
+                                <h1 class="display-1"><i class="fa-brands fa-js"></i></h1>
+                                <h2>Esta aplicación necesita JavaScript. Por favor, habilítalo.</h2>
+                                <h3>¿Por qué deberías habilitarlo?</h3>
+                                <p>
+                                    JavaScript es un lenguaje de programación que se ejecuta en tu navegador.
+                                    En esta aplicación se utiliza para darte una experiencia mucho mejor que simples enlaces entre páginas.
+                                    Permite esas operaciones asíncronas, por ejemplo, que des clic en el botón de like sin que la página refresque.
+                                </p>
                             </div>
                         </div>
-                    </noscript>
+                        <div class="col-md-2 col-lg-3"></div>
+                    </div>
+                </div>
+            </noscript>
             @RenderBody()
         </div>
 
