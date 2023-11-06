@@ -3,7 +3,7 @@
     data: {
         usernameField: {
             value: username, //server rendered
-            hadValue: false,
+            hadInput: false,
             isAvailable: undefined
         },
         nameField: {
@@ -20,8 +20,7 @@
         }
     },
     methods: {
-        queryNameAvailability: async function(e) {
-            e.preventDefault();
+        queryNameAvailability: async function() {
             const result = await fetch(`/api/usernames/check?username=${this.usernameField.value}`);
             if(!result.ok) {
                 this.usernameField.isAvailable = undefined;
@@ -44,13 +43,16 @@
             return this.passwordField.value !== this.passwordConfirmationField.value && this.passwordConfirmationField.value.length > 0 && this.passwordField.value.length > 0;
         },
         canSignUp: function () {
-            return !this.nameIsInvalid && !this.emailIsInvalid && !this.passwordIsInvalid && !this.passwordUnMatches;
+            return !this.nameIsInvalid && !this.passwordIsInvalid && !this.passwordUnMatches && this.usernameField.isAvailable;
         }
     },
     watch: {
-        "usernameField.value": function() {
+        "usernameField.value": async function() {
             this.usernameField.hadInput = true
             this.usernameField.isAvailable = undefined;
+            if(!this.usernameIsInvalid) {
+                await this.queryNameAvailability();
+            }
         },
         "nameField.value": function() {
             this.nameField.hadInput = true;

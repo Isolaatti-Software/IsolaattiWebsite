@@ -19,8 +19,7 @@ namespace Isolaatti.Accounts.Data.Entity
         public string Email { get; set; }
         [JsonIgnore] 
         public string Password { get; set; }
-        [JsonIgnore] 
-        public bool EmailValidated { get; set; }
+        
         [JsonIgnore] 
         public bool ShowEmail { get; set; }
         [NotMapped] 
@@ -39,14 +38,14 @@ namespace Isolaatti.Accounts.Data.Entity
         public bool ThisUserIsFollowingMe { get; set; }
         
         // ProfileImageId is used as first option, and then try ProfileImageUrl
-        public string ProfileImageId { get; set; }
+        public string? ProfileImageId { get; set; }
         // ProfileImageUrl is used to save Firebase account image url. It can come from Google, Facebook, etc
-        public string ProfileImageUrl { get; set; }
-        public string DescriptionText { get; set; }
-        public string DescriptionAudioId { get; set; }
-        public string Genre { get; set; }
-        public string CountryCode { get; set; }
-        public DateTime Birthday { get; set; }
+        public string? ProfileImageUrl { get; set; }
+        public string? DescriptionText { get; set; }
+        public string? DescriptionAudioId { get; set; }
+        public string? Genre { get; set; }
+        public string? CountryCode { get; set; }
+        public DateTime? Birthday { get; set; }
 
     }
 }

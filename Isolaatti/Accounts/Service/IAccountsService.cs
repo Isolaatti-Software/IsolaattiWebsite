@@ -16,15 +16,23 @@ public interface IAccountsService
     {
         EmailUsed,
         Success,
-        EmailValidationError
+        EmailValidationError,
+        CodesSentLimitReached
     }
+    
     
     Task<AccountMakingResult> MakeAccountAsync(string username, string displayName, string email, string password);
     Task<AccountPrecreateResult> PreCreateAccount(string email);
-    Task<bool> IsUserEmailVerified(int userId);
+    
+    /// <summary>
+    /// Validates code. Expiration is validated. Code is marked as valid if it is valid.
+    /// </summary>
+    /// <param name="code"></param>
+    /// <returns>The AccountPrecreate or null when code is invalid or does not exist</returns>
+    Task<AccountPrecreate?> ValidatePreCreateCode(string code);
     Task<bool> ChangeAPassword(int userId, string currentPassword, string newPassword);
-    Task<string> CreateNewSession(int userId, string plainTextPassword);
-    Task<User> ValidateSession(SessionDto sessionDto);
+    Task<string?> CreateNewSession(int userId, string plainTextPassword);
+    Task<User?> ValidateSession(SessionDto sessionDto);
 
     Task<bool> RemoveSession(SessionDto sessionDto);
     string GetUsernameFromId(int userId);

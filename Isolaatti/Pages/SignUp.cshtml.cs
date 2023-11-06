@@ -1,21 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Json;
 using System.Threading.Tasks;
-using Isolaatti.Accounts;
 using Isolaatti.Accounts.Service;
-using Isolaatti.Config;
-using Isolaatti.DTOs;
-using Isolaatti.Enums;
-using Isolaatti.Models;
 using Isolaatti.Services;
-using Isolaatti.Utils;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Options;
 
 namespace Isolaatti.Pages
 {
@@ -33,9 +20,16 @@ namespace Isolaatti.Pages
         
         public bool RecaptchaError { get; set; }
         public IAccountsService.AccountPrecreateResult Result { get; set; }
+        public bool Posted { get; set; }
+
+        public void OnGet()
+        {
+            Posted = false;
+        }
         
         public async Task<IActionResult> OnPost([FromForm(Name = "g-recaptcha-response")] string recaptchaResponse)
         {
+            Posted = true;
             if (!await _recaptchaValidation.ValidateRecaptcha(recaptchaResponse))
             {
                 RecaptchaError = true;
@@ -44,6 +38,11 @@ namespace Isolaatti.Pages
             
             
             Result = await _accounts.PreCreateAccount(Email);
+
+            if (Result == IAccountsService.AccountPrecreateResult.Success)
+            {
+                return RedirectToPage("/ContinueAccountCreation");
+            }
 
             return Page();
         }

@@ -91,9 +91,10 @@ public partial class AccountsService : IAccountsService
             UniqueUsername = username,
             Name = displayName,
             Email = email,
-            Password = hashedPassword,
-            EmailValidated = true
+            Password = hashedPassword
         };
+        db.AccountPrecreates.RemoveRange(db.AccountPrecreates.Where(pc => pc.Email.Equals(email)));
+        await db.SaveChangesAsync();
         try
         {
             db.Users.Add(newUser);
@@ -114,6 +115,11 @@ public partial class AccountsService : IAccountsService
         if (await db.Users.AnyAsync(u => u.Email == email))
         {
             return IAccountsService.AccountPrecreateResult.EmailUsed;
+        }
+
+        if (await db.AccountPrecreates.CountAsync(ap => ap.Email.Equals(email)) > 4)
+        {
+            return IAccountsService.AccountPrecreateResult.CodesSentLimitReached;
         }
         
         var precreate = new AccountPrecreate()
@@ -137,11 +143,32 @@ public partial class AccountsService : IAccountsService
         return IAccountsService.AccountPrecreateResult.Success;
     }
 
-    public async Task<bool> IsUserEmailVerified(int userId)
+    public async Task<AccountPrecreate?> ValidatePreCreateCode(string code)
     {
-        var user = await db.Users.FindAsync(userId);
-        return user.EmailValidated;
+        var foundCode = await db.AccountPrecreates.FindAsync(code);
+        if (foundCode == null || await db.Users.AnyAsync(u => u.Email.Equals(foundCode.Email)))
+        {
+            return null;
+        }
+
+        if (foundCode.Validated)
+        {
+            return foundCode;
+        }
+
+        var isValid = foundCode.CreationDateTime.AddMinutes(10).CompareTo(DateTime.UtcNow) >= 0;
+
+        if (!isValid) return null;
+        
+        // Code is valid, mark this as validated so that future validation returns true even if code expired
+        // Use case for this is to allow account creation form to continue working after verifying code is valid.
+        foundCode.Validated = true;
+        db.AccountPrecreates.Update(foundCode);
+        await db.SaveChangesAsync();
+
+        return foundCode;
     }
+
 
     public async Task<bool> ChangeAPassword(int userId, string currentPassword, string newPassword)
     {
@@ -160,7 +187,7 @@ public partial class AccountsService : IAccountsService
     }
 
 
-    public async Task<string> CreateNewSession(int userId, string plainTextPassword)
+    public async Task<string?> CreateNewSession(int userId, string plainTextPassword)
     {
         var user = await db.Users.FindAsync(userId);
         if (user == null) return null;
@@ -180,7 +207,7 @@ public partial class AccountsService : IAccountsService
         return sessionInserted.ToString();
     }
 
-    public async Task<User> ValidateSession(SessionDto sessionDto)
+    public async Task<User?> ValidateSession(SessionDto sessionDto)
     {
         if (sessionDto == null) return null;   
         var userId = await _sessionsRepository.FindUserIdFromSession(sessionDto);

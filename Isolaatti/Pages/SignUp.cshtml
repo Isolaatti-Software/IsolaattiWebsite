@@ -25,26 +25,28 @@
 
 <div class="col-md-6 d-flex justify-content-center align-items-center">
     <div class="sign-in-up-form-container" id="sign-up">
-        @if (Model.Result == IAccountsService.AccountPrecreateResult.EmailUsed)
+        <h2>Regístrate</h2>
+        @if (Model.Posted && Model.Result == IAccountsService.AccountPrecreateResult.EmailUsed)
         {
             <div class="alert alert-danger">La dirección de correo que quieres utilizar para crear esta cuenta ya ha sido utilizada previamente.</div>
         }
+        @if (Model.Posted && Model.Result == IAccountsService.AccountPrecreateResult.CodesSentLimitReached)
+        {
+            <div class="alert alert-danger">No es posible enviar más códigos, has alcanzado el límite. Contacta al administrador.</div>
+        }
         <form method="POST" id="make_account_form" class="sign-in-up-form mt-3">
-            <h2>Regístrate</h2>
-            <p>
-                Si ya tienes una cuenta <br><a asp-page="LogIn">Inicia sesión</a>
-            </p>
-            <p>El primer paso para crear una cuenta es que proporciones tu dirección de correo. Enviaremos instrucciones 
-                para continuar la creación de la cuenta.</p>
+            <p>El primer paso para crear una cuenta es que proporciones tu dirección de correo. Enviaremos un código que
+                deberás ingresar en el siguiente paso.</p>
             <div class="form-group">
                 <label for="email_form_control">Dirección de correo electrónico</label>
-                <input type="email"  id="email_form_control" class="form-control"
+                <input type="email" id="email_form_control" class="form-control"
                        asp-for="Email" v-model="emailField.value">
                 <div class="invalid-feedback">
                     La dirección de correo no tiene la forma correcta
                 </div>
+                <a asp-page="/ContinueAccountCreation">Tengo un código</a>
             </div>
-            
+
 
             @if (Model.RecaptchaError)
             {
@@ -55,6 +57,7 @@
                 <button class="btn btn-primary" type="submit" :disabled="!canSignUp">Regístrate</button>
             </div>
         </form>
+
     </div>
 </div>
 <div class="col-md-3 flex-column"></div>

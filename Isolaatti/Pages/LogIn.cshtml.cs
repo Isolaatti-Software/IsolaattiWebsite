@@ -18,14 +18,10 @@ namespace Isolaatti.Pages
         private DbContextApp _db;
         private readonly IAccountsService _accounts;
         private readonly ServerRenderedAlerts _renderedAlerts;
-
-        public bool WrongCredential = false;
-        public bool NotVerifiedEmail = false;
-        public bool NewUser = false;
-        public bool JustVerifiedEmail = false;
-        public bool ExistingSession = false;
-        public bool ChangedPassword = false;
-
+        
+        public bool NewUser { get; set; }
+        public bool WrongCredential { get; set; }
+        
         public LogIn(DbContextApp dbContextApp, IAccountsService accounts, ServerRenderedAlerts serverRenderedAlerts)
         {
             _db = dbContextApp;
@@ -34,40 +30,21 @@ namespace Isolaatti.Pages
         }
 
 
-        public async Task<IActionResult> OnGet(
-            bool newUser = false,
-            bool badCredential = false,
-            string username = null,
-            bool notVerified = false,
-            bool justVerified = false,
-            bool changedPassword = false,
-            string then = "")
+        public async Task<IActionResult> OnGet(bool newUser = false)
         {
             var user = await _accounts.ValidateSession(SessionDto.FromJson(Request.Cookies[AccountsService.SessionCookieName]));
+
+            NewUser = newUser;
+            
             if (user != null)
             {
                 return RedirectToPage("/Index");
             }
-
-            NewUser = newUser;
-            WrongCredential = badCredential;
-            NotVerifiedEmail = notVerified;
-            JustVerifiedEmail = justVerified;
-            ChangedPassword = changedPassword;
-
-            if (NewUser || WrongCredential || NotVerifiedEmail || JustVerifiedEmail || ChangedPassword)
-                ViewData["username_field"] = username;
-
-            ViewData["then"] = then;
-            if (then != "")
-            {
-                _renderedAlerts.Alerts.Add("info","Debes iniciar sesión para acceder al recurso solicitado");
-            }
             return Page();
         }
 
-        public async Task<IActionResult> OnPost(string email = null, string password = null,
-            [FromQuery] string then = null)
+        public async Task<IActionResult> OnPost(string? email = null, string? password = null,
+            [FromQuery] string? then = null)
         {
             if (email == null || password == null)
                 return Page();
@@ -75,23 +52,12 @@ namespace Isolaatti.Pages
             try
             {
                 var user = _db.Users.Single(u => u.Email.Equals(email));
-                if (!await _accounts.IsUserEmailVerified(user.Id))
-                {
-                    return RedirectToPage(new
-                    {
-                        notVerified = true,
-                        username = user.Email
-                    });
-                }
 
                 var sessionToken = await _accounts.CreateNewSession(user.Id, password);
                 if (sessionToken == null)
                 {
-                    return RedirectToPage("LogIn", new
-                    {
-                        badCredential = true,
-                        username = email
-                    });
+                    WrongCredential = true;
+                    return Page();
                 }
 
                 Response.Cookies.Append("isolaatti_user_session_token", sessionToken.ToString(), new CookieOptions()

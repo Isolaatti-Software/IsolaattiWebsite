@@ -1,8 +1,9 @@
-@page "/continuar"
+@page "/codigo"
 @model Isolaatti.Pages.ContinueAccountCreation
 
 @{
     Layout = "Shared/_LayoutWebAppOutside";
+    ViewData["Title"] = "Ingresar codigo";
 }
 
 <div class="col-md-3 flex-column"></div>
@@ -11,12 +12,23 @@
 <div class="col-md-6 d-flex justify-content-center align-items-center">
     <div class="sign-in-up-form-container">
 
+        
         <form method="POST" id="make_account_form" >
             <h2>Ingresa el código que te enviamos por correo</h2>
+            <p>Ya casi queda tu cuenta, solo debes ingresar el código que te enviamos a tu correo.</p>
+            <p>Si no puedes verlo, revisa tu carpeta de spam. Si sigues si poder verlo, espera unos minutos a que el correo llegue.</p>
+            @if (Model.CodeIsInvalid)
+            {
+                <div class="alert alert-danger">
+                    El código que ingresaste es inválido. Algunas razones pueden ser que el código está mal escrito o este ya expiró
+                </div>
+            }
             <div class="form-group">
-                <input type="text" class="form-control"/>
+                <input type="text" class="form-control" placeholder="XXXXXX" asp-for="Code"/>
             </div>
+            <button class="btn btn-primary w-100">Continuar</button>
         </form>
+        
     </div>
 </div>
 <div class="col-md-3 flex-column"></div>

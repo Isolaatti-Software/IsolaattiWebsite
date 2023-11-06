@@ -8,7 +8,7 @@ public class SessionDto
     public string SessionId {get;set;}
     public string SessionKey {get;set;}
 
-    public static SessionDto FromJson(string json)
+    public static SessionDto? FromJson(string? json)
     {
         if (json == null)
         {
