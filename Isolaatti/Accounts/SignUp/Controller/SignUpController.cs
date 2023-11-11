@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Isolaatti.Accounts.Service;
 using Isolaatti.Accounts.SignUp.Data;
+using Isolaatti.Classes.ApiEndpointsRequestDataModels;
 using Isolaatti.Config;
 using Isolaatti.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -24,13 +25,9 @@ public class SignUpController : ControllerBase
 
 
     [HttpPost]
-    public async Task<IActionResult> Index([FromHeader] string clientId, [FromHeader] string clientSecret, SignUpDto signUpDto)
+    [Route(("get_code"))]
+    public async Task<IActionResult> Index([FromHeader(Name = "clientId")] string clientId, [FromHeader(Name = "clientSecret")] string clientSecret, SimpleStringData email)
     {
-        if (clientId == null || clientSecret == null)
-        {
-            return Unauthorized("Invalid api client id or secret");
-        }
-
         var client = _clients.Find(c => c.Id == clientId);
         if (client == null)
         {
@@ -47,7 +44,72 @@ public class SignUpController : ControllerBase
             return Unauthorized("Api client unauthorized to sign up");
         }
 
-        await _accounts.MakeAccountAsync(signUpDto.Username, signUpDto.DisplayName, signUpDto.Email, signUpDto.Password);
-        return Ok();
+        var result = await _accounts.PreCreateAccount(email.Data);
+        return Ok(new { result = result.ToString()});
+    }
+
+    [HttpPost]
+    [Route("validate_code")]
+    public async Task<IActionResult> ValidateCode(
+        [FromHeader(Name = "clientId")] string clientId, 
+        [FromHeader(Name = "clientSecret")] string clientSecret, 
+        SimpleStringData code)
+    {
+        var client = _clients.Find(c => c.Id == clientId);
+        if (client == null)
+        {
+            return Unauthorized("Invalid client id");
+        }
+
+        if (client.Secret != clientSecret)
+        {
+            return Unauthorized("Invalid secret");
+        }
+
+        if (!client.SpecialPermissions.Contains(Client.SpecialPermissionSignUp))
+        {
+            return Unauthorized("Api client unauthorized to sign up");
+        }
+
+        var accountPrecreate = await _accounts.ValidatePreCreateCode(code.Data);
+        
+        return Ok(new {valid = accountPrecreate != null});
+    }
+
+    [HttpPost]
+    [Route("sign_up_with_code")]
+    public async Task<IActionResult> SignUpWithCode(
+        [FromHeader(Name = "clientId")] string clientId, 
+        [FromHeader(Name = "clientSecret")] string clientSecret, 
+        SignUpDto signUpDto)
+    {
+        var client = _clients.Find(c => c.Id == clientId);
+        if (client == null)
+        {
+            return Unauthorized("Invalid client id");
+        }
+
+        if (client.Secret != clientSecret)
+        {
+            return Unauthorized("Invalid secret");
+        }
+
+        if (!client.SpecialPermissions.Contains(Client.SpecialPermissionSignUp))
+        {
+            return Unauthorized("Api client unauthorized to sign up");
+        }
+
+        var accountPrecreate = await _accounts.ValidatePreCreateCode(signUpDto.Code);
+
+        if (accountPrecreate is null)
+        {
+            return NotFound();
+        }
+
+        var result = 
+            await _accounts.MakeAccountAsync(signUpDto.Username, signUpDto.DisplayName, accountPrecreate.Email, signUpDto.Password);
+        
+        
+        return Ok(new {result = result.ToString()});
     }
 }

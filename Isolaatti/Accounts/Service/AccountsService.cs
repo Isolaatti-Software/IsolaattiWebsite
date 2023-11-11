@@ -112,6 +112,11 @@ public partial class AccountsService : IAccountsService
     public async Task<IAccountsService.AccountPrecreateResult> PreCreateAccount(string email)
     {
 
+        if (!new EmailAddressAttribute().IsValid(email))
+        {
+            return IAccountsService.AccountPrecreateResult.EmailValidationError;
+        }
+        
         if (await db.Users.AnyAsync(u => u.Email == email))
         {
             return IAccountsService.AccountPrecreateResult.EmailUsed;
@@ -131,12 +136,6 @@ public partial class AccountsService : IAccountsService
         await db.AccountPrecreates.AddAsync(precreate);
 
         await db.SaveChangesAsync();
-
-        if (!new EmailAddressAttribute().IsValid(email))
-        {
-            return IAccountsService.AccountPrecreateResult.EmailValidationError;
-        }
-        
         
         _emailSender.SendEmail(FromAddress, FromName, email, string.Empty, PrecreateAccountSubject, string.Format(EmailTemplates.PreRegistrationEmail.Trim(), precreate.Id));
 
