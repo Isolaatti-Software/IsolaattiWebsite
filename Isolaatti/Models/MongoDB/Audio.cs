@@ -25,5 +25,5 @@ public class Audio
     
     [Required]
     public int DurationSeconds { get; set; }
-    public string SquadId { get; set; }
+    public string? SquadId { get; set; }
 }
