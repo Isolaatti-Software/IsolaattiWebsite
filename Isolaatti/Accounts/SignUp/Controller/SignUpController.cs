@@ -116,14 +116,14 @@ public class SignUpController : ControllerBase
             var session = await _accounts.CreateNewSession(result.UserId.Value, signUpDto.Password);
             return Ok(new SignUpWithCodeDto
             {
-                AccountMakingResult = result.AccountMakingResult,
+                AccountMakingResult = result.AccountMakingResult.ToString(),
                 Session = session
             });
         }
         
         return Ok(new SignUpWithCodeDto
         {
-            AccountMakingResult = result.AccountMakingResult,
+            AccountMakingResult = result.AccountMakingResult.ToString(),
             Session = null
         });
     }
