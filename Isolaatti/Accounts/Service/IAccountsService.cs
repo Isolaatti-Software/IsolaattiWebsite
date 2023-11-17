@@ -21,7 +21,7 @@ public interface IAccountsService
     }
     
     
-    Task<AccountMakingResult> MakeAccountAsync(string username, string displayName, string email, string password);
+    Task<AccountMakeResult> MakeAccountAsync(string username, string displayName, string email, string password);
     Task<AccountPrecreateResult> PreCreateAccount(string email);
     
     /// <summary>

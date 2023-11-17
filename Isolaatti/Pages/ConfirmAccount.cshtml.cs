@@ -41,7 +41,7 @@ public class ConfirmAccount : PageModel
     
     public bool MalformedUrlError { get; set; }
     public bool UnavailableUsername { get; set; }
-    public string TraceId { get; set; }
+    public string? TraceId { get; set; }
 
     public async Task<IActionResult> OnGet([FromQuery] string state)
     {
@@ -75,7 +75,7 @@ public class ConfirmAccount : PageModel
             
             var accountMakeResult = await _accounts.MakeAccountAsync(Username, Name, preCreate.Email,Password);
 
-            switch (accountMakeResult)
+            switch (accountMakeResult.AccountMakingResult)
             {
                 case AccountMakingResult.EmailNotAvailable:
                     break;
@@ -90,6 +90,7 @@ public class ConfirmAccount : PageModel
                 case AccountMakingResult.UsernameUnavailable:
                     UnavailableUsername = true;
                     return Page();
+                default: return Page();
             }
 
         }

@@ -69,18 +69,18 @@ public partial class AccountsService : IAccountsService
     
     
     
-    public async Task<AccountMakingResult> MakeAccountAsync(string username, string displayName, string email,
+    public async Task<AccountMakeResult> MakeAccountAsync(string username, string displayName, string email,
         string password)
     {
         
         if (!IsPasswordValid(password) || !IsDisplayNameValid(displayName) || !IsUsernameValid(username))
         {
-            return AccountMakingResult.ValidationProblems;
+            return new AccountMakeResult { AccountMakingResult = AccountMakingResult.ValidationProblems };
         }
         
         if (await db.Users.AnyAsync(user => user.Email.Equals(email)))
         {
-            return AccountMakingResult.EmailNotAvailable;
+            return new AccountMakeResult { AccountMakingResult = AccountMakingResult.EmailNotAvailable };
         }
 
         var passwordHasher = new PasswordHasher<string>();
@@ -100,11 +100,11 @@ public partial class AccountsService : IAccountsService
             db.Users.Add(newUser);
             await db.SaveChangesAsync();
             SendWelcomeEmail(newUser.Email, newUser.Name);
-            return AccountMakingResult.Ok;
+            return new AccountMakeResult { AccountMakingResult = AccountMakingResult.Ok, UserId = newUser.Id };
         }
         catch (Exception)
         {
-            return AccountMakingResult.Error;
+            return new AccountMakeResult { AccountMakingResult = AccountMakingResult.Error };
         }
     }
     

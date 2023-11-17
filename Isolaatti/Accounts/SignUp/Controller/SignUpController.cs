@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Isolaatti.Accounts.Data;
 using Isolaatti.Accounts.Service;
 using Isolaatti.Accounts.SignUp.Data;
 using Isolaatti.Classes.ApiEndpointsRequestDataModels;
 using Isolaatti.Config;
+using Isolaatti.Enums;
 using Isolaatti.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -108,8 +110,21 @@ public class SignUpController : ControllerBase
 
         var result = 
             await _accounts.MakeAccountAsync(signUpDto.Username, signUpDto.DisplayName, accountPrecreate.Email, signUpDto.Password);
+
+        if (result is { AccountMakingResult: AccountMakingResult.Ok, UserId: not null })
+        {
+            var session = await _accounts.CreateNewSession(result.UserId.Value, signUpDto.Password);
+            return Ok(new SignUpWithCodeDto
+            {
+                AccountMakingResult = result.AccountMakingResult,
+                Session = session
+            });
+        }
         
-        
-        return Ok(new {result = result.ToString()});
+        return Ok(new SignUpWithCodeDto
+        {
+            AccountMakingResult = result.AccountMakingResult,
+            Session = null
+        });
     }
 }
