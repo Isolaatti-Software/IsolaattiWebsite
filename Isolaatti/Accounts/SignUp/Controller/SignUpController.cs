@@ -1,9 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Isolaatti.Accounts.Data;
 using Isolaatti.Accounts.Service;
 using Isolaatti.Accounts.SignUp.Data;
 using Isolaatti.Classes.ApiEndpointsRequestDataModels;
+using Isolaatti.Classes.ApiEndpointsResponseDataModels;
 using Isolaatti.Config;
 using Isolaatti.Enums;
 using Isolaatti.Services;
@@ -114,10 +116,20 @@ public class SignUpController : ControllerBase
         if (result is { AccountMakingResult: AccountMakingResult.Ok, UserId: not null })
         {
             var session = await _accounts.CreateNewSession(result.UserId.Value, signUpDto.Password);
+            if (session == null)
+            {
+                return Unauthorized();
+            }
             return Ok(new SignUpWithCodeDto
             {
                 AccountMakingResult = result.AccountMakingResult.ToString(),
-                Session = session
+                Session = new SessionToken
+                {
+                    Created = DateTime.Now,
+                    Expires = DateTime.Now.AddMonths(12),
+                    Token = session,
+                    UserId = result.UserId.Value
+                }
             });
         }
         

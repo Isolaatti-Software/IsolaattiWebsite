@@ -1,9 +1,9 @@
-using Isolaatti.Enums;
+using Isolaatti.Classes.ApiEndpointsResponseDataModels;
 
 namespace Isolaatti.Accounts.Data;
 
 public class SignUpWithCodeDto
 {
     public string AccountMakingResult { get; set; }
-    public string? Session { get; set; }
+    public SessionToken? Session { get; set; }
 }
