@@ -38,7 +38,7 @@ public class ImagesService
 
         // Create original image. No resize is performed, but only converted to webp format
         var originalImageConvertedToWebpStream = new MemoryStream();
-        var originalImage = await SixLabors.ImageSharp.Image.LoadAsync(file);
+        using var originalImage = await SixLabors.ImageSharp.Image.LoadAsync(file);
         file.Close();
         using (var img = originalImage.Clone(context => context.Resize(context.GetCurrentSize())))
         {
