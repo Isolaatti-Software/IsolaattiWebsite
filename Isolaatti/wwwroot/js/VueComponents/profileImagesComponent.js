@@ -54,10 +54,12 @@
         getImages: async function () {
             const url = this.squadId !== null ? `/api/images/of_squad/${this.squadId}` : `/api/images/of_user/${this.userId}`
             
-            this.images = await (await fetch(url, {
+            const response = await (await fetch(url, {
                 method: "GET",
                 headers: this.customHeaders
             })).json();
+            
+            this.images = response.data;
         },
         imageOnClick: function (index) {
             if(this.performingRequest) {

@@ -105,14 +105,20 @@ public class ImagesController : IsolaattiController
     [Route("of_user/{userId:int}")]
     public async Task<IActionResult> GetImagesOfUserById(int userId, string? lastId)
     {
-        return Ok(await _images.GetImagesOfUser(userId, lastId));
+        return Ok(new
+        {
+            data = await _images.GetImagesOfUser(userId, lastId)
+        });
     }
 
     [HttpGet]
     [Route("of_squad/{squadId:guid}")]
-    public async Task<IActionResult> GetImagesOfSquadById(Guid squadId, string lastId)
+    public async Task<IActionResult> GetImagesOfSquadById(Guid squadId, string? lastId)
     {
-        return Ok(await _squadsRepository.GetImagesOfSquad(squadId, lastId));
+        return Ok(new
+        {
+            data = await _squadsRepository.GetImagesOfSquad(squadId, lastId)
+        });
     }
 
     [IsolaattiAuth]

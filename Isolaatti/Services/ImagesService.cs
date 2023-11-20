@@ -122,7 +122,7 @@ public class ImagesService
 
     }
 
-    public async Task<IEnumerable<Image>> GetImagesOfUser(int userId, string lastId)
+    public async Task<IEnumerable<Image>> GetImagesOfUser(int userId, string? lastId)
     {
         return await _imagesRepository.GetImagesOfUser(userId, lastId);
     }

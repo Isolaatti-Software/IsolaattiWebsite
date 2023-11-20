@@ -298,7 +298,7 @@ public class SquadsRepository
         await _db.SaveChangesAsync();
     }
 
-    public async Task<IEnumerable<Image>> GetImagesOfSquad(Guid squadId, string lastId)
+    public async Task<IEnumerable<Image>> GetImagesOfSquad(Guid squadId, string? lastId)
     {
         return await _images.GetImagesOfSquad(squadId, lastId);
     }

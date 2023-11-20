@@ -49,7 +49,7 @@ public class ImagesRepository
         return await _images.Find(userFilter & pagingFilter & antiSquadFilter).Limit(20).ToListAsync();
     }
 
-    public async Task<IEnumerable<Image>> GetImagesOfSquad(Guid squadId, string lastId)
+    public async Task<IEnumerable<Image>> GetImagesOfSquad(Guid squadId, string? lastId)
     {
         var userFilter = Builders<Image>.Filter.Eq("SquadId", squadId);
         if (lastId == null)
