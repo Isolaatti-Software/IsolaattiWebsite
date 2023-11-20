@@ -152,7 +152,7 @@ public class SquadsController : IsolaattiController
     [IsolaattiAuth]
     [HttpGet]
     [Route("MySquads")]
-    public async Task<IActionResult> GetSquadOfUserAdmins(string sessionToken, Guid lastId)
+    public async Task<IActionResult> GetSquadOfUserAdmins(Guid lastId)
     {
         return Ok(await _squadsRepository.GetSquadsUserAdmins(User.Id, lastId).ToListAsync());
     }
