@@ -39,7 +39,7 @@ public class ImagesService
         // Create original image. No resize is performed, but only converted to webp format
         var originalImageConvertedToWebpStream = new MemoryStream();
         using var originalImage = await SixLabors.ImageSharp.Image.LoadAsync(file);
-        file.Close();
+        await file.DisposeAsync();
         using (var img = originalImage.Clone(context => context.Resize(context.GetCurrentSize())))
         {
             await img.SaveAsWebpAsync(originalImageConvertedToWebpStream);
@@ -64,13 +64,13 @@ public class ImagesService
 
         // Upload original image object
         await _storage.CreateObject(originalImageConvertedToWebpStream, "image/webp", originalImageObjectName);
-        originalImageConvertedToWebpStream.Close();
+        await originalImageConvertedToWebpStream.DisposeAsync();
         // Upload small image object
         await _storage.CreateObject(smallImageStream, "image/webp", smallImageObjectName);
-        smallImageStream.Close();
+        await smallImageStream.DisposeAsync();
         // Upload reduced image object
         await _storage.CreateObject(reducedImageStream, "image/webp", reducedImageObjectName);
-        reducedImageStream.Close();
+        await reducedImageStream.DisposeAsync();
         return await _imagesRepository.InsertImage(userId, name, imageGuid.ToString(), squadId);
     }
 
