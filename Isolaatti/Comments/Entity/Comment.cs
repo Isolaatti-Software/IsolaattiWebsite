@@ -11,7 +11,7 @@ namespace Isolaatti.Comments.Entity
         public int UserId { get; set; }
         public long PostId { get; set; }
         public int TargetUser { get; set; }
-        public string AudioId { get; set; }
+        public string? AudioId { get; set; }
         public DateTime Date { get; set; }
         public Guid? SquadId { get; set; }
 
