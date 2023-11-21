@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Google;
 using Isolaatti.Accounts;
@@ -9,6 +10,7 @@ using Isolaatti.Accounts.Service;
 using Isolaatti.Classes.ApiEndpointsResponseDataModels;
 using Isolaatti.Enums;
 using Isolaatti.Repositories;
+using Isolaatti.Users.Repository;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using Image = Isolaatti.Models.MongoDB.Image;
@@ -20,13 +22,15 @@ public class ImagesService
     private readonly GoogleCloudStorageService _storage;
     private readonly ImagesRepository _imagesRepository;
     private readonly IAccountsService _accounts;
+    private readonly UsersRepository _usersRepository;
 
     public ImagesService(GoogleCloudStorageService googleCloudStorageService, ImagesRepository imagesRepository,
-        IAccountsService accounts)
+        IAccountsService accounts, UsersRepository usersRepository)
     {
         _storage = googleCloudStorageService;
         _imagesRepository = imagesRepository;
         _accounts = accounts;
+        _usersRepository = usersRepository;
     }
 
     public async Task<Image> CreateImage(Stream file, int userId, string name, Guid? squadId)
@@ -124,7 +128,12 @@ public class ImagesService
 
     public async Task<IEnumerable<Image>> GetImagesOfUser(int userId, string? lastId)
     {
-        return await _imagesRepository.GetImagesOfUser(userId, lastId);
+        var images =  await _imagesRepository.GetImagesOfUser(userId, lastId);
+        return images.Select(i =>
+        {
+            i.Username = _usersRepository.GetUsernameById(i.UserId);
+            return i;
+        });
     }
 
     public async Task<ImageModificationResult> RenameImage(string imageId, int userId, string newName)

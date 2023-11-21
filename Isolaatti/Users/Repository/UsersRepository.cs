@@ -36,9 +36,9 @@ namespace Isolaatti.Users.Repository
             return $"{UserImageIdPrefix}.{userId}";
         }
 
-        public string GetUsernameById(int userId)
+        public string? GetUsernameById(int userId)
         {
-            string value = _cache.GetString(GetKeyForUsername(userId));
+            string? value = _cache.GetString(GetKeyForUsername(userId));
 
             if (value == null)
             {

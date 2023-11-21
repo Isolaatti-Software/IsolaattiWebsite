@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
@@ -22,4 +23,7 @@ public class Image
     
     [Required]
     public string IdOnFirebase { get; set; }
+    
+    [BsonIgnore]
+    public string? Username { get; set; }
 }
