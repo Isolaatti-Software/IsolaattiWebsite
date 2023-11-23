@@ -61,6 +61,7 @@ public class ImagesController : IsolaattiController
         }
 
         var image = await _images.CreateImage(file.OpenReadStream(), User.Id, name, squadId);
+        image.Username = User.Name;
         if (!setAsProfile) return Ok(image);
         if (squadId != null)
         {
@@ -72,7 +73,7 @@ public class ImagesController : IsolaattiController
             _db.Users.Update(User);
             await _db.SaveChangesAsync();
         }
-        image.Username = User.Name;
+        
         return Ok(image);
     }
 
