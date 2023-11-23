@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
-using Isolaatti.Accounts;
 using Isolaatti.Accounts.Service;
 using Isolaatti.Classes.ApiEndpointsRequestDataModels;
+using Isolaatti.DTOs;
 using Isolaatti.Enums;
 using Isolaatti.Models;
 using Isolaatti.Repositories;
@@ -12,7 +11,6 @@ using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Primitives;
 
 namespace Isolaatti.Controllers.Images;
@@ -74,6 +72,7 @@ public class ImagesController : IsolaattiController
             _db.Users.Update(User);
             await _db.SaveChangesAsync();
         }
+        image.Username = User.Name;
         return Ok(image);
     }
 
@@ -140,7 +139,7 @@ public class ImagesController : IsolaattiController
     [IsolaattiAuth]
     [HttpDelete]
     [Route("{imageId}")]
-    public async Task<IActionResult> DeleteImages(string imageId)
+    public async Task<IActionResult> DeleteImage(string imageId)
     {
         var result = await _images.DeleteImage(imageId, User.Id);
 
@@ -152,6 +151,14 @@ public class ImagesController : IsolaattiController
             ImageModificationResult.NotOwned => Unauthorized(),
             _ => throw new ArgumentOutOfRangeException()
         };
+    }
+
+    [IsolaattiAuth]
+    [HttpDelete]
+    [Route("delete_many")]
+    public async Task<IActionResult> DeleteImages(ImagesToDeleteDto imagesToDeleteDto)
+    {
+        return Ok();
     }
 
     [IsolaattiAuth]
