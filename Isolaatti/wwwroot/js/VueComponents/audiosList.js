@@ -75,7 +75,7 @@ Vue.component("audios-list", {
                 method: "GET",
                 headers: this.customHeaders
             }).then(res => res.json()).then((audios) => {
-                this.audios = this.audios.concat(audios);
+                this.audios = this.audios.concat(audios.data);
                 this.loadMore = audios.length >= 10;
             });
 

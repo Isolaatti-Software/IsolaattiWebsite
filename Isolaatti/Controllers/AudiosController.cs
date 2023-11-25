@@ -27,9 +27,12 @@ public class AudiosController : IsolaattiController
     [IsolaattiAuth]
     [HttpGet]
     [Route("OfUser/{userId:int}")]
-    public async Task<IActionResult> GetAudiosOfUser(int userId, [FromQuery] string lastAudioId)
+    public async Task<IActionResult> GetAudiosOfUser(int userId, [FromQuery] string? lastAudioId)
     {
-        return Ok(await _audiosRepository.GetAudiosOfUser(userId, lastAudioId));
+        return Ok(new
+        {
+            data = await _audiosRepository.GetAudiosOfUser(userId, lastAudioId)
+        });
     }
 
     [IsolaattiAuth]
