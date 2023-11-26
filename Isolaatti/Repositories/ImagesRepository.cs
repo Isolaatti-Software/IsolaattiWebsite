@@ -42,11 +42,11 @@ public class ImagesRepository
         var antiSquadFilter = Builders<Image>.Filter.Eq("SquadId", BsonNull.Value);
         if (lastId == null)
         {
-            return await _images.Find(userFilter & antiSquadFilter).Limit(20).ToListAsync();
+            return await _images.Find(userFilter & antiSquadFilter).SortByDescending(i => i.Id).Limit(20).ToListAsync();
         }
-        var pagingFilter = Builders<Image>.Filter.Gt("id", lastId);
+        var pagingFilter = Builders<Image>.Filter.Lt("id", lastId);
 
-        return await _images.Find(userFilter & pagingFilter & antiSquadFilter).Limit(20).ToListAsync();
+        return await _images.Find(userFilter & pagingFilter & antiSquadFilter).SortByDescending(i => i.Id).Limit(20).ToListAsync();
     }
 
     public async Task<IEnumerable<Image>> GetImagesOfSquad(Guid squadId, string? lastId)
@@ -54,10 +54,10 @@ public class ImagesRepository
         var userFilter = Builders<Image>.Filter.Eq("SquadId", squadId);
         if (lastId == null)
         {
-            return await _images.Find(userFilter).Limit(20).ToListAsync();
+            return await _images.Find(userFilter).Limit(20).SortByDescending(i => i.Id).ToListAsync();
         }
-        var pagingFilter = Builders<Image>.Filter.Gt("id", lastId);
-        return await _images.Find(userFilter & pagingFilter).Limit(20).ToListAsync();
+        var pagingFilter = Builders<Image>.Filter.Lt("id", lastId);
+        return await _images.Find(userFilter & pagingFilter).SortByDescending(i => i.Id).Limit(20).ToListAsync();
     }
 
     public async Task DeleteImage(string id)
