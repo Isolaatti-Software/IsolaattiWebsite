@@ -28,7 +28,7 @@ public class SquadsRepository
     public async Task<bool> ValidateSquadOwner(Guid squadId, int userId)
     {
         var squad = await GetSquad(squadId);
-        return squad.UserId == userId;
+        return squad?.UserId == userId;
     }
     
 
@@ -84,12 +84,12 @@ public class SquadsRepository
         }
     }
 
-    public async Task<Squad> GetSquad(Guid id)
+    public async Task<Squad?> GetSquad(Guid id)
     {
         return await _db.Squads.FindAsync(id);
     }
 
-    public async Task<SquadStateDto> GetSquadState(Guid squadId, int userId)
+    public async Task<SquadStateDto?> GetSquadState(Guid squadId, int userId)
     {
         return await _db.Squads
             .Where(s => s.Id.Equals(squadId))
@@ -280,7 +280,7 @@ public class SquadsRepository
         return await users.ToListAsync();
     }
 
-    public string GetSquadName(Guid? squadId)
+    public string? GetSquadName(Guid? squadId)
     {
         return _db.Squads.Where(s => s.Id.Equals(squadId)).Select(s => s.Name).FirstOrDefault();
     }
