@@ -60,7 +60,7 @@ public class ImagesController : IsolaattiController
             }
         }
 
-        var image = await _images.CreateImage(file.OpenReadStream(), User.Id, name, squadId);
+        var image = await _images.CreateImage(file.OpenReadStream(), User.Id, name.Trim(), squadId);
         image.Username = User.Name;
         if (!setAsProfile) return Ok(image);
         if (squadId != null)
