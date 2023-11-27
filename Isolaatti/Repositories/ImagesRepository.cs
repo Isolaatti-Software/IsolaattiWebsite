@@ -36,28 +36,28 @@ public class ImagesRepository
         return await _images.Find(i => i.Id.Equals(id)).FirstOrDefaultAsync();
     }
 
-    public async Task<IEnumerable<Image>> GetImagesOfUser(int userId, string? lastId)
+    public async Task<IEnumerable<Image>> GetImagesOfUser(int userId, string? lastId, int pageSize)
     {
         var userFilter = Builders<Image>.Filter.Eq("UserId", userId);
         var antiSquadFilter = Builders<Image>.Filter.Eq("SquadId", BsonNull.Value);
         if (lastId == null)
         {
-            return await _images.Find(userFilter & antiSquadFilter).SortByDescending(i => i.Id).Limit(5).ToListAsync();
+            return await _images.Find(userFilter & antiSquadFilter).SortByDescending(i => i.Id).Limit(pageSize).ToListAsync();
         }
         var pagingFilter = Builders<Image>.Filter.Lt(i => i.Id, lastId);
 
-        return await _images.Find(userFilter & pagingFilter & antiSquadFilter).SortByDescending(i => i.Id).Limit(5).ToListAsync();
+        return await _images.Find(userFilter & pagingFilter & antiSquadFilter).SortByDescending(i => i.Id).Limit(pageSize).ToListAsync();
     }
 
-    public async Task<IEnumerable<Image>> GetImagesOfSquad(Guid squadId, string? lastId)
+    public async Task<IEnumerable<Image>> GetImagesOfSquad(Guid squadId, string? lastId, int pageSize)
     {
         var userFilter = Builders<Image>.Filter.Eq("SquadId", squadId);
         if (lastId == null)
         {
-            return await _images.Find(userFilter).Limit(20).SortByDescending(i => i.Id).ToListAsync();
+            return await _images.Find(userFilter).Limit(20).SortByDescending(i => i.Id).Limit(pageSize).ToListAsync();
         }
         var pagingFilter = Builders<Image>.Filter.Lt(i => i.Id, lastId);
-        return await _images.Find(userFilter & pagingFilter).SortByDescending(i => i.Id).Limit(20).ToListAsync();
+        return await _images.Find(userFilter & pagingFilter).SortByDescending(i => i.Id).Limit(pageSize).ToListAsync();
     }
 
     public async Task DeleteImage(string id)

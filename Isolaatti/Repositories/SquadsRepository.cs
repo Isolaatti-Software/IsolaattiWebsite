@@ -298,9 +298,9 @@ public class SquadsRepository
         await _db.SaveChangesAsync();
     }
 
-    public async Task<IEnumerable<Image>> GetImagesOfSquad(Guid squadId, string? lastId)
+    public async Task<IEnumerable<Image>> GetImagesOfSquad(Guid squadId, string? lastId, int pageSize)
     {
-        return await _images.GetImagesOfSquad(squadId, lastId);
+        return await _images.GetImagesOfSquad(squadId, lastId, pageSize);
     }
 
     public async Task SetSquadPrivacy(Guid squadId, SquadPrivacy privacy) 

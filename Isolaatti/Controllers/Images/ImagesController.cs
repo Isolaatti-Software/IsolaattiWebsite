@@ -103,21 +103,21 @@ public class ImagesController : IsolaattiController
 
     [HttpGet]
     [Route("of_user/{userId:int}")]
-    public async Task<IActionResult> GetImagesOfUserById(int userId, string? lastId)
+    public async Task<IActionResult> GetImagesOfUserById(int userId, string? lastId, int pageSize = 20)
     {
         return Ok(new
         {
-            data = await _images.GetImagesOfUser(userId, lastId)
+            data = await _images.GetImagesOfUser(userId, lastId, pageSize)
         });
     }
 
     [HttpGet]
     [Route("of_squad/{squadId:guid}")]
-    public async Task<IActionResult> GetImagesOfSquadById(Guid squadId, string? lastId)
+    public async Task<IActionResult> GetImagesOfSquadById(Guid squadId, string? lastId, int pageSize = 20)
     {
         return Ok(new
         {
-            data = await _squadsRepository.GetImagesOfSquad(squadId, lastId)
+            data = await _squadsRepository.GetImagesOfSquad(squadId, lastId, pageSize)
         });
     }
 

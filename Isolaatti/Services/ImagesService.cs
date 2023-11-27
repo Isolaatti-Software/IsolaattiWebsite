@@ -126,9 +126,9 @@ public class ImagesService
 
     }
 
-    public async Task<IEnumerable<Image>> GetImagesOfUser(int userId, string? lastId)
+    public async Task<IEnumerable<Image>> GetImagesOfUser(int userId, string? lastId, int pageSize)
     {
-        var images =  await _imagesRepository.GetImagesOfUser(userId, lastId);
+        var images =  await _imagesRepository.GetImagesOfUser(userId, lastId, pageSize);
         return images.Select(i =>
         {
             i.Username = _usersRepository.GetUsernameById(i.UserId);
