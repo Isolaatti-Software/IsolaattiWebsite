@@ -1,6 +1,5 @@
 ﻿using Isolaatti.Classes.ApiEndpointsRequestDataModels;
 using Isolaatti.Models;
-using Isolaatti.Models.MongoDB;
 using Isolaatti.Repositories;
 using Isolaatti.Services;
 using Isolaatti.Utils;
@@ -12,6 +11,7 @@ using Isolaatti.Accounts.Data;
 
 namespace Isolaatti.Profiles.Controller
 {
+    [ApiController]
     public class ProfileController : IsolaattiController
     {
         private readonly DbContextApp _db;
