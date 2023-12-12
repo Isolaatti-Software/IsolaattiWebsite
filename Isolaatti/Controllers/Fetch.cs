@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Isolaatti.Accounts.Data.Entity;
 using Isolaatti.Classes;
+using Isolaatti.Classes.ApiEndpointsResponseDataModels;
 using Isolaatti.Comments.Entity;
 using Isolaatti.DTOs;
 using Isolaatti.Models;
@@ -191,8 +192,9 @@ namespace Isolaatti.Controllers
             foreach (var post in postList)
             {
                 var audioId = post.Post.AudioId;
-                if(audioId != null) 
-                    post.Audio = audiosBadge[audioId];
+                if (audioId == null) continue;
+                audiosBadge.TryGetValue(audioId, out var audio);
+                post.Audio = audio;
             }
 
             return Ok(new ContentListWrapper<PostDto>
