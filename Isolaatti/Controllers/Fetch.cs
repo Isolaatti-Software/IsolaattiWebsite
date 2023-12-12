@@ -9,6 +9,7 @@ using Isolaatti.Comments.Entity;
 using Isolaatti.DTOs;
 using Isolaatti.Models;
 using Isolaatti.Repositories;
+using Isolaatti.Services;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;
@@ -22,11 +23,13 @@ namespace Isolaatti.Controllers
     {
         private readonly DbContextApp _db;
         private readonly SquadsRepository _squads;
+        private readonly AudiosService _audios;
 
-        public Fetch(DbContextApp dbContextApp, SquadsRepository squadsRepository)
+        public Fetch(DbContextApp dbContextApp, SquadsRepository squadsRepository, AudiosService audios)
         {
             _db = dbContextApp;
             _squads = squadsRepository;
+            _audios = audios;
         }
 
         
@@ -34,11 +37,11 @@ namespace Isolaatti.Controllers
         [IsolaattiAuth]
         [HttpGet]
         [Route("PostsOfUser/{userId:int}")]
-        public async Task<IActionResult> GetPosts(int userId, int length = 30, long lastId = -1, bool olderFirst = false, string filterJson = null)
+        public async Task<IActionResult> GetPosts(int userId, int length = 30, long lastId = -1, bool olderFirst = false, string? filterJson = null)
         {
-            User requestedAuthor = null;
+            User? requestedAuthor = null;
 
-            PostFilterDto filter = null;
+            PostFilterDto? filter = null;
             
             // try to parse json filter
             if (filterJson != null)
@@ -175,15 +178,26 @@ namespace Isolaatti.Controllers
                     NumberOfComments = post.Comments.Count,
                     NumberOfLikes = post.Likes.Count,
                     Liked = _db.Likes.Any(l => l.UserId == User.Id && l.PostId == post.Id),
-                    SquadName = post.Squad.Name
+                    SquadName = post.Squad.Name,
                 };
 
             var count = posts.Count();
 
+            var postList = await a.ToListAsync();
+
+            var audiosIds = postList.Where(p => p.Post.AudioId != null).Select(p => p.Post.AudioId!);
+            var audiosBadge = await _audios.GetAudios(audiosIds);
+
+            foreach (var post in postList)
+            {
+                var audioId = post.Post.AudioId;
+                if(audioId != null) 
+                    post.Audio = audiosBadge[audioId];
+            }
 
             return Ok(new ContentListWrapper<PostDto>
             {
-                Data = a.ToList(),
+                Data = postList,
                 MoreContent = total > count
             });
         }

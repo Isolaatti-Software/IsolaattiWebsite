@@ -62,7 +62,7 @@
         fetchProfile: async function () {
             const response = await fetch(`/api/Fetch/UserProfile/${this.userId === null ? this.userData.id : this.userId}`, {
                 headers: this.customHeaders,
-                method: "post"
+                method: "get"
             });
             this.profile = await response.json();
         },

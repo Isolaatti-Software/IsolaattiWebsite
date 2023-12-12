@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,16 +26,13 @@ public class AudiosRepository
         _db = db;
     }
 
-#nullable enable
-
     public async Task<Audio?> GetAudio(string audioId)
     {
         return _audios.Find(a => a.Id == audioId).Limit(1).FirstOrDefault();
     }
+    
 
-#nullable disable
-
-    public async Task<IEnumerable<FeedAudio>> GetAudiosOfUser(int userId, string lastAudioId = null)
+    public async Task<IEnumerable<FeedAudio>> GetAudiosOfUser(int userId, string? lastAudioId = null)
     {
         List<Audio> audiosData;
         if (lastAudioId == null)
@@ -52,8 +50,18 @@ public class AudiosRepository
         
         // This might not be optimal, but it is better than making one http request per audio to get its user name
         return audiosData.Select(audioData => new FeedAudio(audioData)
-            { UserName = _db.Users.FirstOrDefault(u => u.Id == audioData.UserId)?.Name });
+            { UserName = _db.Users.FirstOrDefault(u => u.Id == audioData.UserId)?.Name ?? "" });
 
+    }
+
+
+    public async Task<Dictionary<string,FeedAudio>> GetAudios(IEnumerable<string> ids)
+    {
+        var filter = Builders<Audio>.Filter.In(a => a.Id, ids);
+
+        var data = await _audios.Find(filter).SortByDescending(a => a.Id).ToListAsync();
+
+        return data.Select(a => new FeedAudio(a)).ToDictionary(de => de.Id);
     }
 
     public async Task<List<Audio>> GetGlobalFeed(string lastAudioId = null)

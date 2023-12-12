@@ -8,6 +8,7 @@
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using Isolaatti.Classes.ApiEndpointsResponseDataModels;
 
 namespace Isolaatti.Accounts.Data.Entity
 {
@@ -46,6 +47,9 @@ namespace Isolaatti.Accounts.Data.Entity
         public string? Genre { get; set; }
         public string? CountryCode { get; set; }
         public DateTime? Birthday { get; set; }
+        
+        [NotMapped]
+        public FeedAudio? Audio { get; set; }
 
     }
 }

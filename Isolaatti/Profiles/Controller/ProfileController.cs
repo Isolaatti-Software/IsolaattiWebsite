@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using Isolaatti.Accounts.Data;
+using Isolaatti.Classes.ApiEndpointsResponseDataModels;
 
 namespace Isolaatti.Profiles.Controller
 {
@@ -27,7 +28,7 @@ namespace Isolaatti.Profiles.Controller
 
 
         [IsolaattiAuth]
-        [HttpPost]
+        [HttpGet]
         [Route("/api/Fetch/UserProfile/{userId:int}")]
         public async Task<IActionResult> GetProfile(int userId)
         {
@@ -45,6 +46,19 @@ namespace Isolaatti.Profiles.Controller
             account.FollowingThisUser =
                 await _db.FollowerRelations.AnyAsync(fr => fr.UserId == User.Id && fr.TargetUserId == account.Id);
 
+            if (account.DescriptionAudioId != null)
+            {
+                var audio = await _audios.GetAudio(account.DescriptionAudioId);
+                if (audio != null)
+                {
+                    account.Audio = new FeedAudio(audio)
+                    {
+                        UserName = account.Name
+                    };
+                }
+                
+            }
+            
             if (!account.ShowEmail && account.Id != User.Id)
             {
                 account.Email = null;

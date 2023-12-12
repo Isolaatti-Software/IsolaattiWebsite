@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Google;
 using Isolaatti.Accounts;
@@ -41,6 +44,18 @@ public class AudiosService
         feedAudio.UserName = _accounts.GetUsernameFromId(feedAudio.UserId);
 
         return feedAudio;
+    }
+
+    public async Task<Dictionary<string, FeedAudio>> GetAudios(IEnumerable<string> ids)
+    {
+        var audios = await _audiosRepository.GetAudios(ids);
+        
+        foreach(var (id, audio) in audios)
+        {
+            audio.UserName = _accounts.GetUsernameFromId(audio.UserId);
+        }
+
+        return audios;
     }
 
 

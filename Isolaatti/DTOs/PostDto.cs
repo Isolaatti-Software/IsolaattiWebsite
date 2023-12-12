@@ -1,4 +1,5 @@
-﻿using Isolaatti.Models;
+﻿using Isolaatti.Classes.ApiEndpointsResponseDataModels;
+using Isolaatti.Models;
 
 namespace Isolaatti.DTOs;
 
@@ -11,4 +12,5 @@ public class PostDto
     public string UserName { get; set; }
     public string SquadName { get; set; }
     public bool Liked { get; set; }
+    public FeedAudio? Audio { get; set; }
 }
