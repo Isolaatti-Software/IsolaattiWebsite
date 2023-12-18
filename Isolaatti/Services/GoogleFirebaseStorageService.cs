@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -58,5 +59,13 @@ public class GoogleCloudStorageService
     {
         var firestoreObject = await _storage.GetObjectAsync(FirebaseProjectName, objectName);
         return firestoreObject.MediaLink;
+    }
+
+    public async Task DeleteObjects(IEnumerable<string> objects)
+    {
+        foreach (var file in objects)
+        {
+            await _storage.DeleteObjectAsync(FirebaseProjectName, file);
+        }
     }
 }

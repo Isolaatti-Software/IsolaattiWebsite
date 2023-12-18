@@ -14,7 +14,7 @@
 
     <ItemGroup>
         <PackageReference Include="FirebaseAdmin" Version="2.3.0" />
-        <PackageReference Include="Google.Cloud.Storage.V1" Version="4.1.0" />
+        <PackageReference Include="Google.Cloud.Storage.V1" Version="4.7.0" />
 
         <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.9" />
         <PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" Version="7.0.3" />

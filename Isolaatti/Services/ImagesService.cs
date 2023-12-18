@@ -152,4 +152,16 @@ public class ImagesService
 
         return ImageModificationResult.Success;
     }
+
+    public async Task DeleteImages(IEnumerable<string> imageIds, int userId)
+    {
+        var filesToRemove = await _imagesRepository.DeleteImages(imageIds, userId);
+        foreach (var id in filesToRemove)
+        {
+            await _storage.DeleteObject($"images/{id}/original");
+            await _storage.DeleteObject($"images/{id}/reduced");
+            await _storage.DeleteObject($"images/{id}/small");
+        }
+        
+    }
 }

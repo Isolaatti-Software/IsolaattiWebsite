@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Isolaatti.Models.MongoDB;
 using Microsoft.Extensions.Options;
@@ -31,7 +32,7 @@ public class ImagesRepository
         return image;
     }
 
-    public async Task<Image> GetImage(string id)
+    public async Task<Image?> GetImage(string id)
     {
         return await _images.Find(i => i.Id.Equals(id)).FirstOrDefaultAsync();
     }
@@ -63,6 +64,17 @@ public class ImagesRepository
     public async Task DeleteImage(string id)
     {
         await _images.DeleteOneAsync(i => i.Id.Equals(id));
+    }
+
+    public async Task<IEnumerable<string>> DeleteImages(IEnumerable<string> imageIds, int userId)
+    {
+        var filter = Builders<Image>.Filter.In(i => i.Id, imageIds) & Builders<Image>.Filter.Eq(i => i.UserId, userId);
+
+        var images = _images.Find(filter).ToList();
+
+        await _images.DeleteManyAsync(filter);
+        
+        return images.Select(i => i.IdOnFirebase);
     }
 
     public async Task RenameImage(string id, string name)

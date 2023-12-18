@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Isolaatti.Accounts.Service;
 using Isolaatti.Classes.ApiEndpointsRequestDataModels;
@@ -156,9 +157,11 @@ public class ImagesController : IsolaattiController
 
     [IsolaattiAuth]
     [HttpDelete]
-    [Route("delete_many")]
-    public async Task<IActionResult> DeleteImages(ImagesToDeleteDto imagesToDeleteDto)
+    [Route("delete/delete_many")]
+    public async Task<IActionResult> DeleteImages([FromBody] ImagesToDeleteDto imagesToDeleteDto)
     {
+        _images.DeleteImages(imagesToDeleteDto.ImageIds, User.Id);
+        
         return Ok();
     }
 
