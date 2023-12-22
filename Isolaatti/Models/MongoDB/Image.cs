@@ -24,6 +24,8 @@ public class Image
     [Required]
     public string IdOnFirebase { get; set; }
     
+    public bool Outstanding { get; set; }
+    
     [BsonIgnore]
     public string? Username { get; set; }
 }

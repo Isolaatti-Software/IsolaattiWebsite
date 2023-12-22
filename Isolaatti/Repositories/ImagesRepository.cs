@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Isolaatti.Models.MongoDB;
-using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
@@ -92,4 +91,35 @@ public class ImagesRepository
             .ToListAsync();
     }
 
+    // TODO take this const value to json config
+    private const int OutstandingImageLimit = 10;
+    public async Task<bool> SetImageOutstanding(string imageId, int userId, bool outstanding)
+    {
+        var outstandingImageCount = await _images.CountDocumentsAsync(i => i.UserId == userId && i.Outstanding);
+
+        
+        // Intention is to make this image outstanding but count limit has been reached
+        if (outstandingImageCount > OutstandingImageLimit && outstanding)
+        {
+            return false;
+        }
+        
+        var image = await _images.Find(i => i.Id == imageId).FirstOrDefaultAsync();
+        
+        // verify ownership and existence
+        if (image == null || image.UserId != userId)
+        {
+            return false;
+        }
+
+        var updateDefinition = Builders<Image>.Update.Set(i => i.Outstanding, outstanding);
+
+        var updateResult = await _images.UpdateOneAsync(i => i.Id == imageId, updateDefinition);
+        return updateResult.IsAcknowledged;
+    }
+
+    public async Task<IEnumerable<Image>> GetUserOutstandingImages(int userId)
+    {
+        return await _images.Find(i => i.UserId == userId && i.Outstanding).ToListAsync();
+    }
 }

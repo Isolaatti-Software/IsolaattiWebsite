@@ -164,4 +164,9 @@ public class ImagesService
         }
         
     }
+
+    public Task<bool> SetImageOutstanding(string imageId, int userId, bool outstanding)
+    {
+        return _imagesRepository.SetImageOutstanding(imageId, userId, outstanding);
+    }
 }
