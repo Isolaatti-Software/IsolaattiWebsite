@@ -156,11 +156,11 @@ public class ImagesController : IsolaattiController
     }
 
     [IsolaattiAuth]
-    [HttpDelete]
+    [HttpPost]
     [Route("delete/delete_many")]
     public async Task<IActionResult> DeleteImages([FromBody] ImagesToDeleteDto imagesToDeleteDto)
     {
-        _images.DeleteImages(imagesToDeleteDto.ImageIds, User.Id);
+        await _images.DeleteImages(imagesToDeleteDto.ImageIds, User.Id);
         
         return Ok();
     }
