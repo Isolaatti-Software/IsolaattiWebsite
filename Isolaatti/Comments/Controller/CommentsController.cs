@@ -85,8 +85,8 @@ namespace Isolaatti.Comments.Controller
                 return Unauthorized("post does not exist or is private");
 
             IQueryable<Comment> comments = _db.Comments
-                .Where(comment => comment.PostId.Equals(post.Id) && comment.Id > lastId)
-                .OrderBy(c => c.Id);
+                .Where(comment => comment.PostId.Equals(post.Id) && comment.Id < lastId)
+                .OrderByDescending(c => c.Id);
 
             var total = await comments.CountAsync();
 
