@@ -78,7 +78,7 @@ namespace Isolaatti.Comments.Controller
         [IsolaattiAuth]
         [HttpGet]
         [Route("/api/Fetch/Post/{postId:long}/Comments")]
-        public async Task<IActionResult> GetComments(long postId, long lastId = long.MinValue, int take = 10)
+        public async Task<IActionResult> GetComments(long postId, long lastId = long.MaxValue, int take = 10)
         {
             var post = await _db.SimpleTextPosts.FindAsync(postId);
             if (post == null || (post.Privacy == 1 && post.UserId != User.Id))
