@@ -84,7 +84,7 @@ public class ImagesService
         if (image == null) return null;
 
         var imageFeed = new ImageFeed(image);
-        imageFeed.UserName = _accounts.GetUsernameFromId(imageFeed.UserId);
+        imageFeed.Username = _accounts.GetUsernameFromId(imageFeed.UserId);
 
         return imageFeed;
     }

@@ -11,6 +11,4 @@ public class ImageFeed : Image
         UserId = image.UserId;
         IdOnFirebase = image.IdOnFirebase;
     }
-    
-    public string UserName { get; set; }
 }

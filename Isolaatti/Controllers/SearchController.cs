@@ -38,7 +38,7 @@ public class SearchController : IsolaattiController
     [Route("Quick")]
     [HttpGet]
     public async Task<IActionResult> QuickSearch([FromQuery] string q, [FromQuery] string contextType = "global", 
-        string contextValue = null, [FromQuery] bool onlyProfile = false)
+        string? contextValue = null, [FromQuery] bool onlyProfile = false)
     {
         var results = new SearchResult();
         if (q.IsNullOrWhiteSpace())
@@ -124,7 +124,7 @@ public class SearchController : IsolaattiController
         var imagesResult = await _imagesRepository.SearchOnName(lowerCaseQ);
         results.Images.AddRange(imagesResult.Select(i => new ImageFeed(i)
         {
-            UserName = _db.Users.Where(u => u.Id == i.UserId).Select(u => u.Name).FirstOrDefault()
+            Username = _db.Users.Where(u => u.Id == i.UserId).Select(u => u.Name).FirstOrDefault()
         }));
         
         // Some post processing
