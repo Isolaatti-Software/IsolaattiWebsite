@@ -9,6 +9,7 @@ using Isolaatti.Accounts.Service;
 using Isolaatti.Comments.Repository;
 using Isolaatti.Config;
 using Isolaatti.EmailSender;
+using Isolaatti.Favorites.Data;
 using Isolaatti.Messaging;
 using Isolaatti.Middleware;
 using Isolaatti.Models;
@@ -221,6 +222,7 @@ namespace Isolaatti
             services.AddSingleton<EmailSenderMessaging>();
             services.AddSingleton<PushNotificationsSenderMessaging>();
             services.AddSingleton<RegisterDeviceMessaging>();
+            services.AddScoped<FavoritesRepository>();
             
             services.Configure<CookiePolicyOptions>(options =>
             {
