@@ -1,30 +1,37 @@
 ﻿using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Isolaatti.Accounts;
 using Isolaatti.Accounts.Service;
 using Isolaatti.DTOs;
-using Isolaatti.Services;
 using Isolaatti.Utils.Attributes;
-using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Logging;
 
 namespace Isolaatti.Utils.PageFilters;
 
 public class IsolaattiAuthPagesFilter : IAsyncPageFilter
 {
     private IAccountsService _accounts;
+    private ILogger<IsolaattiAuthPagesFilter> _logger;
     
-    public IsolaattiAuthPagesFilter(IAccountsService accounts)
+    public IsolaattiAuthPagesFilter(IAccountsService accounts, ILogger<IsolaattiAuthPagesFilter> logger)
     {
         _accounts = accounts;
+        _logger = logger;
     }
     
     public Task OnPageHandlerSelectionAsync(PageHandlerSelectedContext context)
     {
         
         return Task.CompletedTask;
+    }
+
+    private void RedirectToLogin(PageHandlerExecutingContext context)
+    {
+        _logger.LogDebug("Then {then}", context.HttpContext.Request.Path);
+        context.Result = new RedirectToPageResult("/LogIn",
+            new { then = context.HttpContext.Request.Path });
     }
     
     public async Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context,
@@ -36,8 +43,8 @@ public class IsolaattiAuthPagesFilter : IAsyncPageFilter
             var cookie = context.HttpContext.Request.Cookies["isolaatti_user_session_token"];
             if (cookie == null)
             {
-                context.Result = new RedirectToPageResult("LogIn");
-                _accounts = null;
+                _logger.LogDebug("Cookie not present, redirecting to log");
+                RedirectToLogin(context);
                 return;
             }
 
@@ -47,9 +54,8 @@ public class IsolaattiAuthPagesFilter : IAsyncPageFilter
                 var user = await _accounts.ValidateSession(session);
                 if (user == null)
                 {
-                    context.Result = new RedirectToPageResult("LogIn",
-                        new { then = context.HttpContext.Request.GetEncodedUrl() });
-                    _accounts = null;
+                    _logger.LogDebug("User is null");
+                    RedirectToLogin(context);
                     return;
                 }
 
