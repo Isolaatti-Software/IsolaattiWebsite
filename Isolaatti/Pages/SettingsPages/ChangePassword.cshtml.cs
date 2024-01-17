@@ -37,7 +37,7 @@ namespace Isolaatti.Pages
                 });
             }
             
-            if (!await _accounts.ChangeAPassword(User.Id, CurrentPassword, NewPassword))
+            if (!(await _accounts.ChangeAPassword(User.Id, CurrentPassword, NewPassword)).Success)
             {
                 return RedirectToPage("MyProfile", new
                 {

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using FirebaseAdmin.Auth;
+using Isolaatti.Accounts.Data;
 using Isolaatti.Accounts.Data.Entity;
 using Isolaatti.DTOs;
 using Isolaatti.EmailSender;
@@ -168,21 +168,53 @@ public partial class AccountsService : IAccountsService
         return foundCode;
     }
 
+    private List<string> _passwordPatters = new()
+    {
+        "[a-z]",
+        "[A-Z]",
+        "[0-9]",
+        @"[!@#$%^&*\(\)_\+\-\={}<>,\.\|""'~`:;\\?\/\[\]]"
+    };
 
-    public async Task<bool> ChangeAPassword(int userId, string currentPassword, string newPassword)
+    private bool PasswordIsValid(string password)
+    {
+        if (password.Length < 8) return false;
+        var counter = 0;
+        foreach (var pattern in _passwordPatters)
+        {
+            if (Regex.IsMatch(password, pattern))
+            {
+                counter++;
+            }
+        }
+
+        return counter > 3;
+    }
+
+
+    public async Task<ChangePasswordResultDto> ChangeAPassword(int userId, string currentPassword, string newPassword)
     {
         var user = await db.Users.FindAsync(userId);
-        if (user == null) return false;
+        if (user == null)
+        {
+            return new ChangePasswordResultDto(false, ChangePasswordResultDto.ReasonUserDoesNotExist);
+        }
         var passwordHasher = new PasswordHasher<string>();
         var verificationResult =
             passwordHasher.VerifyHashedPassword(user.Email, user.Password, currentPassword);
-        if (verificationResult == PasswordVerificationResult.Failed) return false;
+        if (verificationResult == PasswordVerificationResult.Failed)
+        {
+            return new ChangePasswordResultDto(false, ChangePasswordResultDto.ReasonOldPasswordMismatch);
+        }
 
+        if (!PasswordIsValid(newPassword))
+            return new ChangePasswordResultDto(false, ChangePasswordResultDto.ReasonNewPasswordInvalid);
+        
         var newPasswordHashed = passwordHasher.HashPassword(user.Email, newPassword);
         user.Password = newPasswordHashed;
         db.Users.Update(user);
         await db.SaveChangesAsync();
-        return true;
+        return new ChangePasswordResultDto(true);
     }
 
 
@@ -218,6 +250,16 @@ public partial class AccountsService : IAccountsService
     {
         return await _sessionsRepository.RemoveSession(sessionDto);
     }
+
+    public Task<bool> RemoveSessions(int userId, IEnumerable<string> ids)
+    {
+        return _sessionsRepository.RemoveSessions(userId, ids);
+    }
+
+    public Task<bool> RemoveAllSessions(int userId, IEnumerable<string>? exceptIds)
+    {
+        return _sessionsRepository.RemoveSessionsByUserId(userId, exceptIds);
+    }
     
 
     public string GetUsernameFromId(int userId)
@@ -244,9 +286,9 @@ public partial class AccountsService : IAccountsService
         _emailSender.SendEmail(FromAddress, FromName, email, name, JustLoggedInSubject, htmlBody);
     }
 
-    public IEnumerable<Session> GetSessionsOfUser(int userId)
+    public async Task<IEnumerable<Session>> GetSessionsOfUser(int userId)
     {
-        return _sessionsRepository.FindSessionsOfUser(userId);
+        return await _sessionsRepository.FindSessionsOfUser(userId);
     }
 
     public string GetIpAddress()

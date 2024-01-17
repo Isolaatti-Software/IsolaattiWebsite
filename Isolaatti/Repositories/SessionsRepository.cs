@@ -23,9 +23,9 @@ public class SessionsRepository
         return session;
     }
 
-    public IEnumerable<Session> FindSessionsOfUser(int userId)
+    public async Task<IEnumerable<Session>> FindSessionsOfUser(int userId)
     {
-        return _authTokens.Find(t => t.UserId == userId).ToEnumerable();
+        return (await _authTokens.FindAsync(t => t.UserId == userId)).ToEnumerable();
     }
 
     public async Task<int?> FindUserIdFromSession(SessionDto sessionDto) 
@@ -53,10 +53,26 @@ public class SessionsRepository
         return sessionRemoved != null;
     }
 
+    public async Task<bool> RemoveSessionsByUserId(int userId, IEnumerable<string> exceptIds)
+    {
+        var filter = Builders<Session>.Filter.Eq(s => s.UserId, userId) &
+                     Builders<Session>.Filter.Not(Builders<Session>.Filter.In(s => s.Id, exceptIds));
+        var result = await _authTokens.DeleteManyAsync(filter);
+        return result.IsAcknowledged;
+    }
+
     public async Task<Session> FindSessionById(SessionDto sessionDto)
     {
         return await _authTokens
             .Find(session => session.Id.Equals(sessionDto.SessionId))
             .FirstOrDefaultAsync();
+    }
+
+    public async Task<bool> RemoveSessions(int userId, IEnumerable<string> ids)
+    {
+        var filter = Builders<Session>.Filter.Eq(s => s.UserId, userId) & Builders<Session>.Filter.In(s => s.Id, ids);
+        var result = await _authTokens.DeleteManyAsync(filter);
+
+        return result.IsAcknowledged;
     }
 }

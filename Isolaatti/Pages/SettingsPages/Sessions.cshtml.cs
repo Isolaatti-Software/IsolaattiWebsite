@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Isolaatti.Accounts;
 using Isolaatti.Accounts.Service;
 using Isolaatti.Services;
@@ -19,9 +20,9 @@ namespace Isolaatti.Pages.SettingsPages
             _accounts = accounts;
         }
 
-        public IActionResult OnGet()
+        public async Task<IActionResult> OnGet()
         {
-            SessionTokens = _accounts.GetSessionsOfUser(User.Id);
+            SessionTokens = await _accounts.GetSessionsOfUser(User.Id);
 
             return Page();
         }
