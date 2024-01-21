@@ -78,7 +78,7 @@ public class ImagesService
         return await _imagesRepository.InsertImage(userId, name, imageGuid.ToString(), squadId);
     }
 
-    public async Task<ImageFeed> GetImage(string imageId)
+    public async Task<ImageFeed?> GetImage(string imageId)
     {
         var image = await _imagesRepository.GetImage(imageId);
         if (image == null) return null;

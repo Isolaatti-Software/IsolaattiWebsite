@@ -33,7 +33,7 @@ public class AccountsController : IsolaattiController
                 Date = s.CreationDate,
                 Ip = s.IpAddress,
                 UserAgent = s.UserAgent,
-                Current = s.Id == SessionId
+                Current = s.Id == CurrentSessionDto.SessionId
             })
         });
     }
@@ -56,7 +56,7 @@ public class AccountsController : IsolaattiController
             var list = new List<string>();
             if (!signOutCurrent)
             {
-                list.Add((await _accounts.CurrentSession()).GetDto().SessionId);
+                list.Add(CurrentSessionDto.SessionId);
             }
             await _accounts.RemoveAllSessions(User.Id, list);
         }
@@ -71,7 +71,7 @@ public class AccountsController : IsolaattiController
     [IsolaattiAuth]
     public async Task<IActionResult> Logout()
     {
-        var result = await _accounts.RemoveSession((await _accounts.CurrentSession()).GetDto());
+        var result = await _accounts.RemoveSession(CurrentSessionDto);
         return Ok(new
         {
             SessionRemoved = result
