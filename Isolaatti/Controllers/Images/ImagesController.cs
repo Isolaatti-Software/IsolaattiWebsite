@@ -102,6 +102,7 @@ public class ImagesController : IsolaattiController
         return Redirect(url);
     }
 
+    [IsolaattiAuth]
     [HttpGet]
     [Route("of_user/{userId:int}")]
     public async Task<IActionResult> GetImagesOfUserById(int userId, string? lastId, int pageSize = 20)
@@ -112,6 +113,7 @@ public class ImagesController : IsolaattiController
         });
     }
 
+    [IsolaattiAuth]
     [HttpGet]
     [Route("of_squad/{squadId:guid}")]
     public async Task<IActionResult> GetImagesOfSquadById(Guid squadId, string? lastId, int pageSize = 20)
