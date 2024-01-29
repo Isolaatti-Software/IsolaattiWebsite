@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Isolaatti.Classes.ApiEndpointsRequestDataModels;
 using Isolaatti.DTOs;
@@ -139,14 +140,10 @@ public class SquadsController : IsolaattiController
 
         // This list of ids may have ids that does not belong to any user. It is necessary to test.
         var userIds = payload.UserIds;
-        var realUserIds = new List<int>();
-        foreach (var userId in userIds)
-        {
-            if (await _db.Users.AnyAsync(u => u.Id.Equals(userId)))
-            {
-                realUserIds.Add(userId);
-            }
-        }
+
+        var users = await (from user in _db.Users
+            where userIds.Contains(user.Id)
+            select new { id = user.Id, username = user.UniqueUsername, displayName = user.Name, email = user.Email }).ToListAsync();
         
         // TODO: Fix this
         // // Now I remove the users that had already received an invitation, no matter the message.
@@ -156,12 +153,23 @@ public class SquadsController : IsolaattiController
         //     .ToListAsync();
 
 
-        if (realUserIds.Count < 1)
+        if (users.Count < 1)
         {
             return NotFound(new { error = "No invitations were sent, the passed ids are fake." });
         }
 
-        await _squadInvitationsRepository.CreateInvitations(squadId, User.Id, realUserIds, payload.Message);
+        foreach (var u in users)
+        {
+            _emailSenderMessaging.SendEmail(
+                EmailTemplates.NotificationsAddress, 
+                "Isolaatti", 
+                u.email, 
+                u.displayName, 
+                "Invitación a squad", 
+                string.Format(EmailTemplates.InvitationEmail, User.UniqueUsername, squad.Name));
+        }
+
+        await _squadInvitationsRepository.CreateInvitations(squadId, User.Id, users.Select(u => u.id), payload.Message);
         return Ok(new { result = "Invitations send. Fake ids or ids that had already been used, if any, were omitted."});
     }
     
