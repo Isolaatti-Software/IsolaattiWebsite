@@ -9,6 +9,7 @@ namespace Isolaatti.isolaatti_lib
 {
     public class EmailTemplates
     {
+        public static string NotificationsAddress = "notificaciones@isolaatti.com";
         public const string PasswordRecoveryEmail = @"<html><body>
             <h1>Hola {1}. Restablezcamos tu contraseña.</h1>
             <p>Recibimos una solicitud para restablecer la contraseña de tu cuenta de Isolaatti</p>
@@ -47,6 +48,22 @@ namespace Isolaatti.isolaatti_lib
                 <div style="background-color: #3b2d50;color: white;padding: 1em;text-align: center;font-size: larger;">{0}</div>
                 <p>Si comenzaste el registro desde el navegador web ve a <a href="https://isolaatti.com/codigo">https://isolaatti.com/codigo</a></p>
                 <p>O si lo hiciste desde la app, continua en la pantalla que te solicita el código.</p>
+            </body>
+            </html>
+            """;
+
+        public const string InvitationEmail =
+            """
+            <!DOCTYPE html>
+            <html lang="es">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            </head>
+            <body>
+                <h1 style="text-align: center;">Isolaatti</h1>
+                <h2>@{0} te ha invitado a unirte al squad "{1}"</h2>
+                <p>Entra a la aplicación para que revises esta invitación.</p>
             </body>
             </html>
             """;

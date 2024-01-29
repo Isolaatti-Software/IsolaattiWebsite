@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Isolaatti.Classes.ApiEndpointsRequestDataModels;
 using Isolaatti.DTOs;
+using Isolaatti.EmailSender;
 using Isolaatti.Enums;
+using Isolaatti.isolaatti_lib;
 using Isolaatti.Models;
 using Isolaatti.Repositories;
 using Isolaatti.Utils;
@@ -20,16 +22,19 @@ public class SquadsController : IsolaattiController
     private readonly SquadsRepository _squadsRepository;
     private readonly SquadInvitationsRepository _squadInvitationsRepository;
     private readonly DbContextApp _db;
+    private readonly EmailSenderMessaging _emailSenderMessaging;
 
     public SquadsController(
         SquadsRepository squadsRepository, 
         SquadInvitationsRepository squadInvitationsRepository,
         SquadJoinRequestsRepository squadJoinRequestsRepository,
-        DbContextApp dbContextApp)
+        DbContextApp dbContextApp, 
+        EmailSenderMessaging emailSenderMessaging)
     {
         _squadsRepository = squadsRepository;
         _squadInvitationsRepository = squadInvitationsRepository;
         _db = dbContextApp;
+        _emailSenderMessaging = emailSenderMessaging;
     }
 
     [IsolaattiAuth]
@@ -110,6 +115,14 @@ public class SquadsController : IsolaattiController
         await _squadInvitationsRepository
             .CreateInvitation(squadId, User.Id, payload.UserId, payload.Message);
 
+        _emailSenderMessaging.SendEmail(
+            EmailTemplates.NotificationsAddress, 
+            "Isolaatti", 
+            recipientUser.Email, 
+            recipientUser.Name, 
+            "Invitación a squad", 
+            string.Format(EmailTemplates.InvitationEmail, User.UniqueUsername, squad.Name));
+        
         return Ok(new { result = "Invitation sent." });
     }
 
