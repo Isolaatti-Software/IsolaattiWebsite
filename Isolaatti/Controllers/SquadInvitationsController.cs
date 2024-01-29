@@ -21,7 +21,7 @@ public class SquadInvitationsController : IsolaattiController
 {
     public class InvitationUpdatePayload
     {
-        public string Message { get; set; }
+        public string? Message { get; set; }
     }
     
     private readonly IAccountsService _accounts;
@@ -44,7 +44,7 @@ public class SquadInvitationsController : IsolaattiController
     [IsolaattiAuth]
     [HttpGet]
     [Route("/api/Users/Me/Squads/InvitationsForMe")]
-    public async Task<IActionResult> InvitationsOfUser(string lastId=null)
+    public async Task<IActionResult> InvitationsOfUser(string? lastId=null)
     {
         var invitations = await _squadInvitationsRepository.GetInvitationsForUser(User.Id, lastId);
         
@@ -53,23 +53,23 @@ public class SquadInvitationsController : IsolaattiController
             Invitation = inv,
             SenderName = _accounts.GetUsernameFromId(inv.SenderUserId),
             RecipientName = User.Name,
-            SquadName = _squadsRepository.GetSquadName(inv.SquadId)
+            SquadName = _squadsRepository.GetSquadName(inv.SquadId) ?? string.Empty
         }));
     }
 
     [IsolaattiAuth]
     [HttpGet]
     [Route("/api/Users/Me/Squads/MyInvitations")]
-    public async Task<IActionResult> MyInvitations(string lastId=null)
+    public async Task<IActionResult> MyInvitations(string? lastId=null)
     {
         var invitations = await _squadInvitationsRepository.GetInvitationsOfUser(User.Id, lastId);
         
         return Ok(invitations.Select(inv => new InvitationInfoResponse
         {
             Invitation = inv,
-            RecipientName = _db.Users.SingleOrDefault(u => u.Id == inv.RecipientUserId)?.Name,
+            RecipientName = _db.Users.SingleOrDefault(u => u.Id == inv.RecipientUserId)?.Name ?? string.Empty,
             SenderName = User.Name,
-            SquadName = _squadsRepository.GetSquadName(inv.SquadId)
+            SquadName = _squadsRepository.GetSquadName(inv.SquadId) ?? string.Empty
         }));
     }
     
@@ -78,7 +78,7 @@ public class SquadInvitationsController : IsolaattiController
     [Route("Remove")]
     public async Task<IActionResult> RemoveInvitation(string invitationId)
     {
-        var invitation = _squadInvitationsRepository.GetInvitation(invitationId);
+        var invitation = await _squadInvitationsRepository.GetInvitation(invitationId);
         if (invitation == null)
         {
             return NotFound(new { error = "Invitation does not exist" });
@@ -99,7 +99,7 @@ public class SquadInvitationsController : IsolaattiController
     [Route("Accept")]
     public async Task<IActionResult> AcceptInvitation(string invitationId, SquadInvitationAnswer payload)
     {
-        var invitation = _squadInvitationsRepository.GetInvitation(invitationId);
+        var invitation = await _squadInvitationsRepository.GetInvitation(invitationId);
         if (invitation == null)
         {
             return NotFound(new { error = "Invitation does not exist." });
@@ -125,8 +125,8 @@ public class SquadInvitationsController : IsolaattiController
             return Problem("Invitation was accepted, but the squad it points does not exist, maybe it was deleted.");
         }
 
-        invitation = _squadInvitationsRepository.GetInvitation(invitation.Id);
-        return await _squadsRepository.AddUserToSquad(invitation.SquadId, User.Id) switch
+        invitation = await _squadInvitationsRepository.GetInvitation(invitation.Id);
+        return await _squadsRepository.AddUserToSquad(invitation!.SquadId, User.Id) switch
         {
             AddUserToSquadResult.Success => Ok(new
             {
@@ -155,7 +155,7 @@ public class SquadInvitationsController : IsolaattiController
     [Route("Decline")]
     public async Task<IActionResult> RejectInvitation(string invitationId, SimpleStringData payload)
     {
-        var invitation = _squadInvitationsRepository.GetInvitation(invitationId);
+        var invitation = await _squadInvitationsRepository.GetInvitation(invitationId);
         if (invitation == null)
         {
             return NotFound(new { error = "Invitation does not exist." });
@@ -185,7 +185,7 @@ public class SquadInvitationsController : IsolaattiController
     public async Task<IActionResult> SearchInvitation(Guid squadId)
     {
         var invitation = _squadInvitationsRepository.SearchInvitation(User.Id, squadId);
-        string sender = null;
+        string? sender = null;
         if (invitation != null)
         {
             sender = (await _db.Users.FindAsync(invitation.SenderUserId))?.Name;
@@ -200,7 +200,7 @@ public class SquadInvitationsController : IsolaattiController
     [IsolaattiAuth]
     [HttpGet]
     [Route("/api/Squads/{squadId:guid}/Invitations")]
-    public async Task<IActionResult> GetInvitationsOfSquad(Guid squadId, string lastId)
+    public async Task<IActionResult> GetInvitationsOfSquad(Guid squadId, string? lastId = null)
     {
         return Ok(new
         {
@@ -218,7 +218,7 @@ public class SquadInvitationsController : IsolaattiController
     [Route("Update")]
     public async Task<IActionResult> UpdateInvitation(InvitationUpdatePayload invitationUpdatePayload, string invitationId)
     {
-        var invitation = _squadInvitationsRepository.GetInvitation(invitationId);
+        var invitation = await _squadInvitationsRepository.GetInvitation(invitationId);
         if (invitation == null)
         {
             return NotFound();

@@ -14,8 +14,8 @@ public class SquadInvitation
     public Guid SquadId { get; set; }
     public int SenderUserId { get; set; }
     public int RecipientUserId { get; set; }
-    public string Message { get; set; }
-    public string ResponseMessage { get; set; }
+    public string? Message { get; set; }
+    public string? ResponseMessage { get; set; }
     public bool Seen { get; set; }
     public DateTime CreationDate { get; set; }
     public SquadInvitationStatus InvitationStatus { get; set; }

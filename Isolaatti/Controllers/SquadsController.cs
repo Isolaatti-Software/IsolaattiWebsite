@@ -47,6 +47,10 @@ public class SquadsController : IsolaattiController
     public async Task<IActionResult> GetSquad(Guid squadId)
     {
         var squad = await _squadsRepository.GetSquad(squadId);
+        if (squad == null)
+        {
+            return BadRequest("Squad not found");
+        }
         return Ok(new
         {
             squad = squad,
@@ -152,7 +156,7 @@ public class SquadsController : IsolaattiController
     [IsolaattiAuth]
     [HttpGet]
     [Route("MySquads")]
-    public async Task<IActionResult> GetSquadOfUserAdmins(Guid lastId)
+    public async Task<IActionResult> GetSquadOfUserAdmins(Guid? lastId)
     {
         return Ok(await _squadsRepository.GetSquadsUserAdmins(User.Id, lastId).ToListAsync());
     }
@@ -160,7 +164,7 @@ public class SquadsController : IsolaattiController
     [IsolaattiAuth]
     [HttpGet]
     [Route("SquadsBelong")]
-    public async Task<IActionResult> GetSquadsOfUser(Guid lastId)
+    public async Task<IActionResult> GetSquadsOfUser(Guid? lastId)
     {
         return Ok(_squadsRepository.GetSquadUserBelongs(User.Id, lastId));
     }

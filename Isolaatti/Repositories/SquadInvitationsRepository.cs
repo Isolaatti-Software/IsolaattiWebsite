@@ -25,7 +25,7 @@ public class SquadInvitationsRepository
     /// <param name="recipientUserId">The id of the user that is invited</param>
     /// <param name="message">A message to convince the recipient user to join the Squad</param>
     /// </summary>
-    public async Task CreateInvitation(Guid squadId, int senderUserId, int recipientUserId, string message = null)
+    public async Task CreateInvitation(Guid squadId, int senderUserId, int recipientUserId, string? message = null)
     {
         await _invitations.InsertOneAsync(new SquadInvitation
         {
@@ -38,7 +38,7 @@ public class SquadInvitationsRepository
         });
     }
 
-    public async Task CreateInvitations(Guid squadId, int senderUserId, IEnumerable<int> recipientUserIds, string message = null)
+    public async Task CreateInvitations(Guid squadId, int senderUserId, IEnumerable<int> recipientUserIds, string? message = null)
     {
         var invitations = recipientUserIds.Select(userId => new SquadInvitation
         {
@@ -78,7 +78,7 @@ public class SquadInvitationsRepository
     /// </summary>
     /// <param name="invitationId">Id of the invitation to update.</param>
     /// <param name="message">It is the message that the maker of the invitation writes.</param>
-    public void UpdateInvitationMessage(string invitationId, string message)
+    public void UpdateInvitationMessage(string invitationId, string? message)
     {
         _invitations.UpdateOne(inv => inv.Id.Equals(invitationId), Builders<SquadInvitation>.Update.Set("Message", message));
     }
@@ -93,13 +93,13 @@ public class SquadInvitationsRepository
             .CountDocumentsAsync() > 0;
     }
 
-    public SquadInvitation GetInvitation(string id)
+    public async Task<SquadInvitation?> GetInvitation(string id)
     {
-        return _invitations.Find(inv => inv.Id.Equals(id)).Limit(1).FirstOrDefault();
+        return await _invitations.Find(inv => inv.Id.Equals(id)).Limit(1).FirstOrDefaultAsync();
     }
 
     // Returns the invitations that the people have sent to the user
-    public async Task<IEnumerable<SquadInvitation>> GetInvitationsForUser(int userId, string lastId = null)
+    public async Task<IEnumerable<SquadInvitation>> GetInvitationsForUser(int userId, string? lastId = null)
     {
         if (lastId == null)
         {
@@ -120,7 +120,7 @@ public class SquadInvitationsRepository
     }
 
     // Returns the invitations that the user has sent
-    public async Task<IEnumerable<SquadInvitation>> GetInvitationsOfUser(int userId, string lastId = null)
+    public async Task<IEnumerable<SquadInvitation>> GetInvitationsOfUser(int userId, string? lastId = null)
     {
         if (lastId == null)
             return await _invitations
@@ -138,12 +138,12 @@ public class SquadInvitationsRepository
     }
     
     // Return the invitation that matches the criteria
-    public SquadInvitation SearchInvitation(int userId, Guid squadId)
+    public SquadInvitation? SearchInvitation(int userId, Guid squadId)
     {
         return _invitations.Find(inv => inv.SquadId.Equals(squadId) && inv.RecipientUserId.Equals(userId)).FirstOrDefault();
     }
 
-    public async Task<IEnumerable<SquadInvitation>> GetInvitationsOfSquad(Guid squadId, string lastId = null)
+    public async Task<IEnumerable<SquadInvitation>> GetInvitationsOfSquad(Guid squadId, string? lastId = null)
     {
         if (lastId == null)
         {
