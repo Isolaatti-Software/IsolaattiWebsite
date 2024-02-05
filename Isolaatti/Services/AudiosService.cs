@@ -27,7 +27,7 @@ public class AudiosService
         _accounts = accounts;
     }
 
-    public async Task<Audio> CreateAudio(Stream file, int userId, string name, string contentType, int duration)
+    public async Task<FeedAudio> CreateAudio(Stream file, int userId, string name, string contentType, int duration)
     {
         var objectName = $"audios/{Guid.NewGuid()}";
         await _storage.CreateObject(file, contentType, objectName);

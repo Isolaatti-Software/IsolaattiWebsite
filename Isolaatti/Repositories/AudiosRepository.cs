@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Isolaatti.Classes.ApiEndpointsResponseDataModels;
 using Isolaatti.Models;
 using Isolaatti.Models.MongoDB;
-using Microsoft.Extensions.Options;
-using MongoDB.Bson;
+using Isolaatti.Users.Repository;
 using MongoDB.Driver;
 
 namespace Isolaatti.Repositories;
@@ -16,14 +14,16 @@ public class AudiosRepository
 {
     private readonly IMongoCollection<Audio> _audios;
     private readonly DbContextApp _db;
+    private readonly UsersRepository _usersRepository;
 
-    public AudiosRepository(MongoDatabase mongoDatabase, DbContextApp db)
+    public AudiosRepository(MongoDatabase mongoDatabase, DbContextApp db, UsersRepository usersRepository)
     {
 
         _audios = mongoDatabase.GetAudiosCollection();
         _audios.Indexes.CreateOne(new CreateIndexModel<Audio>(Builders<Audio>.IndexKeys.Text(x => x.Name)));
 
         _db = db;
+        _usersRepository = usersRepository;
     }
 
     public async Task<Audio?> GetAudio(string audioId)
@@ -50,7 +50,7 @@ public class AudiosRepository
         
         // This might not be optimal, but it is better than making one http request per audio to get its user name
         return audiosData.Select(audioData => new FeedAudio(audioData)
-            { UserName = _db.Users.FirstOrDefault(u => u.Id == audioData.UserId)?.Name ?? "" });
+            { UserName = _usersRepository.GetUsernameById(audioData.UserId) ?? "" });
 
     }
 
@@ -64,18 +64,7 @@ public class AudiosRepository
         return data.Select(a => new FeedAudio(a)).ToDictionary(de => de.Id);
     }
 
-    public async Task<List<Audio>> GetGlobalFeed(string lastAudioId = null)
-    {
-        if (lastAudioId == null)
-        {
-            return await _audios.Find(a => true).Limit(50).ToListAsync();
-        }
-
-        var filter = Builders<Audio>.Filter.Gt("id", ObjectId.Parse(lastAudioId));
-        return await _audios.Find(filter).Limit(50).ToListAsync();
-    }
-
-    public async Task<Audio> InsertAudio(int userId, string name, string firestorePath, int duration)
+    public async Task<FeedAudio> InsertAudio(int userId, string name, string firestorePath, int duration)
     {
         var audio = new Audio()
         {
@@ -86,7 +75,10 @@ public class AudiosRepository
             DurationSeconds = duration
         };
         await _audios.InsertOneAsync(audio);
-        return audio;
+        return new FeedAudio(audio)
+        {
+            UserName = _usersRepository.GetUsernameById(audio.UserId) ?? ""
+        };
     }
 
     public async Task RemoveAudio(string audioId)
