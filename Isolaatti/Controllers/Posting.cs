@@ -8,6 +8,7 @@ using Isolaatti.Models;
 using Isolaatti.RealtimeInteraction.Service;
 using Isolaatti.Repositories;
 using Isolaatti.Services;
+using Isolaatti.Tagging;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;
@@ -22,12 +23,14 @@ namespace Isolaatti.Controllers
         private readonly DbContextApp _db;
         private readonly NotificationSender _notificationSender;
         private readonly SquadsRepository _squads;
+        private readonly TaggingService _taggingService;
 
-        public PostingController(DbContextApp dbContextApp, NotificationSender notificationSender, SquadsRepository squadsRepository)
+        public PostingController(DbContextApp dbContextApp, NotificationSender notificationSender, SquadsRepository squadsRepository, TaggingService taggingService)
         {
             _db = dbContextApp;
             _notificationSender = notificationSender;
             _squads = squadsRepository;
+            _taggingService = taggingService;
         }
 
         [IsolaattiAuth]
@@ -69,6 +72,9 @@ namespace Isolaatti.Controllers
             
             _db.SimpleTextPosts.Add(newPost);
             await _db.SaveChangesAsync();
+
+            // extract and store hashtags and user tags
+            await _taggingService.ProcessPost(newPost);
 
 
             return Ok(new PostDto()

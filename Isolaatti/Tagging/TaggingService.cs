@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Isolaatti.Models;
 using Isolaatti.Tagging.Entity;
@@ -6,8 +8,14 @@ using Isolaatti.Users.Repository;
 
 namespace Isolaatti.Tagging;
 
-public class TaggingService
+public partial class TaggingService
 {
+    [GeneratedRegex("#(\\w|-|_)+")]
+    private static partial Regex HashtagRegex();
+
+    [GeneratedRegex("@(\\w|-|_)+")]
+    private static partial Regex UserTagRegex();
+    
     private readonly DbContextApp _db;
     private readonly UsersRepository _usersRepository;
 
@@ -17,16 +25,14 @@ public class TaggingService
         _usersRepository = usersRepository;
     }
 
-    private static List<string> _getHashtags(string text)
+    private static IEnumerable<string> _getHashtags(string text)
     {
-        // TODO make regex
-        return new List<string>();
+        return HashtagRegex().Matches(text).Select(match => match.Value);
     }
 
-    private static List<string> _getUserTags(string text)
+    private static IEnumerable<string> _getUserTags(string text)
     {
-        // TODO make regex
-        return new List<string>();
+        return UserTagRegex().Matches(text).Select(match => match.Value);
     }
 
     public async Task ProcessPost(Post post)
