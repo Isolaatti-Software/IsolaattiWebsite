@@ -50,7 +50,7 @@ public partial class TaggingService
             hashtags.Select(hashtag => new HashtagEntity()
             {
                 Text = hashtag.TrimStart('#').ToLower().Normalize(), PostId = post.Id
-            }).ToList();
+            }).DistinctBy(ht => ht.Text).ToList();
 
         var userTagEntities = 
             userTags.Select(userTag => new UserTagEntity()
