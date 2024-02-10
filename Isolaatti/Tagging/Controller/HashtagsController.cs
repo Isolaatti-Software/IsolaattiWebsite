@@ -30,7 +30,10 @@ public class HashtagsController : IsolaattiController
             where ht.Text.Equals(hashtag) && post.Id == ht.PostId && post.Id > after
             select post;
 
-        return Ok(await posts.ToListAsync());
+        return Ok(new
+        {
+            result = await posts.ToListAsync()
+        });
     }
     
     
