@@ -22,7 +22,7 @@ public class HashtagsController : IsolaattiController
     
     [IsolaattiAuth]
     [HttpGet]
-    [Route("{hashtag}")]
+    [Route("hashtag/{hashtag}")]
     public async Task<IActionResult> GetHashtagPosts(string hashtag, [FromQuery] long after = -1)
     {
         var posts = from ht in _db.Hashtags
