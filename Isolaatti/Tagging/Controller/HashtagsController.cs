@@ -53,4 +53,14 @@ public class HashtagsController : IsolaattiController
             result = query
         });
     }
+
+    [IsolaattiAuth]
+    [HttpPost]
+    [Route("follow")]
+    public async Task<IActionResult> FollowHashtag([FromQuery] string hashtag)
+    {
+        
+        
+        return Ok();
+    }
 }

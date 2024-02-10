@@ -19,6 +19,7 @@ using Isolaatti.Notifications.PushNotifications;
 using Isolaatti.Notifications.Repository;
 using Isolaatti.Notifications.Services;
 using Isolaatti.RealtimeInteraction.Service;
+using Isolaatti.Recommendations.Service;
 using Isolaatti.Repositories;
 using Isolaatti.Services;
 using Isolaatti.Tagging;
@@ -225,6 +226,7 @@ namespace Isolaatti
             services.AddSingleton<RegisterDeviceMessaging>();
             services.AddScoped<FavoritesRepository>();
             services.AddScoped<TaggingService>();
+            services.AddScoped<RecommendedUsersService>();
             
             services.Configure<CookiePolicyOptions>(options =>
             {

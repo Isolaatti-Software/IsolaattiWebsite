@@ -6,7 +6,7 @@ using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Isolaatti.Controllers;
+namespace Isolaatti.Notifications.Controller;
 
 [ApiController]
 [Route("/api/push_notifications")]

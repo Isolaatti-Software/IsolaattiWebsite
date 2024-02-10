@@ -1,6 +1,7 @@
 using Isolaatti.Accounts.Data.Entity;
 using Isolaatti.Comments.Entity;
 using Isolaatti.Favorites.Data;
+using Isolaatti.Recommendations.Data;
 using Isolaatti.Tagging.Entity;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -40,5 +41,7 @@ namespace Isolaatti.Models
         public DbSet<FavoriteEntity> Favorites { get; set; }
         public DbSet<HashtagEntity> Hashtags { get; set; }
         public DbSet<UserTagEntity> UserTags { get; set; }
+        public DbSet<UserRecommendation> UserRecommendations { get; set; }
+        public DbSet<HashtagFollowEntity> HashtagFollows { get; set; }
     }
 }
