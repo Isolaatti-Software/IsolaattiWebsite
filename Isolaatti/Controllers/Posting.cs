@@ -74,7 +74,7 @@ namespace Isolaatti.Controllers
             await _db.SaveChangesAsync();
 
             // extract and store hashtags and user tags
-            await _taggingService.ProcessPost(newPost);
+            await _taggingService.ProcessPost(newPost, false);
 
 
             return Ok(new PostDto()
@@ -111,6 +111,8 @@ namespace Isolaatti.Controllers
             _db.SimpleTextPosts.Update(existingPost);
             
             await _db.SaveChangesAsync();
+
+            await _taggingService.ProcessPost(existingPost, true);
 
             var updatedPost = new PostDto()
             {

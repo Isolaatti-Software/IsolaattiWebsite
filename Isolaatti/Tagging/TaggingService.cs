@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Isolaatti.Models;
 using Isolaatti.Tagging.Entity;
 using Isolaatti.Users.Repository;
+using Microsoft.EntityFrameworkCore;
 
 namespace Isolaatti.Tagging;
 
@@ -35,36 +36,31 @@ public partial class TaggingService
         return UserTagRegex().Matches(text).Select(match => match.Value);
     }
 
-    public async Task ProcessPost(Post post)
+    public async Task ProcessPost(Post post, bool reset)
     {
+        if (reset)
+        {
+            await _db.Hashtags.Where(ht => ht.PostId == post.Id).ExecuteDeleteAsync();
+        }
+        
         var hashtags = _getHashtags(post.TextContent);
         var userTags = _getUserTags(post.TextContent);
 
-        var hashtagEntities = new List<HashtagEntity>();
-        
-        foreach (var hashtag in hashtags)
-        {
-            var hashtagEntity = new HashtagEntity()
+        var hashtagEntities = 
+            hashtags.Select(hashtag => new HashtagEntity()
             {
-                Text = hashtag.ToLower(),
-                PostId = post.Id
-            };
-            hashtagEntities.Add(hashtagEntity);
-        }
+                Text = hashtag.TrimStart('#').ToLower().Normalize(), PostId = post.Id
+            }).ToList();
 
-        var userTagEntities = new List<UserTagEntity>();
-
-        foreach (var userTag in userTags)
-        {
-            var userTagEntity = new UserTagEntity()
+        var userTagEntities = 
+            userTags.Select(userTag => new UserTagEntity()
             {
-                PostId = post.Id,
-                Username = userTag
-            };
-            userTagEntities.Add(userTagEntity);
-        }
-        
+                PostId = post.Id, Username = userTag
+            }).ToList();
+
         await _db.Hashtags.AddRangeAsync(hashtagEntities);
         await _db.UserTags.AddRangeAsync(userTagEntities);
+
+        await _db.SaveChangesAsync();
     }
 }
