@@ -10,5 +10,5 @@ public class HashtagEntity
     public string Text { get; set; }
     public long PostId { get; set; }
     
-    public Collection<Post> Posts { get; set; }
+    public Post Post { get; set; }
 }
