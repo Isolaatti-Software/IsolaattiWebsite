@@ -1,4 +1,5 @@
 using Isolaatti.Accounts.Data.Entity;
+using Isolaatti.AudioStreaming.Entity;
 using Isolaatti.Comments.Entity;
 using Isolaatti.Favorites.Data;
 using Isolaatti.Recommendations.Data;
@@ -43,5 +44,6 @@ namespace Isolaatti.Models
         public DbSet<UserTagEntity> UserTags { get; set; }
         public DbSet<UserRecommendation> UserRecommendations { get; set; }
         public DbSet<HashtagFollowEntity> HashtagFollows { get; set; }
+        public DbSet<RadioStationEntity> RadioStations { get; set; }
     }
 }
