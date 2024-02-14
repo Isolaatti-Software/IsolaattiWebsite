@@ -12,7 +12,7 @@ public class RadioStationEntity
     public string? Description { get; set; }
     public int UserId { get; set; }
     [JsonIgnore]
-    public string KeyHash { get; set; }
+    public string? KeyHash { get; set; }
     [JsonIgnore]
     public User User { get; set; }
 }

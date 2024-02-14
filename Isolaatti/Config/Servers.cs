@@ -2,6 +2,6 @@
 
 public class Servers
 {
-    public string RealtimeServerUrl { get; set; }
-    public string RealtimeServerInternalUrl { get; set; }
+    public string RtmpServer { get; set; }
+    public string RtmpPlayUrl { get; set; }
 }
