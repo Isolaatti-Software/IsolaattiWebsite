@@ -1,0 +1,34 @@
+@page
+@using Isolaatti.Config
+@using Microsoft.Extensions.Options
+@model Isolaatti.Pages.VideoStream.StreamPlayer
+
+@{
+    Layout = "Shared/_LayoutWebAppOutside";
+}
+
+@section Scripts
+{
+    <script src="http://cdn.dashjs.org/latest/dash.all.min.js"></script>
+    
+    <script defer>
+        (function (){
+            const dashUrl = "@Model.DashUrl";
+                const player = dashjs.MediaPlayer().create();
+                
+                player.initialize(document.querySelector("#player"), dashUrl, true);
+        }());
+    </script>
+}
+
+<div class="col-12">
+    
+    <video id="player" controls width="100%"></video>
+    <p></p>
+    <div class="isolaatti-card">
+        <h1>@Model.StationEntity?.Name</h1>
+        <p>@Model.StationEntity?.Description</p>
+    </div>
+    
+</div>
+
