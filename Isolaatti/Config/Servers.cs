@@ -3,5 +3,6 @@
 public class Servers
 {
     public string RtmpServer { get; set; }
-    public string RtmpPlayUrl { get; set; }
+    public string HlsUrl { get; set; }
+    public string DashUrl { get; set; }
 }

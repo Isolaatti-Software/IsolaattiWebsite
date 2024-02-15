@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -50,6 +52,17 @@ public class RadioStationController : IsolaattiController
     }
 
     [HttpGet]
+    [Route("user/{userId:int}")]
+    [IsolaattiAuth]
+    public async Task<IActionResult> GetUserRadioStations(int userId)
+    {
+        return Ok(new
+        {
+            result = await _db.RadioStations.Where(radioStation => radioStation.UserId == userId).ToListAsync()
+        });
+    }
+
+    [HttpGet]
     [Route("station/{stationId:guid}/get_stream_url")]
     [IsolaattiAuth]
     public async Task<IActionResult> GetStreamUrl(Guid stationId)
@@ -84,7 +97,11 @@ public class RadioStationController : IsolaattiController
     [IsolaattiAuth]
     public async Task<IActionResult> GetStreamPlayUrl(Guid stationId)
     {
-        return Ok(new { url = _servers.Value.RtmpPlayUrl?.Replace("[stationId]", stationId.ToString()) });
+        return Ok(new
+        {
+            dash = _servers.Value.DashUrl?.Replace("[stationId]", stationId.ToString()),
+            hls = _servers.Value.HlsUrl?.Replace("[stationId]", stationId.ToString())
+        });
     }
 
     [HttpPost]
