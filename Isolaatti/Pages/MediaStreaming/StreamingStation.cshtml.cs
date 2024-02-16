@@ -24,7 +24,7 @@ public class StreamingStation : IsolaattiPageModel
     public async Task<IActionResult> OnGet([FromQuery] Guid stationId)
     {
         StreamingStationEntity = await _db.RadioStations.FindAsync(stationId);
-        if (StreamingStationEntity == null)
+        if (StreamingStationEntity == null || StreamingStationEntity.UserId != User.Id)
         {
             return NotFound();
         }
