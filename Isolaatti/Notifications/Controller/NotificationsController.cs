@@ -1,11 +1,11 @@
+using System.Threading.Tasks;
 using Isolaatti.Notifications.Dto;
 using Isolaatti.Notifications.Services;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
-namespace Isolaatti.Controllers;
+namespace Isolaatti.Notifications.Controller;
 
 [Route("/api/Notifications")]
 [ApiController]

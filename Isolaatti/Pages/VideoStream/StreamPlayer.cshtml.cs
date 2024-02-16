@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
-using Isolaatti.AudioStreaming.Entity;
 using Isolaatti.Config;
+using Isolaatti.MediaStreaming.Entity;
 using Isolaatti.Models;
 using Isolaatti.Utils;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +14,7 @@ public class StreamPlayer : IsolaattiPageModel
     private readonly DbContextApp _db;
     private readonly IOptions<Servers> _servers;
     
-    public RadioStationEntity? StationEntity;
+    public StreamingStationEntity? StationEntity;
     public string? DashUrl;
     public string? HlsUrl;
 
