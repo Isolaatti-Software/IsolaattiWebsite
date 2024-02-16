@@ -3,13 +3,24 @@ Vue.component("streaming-station", {
     data: function() {
         return {
             url: "",
-            name: ""
+            name: "",
+            dashUrl: ""
         }
     },
     methods: {
-        playStream: function(dashUrl){
+        getPlayStreamUrl: async function() {
+            const endpoint = `/api/streaming/station/${stationId}/get_stream_play_url`;
+
+            const response = await fetch(endpoint);
+
+            if(response.ok) {
+                const json = await response.json();
+                this.dashUrl = json.dash;
+            }
+        },
+        playStream: function(){
             const player = dashjs.MediaPlayer().create();
-            player.initialize(document.querySelector("#player"), dashUrl, true);
+            player.initialize(document.querySelector("#player"), this.dashUrl, true);
         },
         regenerateStreamKey: async function() {
             const endpoint = `/api/streaming/station/${stationId}/get_stream_config`;
@@ -24,7 +35,8 @@ Vue.component("streaming-station", {
         }
     },
     mounted: async function(){
-        await this.regenerateStreamKey()
+        await this.regenerateStreamKey();
+        await this.getPlayStreamUrl();
     },
     template: `
     <div class="row">
