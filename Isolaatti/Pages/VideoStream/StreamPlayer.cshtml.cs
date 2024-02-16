@@ -35,6 +35,7 @@ public class StreamPlayer : IsolaattiPageModel
 
         StationEntity = station;
 
+        ViewData["Title"] = $"Transmisión en vivo: {StationEntity.Name}";
         DashUrl = _servers.Value.DashUrl?.Replace("[stationId]", stationId.ToString());
         HlsUrl = _servers.Value.HlsUrl?.Replace("[stationId]", stationId.ToString());
 
