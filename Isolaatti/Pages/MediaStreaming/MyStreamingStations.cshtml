@@ -3,6 +3,12 @@
 
 @{
     Layout = "Shared/_LayoutWebApp";
+    ViewData["Title"] = "Mis estaciones de transmisión";
+}
+
+@section Scripts
+{
+    <script src="~/js/VueComponents/page/streams/MyStreamingStationsPage.js"></script>
 }
 
 <div class="container-fluid">
@@ -31,6 +37,8 @@
                     </div>
                 </div>
             </div>
-            </div>
+        </div>
     </div>
+    
+    <my-streaming-stations></my-streaming-stations>
 </div>
