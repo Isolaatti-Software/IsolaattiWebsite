@@ -28,6 +28,8 @@ public class StreamingStation : IsolaattiPageModel
         {
             return NotFound();
         }
+
+        ViewData["Title"] = $"Estación de transmisión: {StreamingStationEntity.Name}";
         return Page();
     }
 }

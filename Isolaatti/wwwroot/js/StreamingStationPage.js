@@ -4,7 +4,8 @@ Vue.component("streaming-station", {
         return {
             url: "",
             name: "",
-            dashUrl: ""
+            dashUrl: "",
+            helpUrl: "https://isolaattisoftware.com.mx/ayuda/2024/02/17/guia-para-transmitir-a-isolaatti-con-obs-studio.html"
         }
     },
     methods: {
@@ -40,7 +41,7 @@ Vue.component("streaming-station", {
     },
     template: `
     <div class="row">
-        <div class="col-6">
+        <div class="col-md-6">
             <h5>Comienza a transmitir</h5>
             <div class="card">
                 <div class="card-body">
@@ -50,7 +51,7 @@ Vue.component("streaming-station", {
                     <button class="btn btn-primary" @click="regenerateStreamKey">Regenerar clave de transmisión</button>
                     <hr/>
                     <div class="alert alert-info">
-                        Utiliza estos datos para configurar tu software de transmisión. Se recomienda utilizar OBS Studio. <strong><i class="fa-solid fa-arrow-up-right-from-square"></i><a href="#">Guía para configurar OBS</a></strong>
+                        Utiliza estos datos para configurar tu software de transmisión. Se recomienda utilizar OBS Studio. <strong><i class="fa-solid fa-arrow-up-right-from-square"></i><a :href="helpUrl">Guía para configurar OBS</a></strong>
                     </div>
                     <div class="form-group">
                         <label for="url_input">Url</label>
@@ -64,7 +65,7 @@ Vue.component("streaming-station", {
                 </div>
             </div>
         </div>
-        <div class="col-6">
+        <div class="col-md-6">
             <h5>Vista previa</h5>
             <button class="btn btn-primary" @click="playStream">Refrescar</button>
             <video id="player" width="100%" controls autoplay="autoplay" muted></video>
