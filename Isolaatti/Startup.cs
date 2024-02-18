@@ -192,6 +192,7 @@ namespace Isolaatti
                 services.Configure<IsolaattiServicesKeys>(Configuration.GetSection("IsolaattiServicesKeys"));
                 services.Configure<RabbitmqConfig>(Configuration.GetSection("RabbitMQ"));
                 services.Configure<List<Client>>(Configuration.GetSection("Clients"));
+                services.Configure<HostConfig>(Configuration.GetSection("Host"));
             }
 
             services.AddSingleton<MongoDatabase>();
@@ -225,6 +226,7 @@ namespace Isolaatti
             services.AddSingleton<RegisterDeviceMessaging>();
             services.AddScoped<FavoritesRepository>();
             services.AddScoped<TaggingService>();
+            services.AddScoped<AccountRemovalService>();
             
             services.Configure<CookiePolicyOptions>(options =>
             {

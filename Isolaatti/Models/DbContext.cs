@@ -40,5 +40,6 @@ namespace Isolaatti.Models
         public DbSet<FavoriteEntity> Favorites { get; set; }
         public DbSet<HashtagEntity> Hashtags { get; set; }
         public DbSet<UserTagEntity> UserTags { get; set; }
+        public DbSet<AccountRemovalRequestEntity> AccountRemovalRequests { get; set; }
     }
 }

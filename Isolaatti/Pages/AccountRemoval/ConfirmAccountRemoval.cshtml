@@ -1,0 +1,34 @@
+@page
+@model Isolaatti.Pages.AccountRemoval.ConfirmAccountRemoval
+
+@{
+    Layout = "Shared/_LayoutWebAppOutside";
+    ViewData["Title"] = "Confirmación de eliminación de cuenta";
+}
+
+<div class="col-3"></div>
+<div class="col-6">
+    <h1>Eliminar cuenta</h1>
+    @if (Model.Failure)
+    {
+        <div class="alert alert-danger">Ocurrió un error al procesar tu solicitud</div>
+    }
+    else
+    {
+        <p>¿Confirmas que deseas eliminar tu cuenta y toda la información de la misma?</p>
+        <ul>
+            <li>Información de perfil</li>
+            <li>Publicaciones</li>
+            <li>Interacciones en publicaciones (likes, comentarios, seguidores, invitaciones y solicitudes de union a squads)</li>
+            <li>Imagenes creadas por ti en tu perfil y squads</li>
+            <li>Audios creados por ti en tu perfil y squads</li>
+            <li>Dispositivos registrados para notificaciones push</li>
+            <li>Sesiones</li>
+            <li>Solicitudes pendientes y/o autorizadas pendientes de borrar de cambio de contraseña.</li>
+        </ul>
+        <form method="post">
+            <button type="submit" class="btn btn-primary w-100">Acepto, continuar</button>
+        </form>
+    }
+    
+</div>

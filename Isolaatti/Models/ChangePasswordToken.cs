@@ -1,5 +1,6 @@
 using System;
 using System.Security.Cryptography;
+using Isolaatti.Accounts.Data.Entity;
 
 namespace Isolaatti.Models
 {
@@ -10,6 +11,7 @@ namespace Isolaatti.Models
         public string Token { get; set; }
         public DateTime Expires { get; set; }
 
+        public User User { get; set; }
         public ChangePasswordToken()
         {
             byte[] randomData = new byte[256];

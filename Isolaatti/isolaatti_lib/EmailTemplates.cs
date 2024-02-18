@@ -67,5 +67,23 @@ namespace Isolaatti.isolaatti_lib
             </body>
             </html>
             """;
+
+        public const string DeleteAccountEmail =
+            """
+            <!DOCTYPE html>
+            <html lang="es">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Elimina tu cuenta</title>
+            </head>
+            <body>
+                <h1 style="text-align: center;">Isolaatti</h1>
+                <h2>Elimina tu cuenta</h2>
+                <p>Da clic en el enlace para que confirmes que deseas eliminar tu cuenta de Isolaatti</p>
+                <p><a href='{0}'>Eliminar cuenta</a></p>
+            </body>
+            </html>
+            """;
     }
 }

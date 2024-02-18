@@ -1,0 +1,32 @@
+@page
+@model Isolaatti.Pages.AccountRemoval.AskAccountRemoval
+
+@{
+    Layout = "Shared/_LayoutWebAppOutside";
+    ViewData["Title"] = "Borrar cuenta";
+}
+
+<div class="col-md-3"></div>
+<div class="col-md-6">
+    @if (!Model.EmailSent)
+    {
+        <h1 class="text-center">Elimina tu cuenta</h1>
+        <p class="text-center">Para eliminar tu cuenta, ingresa tu dirección de correo ahora.</p>
+        <form method="post">
+            <div class="form-group">
+                <label>Correo electrónico</label>
+                <input type="email" class="form-control @(Model.EmailInvalid ? "is-invalid" : "")" asp asp-for="Email"/>
+                <div class="invalid-feedback">Ingresa una dirección de correo válida</div>
+            </div>
+            <p>Te enviaremos un link para que procedas a la eliminación de tu cuenta.</p>
+            <button class="btn btn-primary w-100" type="submit">Enviar</button>
+        </form>
+    }
+    else
+    {
+        <h1 class="text-center">Correo enviado, revisa tu bandeja de entrada.</h1>
+        <p>Si no lo encuentras, recomendamos esperar unos minutos. También considera revisar tu bandeja de correo no deseado, promociones o social.</p>
+    }
+    
+</div>
+<div class="col-md-3"></div>

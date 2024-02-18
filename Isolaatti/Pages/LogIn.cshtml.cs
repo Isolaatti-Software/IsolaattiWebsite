@@ -30,7 +30,7 @@ namespace Isolaatti.Pages
         }
 
 
-        public async Task<IActionResult> OnGet(bool newUser = false)
+        public async Task<IActionResult> OnGet(bool newUser = false, bool accountRemoved = false)
         {
             var user = await _accounts.ValidateSession(SessionDto.FromJson(Request.Cookies[AccountsService.SessionCookieName]));
 
