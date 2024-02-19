@@ -258,7 +258,7 @@ public partial class AccountsService : IAccountsService
 
     public Task<bool> RemoveAllSessions(int userId, IEnumerable<string>? exceptIds)
     {
-        return _sessionsRepository.RemoveSessionsByUserId(userId, exceptIds);
+        return _sessionsRepository.RemoveSessionsByUserId(userId, exceptIds ?? new List<string>());
     }
     
 

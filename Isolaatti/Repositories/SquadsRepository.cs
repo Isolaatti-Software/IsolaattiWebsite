@@ -250,7 +250,7 @@ public class SquadsRepository
             select squad;
     }
 
-    public IQueryable<Squad> GetSquadsUserAdmins(int userId, Guid? lastId = null)
+    public IQueryable<Squad> GetSquadsUserOwns(int userId, Guid? lastId = null)
     {
         return  _db.Squads
             .Where(squad => squad.UserId == userId);

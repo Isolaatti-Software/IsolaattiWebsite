@@ -96,4 +96,10 @@ public class AudiosService
 
         return AudiosOperationResult.Success;
     }
+
+    public async Task DeleteAllUserAudios(int userId)
+    {
+        var paths = await _audiosRepository.RemoveAllAudiosFromUser(userId);
+        await _storage.DeleteObjects(paths);
+    }
 }

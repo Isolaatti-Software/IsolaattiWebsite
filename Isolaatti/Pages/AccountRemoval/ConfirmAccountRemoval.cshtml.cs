@@ -18,7 +18,7 @@ public class ConfirmAccountRemoval : PageModel
 
     public async Task<IActionResult> OnPost([FromQuery] Guid id, [FromQuery] string key)
     {
-        Failure = await _accountRemovalService.ProceedWithAccountRemoval(id, key);
+        Failure = !await _accountRemovalService.ProceedWithAccountRemoval(id, key);
 
         if (Failure)
         {

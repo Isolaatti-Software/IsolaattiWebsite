@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Google;
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Storage.V1;
+using Microsoft.Extensions.Logging;
 
 namespace Isolaatti.Services;
 
@@ -14,8 +16,11 @@ public class GoogleCloudStorageService
     private const string GoogleCloudCredentialPath = "isolaatti-firebase-adminsdk.json";
     private readonly StorageClient _storage;
 
-    public GoogleCloudStorageService()
+    private readonly ILogger<GoogleCloudStorageService> _logger;
+
+    public GoogleCloudStorageService(ILogger<GoogleCloudStorageService> logger)
     {
+        _logger = logger;
         const string filePath = "isolaatti-firebase-adminsdk.json";
         GoogleCredential credential;
         if (File.Exists(filePath))
@@ -65,7 +70,14 @@ public class GoogleCloudStorageService
     {
         foreach (var file in objects)
         {
-            await _storage.DeleteObjectAsync(FirebaseProjectName, file);
+            try
+            {
+                await _storage.DeleteObjectAsync(FirebaseProjectName, file);
+            }
+            catch (GoogleApiException e)
+            {
+                _logger.LogError("Error deleting file {} from Google Cloud Storage Bucket with exception message {}", file, e.Message);
+            }
         }
     }
 }

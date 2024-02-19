@@ -179,7 +179,7 @@ public class SquadsController : IsolaattiController
     [Route("MySquads")]
     public async Task<IActionResult> GetSquadOfUserAdmins(Guid? lastId)
     {
-        return Ok(await _squadsRepository.GetSquadsUserAdmins(User.Id, lastId).ToListAsync());
+        return Ok(await _squadsRepository.GetSquadsUserOwns(User.Id, lastId).ToListAsync());
     }
 
     [IsolaattiAuth]

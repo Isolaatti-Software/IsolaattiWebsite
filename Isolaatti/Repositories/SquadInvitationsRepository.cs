@@ -163,4 +163,13 @@ public class SquadInvitationsRepository
     {
         return await _invitations.Find(inv => inv.RecipientUserId == userId && !inv.Seen).CountDocumentsAsync();
     }
+
+    public async Task RemoveInvitationsFromAndToUser(int userId)
+    {
+        var filterFrom = Builders<SquadInvitation>.Filter.Eq(si => si.SenderUserId, userId);
+        var filterTo = Builders<SquadInvitation>.Filter.Eq(si => si.RecipientUserId, userId);
+
+        await _invitations.DeleteManyAsync(filterFrom | filterTo);
+        
+    }
 }

@@ -101,4 +101,13 @@ public class AudiosRepository
     {
         return await (await _audios.FindAsync(Builders<Audio>.Filter.Text(query))).ToListAsync();
     }
+
+    public async Task<IEnumerable<string>> RemoveAllAudiosFromUser(int userId)
+    {
+        var filter = Builders<Audio>.Filter.Eq(a => a.UserId, userId);
+
+        var audios = _audios.Find(filter).ToList();
+        await _audios.DeleteManyAsync(filter);
+        return audios.Select(a => a.FirestoreObjectPath);
+    }
 }

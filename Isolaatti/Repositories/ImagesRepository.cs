@@ -76,6 +76,17 @@ public class ImagesRepository
         return images.Select(i => i.IdOnFirebase);
     }
 
+    public async Task<IEnumerable<string>> DeleteAllImages(int userId)
+    {
+        var filter = Builders<Image>.Filter.Eq(i => i.UserId, userId);
+
+        var images = _images.Find(filter).ToList();
+
+        await _images.DeleteManyAsync(filter);
+
+        return images.Select(i => i.IdOnFirebase);
+    }
+
     public async Task RenameImage(string id, string name)
     {
         var filter = Builders<Image>.Filter.Eq(image => image.Id, id);

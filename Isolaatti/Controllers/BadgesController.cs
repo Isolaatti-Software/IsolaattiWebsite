@@ -30,7 +30,7 @@ public class BadgesController : IsolaattiController
     [Route("squads")]
     public async Task<IActionResult> OfSquads()
     {
-        var squadsOfUser = _squadsRepository.GetSquadsUserAdmins(User.Id).Select(squad => squad.Id).ToArray();
+        var squadsOfUser = _squadsRepository.GetSquadsUserOwns(User.Id).Select(squad => squad.Id).ToArray();
         var response = new SquadsBadgesStatusDto
         {
             UnseenInvitations = await _squadInvitationsRepository.GetUnseenInvitationsForUser(User.Id),

@@ -165,6 +165,18 @@ public class ImagesService
         
     }
 
+    public async Task DeleteUserImages(int userId)
+    {
+        var fileToRemove = await _imagesRepository.DeleteAllImages(userId);
+
+        foreach (var id in fileToRemove)
+        {
+            await _storage.DeleteObject($"images/{id}/original");
+            await _storage.DeleteObject($"images/{id}/reduced");
+            await _storage.DeleteObject($"images/{id}/small");
+        }
+    }
+
     public Task<bool> SetImageOutstanding(string imageId, int userId, bool outstanding)
     {
         return _imagesRepository.SetImageOutstanding(imageId, userId, outstanding);

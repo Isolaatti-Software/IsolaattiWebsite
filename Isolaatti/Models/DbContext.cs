@@ -20,6 +20,16 @@ namespace Isolaatti.Models
                 .HasIndex(u => u.UniqueUsername)
                 .HasFilter("'UniqueUsername' IS NOT NULL")
                 .IsUnique();
+
+            modelBuilder.Entity<FollowerRelation>()
+                .HasOne<User>("User")
+                .WithOne()
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<FollowerRelation>()
+                .HasOne<User>("TargetUser")
+                .WithOne()
+                .OnDelete(DeleteBehavior.Cascade);
         }
 
 

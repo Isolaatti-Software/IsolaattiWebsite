@@ -119,7 +119,7 @@ public class SquadJoinRequestsRepository
         // As join requests don't store the userId of the user that receives, I need to retrieve the ids of the
         // squads that the user admins.
 
-        var squads = _squads.GetSquadsUserAdmins(userId).Select(squad => squad.Id).ToArray();
+        var squads = _squads.GetSquadsUserOwns(userId).Select(squad => squad.Id).ToArray();
         
         // Now that I have the ids, I can check the squads array against the join requests
         if (lastId == null)
@@ -146,5 +146,12 @@ public class SquadJoinRequestsRepository
     public async Task<long> GetUnseenRequestsForUser(Guid[] squads)
     {
         return await _joinRequests.Find(req => squads.Contains(req.SquadId)).CountDocumentsAsync();
+    }
+
+    public async Task RemoveJoinRequestFromAndToUser(int userId)
+    {
+        var filterFrom = Builders<SquadJoinRequest>.Filter.Eq(si => si.SenderUserId, userId);
+
+        await _joinRequests.DeleteManyAsync(filterFrom);
     }
 }

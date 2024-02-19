@@ -11,5 +11,6 @@ namespace Isolaatti.Models
         public int TargetUserId { get; set; }
         
         public User User { get; set; }
+        public User TargetUser { get; set; }
     }
 }
