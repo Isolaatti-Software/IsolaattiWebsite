@@ -76,7 +76,7 @@ public class AccountRemovalService
         
         // enqueue email
         var url = 
-            $"https://{_optionsHostConfig.Value.BaseUrl}/AccountRemoval/ConfirmAccountRemoval?id={accountRemovalRequestEntity.Id}&key={HttpUtility.UrlEncode(key)}";
+            $"{_optionsHostConfig.Value.BaseUrl}/AccountRemoval/ConfirmAccountRemoval?id={accountRemovalRequestEntity.Id}&key={HttpUtility.UrlEncode(key)}";
         var body = string.Format(EmailTemplates.DeleteAccountEmail, url);
         _emailSender.SendEmail(
             "no-reply@isolaatti.com", 

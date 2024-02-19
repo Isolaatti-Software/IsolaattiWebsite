@@ -183,6 +183,12 @@ namespace Isolaatti
                     var clientsConfig = JsonSerializer.Deserialize<List<Client>>(clientsConfigJsonEnv);
                     config.AddRange(clientsConfig);
                 });
+                var hostConfigJsonEnv = Environment.GetEnvironmentVariable(Env.HostConfig);
+                services.Configure<HostConfig>(config =>
+                {
+                    var hostConfig = JsonSerializer.Deserialize<HostConfig>(hostConfigJsonEnv);
+                    config.BaseUrl = hostConfig.BaseUrl;
+                });
             }
             else
             {
