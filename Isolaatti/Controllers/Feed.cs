@@ -33,11 +33,7 @@ namespace Isolaatti.Controllers
             {
                 postsQuery =
                     from post in Db.SimpleTextPosts
-                    from following in Db.FollowerRelations
-                    where following.UserId == User.Id
-                          && post.UserId == following.TargetUserId
-                          && post.Privacy != 1
-                          && post.SquadId == null
+                    where post.Privacy != 1 && post.SquadId == null
                     orderby post.Id descending 
                     select post;
             }
@@ -45,12 +41,8 @@ namespace Isolaatti.Controllers
             {
                 postsQuery =
                     from post in Db.SimpleTextPosts
-                    from following in Db.FollowerRelations
-                    where following.UserId == User.Id
-                          && post.UserId == following.TargetUserId
-                          && post.Privacy != 1
-                          && post.Id < lastId
-                          && post.SquadId == null
+
+                    where post.Privacy != 1 && post.Id < lastId && post.SquadId == null
                     orderby post.Id descending 
                     select post;
             }
