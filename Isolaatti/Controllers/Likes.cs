@@ -66,7 +66,7 @@ namespace Isolaatti.Controllers
 
             if(post.UserId != User.Id)
             {
-                await _notifications.InsertNewLikeNotification(likeEntity);
+                _notifications.InsertNewLikeNotification(likeEntity);
             }
 
             return Ok(likeDto);

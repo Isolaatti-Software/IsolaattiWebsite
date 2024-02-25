@@ -4,6 +4,6 @@ namespace Isolaatti.Notifications.Dto
 {
     public class DeleteManyNotifications
     {
-        public string[] Ids { get; set; }
+        public long[] Ids { get; set; }
     }
 }

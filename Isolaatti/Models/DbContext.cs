@@ -1,9 +1,11 @@
 using Isolaatti.Accounts.Data.Entity;
 using Isolaatti.Comments.Entity;
 using Isolaatti.Favorites.Data;
+using Isolaatti.Notifications.Entity;
 using Isolaatti.Tagging.Entity;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Protocol;
 
 namespace Isolaatti.Models
 {
@@ -30,6 +32,10 @@ namespace Isolaatti.Models
                 .HasOne<User>("TargetUser")
                 .WithOne()
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder
+                .Entity<NotificationEntity>()
+                .OwnsOne(notification => notification.Payload, builder => builder.ToJson());
         }
 
 
@@ -51,5 +57,6 @@ namespace Isolaatti.Models
         public DbSet<HashtagEntity> Hashtags { get; set; }
         public DbSet<UserTagEntity> UserTags { get; set; }
         public DbSet<AccountRemovalRequestEntity> AccountRemovalRequests { get; set; }
+        public DbSet<NotificationEntity> Notifications { get; set; }
     }
 }

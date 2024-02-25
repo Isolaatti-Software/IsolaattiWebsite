@@ -7,8 +7,9 @@ using Isolaatti.Users.Repository;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Isolaatti.Urls;
 using static Isolaatti.Notifications.Dto.NotificationDto;
-using static Isolaatti.Notifications.Entity.Notification;
+using static Isolaatti.Notifications.Entity.NotificationEntity;
 
 namespace Isolaatti.Notifications.Services;
 
@@ -17,15 +18,17 @@ public class NotificationsService
     private readonly NotificationsRepository _notificationsRepository;
     private readonly NotificationSender _notificationSender;
     private readonly UsersRepository _usersRepository;
+    private readonly UrlsService _urlsService;
     
-    public NotificationsService(NotificationsRepository notificationsRepository, NotificationSender notificationSender, UsersRepository usersRepository)
+    public NotificationsService(NotificationsRepository notificationsRepository, NotificationSender notificationSender, UsersRepository usersRepository, UrlsService urlsService)
     {
         _notificationsRepository = notificationsRepository;
         _notificationSender = notificationSender;
         _usersRepository = usersRepository;
+        _urlsService = urlsService;
     }
 
-    public async Task DeleteNotification(int userId, params string[] ids)
+    public async Task DeleteNotification(int userId, params long[] ids)
     {
         await _notificationsRepository.DeleteNotificationsById(userId, ids);
     }
@@ -35,27 +38,33 @@ public class NotificationsService
         await _notificationsRepository.DeleteNotificationsOfUser(userId);
     }
 
-    public async Task MarkAsRead(string notificationId, int userId)
+    public async Task MarkAsRead(long notificationId, int userId)
     {
         await _notificationsRepository.MarkAsReadNotification(notificationId, userId);
     }
 
-    public async Task<IEnumerable<NotificationDto>> GetUserNotifications(int userId, string after)
+    public IEnumerable<NotificationDto> GetUserNotifications(int userId, long? after)
     {
-        var notifications = await _notificationsRepository.GetNotificationsForUser(userId, after);
+        var notifications = _notificationsRepository.GetNotificationsForUser(userId, after);
 
-        return notifications.Select(FromEntity);
+        return notifications.Select(notification =>
+        {
+            var dto = NotificationDto.FromEntity(notification);
+            dto.Payload.AuthorName = _usersRepository.GetUsernameById(dto.Payload.AuthorId) ?? "";
+            return dto;
+        });
     }
 
     public async Task InsertNewLikeNotification(Like like)
     {
-        var notification = new Notification()
+        var notification = new NotificationEntity()
         {
             UserId = like.TargetUserId,
-            Payload = new LikeNotificationPayload()
+            Payload = new NotificationPayloadEntity()
             {
-                PostId = like.PostId,
-                MakerUserId = like.UserId
+                Type = NotificationPayloadEntity.TypeLike,
+                AuthorId = like.UserId,
+                IntentData = like.PostId.ToString()
             }
         };
 
@@ -64,29 +73,29 @@ public class NotificationsService
 
     public async Task InsertNewFollowerNotification(FollowerRelation followerRelation)
     {
-        var notification = new Notification()
+        var notification = new NotificationEntity()
         {
             UserId = followerRelation.TargetUserId,
-            Payload = new FollowerNotificationPayload()
+            Payload = new NotificationPayloadEntity()
             {
-                NewFollowerUserId = followerRelation.UserId
+                
             }
         };
 
         await _notificationsRepository.InsertNotification(notification);
     }
 
-    public async Task InsertNewUserActivityNotification(int userId, long postId)
+    public void InsertNewUserActivityNotification(int userId, long postId)
     {
-        var notification = new Notification()
+        var notification = new NotificationEntity()
         {
             UserId = userId,
-            Payload = new NewActivityOfUser()
+            Payload = new NotificationPayloadEntity()
             {
-                PostId = postId
+                
             }
         };
 
-        await _notificationsRepository.InsertNotification(notification);
+        _notificationsRepository.InsertNotification(notification);
     }
 }

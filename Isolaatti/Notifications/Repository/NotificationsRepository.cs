@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Isolaatti.Classes;
+using Isolaatti.Models;
 using Isolaatti.Models.MongoDB;
 using Isolaatti.Notifications.Entity;
 using Microsoft.Extensions.Options;
@@ -12,63 +14,89 @@ namespace Isolaatti.Notifications.Repository;
 
 public class NotificationsRepository
 {
-    private readonly IMongoCollection<Notification> _notifications;
+    private readonly DbContextApp _db;
     private readonly MongoDatabaseConfiguration _settings;
 
-    public NotificationsRepository(IOptions<MongoDatabaseConfiguration> settings)
+    public NotificationsRepository(IOptions<MongoDatabaseConfiguration> settings, DbContextApp db)
     {
+        _db = db;
         _settings = settings.Value;
         var client = new MongoClient(_settings.ConnectionString);
         var database = client.GetDatabase(_settings.DatabaseName);
-        _notifications = database.GetCollection<Notification>(_settings.NotificationsCollectionName);
+        
     }
     
-    public async Task InsertNotification(Notification notification)
+    public async Task InsertNotification(NotificationEntity notificationEntity)
     {
-        await _notifications.InsertOneAsync(notification);
+        _db.Notifications.Add(notificationEntity);
+        await _db.SaveChangesAsync();
     }
 
-    public async Task<bool> TryInsertLikeNotificationRationally(Notification notification)
+    public bool TryInsertLikeNotificationRationally(NotificationEntity notificationEntity)
     {
         throw new NotImplementedException();
     }
 
 
-    public async Task MarkAsReadNotification(string notificationId, int userId)
+    public async Task MarkAsReadNotification(long notificationId, int userId)
     {
-        var filter = Builders<Notification>.Filter.Eq(n => n.Id, notificationId) & Builders<Notification>.Filter.Eq(n => n.UserId, userId);
-        var update = Builders<Notification>.Update.Set(n => n.Read, true);
-        await _notifications.UpdateOneAsync(filter, update);
+        var notification = await _db.Notifications.FindAsync(notificationId);
+
+        if (notification == null)
+        {
+            return;
+        }
+        
+        if (notification.UserId == userId)
+        {
+            notification.Read = true;
+            _db.Notifications.Update(notification);
+            await _db.SaveChangesAsync();
+        }
     }
 
-    public async Task DeleteNotificationsById(int userId, params string[] notificationId)
+    public async Task DeleteNotificationsById(int userId, params long[] notificationId)
     {
-        var filter = Builders<Notification>.Filter.In(n => n.Id, notificationId);
-        var ownerFilter = Builders<Notification>.Filter.Eq(n => n.UserId, userId);
-        await _notifications.DeleteManyAsync(ownerFilter & filter);
+
+        var notifications = _db.Notifications.Where(notification => notificationId.Contains(notification.Id) && notification.UserId == userId);
+        
+        _db.Notifications.RemoveRange(notifications);
+        await _db.SaveChangesAsync();
     }
     
-    public async Task<List<Notification>> GetNotificationsForUser(int userId, string after)
+    public List<NotificationEntity> GetNotificationsForUser(int userId, long? after)
     {
-        var filter = Builders<Notification>.Filter.Eq(n => n.UserId, userId);
-        
-        var sorting = Builders<Notification>.Sort.Descending(n => n.Id);
-
-        if(after != null)
+        List<NotificationEntity> notifications;
+        if (after == null)
         {
-            var pagination = Builders<Notification>.Filter.Gt(n => n.Id, after);
-            filter &= pagination;
+            notifications = _db.Notifications
+                .Where(notification => notification.UserId == userId)
+                .OrderByDescending(notification => notification.Id)
+                .Take(20)
+                .ToList();
         }
-        var result = _notifications.Find(filter);
+        else
+        {
+            notifications =
+                _db.Notifications
+                    .Where(notification => notification.UserId == userId && notification.Id < after)
+                    .OrderByDescending(notification => notification.Id)
+                    .Take(20)
+                    .ToList();
+        }
+       
 
-
-
-        return await result.Sort(sorting).Limit(20).ToListAsync();
+        return notifications;
     }
 
     public async Task DeleteNotificationsOfUser(int userId)
     {
+        var notifications =
+            _db.Notifications
+                .Where(notification => notification.UserId == userId);
+        
+        _db.Notifications.RemoveRange(notifications);
 
-        await _notifications.DeleteManyAsync(n => n.UserId == userId);
+        await _db.SaveChangesAsync();
     }
 }

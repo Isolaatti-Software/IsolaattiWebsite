@@ -20,15 +20,18 @@ public class NotificationsController : IsolaattiController
     [IsolaattiAuth]
     [HttpGet]
     [Route("list")]
-    public async Task<IActionResult> GetAll(string after)
+    public IActionResult GetAll(long? after = null)
     {
-        return Ok(await _notifications.GetUserNotifications(User.Id, after));
+        return Ok(new
+        {
+            result = _notifications.GetUserNotifications(User.Id, after)
+        });
     }
 
     [IsolaattiAuth]
     [HttpDelete]
     [Route("delete_notification")]
-    public async Task<IActionResult> DeleteANotification(string id)
+    public async Task<IActionResult> DeleteANotification(long id)
     {
         await _notifications.DeleteNotification(User.Id, id);
         return Ok();
@@ -55,7 +58,7 @@ public class NotificationsController : IsolaattiController
     [IsolaattiAuth]
     [Route("MarkAsRead")]
     [HttpPost]
-    public async Task<IActionResult> MarkAsRead(string notificationId)
+    public async Task<IActionResult> MarkAsRead(long notificationId)
     {
         await _notifications.MarkAsRead(notificationId, User.Id);
         return Ok();

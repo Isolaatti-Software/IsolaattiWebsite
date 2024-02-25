@@ -22,6 +22,7 @@ using Isolaatti.RealtimeInteraction.Service;
 using Isolaatti.Repositories;
 using Isolaatti.Services;
 using Isolaatti.Tagging;
+using Isolaatti.Urls;
 using Isolaatti.Users.Repository;
 using Isolaatti.Utils.ActionFilters;
 using Isolaatti.Utils.PageFilters;
@@ -233,6 +234,7 @@ namespace Isolaatti
             services.AddScoped<FavoritesRepository>();
             services.AddScoped<TaggingService>();
             services.AddScoped<AccountRemovalService>();
+            services.AddSingleton<UrlsService>();
             
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -255,9 +257,6 @@ namespace Isolaatti
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DbContextApp dbContext)
         {
-
-            BsonClassMap.RegisterClassMap<LikeNotificationPayload>();
-
             // Stop using this on production when app is for public use
             app.UseDeveloperExceptionPage();
             

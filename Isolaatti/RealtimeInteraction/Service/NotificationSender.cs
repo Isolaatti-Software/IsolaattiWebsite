@@ -25,12 +25,12 @@ public class NotificationSender
         _channel.QueueBind(QueueName, Exchange, RoutingKey);
     }
     
-    public void NotifyUser(int userId, Notification notification)
+    public void NotifyUser(int userId, NotificationEntity notificationEntity)
     {
         var dto = new RealtimeUnicastEventDto
         {
             UserId = userId,
-            Notification = notification
+            NotificationEntity = notificationEntity
         };
         
         var props = _channel.CreateBasicProperties();

@@ -7,5 +7,5 @@ public class RealtimeUnicastEventDto
 {
     public int UserId { get; set; }
     public Guid ClientId { get; set; }
-    public Notification Notification { get; set; }
+    public NotificationEntity NotificationEntity { get; set; }
 }
