@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Isolaatti.Messaging;
 using Isolaatti.Notifications.Dto;
 using RabbitMQ.Client;
@@ -29,6 +30,9 @@ public class RegisterDeviceMessaging
 
         props.ContentType = "application/json";
         props.DeliveryMode = 2;
-        _channel.BasicPublish(Exchange, RoutingKey, props, Encoding.UTF8.GetBytes(JsonSerializer.Serialize(dto)));
+        _channel.BasicPublish(Exchange, RoutingKey, props, Encoding.UTF8.GetBytes(JsonSerializer.Serialize(dto, new JsonSerializerOptions()
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        })));
     }
 }
