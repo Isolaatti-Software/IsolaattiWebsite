@@ -57,16 +57,10 @@ namespace Isolaatti.Controllers
                 PostId = post.Id,
                 LikesCount = await _db.Likes.CountAsync(like => like.PostId == post.Id)
             };
-
-            try
-            {
-                var clientId = Guid.Parse(Request.Headers["client-id"]);
-                _notificationSender.SendPostUpdate(post.Id, clientId);
-            } catch(FormatException) {}
-
+            
             if(post.UserId != User.Id)
             {
-                _notifications.InsertNewLikeNotification(likeEntity);
+                await _notifications.InsertNewLikeNotification(likeEntity);
             }
 
             return Ok(likeDto);
@@ -92,13 +86,7 @@ namespace Isolaatti.Controllers
                 LikesCount = await _db.Likes.CountAsync(l => l.PostId == post.Id)
             };
 
-            try
-            {
-                var clientId = Guid.Parse(Request.Headers["client-id"]);
-                _notificationSender.SendPostUpdate(post.Id, clientId);
-            } catch(FormatException) {}
-
-
+            
             return Ok(likeDto);
         }
 

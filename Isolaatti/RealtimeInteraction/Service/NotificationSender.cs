@@ -14,8 +14,8 @@ public class NotificationSender
     private readonly IModel _channel;
 
     private const string Exchange = "default_exchange";
-    private const string QueueName = "realtime_queue";
-    private const string RoutingKey = "routing_realtime";
+    private const string QueueName = "notification_send_queue";
+    private const string RoutingKey = "routing_push_notifications";
     
     public NotificationSender(Rabbitmq rabbitmq)
     {
@@ -27,17 +27,12 @@ public class NotificationSender
     
     public void NotifyUser(int userId, NotificationEntity notificationEntity)
     {
-        var dto = new RealtimeUnicastEventDto
-        {
-            UserId = userId,
-            NotificationEntity = notificationEntity
-        };
         
         var props = _channel.CreateBasicProperties();
 
         props.ContentType = "application/json";
         props.DeliveryMode = 2;
-        _channel.BasicPublish(Exchange, RoutingKey, props, Encoding.UTF8.GetBytes(JsonSerializer.Serialize(dto,
+        _channel.BasicPublish(Exchange, RoutingKey, props, Encoding.UTF8.GetBytes(JsonSerializer.Serialize(notificationEntity,
             new JsonSerializerOptions()
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase

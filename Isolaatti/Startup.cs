@@ -14,9 +14,7 @@ using Isolaatti.Messaging;
 using Isolaatti.Middleware;
 using Isolaatti.Models;
 using Isolaatti.Models.MongoDB;
-using Isolaatti.Notifications.Entity;
 using Isolaatti.Notifications.PushNotifications;
-using Isolaatti.Notifications.Repository;
 using Isolaatti.Notifications.Services;
 using Isolaatti.RealtimeInteraction.Service;
 using Isolaatti.Repositories;
@@ -210,7 +208,6 @@ namespace Isolaatti
             services.AddScoped<SquadUsersRepository>();
             services.AddScoped<SquadPermissionsRepository>();
             services.AddScoped<SquadJoinRequestsRepository>();
-            services.AddScoped<NotificationsRepository>();
             services.AddScoped<NotificationsService>();
             services.AddScoped<SocketIoServiceKeysRepository>();
             services.AddScoped<KeyGenService>();

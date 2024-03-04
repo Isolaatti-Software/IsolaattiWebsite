@@ -1,6 +1,7 @@
 using Isolaatti.Accounts.Data.Entity;
 using Isolaatti.Comments.Entity;
 using Isolaatti.Favorites.Data;
+using Isolaatti.Notifications.Dto;
 using Isolaatti.Notifications.Entity;
 using Isolaatti.Tagging.Entity;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
@@ -32,10 +33,6 @@ namespace Isolaatti.Models
                 .HasOne<User>("TargetUser")
                 .WithOne()
                 .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder
-                .Entity<NotificationEntity>()
-                .OwnsOne(notification => notification.Payload, builder => builder.ToJson());
         }
 
 
