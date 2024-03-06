@@ -6,6 +6,7 @@ using Isolaatti.Classes.ApiEndpointsRequestDataModels;
 using Isolaatti.Classes.ApiEndpointsResponseDataModels;
 using Isolaatti.DTOs;
 using Isolaatti.Models;
+using Isolaatti.Notifications.Services;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;
@@ -20,11 +21,13 @@ namespace Isolaatti.Controllers
     {
         private readonly DbContextApp Db;
         private readonly IDistributedCache _cache;
+        private readonly NotificationsService _notificationsService;
 
-        public FollowingController(DbContextApp dbContextApp, IDistributedCache cache)
+        public FollowingController(DbContextApp dbContextApp, IDistributedCache cache, NotificationsService notificationsService)
         {
             Db = dbContextApp;
             _cache = cache;
+            _notificationsService = notificationsService;
         }
 
         private string FollowStateCacheKey(int userId, int targetUserId)
@@ -57,7 +60,8 @@ namespace Isolaatti.Controllers
             await Db.SaveChangesAsync();
 
             _cache.SetString(FollowStateCacheKey(User.Id, userToFollow.Id), "1");
-            
+
+            await _notificationsService.InsertNewFollowerNotification(followerRelation);
             return Ok(await GetFollowingInfo(userToFollow.Id));
         }
 

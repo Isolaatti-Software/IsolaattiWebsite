@@ -22,6 +22,7 @@ namespace Isolaatti.Notifications.Entity
         public const string KeyPostId = "postId";
         public const string KeyLikeId = "likeId";
         public const string KeyFollowerUserId = "followerUserId";
+        public const string KeyFollowerName = "followerName";
         
         public long Id { get; set; }
         public DateTime TimeStamp { get; set; }

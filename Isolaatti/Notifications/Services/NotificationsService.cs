@@ -114,6 +114,7 @@ public class NotificationsService
             {
                 { NotificationEntity.KeyType , NotificationEntity.TypeLike },
                 { NotificationEntity.KeyAuthorId, like.UserId.ToString()},
+                { NotificationEntity.KeyAuthorName, _usersRepository.GetUsernameById(like.UserId) ?? ""},
                 { NotificationEntity.KeyLikeId, like.LikeId.ToString() },
                 { NotificationEntity.KeyPostId, like.PostId.ToString() }
             }),
@@ -146,16 +147,38 @@ public class NotificationsService
 
     public async Task InsertNewFollowerNotification(FollowerRelation followerRelation)
     {
-        var notification = new NotificationEntity()
+        var notificationToInsert = new NotificationEntity()
         {
             UserId = followerRelation.TargetUserId,
             Data = JsonSerializer.SerializeToDocument(new Dictionary<string, string>()
             {
-                { NotificationEntity.KeyFollowerUserId, followerRelation.UserId.ToString() }
-            })
+                { NotificationEntity.KeyType, NotificationEntity.TypeFollower },
+                { NotificationEntity.KeyFollowerUserId, followerRelation.UserId.ToString() },
+                { NotificationEntity.KeyFollowerName, _usersRepository.GetUsernameById(followerRelation.UserId) ?? "" }
+            }),
+            RelatedNotifications = Array.Empty<long>()
         };
-
         
+        var existingNotifications = _db.Notifications
+            .Where(notification =>
+                notification.UserId == notificationToInsert.UserId
+                && notification.Data.RootElement.GetProperty(NotificationEntity.KeyType).GetString() ==
+                NotificationEntity.TypeFollower
+                && notification.Data.RootElement.GetProperty(NotificationEntity.KeyFollowerUserId).GetString() ==
+                followerRelation.UserId.ToString()).Select(existingNotification => existingNotification.Id).ToArray();
+
+        if (existingNotifications.Length != 0)
+        {
+            notificationToInsert.RelatedNotifications = existingNotifications;
+            
+            _db.Notifications.RemoveRange(_db.Notifications.Where(notification => existingNotifications.Contains(notification.Id)));
+            await _db.SaveChangesAsync();
+        }
+        _db.Notifications.Add(notificationToInsert);
+
+        await _db.SaveChangesAsync();
+        
+        _notificationSender.NotifyUser(followerRelation.TargetUserId, notificationToInsert);
     }
 
     public async Task InsertNewUserActivityNotification(int userId, long postId)
