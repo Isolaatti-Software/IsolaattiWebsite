@@ -38,7 +38,7 @@ public class NotificationsController : IsolaattiController
     }
 
     [IsolaattiAuth]
-    [HttpDelete]
+    [HttpPost]
     [Route("delete_many")]
     public async Task<IActionResult> DeleteManyNotifications(DeleteManyNotifications deleteManyNotificationsDto)
     {
