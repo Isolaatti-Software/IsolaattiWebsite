@@ -19,7 +19,7 @@ Vue.component('notification',{
     },
     template: `
 <div class="list-group list-group-flush">
-    <like-notification v-if="notification.payload.type === 'like' " :notification="notification"/>
+    <like-notification v-if="notification.type === 'like' " :notification="notification"/>
 </div>
     `
 })
