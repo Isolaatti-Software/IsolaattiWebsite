@@ -191,4 +191,26 @@ public class SearchController : IsolaattiController
         var result = await _squadUsersRepository.GetRankedSuggestions(squadId, owner, admins, members);
         return Ok(result);
     }
+
+    [IsolaattiAuth]
+    [HttpGet]
+    [Route("newestUsers")]
+    public async Task<IActionResult> GetNewestUsers([FromQuery] int limit, [FromQuery] int after)
+    {
+        var users = from user in _db.Users
+            where user.Id != User.Id
+            orderby user.Id descending
+            select new UserFeedDto()
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Following = false,
+                ImageId = user.ProfileImageId
+            };
+
+        return Ok(new
+        {
+            result = users.ToList()
+        });
+    }
 }
