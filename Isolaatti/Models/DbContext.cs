@@ -3,6 +3,7 @@ using Isolaatti.Comments.Entity;
 using Isolaatti.Favorites.Data;
 using Isolaatti.Notifications.Dto;
 using Isolaatti.Notifications.Entity;
+using Isolaatti.Search.Data;
 using Isolaatti.Tagging.Entity;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -33,6 +34,17 @@ namespace Isolaatti.Models
                 .HasOne<User>("TargetUser")
                 .WithOne()
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<SearchResultViewEntity>(eb =>
+            {
+                eb.HasNoKey();
+                eb.ToView("View_SearchItems");
+                eb.Property(v => v.Origin).HasColumnName("origin_table");
+                eb.Property(v => v.ResourceId).HasColumnName("id");
+                eb.Property(v => v.Title).HasColumnName("title");
+                eb.Property(v => v.Description).HasColumnName("description");
+                eb.Property(v => v.Rank).HasColumnName("rank");
+            });
         }
 
 
@@ -55,5 +67,6 @@ namespace Isolaatti.Models
         public DbSet<UserTagEntity> UserTags { get; set; }
         public DbSet<AccountRemovalRequestEntity> AccountRemovalRequests { get; set; }
         public DbSet<NotificationEntity> Notifications { get; set; }
+        public DbSet<SearchResultViewEntity> SearchView { get; set; }
     }
 }

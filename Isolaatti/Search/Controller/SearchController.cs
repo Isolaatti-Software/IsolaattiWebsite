@@ -152,6 +152,19 @@ public class SearchController : IsolaattiController
     }
 
     [IsolaattiAuth]
+    [HttpGet]
+    [Route("v2")]
+    public async Task<IActionResult> Search([FromQuery] string query)
+    {
+        var results = await _db.SearchView
+            .FromSql(
+                $"SELECT origin_table, id, title, description, ts_rank(searchable_element, to_tsquery('english', {query})) AS rank FROM View_SearchItems WHERE to_tsquery('english', {query}) @@ View_SearchItems.searchable_element ORDER BY rank DESC")
+            .ToListAsync();
+
+        return Ok(results);
+    }
+
+    [IsolaattiAuth]
     [Route("{squadId:guid}/RankedUserSearch")]
     [HttpGet]
     public async Task<IActionResult> RankedSearchOnSquads([FromQuery] string q, Guid squadId, [FromQuery] int lastId = 0)
