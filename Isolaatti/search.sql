@@ -18,7 +18,6 @@ CREATE INDEX idx_hashtags_full_text
     ON "Hashtags"
     USING GIN(to_tsvector('english', "Hashtags"."Text"));
 
-DROP VIEW View_SearchItems;
 CREATE VIEW View_SearchItems AS
     SELECT 
         text 'users' AS origin_table, 
