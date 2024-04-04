@@ -32,7 +32,7 @@ UNION ALL
     SELECT
         text 'posts' AS origin_table,
         "Id"::text AS id,
-        substr("TextContent", 0, 20) as title,
+        substr(replace("TextContent", E'\n', ' '), 0, 20) as title,
         "Date"::text as description,
         to_tsvector("SimpleTextPosts"."TextContent") AS searchable_element
     FROM "SimpleTextPosts"
