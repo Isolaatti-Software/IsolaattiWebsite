@@ -25,22 +25,41 @@ public class HashtagsController : IsolaattiController
     [IsolaattiAuth]
     [HttpGet]
     [Route("hashtag/{hashtag}")]
-    public async Task<IActionResult> GetHashtagPosts(string hashtag, [FromQuery] long after = -1, [FromQuery] int length = 20)
+    public async Task<IActionResult> GetHashtagPosts(string hashtag, [FromQuery] long after = 0, [FromQuery] int length = 20)
     {
         var total = _db.Hashtags.Count(ht => ht.Text.Equals(hashtag));
+
+        IQueryable<Post> postsQuery;
         
-        var posts = from ht in _db.Hashtags
-            from post in _db.SimpleTextPosts
-            where ht.Text.Equals(hashtag) && post.Id == ht.PostId && post.Id > after
-            select new PostDto()
-            {
-                Post = post,
-                UserName = _db.Users.FirstOrDefault(u => u.Id == post.UserId).Name,
-                NumberOfComments = post.Comments.Count,
-                NumberOfLikes = post.Likes.Count,
-                Liked = _db.Likes.Any(l => l.UserId == User.Id && l.PostId == post.Id),
-                SquadName = post.Squad.Name
-            };
+        
+
+        if (after <= 1)
+        {
+            postsQuery = from ht in _db.Hashtags
+                from post in _db.SimpleTextPosts
+                where ht.Text.Equals(hashtag) && post.Id == ht.PostId
+                orderby post.Id descending
+                select post;
+        }
+        else
+        {
+            postsQuery = from ht in _db.Hashtags
+                from post in _db.SimpleTextPosts
+                where ht.Text.Equals(hashtag) && post.Id == ht.PostId && post.Id < after
+                orderby post.Id descending 
+                select post;
+        }
+
+        var posts = postsQuery.Select(post => new PostDto()
+        {
+            Post = post,
+            UserName = _db.Users.FirstOrDefault(u => u.Id == post.UserId).Name,
+            NumberOfComments = post.Comments.Count,
+            NumberOfLikes = post.Likes.Count,
+            Liked = _db.Likes.Any(l => l.UserId == User.Id && l.PostId == post.Id),
+            SquadName = post.Squad.Name
+        });
+        
 
         return Ok(new ContentListWrapper<PostDto>()
         {
