@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Isolaatti.Classes;
+using Isolaatti.DTOs;
 using Isolaatti.Models;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
@@ -31,9 +32,17 @@ public class HashtagsController : IsolaattiController
         var posts = from ht in _db.Hashtags
             from post in _db.SimpleTextPosts
             where ht.Text.Equals(hashtag) && post.Id == ht.PostId && post.Id > after
-            select post;
+            select new PostDto()
+            {
+                Post = post,
+                UserName = _db.Users.FirstOrDefault(u => u.Id == post.UserId).Name,
+                NumberOfComments = post.Comments.Count,
+                NumberOfLikes = post.Likes.Count,
+                Liked = _db.Likes.Any(l => l.UserId == User.Id && l.PostId == post.Id),
+                SquadName = post.Squad.Name
+            };
 
-        return Ok(new ContentListWrapper<Post>()
+        return Ok(new ContentListWrapper<PostDto>()
         {
             Data = await posts.Take(20).ToListAsync(),
             MoreContent = total > length
