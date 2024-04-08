@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Isolaatti.Classes;
 using Isolaatti.DTOs;
 using Isolaatti.Models;
+using Isolaatti.Services;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;
@@ -16,10 +17,12 @@ namespace Isolaatti.Controllers
     public class Feed : IsolaattiController
     {
         private readonly DbContextApp Db;
+        private readonly AudiosService _audios;
 
-        public Feed(DbContextApp dbContextApp)
+        public Feed(DbContextApp dbContextApp, AudiosService audios)
         {
             Db = dbContextApp;
+            _audios = audios;
         }
 
         [IsolaattiAuth]
@@ -86,11 +89,23 @@ namespace Isolaatti.Controllers
                                       SquadName = post.Squad.Name
                                   }).ToListAsync();
             }
+
+            var postList = newPosts.Concat(posts.ToList()).ToList();
             
+            var audiosIds = postList.Where(p => p.Post.AudioId != null).Select(p => p.Post.AudioId!);
+            var audiosBadge = await _audios.GetAudios(audiosIds);
+            
+            foreach (var post in postList)
+            {
+                var audioId = post.Post.AudioId;
+                if (audioId == null) continue;
+                audiosBadge.TryGetValue(audioId, out var audio);
+                post.Audio = audio;
+            }
             
             return Ok(new ContentListWrapper<PostDto>
             {
-                Data = newPosts.Concat(posts.ToList()).ToList(),
+                Data = postList,
                 MoreContent = total > length
             });
         }
