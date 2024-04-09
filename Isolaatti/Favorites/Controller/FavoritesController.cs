@@ -23,7 +23,10 @@ public class FavoritesController : IsolaattiController
     public async Task<IActionResult> GetFavorites()
     {
         
-        return Ok(await _favoritesRepository.GetUserFavorites(User.Id));
+        return Ok(new
+        {
+            result = await _favoritesRepository.GetUserFavorites(User.Id)
+        });
     }
 
     [IsolaattiAuth]
