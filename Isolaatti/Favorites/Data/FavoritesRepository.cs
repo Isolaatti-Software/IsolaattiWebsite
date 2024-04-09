@@ -56,6 +56,7 @@ public class FavoritesRepository
         };
 
         await _db.Favorites.AddAsync(favorite);
+        await _db.SaveChangesAsync();
         return true;
     }
     
@@ -69,6 +70,7 @@ public class FavoritesRepository
         }
 
         _db.Favorites.Remove(favorite);
+        await _db.SaveChangesAsync();
         return true;
     }
 }
