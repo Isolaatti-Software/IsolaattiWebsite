@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Text.Json;
-using Isolaatti.DTOs;
+using Isolaatti.Comments.Dto;
 using Isolaatti.Messaging;
 using Isolaatti.Notifications.Entity;
 using Isolaatti.RealtimeInteraction.Dto;

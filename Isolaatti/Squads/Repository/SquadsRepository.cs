@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Isolaatti.Accounts.Data;
-using Isolaatti.Classes.ApiEndpointsRequestDataModels;
-using Isolaatti.Classes.ApiEndpointsResponseDataModels;
 using Isolaatti.Database.EF;
-using Isolaatti.DTOs;
 using Isolaatti.Enums;
 using Isolaatti.Images.Data;
 using Isolaatti.Images.Repository;
 using Isolaatti.Squads.Data;
+using Isolaatti.Squads.Dto;
 using Isolaatti.Utils;
 using Microsoft.EntityFrameworkCore;
 

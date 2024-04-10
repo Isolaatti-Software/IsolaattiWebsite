@@ -4,8 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Isolaatti.Accounts.Data;
 using Isolaatti.Database.EF;
-using Isolaatti.DTOs;
 using Isolaatti.Enums;
+using Isolaatti.Squads.Dto;
 using Microsoft.EntityFrameworkCore;
 
 namespace Isolaatti.Squads.Repository;

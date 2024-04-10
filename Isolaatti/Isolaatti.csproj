@@ -35,7 +35,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Accounts\SignIn\Dto\" />
         <Folder Include="Migrations" />
         <Folder Include="Report\Controller\" />
         <Folder Include="Resources" />

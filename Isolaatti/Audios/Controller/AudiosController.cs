@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Isolaatti.Audios.Repository;
-using Isolaatti.Classes.ApiEndpointsRequestDataModels;
+using Isolaatti.Audios.Service;
+using Isolaatti.Common;
 using Isolaatti.Repositories;
 using Isolaatti.Services;
 using Isolaatti.Utils;

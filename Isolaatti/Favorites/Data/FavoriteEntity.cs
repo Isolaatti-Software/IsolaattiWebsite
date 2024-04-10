@@ -1,6 +1,7 @@
 using System;
 using Isolaatti.Accounts.Data.Entity;
 using Isolaatti.Models;
+using Isolaatti.Posting.Data;
 
 namespace Isolaatti.Favorites.Data;
 

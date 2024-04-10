@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Isolaatti.Audios.Data;
 using Isolaatti.Audios.Dto;
-using Isolaatti.Classes.ApiEndpointsResponseDataModels;
 using Isolaatti.Database.EF;
 using Isolaatti.Database.MongoDb;
 using Isolaatti.Users.Repository;

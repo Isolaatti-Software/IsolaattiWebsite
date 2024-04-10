@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Isolaatti.Accounts.Service;
+using Isolaatti.Recaptcha;
 using Isolaatti.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;

@@ -4,27 +4,28 @@ using System.IO;
 using System.Text.Json;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
-using Isolaatti.Accounts;
 using Isolaatti.Accounts.Service;
 using Isolaatti.Audios.Repository;
+using Isolaatti.Audios.Service;
 using Isolaatti.Comments.Repository;
+using Isolaatti.Common;
 using Isolaatti.Config;
 using Isolaatti.Database.EF;
 using Isolaatti.Database.MongoDb;
 using Isolaatti.EmailSender;
 using Isolaatti.Favorites.Data;
 using Isolaatti.Images.Repository;
+using Isolaatti.Images.Service;
 using Isolaatti.Messaging;
 using Isolaatti.Middleware;
-using Isolaatti.Models;
 using Isolaatti.Notifications.PushNotifications;
 using Isolaatti.Notifications.Services;
 using Isolaatti.RealtimeInteraction.Service;
+using Isolaatti.Recaptcha;
 using Isolaatti.Repositories;
 using Isolaatti.Services;
 using Isolaatti.Squads.Repository;
 using Isolaatti.Tagging;
-using Isolaatti.Urls;
 using Isolaatti.Users.Repository;
 using Isolaatti.Utils.ActionFilters;
 using Isolaatti.Utils.PageFilters;
@@ -214,7 +215,6 @@ namespace Isolaatti
             services.AddScoped<SquadJoinRequestsRepository>();
             services.AddScoped<NotificationsService>();
             services.AddScoped<SocketIoServiceKeysRepository>();
-            services.AddScoped<KeyGenService>();
             services.AddScoped<CommentHistoryRepository>();
             services.AddSingleton<SessionsRepository>();
             services.AddDistributedMemoryCache();
@@ -235,7 +235,6 @@ namespace Isolaatti
             services.AddScoped<FavoritesRepository>();
             services.AddScoped<TaggingService>();
             services.AddScoped<AccountRemovalService>();
-            services.AddSingleton<UrlsService>();
             
             services.Configure<CookiePolicyOptions>(options =>
             {

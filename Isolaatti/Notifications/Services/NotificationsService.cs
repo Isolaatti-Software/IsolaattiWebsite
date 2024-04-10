@@ -10,7 +10,6 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Isolaatti.Database.EF;
 using Isolaatti.Likes.Data;
-using Isolaatti.Urls;
 using Isolaatti.Utils;
 
 namespace Isolaatti.Notifications.Services;
@@ -20,13 +19,11 @@ public class NotificationsService
     private readonly NotificationSender _notificationSender;
     private readonly UsersRepository _usersRepository;
     private readonly DbContextApp _db;
-    private readonly UrlsService _urlsService;
     
-    public NotificationsService(NotificationSender notificationSender, UsersRepository usersRepository, UrlsService urlsService, DbContextApp db)
+    public NotificationsService(NotificationSender notificationSender, UsersRepository usersRepository, DbContextApp db)
     {
         _notificationSender = notificationSender;
         _usersRepository = usersRepository;
-        _urlsService = urlsService;
         _db = db;
     }
 

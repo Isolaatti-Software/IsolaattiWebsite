@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
-using Isolaatti.DTOs;
+using Isolaatti.Accounts.SignIn.Dto;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 

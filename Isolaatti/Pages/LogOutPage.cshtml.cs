@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Isolaatti.Accounts;
 using Isolaatti.Accounts.Service;
-using Isolaatti.DTOs;
 using Isolaatti.Services;
 using Isolaatti.Utils;
 using Microsoft.AspNetCore.Mvc;

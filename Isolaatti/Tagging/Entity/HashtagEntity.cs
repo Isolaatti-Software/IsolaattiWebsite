@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using Isolaatti.Models;
+using Isolaatti.Posting.Data;
 
 namespace Isolaatti.Tagging.Entity;
 

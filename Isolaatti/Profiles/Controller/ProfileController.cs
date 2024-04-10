@@ -1,5 +1,4 @@
-﻿using Isolaatti.Classes.ApiEndpointsRequestDataModels;
-using Isolaatti.Models;
+﻿using Isolaatti.Models;
 using Isolaatti.Repositories;
 using Isolaatti.Services;
 using Isolaatti.Utils;
@@ -10,8 +9,9 @@ using System.Threading.Tasks;
 using Isolaatti.Accounts.Data;
 using Isolaatti.Audios.Dto;
 using Isolaatti.Audios.Repository;
-using Isolaatti.Classes.ApiEndpointsResponseDataModels;
+using Isolaatti.Common;
 using Isolaatti.Database.EF;
+using Isolaatti.Images.Service;
 
 namespace Isolaatti.Profiles.Controller
 {

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Isolaatti.Accounts.Service;
-using Isolaatti.Classes.ApiEndpointsRequestDataModels;
+using Isolaatti.Common;
 using Isolaatti.Database.EF;
-using Isolaatti.DTOs;
 using Isolaatti.Enums;
 using Isolaatti.Images.Data;
+using Isolaatti.Images.Service;
 using Isolaatti.Models;
 using Isolaatti.Repositories;
 using Isolaatti.Services;

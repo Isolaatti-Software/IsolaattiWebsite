@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Isolaatti.Accounts.Data;
 using Isolaatti.Accounts.Data.Entity;
+using Isolaatti.Accounts.SignIn.Dto;
 using Isolaatti.Database.MongoDb;
-using Isolaatti.DTOs;
 
 namespace Isolaatti.Accounts.Service;
 

@@ -1,5 +1,5 @@
 using System;
-using Isolaatti.DTOs;
+using Isolaatti.Posting.Dto;
 
 namespace Isolaatti.Favorites.Data;
 

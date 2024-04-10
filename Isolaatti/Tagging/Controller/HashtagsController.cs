@@ -1,9 +1,10 @@
 using System.Linq;
 using System.Threading.Tasks;
-using Isolaatti.Classes;
+using Isolaatti.Common;
 using Isolaatti.Database.EF;
-using Isolaatti.DTOs;
 using Isolaatti.Models;
+using Isolaatti.Posting.Data;
+using Isolaatti.Posting.Dto;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;

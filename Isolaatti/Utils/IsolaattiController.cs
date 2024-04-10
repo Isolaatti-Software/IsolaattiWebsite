@@ -1,5 +1,5 @@
 ﻿using Isolaatti.Accounts.Data.Entity;
-using Isolaatti.DTOs;
+using Isolaatti.Accounts.SignIn.Dto;
 using Isolaatti.Models;
 using Microsoft.AspNetCore.Mvc;
 

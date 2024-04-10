@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using Isolaatti.Accounts.Data;
 using Isolaatti.Audios.Dto;
-using Isolaatti.DTOs;
 using Isolaatti.Images.Data;
+using Isolaatti.Posting.Dto;
 using Isolaatti.Squads.Data;
 
 namespace Isolaatti.Search.Dto;

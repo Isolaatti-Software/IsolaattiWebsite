@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Isolaatti.Database.EF;
-using Isolaatti.DTOs;
 using Isolaatti.Models;
+using Isolaatti.Users.Dto;
 using Isolaatti.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

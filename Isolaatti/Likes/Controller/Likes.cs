@@ -1,11 +1,12 @@
 using System.Linq;
 using System.Threading.Tasks;
-using Isolaatti.Classes.ApiEndpointsRequestDataModels;
+using Isolaatti.Common;
 using Isolaatti.Database.EF;
-using Isolaatti.DTOs;
 using Isolaatti.Likes.Data;
+using Isolaatti.Likes.Dto;
 using Isolaatti.Models;
 using Isolaatti.Notifications.Services;
+using Isolaatti.Posting.Dto;
 using Isolaatti.RealtimeInteraction.Service;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;

@@ -1,5 +1,3 @@
-using Isolaatti.Classes.ApiEndpointsResponseDataModels;
-
 namespace Isolaatti.Accounts.Data;
 
 public class SignUpWithCodeDto

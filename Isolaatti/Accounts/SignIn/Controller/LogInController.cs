@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Isolaatti.Accounts.Data;
 using Isolaatti.Accounts.Service;
-using Isolaatti.Classes.ApiEndpointsRequestDataModels;
-using Isolaatti.Classes.ApiEndpointsResponseDataModels;
+using Isolaatti.Accounts.SignIn.Dto;
 using Isolaatti.Config;
 using Isolaatti.Database.EF;
-using Isolaatti.DTOs;
 using Isolaatti.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

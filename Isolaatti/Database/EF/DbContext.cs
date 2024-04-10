@@ -4,6 +4,7 @@ using Isolaatti.Favorites.Data;
 using Isolaatti.Likes.Data;
 using Isolaatti.Models;
 using Isolaatti.Notifications.Entity;
+using Isolaatti.Posting.Data;
 using Isolaatti.Search.Data;
 using Isolaatti.Squads.Data;
 using Isolaatti.Tagging.Entity;

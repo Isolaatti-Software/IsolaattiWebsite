@@ -1,12 +1,11 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Isolaatti.Classes;
-using Isolaatti.Classes.ApiEndpointsRequestDataModels;
+using Isolaatti.Comments.Dto;
 using Isolaatti.Comments.Entity;
 using Isolaatti.Comments.Repository;
+using Isolaatti.Common;
 using Isolaatti.Database.EF;
-using Isolaatti.DTOs;
 using Isolaatti.Models;
 using Isolaatti.RealtimeInteraction.Service;
 using Isolaatti.Services;
