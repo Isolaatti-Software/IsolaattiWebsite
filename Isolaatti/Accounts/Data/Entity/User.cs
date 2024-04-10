@@ -8,6 +8,7 @@
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using Isolaatti.Audios.Dto;
 using Isolaatti.Classes.ApiEndpointsResponseDataModels;
 
 namespace Isolaatti.Accounts.Data.Entity

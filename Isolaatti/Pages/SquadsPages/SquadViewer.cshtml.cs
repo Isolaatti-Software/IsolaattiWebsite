@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Isolaatti.Enums;
 using Isolaatti.Repositories;
+using Isolaatti.Squads.Repository;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;

@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Isolaatti.Classes;
+using Isolaatti.Database.EF;
 using Isolaatti.DTOs;
 using Isolaatti.Models;
 using Isolaatti.Utils;

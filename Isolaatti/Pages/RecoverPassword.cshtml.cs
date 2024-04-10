@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Isolaatti.Database.EF;
 using Isolaatti.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

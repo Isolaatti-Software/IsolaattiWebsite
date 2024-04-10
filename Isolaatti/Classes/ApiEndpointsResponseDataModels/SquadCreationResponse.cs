@@ -1,5 +1,6 @@
 ﻿using Isolaatti.Enums;
 using Isolaatti.Models;
+using Isolaatti.Squads.Data;
 
 namespace Isolaatti.Classes.ApiEndpointsResponseDataModels;
 

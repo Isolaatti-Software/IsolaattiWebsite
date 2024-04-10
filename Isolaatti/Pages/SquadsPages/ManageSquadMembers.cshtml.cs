@@ -2,6 +2,8 @@
 using System.Threading.Tasks;
 using Isolaatti.Models;
 using Isolaatti.Repositories;
+using Isolaatti.Squads.Data;
+using Isolaatti.Squads.Repository;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;

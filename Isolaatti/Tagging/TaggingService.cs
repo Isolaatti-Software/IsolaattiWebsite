@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Isolaatti.Database.EF;
 using Isolaatti.Models;
 using Isolaatti.Tagging.Entity;
 using Isolaatti.Users.Repository;

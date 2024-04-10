@@ -9,11 +9,13 @@ using Isolaatti.Accounts;
 using Isolaatti.Accounts.Service;
 using Isolaatti.Classes.ApiEndpointsResponseDataModels;
 using Isolaatti.Enums;
+using Isolaatti.Images.Data;
+using Isolaatti.Images.Repository;
 using Isolaatti.Repositories;
 using Isolaatti.Users.Repository;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
-using Image = Isolaatti.Models.MongoDB.Image;
+using Image = Isolaatti.Images.Data.Image;
 
 namespace Isolaatti.Services;
 

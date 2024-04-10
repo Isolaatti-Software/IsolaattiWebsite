@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Isolaatti.Database.MongoDb;
 using Isolaatti.DTOs;
-using Isolaatti.Models.MongoDB;
 using Isolaatti.Services;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;

@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Isolaatti.Accounts;
 using Isolaatti.Accounts.Service;
+using Isolaatti.Database.MongoDb;
 using Isolaatti.Services;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
@@ -13,7 +14,7 @@ namespace Isolaatti.Pages.SettingsPages
     public class Sessions : IsolaattiPageModel
     {
         private readonly IAccountsService _accounts;
-        public IEnumerable<Models.MongoDB.Session> SessionTokens;
+        public IEnumerable<Session> SessionTokens;
 
         public Sessions(IAccountsService accounts)
         {

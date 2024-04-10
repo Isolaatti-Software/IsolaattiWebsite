@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Isolaatti.Database.EF;
 using Isolaatti.DTOs;
 using Isolaatti.Models;
 using Microsoft.EntityFrameworkCore;

@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
+using Isolaatti.Database.MongoDb;
 using Isolaatti.Models;
-using Isolaatti.Models.MongoDB;
 using Isolaatti.RealtimeInteraction.Entity;
 using Isolaatti.Utils;
 using Microsoft.Extensions.Options;

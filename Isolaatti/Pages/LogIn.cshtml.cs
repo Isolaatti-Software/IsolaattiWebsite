@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Isolaatti.Accounts;
 using Isolaatti.Accounts.Service;
+using Isolaatti.Database.EF;
 using Isolaatti.DTOs;
 using Isolaatti.Models;
 using Isolaatti.Services;

@@ -1,5 +1,4 @@
 using System.Text.Json;
-using Isolaatti.Models.MongoDB;
 
 namespace Isolaatti.DTOs;
 

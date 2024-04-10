@@ -8,7 +8,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using Isolaatti.Accounts.Data;
+using Isolaatti.Audios.Dto;
+using Isolaatti.Audios.Repository;
 using Isolaatti.Classes.ApiEndpointsResponseDataModels;
+using Isolaatti.Database.EF;
 
 namespace Isolaatti.Profiles.Controller
 {

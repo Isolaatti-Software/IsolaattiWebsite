@@ -1,0 +1,51 @@
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.Text.Json;
+using Isolaatti.DTOs;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+
+namespace Isolaatti.Database.MongoDb
+{
+    public class Session
+    {
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; }
+        
+        [Required]
+        public int UserId { get; set; }
+        
+        [Required]
+        public string IpAddress { get; set; }
+        
+        [Required]
+        public string UserAgent { get; set; }
+
+        [Required]
+        public string SessionKey { get; set; }
+        
+        [Required]
+        public DateTime CreationDate { get; set; }
+
+        public Session()
+        {
+            SessionKey = Utils.RandomData.GenerateRandomKey(32);
+            CreationDate = DateTime.Now.ToUniversalTime();
+        }
+
+        public SessionDto GetDto() 
+        {
+            return new() 
+            {
+                SessionId = Id,
+                SessionKey = SessionKey
+            };
+        }
+
+        public override string ToString()
+        {
+            return JsonSerializer.Serialize<SessionDto>(GetDto());
+        }
+    }
+}

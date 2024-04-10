@@ -1,3 +1,4 @@
+using Isolaatti.Database.EF;
 using Isolaatti.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;

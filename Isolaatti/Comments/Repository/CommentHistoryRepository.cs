@@ -1,9 +1,9 @@
 ﻿using Isolaatti.Comments.Entity;
-using Isolaatti.Models.MongoDB;
 using Isolaatti.Repositories;
 using MongoDB.Driver;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Isolaatti.Database.MongoDb;
 
 namespace Isolaatti.Comments.Repository
 {

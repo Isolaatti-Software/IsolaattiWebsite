@@ -6,6 +6,8 @@ using System.Text.Json.Serialization;
 using Isolaatti.Accounts.Data.Entity;
 using Isolaatti.Classes.ApiEndpointsResponseDataModels;
 using Isolaatti.Comments.Entity;
+using Isolaatti.Likes.Data;
+using Isolaatti.Squads.Data;
 
 namespace Isolaatti.Models
 {

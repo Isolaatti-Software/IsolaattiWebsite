@@ -5,6 +5,7 @@ using Isolaatti.Classes;
 using Isolaatti.Classes.ApiEndpointsRequestDataModels;
 using Isolaatti.Comments.Entity;
 using Isolaatti.Comments.Repository;
+using Isolaatti.Database.EF;
 using Isolaatti.DTOs;
 using Isolaatti.Models;
 using Isolaatti.RealtimeInteraction.Service;

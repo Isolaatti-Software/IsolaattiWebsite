@@ -7,9 +7,10 @@ using System.Threading.Tasks;
 using Google;
 using Isolaatti.Accounts;
 using Isolaatti.Accounts.Service;
+using Isolaatti.Audios.Dto;
+using Isolaatti.Audios.Repository;
 using Isolaatti.Classes.ApiEndpointsResponseDataModels;
 using Isolaatti.Enums;
-using Isolaatti.Models.MongoDB;
 using Isolaatti.Repositories;
 
 namespace Isolaatti.Services;

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Isolaatti.Database.EF;
 
 namespace Isolaatti.Users.Repository
 {

@@ -1,4 +1,5 @@
-﻿using Isolaatti.Classes.ApiEndpointsResponseDataModels;
+﻿using Isolaatti.Audios.Dto;
+using Isolaatti.Classes.ApiEndpointsResponseDataModels;
 using Isolaatti.Models;
 
 namespace Isolaatti.DTOs;

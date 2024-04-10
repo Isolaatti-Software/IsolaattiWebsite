@@ -5,6 +5,7 @@ using Isolaatti.Accounts.Service;
 using Isolaatti.Classes.ApiEndpointsRequestDataModels;
 using Isolaatti.Classes.ApiEndpointsResponseDataModels;
 using Isolaatti.Config;
+using Isolaatti.Database.EF;
 using Isolaatti.DTOs;
 using Isolaatti.Models;
 using Microsoft.AspNetCore.Mvc;

@@ -1,4 +1,4 @@
-﻿using Isolaatti.Models.MongoDB;
+﻿using Isolaatti.Database.MongoDb;
 
 namespace Isolaatti.Classes.ApiEndpointsResponseDataModels;
 
