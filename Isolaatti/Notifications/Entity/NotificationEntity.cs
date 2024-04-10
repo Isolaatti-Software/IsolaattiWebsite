@@ -1,10 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
-
 
 namespace Isolaatti.Notifications.Entity
 {

@@ -1,7 +1,5 @@
-﻿using System.Threading.Tasks;
-using Isolaatti.Notifications.Dto;
+﻿using Isolaatti.Notifications.Dto;
 using Isolaatti.Notifications.PushNotifications;
-using Isolaatti.Services;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;

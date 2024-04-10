@@ -3,7 +3,6 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Isolaatti.Accounts.Service;
 using Isolaatti.Accounts.SignIn.Dto;
-using Isolaatti.Services;
 using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;

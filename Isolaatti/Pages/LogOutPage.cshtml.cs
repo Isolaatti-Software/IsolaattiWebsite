@@ -1,9 +1,5 @@
-﻿using System.Text.Json;
-using System.Threading.Tasks;
-using Isolaatti.Accounts;
+﻿using System.Threading.Tasks;
 using Isolaatti.Accounts.Service;
-using Isolaatti.Services;
-using Isolaatti.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 

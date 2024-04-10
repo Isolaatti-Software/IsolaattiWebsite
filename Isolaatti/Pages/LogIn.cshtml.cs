@@ -1,12 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Isolaatti.Accounts;
 using Isolaatti.Accounts.Service;
 using Isolaatti.Accounts.SignIn.Dto;
 using Isolaatti.Database.EF;
-using Isolaatti.Models;
 using Isolaatti.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

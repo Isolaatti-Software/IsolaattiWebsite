@@ -1,12 +1,9 @@
-using System;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Isolaatti.Accounts.Service;
 using Isolaatti.Enums;
 using Isolaatti.Recaptcha;
-using Isolaatti.Services;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 

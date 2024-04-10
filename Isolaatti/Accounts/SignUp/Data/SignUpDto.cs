@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Isolaatti.Accounts.SignUp.Data;
+﻿namespace Isolaatti.Accounts.SignUp.Data;
 public class SignUpDto
 {
     public string Username { get; set; }

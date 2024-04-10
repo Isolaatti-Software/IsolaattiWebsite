@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Isolaatti.Accounts.Service;
 using Isolaatti.Common;
 using Isolaatti.Database.EF;
-using Isolaatti.Models;
 using Isolaatti.Posting.Data;
 using Isolaatti.Posting.Dto;
 using Isolaatti.Squads.Repository;

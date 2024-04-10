@@ -1,6 +1,5 @@
 ﻿using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using Isolaatti.Messaging;
 using Isolaatti.Notifications.Dto;
 using RabbitMQ.Client;

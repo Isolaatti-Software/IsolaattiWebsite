@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Isolaatti.Accounts.Data;
@@ -8,9 +7,7 @@ using Isolaatti.Audios.Repository;
 using Isolaatti.Database.EF;
 using Isolaatti.Images.Data;
 using Isolaatti.Images.Repository;
-using Isolaatti.Models;
 using Isolaatti.Posting.Dto;
-using Isolaatti.Repositories;
 using Isolaatti.Search.Dto;
 using Isolaatti.Squads.Repository;
 using Isolaatti.Utils;

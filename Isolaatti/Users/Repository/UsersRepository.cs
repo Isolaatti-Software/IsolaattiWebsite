@@ -1,9 +1,7 @@
-﻿using Isolaatti.Models;
-using Microsoft.Extensions.Caching.Distributed;
-using System;
+﻿using System;
 using System.Linq;
-using System.Threading.Tasks;
 using Isolaatti.Database.EF;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace Isolaatti.Users.Repository
 {

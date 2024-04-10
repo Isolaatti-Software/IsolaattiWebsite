@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Isolaatti.Database.EF;
-using Isolaatti.Models;
 using Isolaatti.Posting.Dto;
 using Microsoft.EntityFrameworkCore;
 

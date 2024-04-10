@@ -1,9 +1,7 @@
-﻿using Isolaatti.Notifications.Entity;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Isolaatti.Notifications.Entity;
 
 namespace Isolaatti.Notifications.Dto;
 

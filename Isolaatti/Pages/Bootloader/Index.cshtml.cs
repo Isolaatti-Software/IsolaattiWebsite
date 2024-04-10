@@ -1,7 +1,6 @@
 ﻿using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Isolaatti.Pages.Bootloader;
 

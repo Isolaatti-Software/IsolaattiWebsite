@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Isolaatti.Common;
-using Isolaatti.Services;
 using Microsoft.AspNetCore.Http;
 
 namespace Isolaatti.Middleware;

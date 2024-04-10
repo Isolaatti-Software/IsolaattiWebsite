@@ -1,5 +1,3 @@
-using System;
-
 namespace Isolaatti.Utils;
 
 public class Result<D, RT>

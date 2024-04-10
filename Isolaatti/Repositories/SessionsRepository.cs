@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Isolaatti.Accounts.SignIn.Dto;
 using Isolaatti.Database.MongoDb;
-using Isolaatti.Services;
-using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
 namespace Isolaatti.Repositories;

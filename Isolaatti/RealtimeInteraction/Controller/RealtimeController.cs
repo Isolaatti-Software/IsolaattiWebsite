@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Isolaatti.Models;
 using Isolaatti.RealtimeInteraction.Entity;
 using Isolaatti.Repositories;
 using Microsoft.AspNetCore.Mvc;

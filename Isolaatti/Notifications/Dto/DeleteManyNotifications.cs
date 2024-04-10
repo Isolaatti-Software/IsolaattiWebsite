@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Isolaatti.Notifications.Dto
+﻿namespace Isolaatti.Notifications.Dto
 {
     public class DeleteManyNotifications
     {

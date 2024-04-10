@@ -2,7 +2,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Isolaatti.Common;
 using Isolaatti.Database.EF;
-using Isolaatti.Models;
 using Isolaatti.Posting.Data;
 using Isolaatti.Posting.Dto;
 using Isolaatti.Utils;

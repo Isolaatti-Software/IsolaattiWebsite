@@ -1,5 +1,5 @@
-﻿using Isolaatti.Comments.Entity;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Isolaatti.Comments.Entity;
 
 namespace Isolaatti.Comments.Dto
 {

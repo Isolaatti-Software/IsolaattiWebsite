@@ -1,9 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Isolaatti.Database.MongoDb;
-using Isolaatti.Models;
 using Isolaatti.RealtimeInteraction.Entity;
 using Isolaatti.Utils;
-using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
 namespace Isolaatti.Repositories;

@@ -1,15 +1,15 @@
 ﻿using System;
-using Isolaatti.Models;
-using Isolaatti.Notifications.Dto;
-using Isolaatti.Notifications.Entity;
-using Isolaatti.RealtimeInteraction.Service;
-using Isolaatti.Users.Repository;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Isolaatti.Database.EF;
 using Isolaatti.Likes.Data;
+using Isolaatti.Models;
+using Isolaatti.Notifications.Dto;
+using Isolaatti.Notifications.Entity;
+using Isolaatti.RealtimeInteraction.Service;
+using Isolaatti.Users.Repository;
 using Isolaatti.Utils;
 
 namespace Isolaatti.Notifications.Services;

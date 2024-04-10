@@ -7,7 +7,6 @@ using Isolaatti.Accounts.SignUp.Data;
 using Isolaatti.Common;
 using Isolaatti.Config;
 using Isolaatti.Enums;
-using Isolaatti.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 

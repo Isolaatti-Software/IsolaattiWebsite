@@ -1,17 +1,14 @@
-﻿using Isolaatti.Models;
-using Isolaatti.Repositories;
-using Isolaatti.Services;
-using Isolaatti.Utils;
-using Isolaatti.Utils.Attributes;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Isolaatti.Accounts.Data;
 using Isolaatti.Audios.Dto;
 using Isolaatti.Audios.Repository;
 using Isolaatti.Common;
 using Isolaatti.Database.EF;
 using Isolaatti.Images.Service;
+using Isolaatti.Utils;
+using Isolaatti.Utils.Attributes;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Isolaatti.Profiles.Controller
 {

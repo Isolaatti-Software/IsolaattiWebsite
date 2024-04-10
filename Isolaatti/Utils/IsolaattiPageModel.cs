@@ -1,8 +1,5 @@
-﻿using System.Threading.Tasks;
-using Isolaatti.Accounts.Data.Entity;
+﻿using Isolaatti.Accounts.Data.Entity;
 using Isolaatti.Database.MongoDb;
-using Isolaatti.Models;
-using Isolaatti.Services;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Isolaatti.Utils;

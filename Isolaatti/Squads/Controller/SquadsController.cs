@@ -4,8 +4,6 @@ using System.Threading.Tasks;
 using Isolaatti.Database.EF;
 using Isolaatti.EmailSender;
 using Isolaatti.Enums;
-using Isolaatti.Models;
-using Isolaatti.Repositories;
 using Isolaatti.Squads.Dto;
 using Isolaatti.Squads.Repository;
 using Isolaatti.Utils;

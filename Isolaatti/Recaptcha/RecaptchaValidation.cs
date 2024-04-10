@@ -4,7 +4,6 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Isolaatti.Common;
 using Isolaatti.Config;
-using Isolaatti.Services;
 using Microsoft.Extensions.Options;
 
 namespace Isolaatti.Recaptcha;

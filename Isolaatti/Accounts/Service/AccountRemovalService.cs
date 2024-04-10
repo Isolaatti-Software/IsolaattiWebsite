@@ -10,9 +10,6 @@ using Isolaatti.Database.EF;
 using Isolaatti.EmailSender;
 using Isolaatti.Enums;
 using Isolaatti.Images.Service;
-using Isolaatti.Models;
-using Isolaatti.Repositories;
-using Isolaatti.Services;
 using Isolaatti.Squads.Repository;
 using Isolaatti.Utils;
 using Microsoft.AspNetCore.Identity;
@@ -63,7 +60,7 @@ public class AccountRemovalService
             return;
         }
 
-        var key = Utils.RandomData.GenerateRandomKey(15);
+        var key = RandomData.GenerateRandomKey(15);
 
         var passwordHasher = new PasswordHasher<string>();
         

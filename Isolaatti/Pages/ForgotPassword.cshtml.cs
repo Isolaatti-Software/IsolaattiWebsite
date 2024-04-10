@@ -7,7 +7,6 @@ using Isolaatti.Database.EF;
 using Isolaatti.EmailSender;
 using Isolaatti.Models;
 using Isolaatti.Recaptcha;
-using Isolaatti.Services;
 using Isolaatti.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;

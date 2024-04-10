@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations.Schema;
 using Isolaatti.Accounts.Data.Entity;
 
 namespace Isolaatti.Models

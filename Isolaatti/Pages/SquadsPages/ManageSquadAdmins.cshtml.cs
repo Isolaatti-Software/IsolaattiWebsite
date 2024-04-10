@@ -2,14 +2,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Isolaatti.Accounts.Data;
-using Isolaatti.Models;
-using Isolaatti.Repositories;
 using Isolaatti.Squads.Data;
 using Isolaatti.Squads.Repository;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Isolaatti.Pages.SquadsPages;
 

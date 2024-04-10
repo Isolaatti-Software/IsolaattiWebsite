@@ -1,6 +1,5 @@
 using System.Linq;
 using System.Threading.Tasks;
-using Isolaatti.Repositories;
 using Isolaatti.Squads.Dto;
 using Isolaatti.Squads.Repository;
 using Isolaatti.Utils;

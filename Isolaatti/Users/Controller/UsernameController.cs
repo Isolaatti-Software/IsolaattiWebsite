@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Isolaatti.Database.EF;
-using Isolaatti.Models;
 using Isolaatti.Users.Dto;
 using Isolaatti.Utils;
 using Microsoft.AspNetCore.Mvc;

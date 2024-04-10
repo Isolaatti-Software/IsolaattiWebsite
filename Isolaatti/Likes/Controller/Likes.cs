@@ -4,7 +4,6 @@ using Isolaatti.Common;
 using Isolaatti.Database.EF;
 using Isolaatti.Likes.Data;
 using Isolaatti.Likes.Dto;
-using Isolaatti.Models;
 using Isolaatti.Notifications.Services;
 using Isolaatti.Posting.Dto;
 using Isolaatti.RealtimeInteraction.Service;

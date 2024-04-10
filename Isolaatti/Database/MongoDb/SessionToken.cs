@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 using Isolaatti.Accounts.SignIn.Dto;
+using Isolaatti.Utils;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
@@ -30,7 +31,7 @@ namespace Isolaatti.Database.MongoDb
 
         public Session()
         {
-            SessionKey = Utils.RandomData.GenerateRandomKey(32);
+            SessionKey = RandomData.GenerateRandomKey(32);
             CreationDate = DateTime.Now.ToUniversalTime();
         }
 
