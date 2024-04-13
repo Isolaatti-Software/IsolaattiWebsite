@@ -1,4 +1,4 @@
-# Isolaatti-BackendWebApp
+# Isolaatti
 Sitio web de Isolaatti
 
 [![.NET](https://github.com/Isolaatti-Software/IsolaattiWebsite/actions/workflows/dotnet.yml/badge.svg)](https://github.com/Isolaatti-Software/IsolaattiWebsite/actions/workflows/dotnet.yml)
@@ -13,9 +13,9 @@ Este proyecto es la aplicación web principal, aquí es donde el usuario final a
 atención a los requerimientos que debes satisfacer antes de poder correr la aplicación
 en tu estación de trabajo.
 
-### Microsoft .NET 7 SDK 
+### Microsoft .NET 8 SDK 
 Este componente es el más importante, es necesario para compilar el código de este proyecto. La forma de instalarlo depende
-del sistema operativo que estés usando. https://dotnet.microsoft.com/en-us/download/dotnet/7.0
+del sistema operativo que estés usando. https://dotnet.microsoft.com/en-us/download/dotnet/8.0
 
 ### Instancia de PostgreSQL
 https://www.postgresql.org/download/  
