@@ -219,7 +219,7 @@ namespace Isolaatti
             services.AddScoped<UsersRepository>();
             services.AddScoped<ScopedHttpContext>();
             services.AddScoped<IAccountsService, AccountsService>();
-            services.AddScoped<NotificationSender>();
+            services.AddSingleton<NotificationSender>();
             services.AddScoped<ServerRenderedAlerts>();
             services.AddSingleton<GoogleCloudStorageService>();
             services.AddScoped<AudiosService>();
