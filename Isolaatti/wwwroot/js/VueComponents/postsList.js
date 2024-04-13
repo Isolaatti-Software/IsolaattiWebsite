@@ -103,7 +103,7 @@ Vue.component("posts-list", {
             const response = await fetch(`/api/Fetch/Post/${post.id}/LikedBy`, {
                 headers: this.customHeaders
             });
-            this.postDetails.usersWhoLiked = await response.json();
+            this.postDetails.usersWhoLiked = (await response.json()).result;
         },
         userProfileLink: function (userId) {
             return `/perfil/${userId}`;
