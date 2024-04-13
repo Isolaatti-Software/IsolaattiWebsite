@@ -266,7 +266,10 @@ namespace Isolaatti.Controllers
                     ProfileImageId = account.ProfileImageId
                 };
 
-            return Ok(likedBy.ToList());
+            return Ok(new
+            {
+                result = likedBy.ToList()
+            });
         }
     }
 }
