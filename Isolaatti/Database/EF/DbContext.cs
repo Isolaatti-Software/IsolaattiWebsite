@@ -5,6 +5,7 @@ using Isolaatti.Likes.Data;
 using Isolaatti.Models;
 using Isolaatti.Notifications.Entity;
 using Isolaatti.Posting.Data;
+using Isolaatti.Report.Entity;
 using Isolaatti.Search.Data;
 using Isolaatti.Squads.Data;
 using Isolaatti.Tagging.Entity;
@@ -70,5 +71,6 @@ namespace Isolaatti.Database.EF
         public DbSet<AccountRemovalRequestEntity> AccountRemovalRequests { get; set; }
         public DbSet<NotificationEntity> Notifications { get; set; }
         public DbSet<SearchResultViewEntity> SearchView { get; set; }
+        public DbSet<ReportEntity> Reports { get; set; }
     }
 }

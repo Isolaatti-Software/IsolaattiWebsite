@@ -1,9 +1,11 @@
 using System;
+using System.Text.Json.Serialization;
 using Isolaatti.Accounts.Data.Entity;
+using Isolaatti.Report.Dto;
 
 namespace Isolaatti.Report.Entity;
 
-public class Report
+public class ReportEntity
 {
     public enum ReportStatus
     {
@@ -14,8 +16,14 @@ public class Report
         Post, Comment, Profile, Squad, Picture, Audio
     }
     
+    public enum ReportReasonEnum
+    {
+        Spam, ExplicitContent, ChildRiskContent, Piracy, CopyrightProtectedContent,
+        HateAndDiscrimination, IdentityFraud, FraudulentIaGeneratedContent, PeopleInDanger
+    }
+    
     public Guid Id { get; set; }
-    public int ReportReasonDescriptionId { get; set; }
+    public ReportReasonEnum ReportReason { get; set; }
     public int UserId { get; set; }
     public string UserComment { get; set; }
     public ReportStatus Status { get; set; }
@@ -23,6 +31,6 @@ public class Report
     public ContentTypeEnum ContentType { get; set; }
     public string ContentId { get; set; }
     
-    public ReportReasonDescription ReportReasonDescription { get; set; }
+    [JsonIgnore]
     public User User { get; set; }
 }
