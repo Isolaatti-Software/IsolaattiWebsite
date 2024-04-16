@@ -4,7 +4,7 @@ using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Isolaatti.Controllers;
+namespace Isolaatti.Notifications.Controller;
 
 [ApiController]
 [Route("/api/push_notifications")]
@@ -24,7 +24,7 @@ public class PushNotificationsController : IsolaattiController
     {
         _registerDeviceMessaging.RegisterDevice(new RegisterDeviceMessagingDto
         {
-            SessionId = CurrentSessionDto.SessionId,
+            SessionId = CurrentSessionDto.SessionId.ToString(),
             Token = token,
             UserId = User.Id
         });

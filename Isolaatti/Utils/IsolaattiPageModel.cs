@@ -1,5 +1,5 @@
 ﻿using Isolaatti.Accounts.Data.Entity;
-using Isolaatti.Database.MongoDb;
+using Isolaatti.Accounts.SignIn.Data;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Isolaatti.Utils;

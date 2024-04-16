@@ -30,11 +30,6 @@ namespace Isolaatti.Database.MongoDb
             return _database.GetCollection<Image>(_settings.ImagesCollectionName);
         }
 
-        public IMongoCollection<Session> GetSessionsCollection()
-        {
-            return _database.GetCollection<Session>(_settings.AuthTokensCollectionName);
-        }
-
         public IMongoCollection<SocketIoServiceKey> GetSocketIoServiceKeysCollection()
         {
             return _database.GetCollection<SocketIoServiceKey>(_settings.RealtimeServiceKeysCollectionName);

@@ -7,10 +7,10 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Isolaatti.Accounts.Data;
 using Isolaatti.Accounts.Data.Entity;
+using Isolaatti.Accounts.SignIn.Data;
 using Isolaatti.Accounts.SignIn.Dto;
 using Isolaatti.Common;
 using Isolaatti.Database.EF;
-using Isolaatti.Database.MongoDb;
 using Isolaatti.EmailSender;
 using Isolaatti.Enums;
 using Isolaatti.Repositories;
@@ -250,18 +250,18 @@ public partial class AccountsService : IAccountsService
         return await _sessionsRepository.RemoveSession(sessionDto);
     }
 
-    public Task<bool> RemoveSessions(int userId, IEnumerable<string> ids)
+    public Task<bool> RemoveSessions(int userId, IEnumerable<Guid> ids)
     {
         return _sessionsRepository.RemoveSessions(userId, ids);
     }
 
-    public Task<bool> RemoveAllSessions(int userId, IEnumerable<string>? exceptIds)
+    public Task<bool> RemoveAllSessions(int userId, IEnumerable<Guid>? exceptIds)
     {
-        return _sessionsRepository.RemoveSessionsByUserId(userId, exceptIds ?? new List<string>());
+        return _sessionsRepository.RemoveSessionsByUserId(userId, exceptIds ?? new List<Guid>());
     }
     
 
-    public string GetUsernameFromId(int userId)
+    public string? GetUsernameFromId(int userId)
     {
         return db.Users.Where(u => u.Id == userId).Select(u => u.Name).FirstOrDefault();
     }
@@ -287,7 +287,7 @@ public partial class AccountsService : IAccountsService
 
     public async Task<IEnumerable<Session>> GetSessionsOfUser(int userId)
     {
-        return await _sessionsRepository.FindSessionsOfUser(userId);
+        return _sessionsRepository.FindSessionsOfUser(userId);
     }
 
     public string GetIpAddress()
