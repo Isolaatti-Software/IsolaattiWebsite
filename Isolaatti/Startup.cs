@@ -214,7 +214,7 @@ namespace Isolaatti
             services.AddScoped<NotificationsService>();
             services.AddScoped<SocketIoServiceKeysRepository>();
             services.AddScoped<CommentHistoryRepository>();
-            services.AddSingleton<SessionsRepository>();
+            services.AddScoped<SessionsRepository>();
             services.AddDistributedMemoryCache();
             services.AddScoped<UsersRepository>();
             services.AddScoped<ScopedHttpContext>();

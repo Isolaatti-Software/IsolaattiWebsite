@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Isolaatti.Accounts.Service;
-using Isolaatti.Database.MongoDb;
+using Isolaatti.Accounts.SignIn.Data;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;

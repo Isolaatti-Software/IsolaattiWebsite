@@ -1,4 +1,5 @@
 using Isolaatti.Accounts.Data.Entity;
+using Isolaatti.Accounts.SignIn.Data;
 using Isolaatti.Comments.Entity;
 using Isolaatti.Favorites.Data;
 using Isolaatti.Likes.Data;
@@ -73,5 +74,6 @@ namespace Isolaatti.Database.EF
         public DbSet<SearchResultViewEntity> SearchView { get; set; }
         public DbSet<ReportEntity> Reports { get; set; }
         public DbSet<PostVersionEntity> PostVersions { get; set; }
+        public DbSet<Session> Sessions { get; set; }
     }
 }

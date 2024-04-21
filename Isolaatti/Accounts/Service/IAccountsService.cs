@@ -1,9 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Isolaatti.Accounts.Data;
 using Isolaatti.Accounts.Data.Entity;
+using Isolaatti.Accounts.SignIn.Data;
 using Isolaatti.Accounts.SignIn.Dto;
-using Isolaatti.Database.MongoDb;
 
 namespace Isolaatti.Accounts.Service;
 
@@ -32,9 +33,9 @@ public interface IAccountsService
     Task<User?> ValidateSession(SessionDto sessionDto);
 
     Task<bool> RemoveSession(SessionDto sessionDto);
-    Task<bool> RemoveSessions(int userId, IEnumerable<string> ids);
-    Task<bool> RemoveAllSessions(int userId, IEnumerable<string>? exceptIds);
-    string GetUsernameFromId(int userId);
+    Task<bool> RemoveSessions(int userId, IEnumerable<Guid> ids);
+    Task<bool> RemoveAllSessions(int userId, IEnumerable<Guid>? exceptIds);
+    string? GetUsernameFromId(int userId);
     Task<IEnumerable<Session>> GetSessionsOfUser(int userId);
     string GetIpAddress();
     void RemoveSessionCookie();

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -53,7 +54,7 @@ public class AccountsController : IsolaattiController
         }
         if (signOut)
         {
-            var list = new List<string>();
+            var list = new List<Guid>();
             if (!signOutCurrent)
             {
                 list.Add(CurrentSessionDto.SessionId);
