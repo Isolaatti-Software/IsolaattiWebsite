@@ -101,7 +101,13 @@ namespace Isolaatti.Posting.Controller
             {
                 return Unauthorized("Post is not yours, cannot edit");
             }
-
+            _db.PostVersions.Add(new PostVersionEntity()
+            {
+                PostId = existingPost.Id,
+                TextContent = existingPost.TextContent,
+                DateTime = DateTime.Now.ToUniversalTime(),
+                AudioId = existingPost.AudioId
+            });
 
             existingPost.Privacy = editedPost.Privacy;
             existingPost.TextContent = editedPost.Content;
@@ -116,7 +122,7 @@ namespace Isolaatti.Posting.Controller
             var updatedPost = new PostDto()
             {
                 Post = existingPost,
-                UserName = _db.Users.FirstOrDefault(u => u.Id == existingPost.UserId)?.Name,
+                UserName = _db.Users.FirstOrDefault(u => u.Id == existingPost.UserId)?.Name ?? "",
                 NumberOfComments = await _db.Comments.CountAsync(c => c.PostId == existingPost.Id),
                 NumberOfLikes = await _db.Likes.CountAsync(l => l.PostId == existingPost.Id),
                 Liked = _db.Likes.Any(l => l.UserId == User.Id && l.PostId == existingPost.Id),
@@ -167,6 +173,15 @@ namespace Isolaatti.Posting.Controller
                 Success = true,
                 OperationTime = DateTime.Now
             });
+        }
+
+        [HttpGet]
+        [IsolaattiAuth]
+        [Route("Post/{postId:long}/Versions")]
+        public async Task<IActionResult> GetPostVersions(long postId)
+        {
+            var versions = _db.PostVersions.Where(pv => pv.PostId == postId).ToList();
+            return Ok(new {result = versions});
         }
         
         

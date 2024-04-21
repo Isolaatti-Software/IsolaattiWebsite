@@ -72,5 +72,6 @@ namespace Isolaatti.Database.EF
         public DbSet<NotificationEntity> Notifications { get; set; }
         public DbSet<SearchResultViewEntity> SearchView { get; set; }
         public DbSet<ReportEntity> Reports { get; set; }
+        public DbSet<PostVersionEntity> PostVersions { get; set; }
     }
 }
