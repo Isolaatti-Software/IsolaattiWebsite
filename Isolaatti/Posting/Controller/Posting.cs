@@ -180,7 +180,7 @@ namespace Isolaatti.Posting.Controller
         [Route("Post/{postId:long}/Versions")]
         public async Task<IActionResult> GetPostVersions(long postId)
         {
-            var versions = _db.PostVersions.Where(pv => pv.PostId == postId).ToList();
+            var versions = _db.PostVersions.Where(pv => pv.PostId == postId).OrderByDescending(pv => pv.Id).ToList();
             return Ok(new {result = versions});
         }
         
