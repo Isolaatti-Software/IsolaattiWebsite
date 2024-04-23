@@ -138,11 +138,22 @@ namespace Isolaatti.Profiles.Controller
 
         [IsolaattiAuth]
         [HttpPost]
-        [Route("RemoveAudioFromProfile")]
+        [Route("/api/EditProfile/RemoveAudioFromProfile")]
         public async Task<IActionResult> RemoveAudioFromDescription()
         {
             User.DescriptionAudioId = null;
-            _db.Update(User);
+            _db.Users.Update(User);
+            await _db.SaveChangesAsync();
+            return Ok();
+        }
+
+        [IsolaattiAuth]
+        [HttpPost]
+        [Route("/api/EditProfile/RemoveProfileImage")]
+        public async Task<IActionResult> RemoveProfileImage()
+        {
+            User.ProfileImageId = null;
+            _db.Users.Update(User);
             await _db.SaveChangesAsync();
             return Ok();
         }
