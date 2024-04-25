@@ -107,7 +107,7 @@ namespace Isolaatti.Users.Followers.Controller
                  })
                     .OrderBy(u => u.Id)
                     .Take(10)
-                    .ToList().Select(u => { u.Following = _usersRepository.GetUserFollowsUser(User.Id, userId); return u; });
+                    .ToList().Select(u => { u.Following = _usersRepository.GetUserFollowsUser(User.Id, u.Id); return u; });
 
             return Ok(listOfFollowing);
         }
@@ -130,7 +130,7 @@ namespace Isolaatti.Users.Followers.Controller
                     })
                     .OrderBy(u => u.Id)
                     .Take(10)
-                    .ToList().Select(u => { u.Following = _usersRepository.GetUserFollowsUser(User.Id, userId); return u; });
+                    .ToList().Select(u => { u.Following = _usersRepository.GetUserFollowsUser(User.Id, u.Id); return u; });
             return Ok(listOfFollowers);
         }
 
