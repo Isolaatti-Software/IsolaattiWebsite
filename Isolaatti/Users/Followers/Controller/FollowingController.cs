@@ -7,11 +7,11 @@ using Isolaatti.Database.EF;
 using Isolaatti.Models;
 using Isolaatti.Notifications.Services;
 using Isolaatti.Users.Followers.Dto;
+using Isolaatti.Users.Repository;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Distributed;
 
 namespace Isolaatti.Users.Followers.Controller
 {
@@ -20,21 +20,16 @@ namespace Isolaatti.Users.Followers.Controller
     public class FollowingController : IsolaattiController
     {
         private readonly DbContextApp Db;
-        private readonly IDistributedCache _cache;
+        private readonly UsersRepository _usersRepository;
         private readonly NotificationsService _notificationsService;
 
-        public FollowingController(DbContextApp dbContextApp, IDistributedCache cache, NotificationsService notificationsService)
+        public FollowingController(DbContextApp dbContextApp, UsersRepository usersRepository, NotificationsService notificationsService)
         {
             Db = dbContextApp;
-            _cache = cache;
+            _usersRepository = usersRepository;
             _notificationsService = notificationsService;
         }
-
-        private string FollowStateCacheKey(int userId, int targetUserId)
-        {
-            return $"user_{userId}_follows_${targetUserId}";
-        }
-
+        
         [IsolaattiAuth]
         [HttpPost]
         [Route("Follow")]
@@ -59,7 +54,7 @@ namespace Isolaatti.Users.Followers.Controller
             Db.FollowerRelations.Add(followerRelation);
             await Db.SaveChangesAsync();
 
-            _cache.SetString(FollowStateCacheKey(User.Id, userToFollow.Id), "1");
+            _usersRepository.SetUserFollowsUser(User.Id, userToFollow.Id, true);
 
             await _notificationsService.InsertNewFollowerNotification(followerRelation);
             return Ok(await GetFollowingInfo(userToFollow.Id));
@@ -81,7 +76,7 @@ namespace Isolaatti.Users.Followers.Controller
                 Db.FollowerRelations.Remove(followerRelation);
 
                 await Db.SaveChangesAsync();
-                _cache.SetString(FollowStateCacheKey(User.Id, userToUnfollow.Id), "0");
+                _usersRepository.SetUserFollowsUser(User.Id, userToUnfollow.Id, false);
                 
                 return Ok(await GetFollowingInfo(userToUnfollow.Id));
             }
@@ -91,26 +86,7 @@ namespace Isolaatti.Users.Followers.Controller
             }
         }
 
-        private bool UserFollowsUser(int userId, int targetUserId)
-        {
-            var rawValue = _cache.GetString(FollowStateCacheKey(userId, targetUserId));
-            if(rawValue != null)
-            {
-                if(rawValue.Equals("1"))
-                {
-                    return true;
-                } 
-                else if(rawValue.Equals("0"))
-                {
-                    return false;
-                }
-            }
-            var value = Db.FollowerRelations.Any(fr => fr.UserId == userId && fr.TargetUserId == targetUserId);
-
-            _cache.SetString(FollowStateCacheKey(userId, targetUserId), value ? "1" : "0");
-
-            return value;
-        }
+        
 
         [IsolaattiAuth]
         [Route("FollowingsOf/{userId:int}")]
@@ -131,7 +107,7 @@ namespace Isolaatti.Users.Followers.Controller
                  })
                     .OrderBy(u => u.Id)
                     .Take(10)
-                    .ToList().Select(u => { u.Following = UserFollowsUser(User.Id, u.Id); return u; });
+                    .ToList().Select(u => { u.Following = _usersRepository.GetUserFollowsUser(User.Id, userId); return u; });
 
             return Ok(listOfFollowing);
         }
@@ -154,7 +130,7 @@ namespace Isolaatti.Users.Followers.Controller
                     })
                     .OrderBy(u => u.Id)
                     .Take(10)
-                    .ToList().Select(u => { u.Following = UserFollowsUser(u.Id, User.Id); return u; });
+                    .ToList().Select(u => { u.Following = _usersRepository.GetUserFollowsUser(User.Id, userId); return u; });
             return Ok(listOfFollowers);
         }
 

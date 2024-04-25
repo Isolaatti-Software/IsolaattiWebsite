@@ -79,5 +79,36 @@ namespace Isolaatti.Users.Repository
 
             return value;
         }
+        
+        private string FollowStateCacheKey(int userId, int targetUserId)
+        {
+            return $"user_{userId}_follows_${targetUserId}";
+        }
+        
+        public bool GetUserFollowsUser(int userId, int targetUserId)
+        {
+            var rawValue = _cache.GetString(FollowStateCacheKey(userId, targetUserId));
+            if(rawValue != null)
+            {
+                if(rawValue.Equals("1"))
+                {
+                    return true;
+                } 
+                else if(rawValue.Equals("0"))
+                {
+                    return false;
+                }
+            }
+            var value = _db.FollowerRelations.Any(fr => fr.UserId == userId && fr.TargetUserId == targetUserId);
+
+            _cache.SetString(FollowStateCacheKey(userId, targetUserId), value ? "1" : "0");
+
+            return value;
+        }
+
+        public void SetUserFollowsUser(int userId, int followedUserId, bool follows)
+        {
+            _cache.SetString(FollowStateCacheKey(userId, followedUserId), follows ? "1" : "0");
+        }
     }
 }

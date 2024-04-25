@@ -119,7 +119,7 @@
               <h6>Personas que dieron like</h6>
               <div class="list-group list-group-flush">
                 <a class="list-group-item list-group-item-action" v-for="user in postDetails.usersWhoLiked" :href="userProfileLink(user.id)">
-                  <img class="user-avatar" :src="profilePictureUrl(user.profileImageId)">
+                  <img class="user-avatar" :src="profilePictureUrl(user.imageId)">
                   <span>{{user.name}}</span>
                 </a>
               </div>

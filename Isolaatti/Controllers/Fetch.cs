@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Isolaatti.Accounts.Data;
 using Isolaatti.Accounts.Data.Entity;
 using Isolaatti.Audios.Service;
 using Isolaatti.Common;
@@ -10,6 +11,7 @@ using Isolaatti.Database.EF;
 using Isolaatti.Posting.Data;
 using Isolaatti.Posting.Dto;
 using Isolaatti.Squads.Repository;
+using Isolaatti.Users.Repository;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;
@@ -24,12 +26,15 @@ namespace Isolaatti.Controllers
         private readonly DbContextApp _db;
         private readonly SquadsRepository _squads;
         private readonly AudiosService _audios;
+        private readonly UsersRepository _usersRepository;
+        
 
-        public Fetch(DbContextApp dbContextApp, SquadsRepository squadsRepository, AudiosService audios)
+        public Fetch(DbContextApp dbContextApp, SquadsRepository squadsRepository, AudiosService audios, UsersRepository usersRepository)
         {
             _db = dbContextApp;
             _squads = squadsRepository;
             _audios = audios;
+            _usersRepository = usersRepository;
         }
 
         
@@ -255,20 +260,26 @@ namespace Isolaatti.Controllers
             var post = await _db.SimpleTextPosts.FindAsync(postId);
             if (post == null || (post.Privacy == 1 && post.UserId != User.Id)) return NotFound("post not found");
 
-            var likedBy =
-                from like in _db.Likes
+            var likedBy = (from like in _db.Likes
                 from account in _db.Users
                 where like.UserId == account.Id && like.PostId == post.Id
-                select new
+                select new UserFeedDto()
                 {
                     Id = account.Id,
                     Name = account.Name,
-                    ProfileImageId = account.ProfileImageId
-                };
+                    ImageId = account.ProfileImageId
+                })
+                .ToList()
+                // this makes another database roundtrip only if this query is not cached
+                .Select(u => 
+                { 
+                    u.Following = _usersRepository.GetUserFollowsUser(User.Id, u.Id); 
+                    return u; 
+                });
 
             return Ok(new
             {
-                result = likedBy.ToList()
+                result = likedBy
             });
         }
     }
