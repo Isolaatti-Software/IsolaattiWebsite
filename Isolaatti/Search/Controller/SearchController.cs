@@ -10,6 +10,7 @@ using Isolaatti.Images.Repository;
 using Isolaatti.Posting.Dto;
 using Isolaatti.Search.Dto;
 using Isolaatti.Squads.Repository;
+using Isolaatti.Users.Repository;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;
@@ -26,14 +27,16 @@ public class SearchController : IsolaattiController
     private readonly ImagesRepository _imagesRepository;
     private readonly SquadUsersRepository _squadUsersRepository;
     private readonly SquadsRepository _squadsRepository;
+    private readonly UsersRepository _usersRepository;
 
-    public SearchController(DbContextApp db, AudiosRepository audios, ImagesRepository imagesRepository, SquadUsersRepository squadUsersRepository, SquadsRepository squadsRepository)
+    public SearchController(DbContextApp db, AudiosRepository audios, ImagesRepository imagesRepository, SquadUsersRepository squadUsersRepository, SquadsRepository squadsRepository, UsersRepository usersRepository)
     {
         _db = db;
         _audios = audios;
         _imagesRepository = imagesRepository;
         _squadUsersRepository = squadUsersRepository;
         _squadsRepository = squadsRepository;
+        _usersRepository = usersRepository;
     }
 
     [IsolaattiAuth]
@@ -212,16 +215,20 @@ public class SearchController : IsolaattiController
     [Route("newestUsers")]
     public async Task<IActionResult> GetNewestUsers([FromQuery] int limit, [FromQuery] int after)
     {
-        var users = from user in _db.Users
+        var users = (from user in _db.Users
             where user.Id != User.Id
             orderby user.Id descending
             select new UserFeedDto()
             {
                 Id = user.Id,
                 Name = user.Name,
-                Following = false,
                 ImageId = user.ProfileImageId
-            };
+            })
+            .ToList()
+            .Select(searchResult => { 
+                searchResult.Following = _usersRepository.GetUserFollowsUser(User.Id, searchResult.Id); 
+                return searchResult; 
+            });
 
         return Ok(new
         {
