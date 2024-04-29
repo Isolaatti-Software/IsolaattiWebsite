@@ -1,0 +1,88 @@
+@page "/about"
+@model Isolaatti.Pages.AboutPage
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="shortcut icon" href="/favicon.ico">
+    <style>
+        @@import url('https://fonts.googleapis.com/css2?family=Zen+Dots&display=swap');
+        .isolaatti-text {
+            color: #4d3b68;
+            font-family: 'Zen Dots', cursive;
+        }
+        .isolaatti-button{
+            color: #4d3b68;
+        }
+        
+    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <title>Acerca de Isolaatti</title>
+    <script>
+        // Set theme to the user's preferred color scheme
+        function updateTheme() {
+            const colorMode = window.matchMedia("(prefers-color-scheme: dark)").matches ?
+                "dark" :
+                "light";
+            document.querySelector("html").setAttribute("data-bs-theme", colorMode);
+        }
+
+        // Set theme on load
+        updateTheme()
+
+        // Update theme when the preferred scheme changes
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateTheme)
+    </script>
+</head>
+<body>
+<div class="container">
+    <div class="col-12">
+        <h1 class="display-1 isolaatti-text text-center mt-5">Isolaatti</h1>
+        
+        <h2 class="display-6 text-center">"muéstrame lo que mis amigos postean por favor y no me <span style="font-family: monospace; font-weight: bolder">shadowbanees</span> 😊😊"</h2>
+        
+        <div class="card mt-5">
+            <div class="card-body justify-content-center d-flex flex-column">
+                <h5 class="card-title text-center ">Red social experimental sin rastreo, ¡de código abierto!</h5>
+                <a class="isolaatti-button text-center" data-bs-toggle="offcanvas" href="#offcanvasManifiesto" role="button" aria-controls="offcanvasManifiesto">Leer manifiesto</a>
+            </div>
+        </div>
+        <div class="d-flex flex-column align-items-center mt-5">
+            <a href='https://play.google.com/store/apps/details?id=com.isolaatti&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Disponible en Google Play' width="200" src='https://play.google.com/intl/en_us/badges/static/images/badges/es-419_badge_web_generic.png'/></a>
+            <small>Google Play y el logotipo de Google Play son marcas comerciales de Google LLC.</small>
+        </div>
+    </div>
+</div>
+
+
+<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasManifiesto" aria-labelledby="manifiestoLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="manifiestoLabel">Manifiesto</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <p>
+            Isolaatti es una red social creada desde cero, concebida con la intención de ser “solo” una herramienta más, que no controle tus decisiones del mundo real, donde no seas el objetivo de miles de compañías de tratar de convencerte de comprar sus productos y servicios. Dicha intención ha influido en mis decisiones sobre cómo desarrollar y distribuir la plataforma, incluyendo todos sus componentes.
+        </p>
+        <p>
+            Cuento con un presupuesto modesto, por lo que no es posible garantizar la estabilidad si la plataforma se usa de manera masiva y centralizada, es decir, todo el mundo accediendo a mi propia implementación. Por lo tanto, he decidido dejar disponible todo el código fuente de la plataforma, incluyendo backend, app de android y servicios varios. La intención de esto es que asociaciones puedan implementar la plataforma para su uso privado en su propia infraestructura.
+        </p>
+        <p>
+            Aun así, estoy dejando disponible una implementación accesible públicamente, donde las personas pueden probarla e interactuar. Solo el tiempo dirá si esto escala más allá y dependería en gran medida de mis propios recursos, así como de donaciones. Esto es una entrada de un blog, por lo que puedo decir estas cosas.
+        </p>
+        <p>
+            Aunque este proyecto ha ido lento durante su desarrollo, lo dejo a disposición de todo el mundo, con la intención de mejorarlo siempre que sea posible. Esto incluye a todo aquel que quiera experimentar como usuario final, implementarlo para su uso privado o colaborar al desarrollo.
+        </p>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>
