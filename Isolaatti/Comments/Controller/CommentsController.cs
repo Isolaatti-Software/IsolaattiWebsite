@@ -75,20 +75,22 @@ public class CommentsController(
 
         var total = await comments.CountAsync();
 
-        var commentsList = comments
+        var commentsList= comments
             .Take(take)
-            .Select(co =>
+            .ToList();
+            
+        
+            
+
+        return Ok(new ContentListWrapper<CommentDto>
+        {
+            Data = commentsList.Select(co =>
                 new CommentDto
                 {
                     Comment = co,
                     Username = usersRepository.GetUsernameById(co.UserId) ?? ""
-                })
-            .ToList();
-
-        return Ok(new ContentListWrapper<CommentDto>
-        {
-            Data = commentsList,
-            MoreContent = total > commentsList.Count
+                }).ToList(),
+            MoreContent = total > commentsList.Count()
         });
     }
 
@@ -224,17 +226,16 @@ public class CommentsController(
         
         var commentsList = comments
             .Take(take)
-            .Select(co =>
-                new CommentDto
-                {
-                    Comment = co,
-                    Username = usersRepository.GetUsernameById(co.UserId) ?? ""
-                })
             .ToList();
 
         return Ok(new ContentListWrapper<CommentDto>
         {
-            Data = commentsList,
+            Data = commentsList.Select(co =>
+                new CommentDto
+                {
+                    Comment = co,
+                    Username = usersRepository.GetUsernameById(co.UserId) ?? ""
+                }).ToList(),
             MoreContent = total > commentsList.Count
         });
         
