@@ -6,185 +6,237 @@ using Isolaatti.Comments.Entity;
 using Isolaatti.Comments.Repository;
 using Isolaatti.Common;
 using Isolaatti.Database.EF;
-using Isolaatti.RealtimeInteraction.Service;
+using Isolaatti.Users.Repository;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Isolaatti.Comments.Controller
+namespace Isolaatti.Comments.Controller;
+
+[ApiController]
+[Route("/api/Comment")]
+public class CommentsController(
+    DbContextApp db,
+    CommentHistoryRepository commentHistoryRepository,
+    UsersRepository usersRepository) : IsolaattiController
 {
-    [ApiController]
-    [Route("/api/Comment")]
-    public class CommentsController : IsolaattiController
+    [IsolaattiAuth]
+    [HttpPost]
+    [Route("/api/Posting/Post/{postId:long}/Comment")]
+    public async Task<IActionResult> MakeComment(long postId, MakeCommentModel commentModel)
     {
-        private readonly DbContextApp _db;
-        private readonly NotificationSender _notificationSender;
-        private readonly CommentHistoryRepository _commentHistoryRepository;
-
-        public CommentsController(DbContextApp dbContextApp, NotificationSender notificationSender, CommentHistoryRepository commentHistoryRepository)
+        var post = await db.SimpleTextPosts.FindAsync(postId);
+        if (post == null)
         {
-            _db = dbContextApp;
-            _notificationSender = notificationSender;
-            _commentHistoryRepository = commentHistoryRepository;
+            return Unauthorized("Post does not exist");
         }
 
-        [IsolaattiAuth]
-        [HttpPost]
-        [Route("/api/Posting/Post/{postId:long}/Comment")]
-        public async Task<IActionResult> MakeComment(long postId, MakeCommentModel commentModel)
+        if (!post.UserId.Equals(User.Id) && post.Privacy == 1)
         {
-            var post = await _db.SimpleTextPosts.FindAsync(postId);
-            if (post == null)
-            {
-                return Unauthorized("Post does not exist");
-            }
-
-            if (!post.UserId.Equals(User.Id) && post.Privacy == 1)
-            {
-                return Unauthorized("Post is private");
-            }
-            var commentToMake = new Comment
-            {
-                TextContent = commentModel.Content,
-                UserId = User.Id,
-                PostId = post.Id,
-                TargetUser = post.UserId,
-                AudioId = commentModel.AudioId,
-                SquadId = post.SquadId
-            };
-
-            _db.Comments.Add(commentToMake);
-            await _db.SaveChangesAsync();
-
-            var commentDto = new CommentDto
-            {
-                Comment = commentToMake,
-                Username = _db.Users.FirstOrDefault(u => u.Id == commentToMake.UserId)?.Name
-            };
-
-            try
-            {
-                var clientId = Guid.Parse(Request.Headers["client-id"]);
-                _notificationSender.SendNewCommentEvent(commentDto, clientId);
-            }
-            catch (FormatException) { }
-
-            return Ok(commentDto);
+            return Unauthorized("Post is private");
         }
 
-        [IsolaattiAuth]
-        [HttpGet]
-        [Route("/api/Fetch/Post/{postId:long}/Comments")]
-        public async Task<IActionResult> GetComments(long postId, long lastId = long.MaxValue, int take = 10)
+        var commentToMake = new Comment
         {
-            var post = await _db.SimpleTextPosts.FindAsync(postId);
-            if (post == null || (post.Privacy == 1 && post.UserId != User.Id))
-                return Unauthorized("post does not exist or is private");
+            TextContent = commentModel.Content,
+            UserId = User.Id,
+            PostId = post.Id,
+            TargetUser = post.UserId,
+            AudioId = commentModel.AudioId,
+            SquadId = post.SquadId
+        };
 
-            IQueryable<Comment> comments = _db.Comments
-                .Where(comment => comment.PostId.Equals(post.Id) && comment.Id < lastId)
-                .OrderByDescending(c => c.Id);
+        db.Comments.Add(commentToMake);
+        await db.SaveChangesAsync();
 
-            var total = await comments.CountAsync();
-
-            var commentsList = comments
-                .Take(take)
-                .Select(co =>
-                    new CommentDto
-                    {
-                        Comment = co,
-                        Username = _db.Users.FirstOrDefault(u => u.Id == co.UserId).Name
-                    })
-                .ToList();
-
-            return Ok(new ContentListWrapper<CommentDto>
-            {
-                Data = commentsList,
-                MoreContent = total > commentsList.Count
-            });
-        }
-
-        [IsolaattiAuth]
-        [HttpGet]
-        [Route("/api/Fetch/Comments/{commentId:long}")]
-        public async Task<IActionResult> GetComment(long commentId)
+        var commentDto = new CommentDto
         {
-            var comment = await _db.Comments.FindAsync(commentId);
-            if (comment == null) return NotFound();
+            Comment = commentToMake,
+            Username = usersRepository.GetUsernameById(commentToMake.UserId) ?? ""
+        };
 
-            return Ok(new CommentDto
-            {
-                Comment = comment,
-                Username = _db.Users.FirstOrDefault(u => u.Id == comment.UserId)?.Name
-            });
+
+        return Ok(commentDto);
+    }
+
+    [IsolaattiAuth]
+    [HttpGet]
+    [Route("/api/Fetch/Post/{postId:long}/Comments")]
+    public async Task<IActionResult> GetComments(long postId, long lastId = long.MaxValue, int take = 10)
+    {
+        var post = await db.SimpleTextPosts.FindAsync(postId);
+        if (post == null || (post.Privacy == 1 && post.UserId != User.Id))
+            return Unauthorized("post does not exist or is private");
+
+        IQueryable<Comment> comments = db.Comments
+            .Where(comment => comment.PostId == post.Id && comment.ResponseForCommentId == null && comment.Id < lastId)
+            .OrderByDescending(c => c.Id);
+
+        var total = await comments.CountAsync();
+
+        var commentsList = comments
+            .Take(take)
+            .Select(co =>
+                new CommentDto
+                {
+                    Comment = co,
+                    Username = usersRepository.GetUsernameById(co.UserId) ?? ""
+                })
+            .ToList();
+
+        return Ok(new ContentListWrapper<CommentDto>
+        {
+            Data = commentsList,
+            MoreContent = total > commentsList.Count
+        });
+    }
+
+    [IsolaattiAuth]
+    [HttpGet]
+    [Route("/api/Fetch/Comments/{commentId:long}")]
+    public async Task<IActionResult> GetComment(long commentId)
+    {
+        var comment = await db.Comments.FindAsync(commentId);
+        if (comment == null) return NotFound();
+
+        return Ok(new CommentDto
+        {
+            Comment = comment,
+            Username = usersRepository.GetUsernameById(comment.UserId) ?? ""
+        });
+    }
+
+
+    [IsolaattiAuth]
+    [Route("Delete")]
+    [HttpPost]
+    public async Task<IActionResult> Delete(SingleIdentification identification)
+    {
+        var comment = await db.Comments.FindAsync(identification.Id);
+        if (comment == null) return NotFound("Comment not found");
+
+        if (comment.UserId != User.Id)
+        {
+            return Unauthorized("Access denied, cannot delete this comment, it is not yours");
         }
 
 
-        [IsolaattiAuth]
-        [Route("Delete")]
-        [HttpPost]
-        public async Task<IActionResult> Delete(SingleIdentification identification)
+        db.Comments.Remove(comment);
+        await db.SaveChangesAsync();
+
+        return Ok();
+    }
+
+    [IsolaattiAuth]
+    [HttpPost]
+    [Route("{commentId:long}/Edit")]
+    public async Task<IActionResult> EditComment(long commentId, MakeCommentModel updatedComment)
+    {
+        var commentToEdit = await db.Comments.FindAsync(commentId);
+        if (commentToEdit == null) return NotFound();
+        if (commentToEdit.UserId != User.Id)
         {
-            var comment = await _db.Comments.FindAsync(identification.Id);
-            if (comment == null) return NotFound("Comment not found");
-
-            if (comment.UserId != User.Id)
-            {
-                return Unauthorized("Access denied, cannot delete this comment, it is not yours");
-            }
-
-
-            _db.Comments.Remove(comment);
-            await _db.SaveChangesAsync();
-
-
-            try
-            {
-                var clientId = Guid.Parse(Request.Headers["client-id"]);
-                _notificationSender.SendDeleteCommentEvent(comment.PostId, comment.Id, clientId);
-            }
-            catch (FormatException) { }
-
-
-            return Ok();
+            return Unauthorized();
         }
 
-        [IsolaattiAuth]
-        [HttpPost]
-        [Route("{commentId:long}/Edit")]
-        public async Task<IActionResult> EditComment(long commentId, MakeCommentModel updatedComment)
+        await commentHistoryRepository.InsertModificationHistory(commentToEdit);
+
+        commentToEdit.AudioId = updatedComment.AudioId;
+        commentToEdit.TextContent = updatedComment.Content;
+        commentToEdit.Modified = true;
+        commentToEdit.Date = DateTime.UtcNow;
+
+        db.Comments.Update(commentToEdit);
+        await db.SaveChangesAsync();
+
+        var commentDto = new CommentDto
         {
-            var commentToEdit = await _db.Comments.FindAsync(commentId);
-            if (commentToEdit == null) return NotFound();
-            if (commentToEdit.UserId != User.Id)
-            {
-                return Unauthorized();
-            }
+            Comment = commentToEdit,
+            Username = usersRepository.GetUsernameById(commentToEdit.UserId) ?? ""
+        };
 
-            await _commentHistoryRepository.InsertModificationHistory(commentToEdit);
+        return Ok(commentDto);
+    }
 
-            commentToEdit.AudioId = updatedComment.AudioId;
-            commentToEdit.TextContent = updatedComment.Content;
-            commentToEdit.Modified = true;
-            commentToEdit.Date = DateTime.UtcNow;
+    [IsolaattiAuth]
+    [HttpPost]
+    [Route("/api/Comments/{commentId:long}/reply")]
+    public async Task<IActionResult> ReplyComment(long commentId, MakeCommentModel comment)
+    {
+        var commentToReply = await db.Comments.FindAsync(commentId);
 
-            _db.Comments.Update(commentToEdit);
-            await _db.SaveChangesAsync();
-
-            var commentDto = new CommentDto
-            {
-                Comment = commentToEdit,
-                Username = _db.Users.FirstOrDefault(u => u.Id == commentToEdit.UserId)?.Name
-            };
-            try
-            {
-                var clientId = Guid.Parse(Request.Headers["client-id"]);
-                _notificationSender.SendCommentModifiedEvent(commentDto, clientId);
-            }
-            catch (FormatException) { }
-
-            return Ok(commentDto);
+        if (commentToReply == null)
+        {
+            return Unauthorized("Comment does not exist");
         }
+
+        var post = await db.SimpleTextPosts.FindAsync(commentToReply.PostId);
+        if (post == null)
+        {
+            return Unauthorized("Post does not exist");
+        }
+
+        if (!post.UserId.Equals(User.Id) && post.Privacy == 1)
+        {
+            return Unauthorized("Post is private");
+        }
+
+        var commentToMake = new Comment
+        {
+            TextContent = comment.Content,
+            UserId = User.Id,
+            PostId = post.Id,
+            TargetUser = post.UserId,
+            AudioId = comment.AudioId,
+            SquadId = post.SquadId,
+            ResponseForCommentId = commentToReply.Id
+        };
+
+        db.Comments.Add(commentToMake);
+        await db.SaveChangesAsync();
+
+        var commentDto = new CommentDto
+        {
+            Comment = commentToMake,
+            Username = usersRepository.GetUsernameById(commentToMake.UserId) ?? ""
+        };
+
+        return Ok(commentDto);
+    }
+    
+    [IsolaattiAuth]
+    [HttpGet]
+    [Route("/api/Comments/{commentId:long}/replies")]
+
+    public async Task<IActionResult> GetCommentReplies(long commentId, long lastId = long.MaxValue, int take = 10)
+    {
+        var comment = await db.Comments.FindAsync(commentId);
+        if (comment == null)
+        {
+            return NotFound("Comment not found");
+        }
+        IQueryable<Comment> comments = db.Comments
+            .Where(c => c.ResponseForCommentId == commentId && c.Id < lastId)
+            .OrderByDescending(c => c.Id);
+        
+        var total = await comments.CountAsync();
+        
+        var commentsList = comments
+            .Take(take)
+            .Select(co =>
+                new CommentDto
+                {
+                    Comment = co,
+                    Username = usersRepository.GetUsernameById(co.UserId) ?? ""
+                })
+            .ToList();
+
+        return Ok(new ContentListWrapper<CommentDto>
+        {
+            Data = commentsList,
+            MoreContent = total > commentsList.Count
+        });
+        
     }
 }
