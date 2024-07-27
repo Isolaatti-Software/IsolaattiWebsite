@@ -50,7 +50,7 @@ public class MessengerController(DbContextApp db, IMessagingServer messagingServ
         var response = new RequestRegistrationDto();
         if (messengerAccounts.Count == 0)
         {
-            var newMessengerAccountUsername = $"{Utils.RandomData.GenerateRandomString(4)}-{User.UniqueUsername}";
+            var newMessengerAccountUsername = $"{Utils.RandomData.GenerateRandomString(4)}-{User.UniqueUsername}".ToLower();
             var newMessengerAccount = new OpenfireAccount()
             {
                 Id = newMessengerAccountUsername,
