@@ -12,4 +12,5 @@ public class Env
     public const string RabbitmqConfig = "RABBITMQ";
     public const string ClientsConfig = "CLIENTS_CONFIG";
     public const string HostConfig = "HOST_CONFIG";
+    public const string MessengerConfig = "MESSENGER_CONFIG";
 }

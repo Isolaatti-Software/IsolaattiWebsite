@@ -9,10 +9,12 @@ public class HttpClientSingleton
 
     public HttpClientSingleton()
     {
-        var socketHandler = new SocketsHttpHandler()
+        var httpClientHandler = new HttpClientHandler();
+        httpClientHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, sslPolicyErrors) =>
         {
-            PooledConnectionLifetime = TimeSpan.FromMinutes(2)
+            return true;
         };
-        Client = new HttpClient(socketHandler);
+        
+        Client = new HttpClient(httpClientHandler);
     }
 }

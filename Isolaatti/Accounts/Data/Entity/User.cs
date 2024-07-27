@@ -50,6 +50,7 @@ namespace Isolaatti.Accounts.Data.Entity
         
         [NotMapped]
         public FeedAudio? Audio { get; set; }
+        public string? MessengerId { get; set; }
 
     }
 }
