@@ -198,6 +198,7 @@ namespace Isolaatti
                     var messengerConfig = JsonSerializer.Deserialize<MessengerConfig>(messengerConfigJsonEnv);
                     config.ApiKey = messengerConfig.ApiKey;
                     config.OpenfireApiUrl = messengerConfig.OpenfireApiUrl;
+                    config.Domain = messengerConfig.Domain;
                 });
             }
             else
