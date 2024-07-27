@@ -4,12 +4,13 @@ using Isolaatti.Database.EF;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace Isolaatti.Messenger;
 
 [ApiController]
 [Route("/api/messenger")]
-public class MessengerController(DbContextApp db, IMessagingServer messagingServerApi) : IsolaattiController
+public class MessengerController(DbContextApp db, IMessagingServer messagingServerApi, IOptions<MessengerConfig> messengerConfig) : IsolaattiController
 {
     [IsolaattiAuth]
     [Route("information")]
@@ -20,16 +21,24 @@ public class MessengerController(DbContextApp db, IMessagingServer messagingServ
         {
             return NotFound(new
             {
-                message = "Account not registered in messenger"
+                message = "Account not registered in messenger. Send post to request_registration"
             });
         }
 
         var messengerAccount = await db.MessengerAccounts.FindAsync(User.MessengerId);
         if (messengerAccount == null)
         {
-            return NotFound();
+            // something happened, setting "MessengerId" on user null
+            User.MessengerId = null;
+            db.Users.Update(User);
+            await db.SaveChangesAsync();
+            return NotFound("Info not found. Send post to request_registration");
         }
-        return Ok(messengerAccount);
+        return Ok(new MessengerInfoDto()
+        {
+            Account = messengerAccount,
+            Domain = messengerConfig.Value.Domain
+        });
     }
 
     [IsolaattiAuth]
@@ -38,6 +47,7 @@ public class MessengerController(DbContextApp db, IMessagingServer messagingServ
     public async Task<IActionResult> RequestRegistration()
     {
         var messengerAccounts = db.MessengerAccounts.Where(ma => ma.Id.Equals(User.MessengerId)).ToList();
+        var response = new RequestRegistrationDto();
         if (messengerAccounts.Count == 0)
         {
             var newMessengerAccountUsername = $"{Utils.RandomData.GenerateRandomString(4)}-{User.UniqueUsername}";
@@ -49,21 +59,26 @@ public class MessengerController(DbContextApp db, IMessagingServer messagingServ
             User.MessengerId = newMessengerAccountUsername;
             db.Users.Update(User);
             db.MessengerAccounts.Add(newMessengerAccount);
-            var result = await messagingServerApi.CreateUser(newMessengerAccountUsername, User.Name, User.Email, newMessengerAccount.Password);
-            if (result)
+            var userCreatedSuccessfully = await messagingServerApi.CreateUser(newMessengerAccountUsername, User.Name, User.Email, newMessengerAccount.Password);
+            if (userCreatedSuccessfully)
             {
                 await db.SaveChangesAsync();
             }
             else
             {
-                return Problem("Could not create user on openfire");
+                return Problem("An error occurred when creating user on messenger");
             }
 
-            
+            response.Result = MessengerInfoDto.Success;
+            response.Account = newMessengerAccount;
         }
-        return Ok(new
+        else
         {
-            
-        });
+            response.Result = MessengerInfoDto.AlreadyExists;
+            response.Account = messengerAccounts[0];
+        }
+        
+        
+        return Ok(response);
     }
 }

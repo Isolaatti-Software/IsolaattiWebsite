@@ -43,8 +43,8 @@ public class OpenfireApi(HttpClientSingleton httpClient, IOptions<MessengerConfi
         try
         {
             var jsonContent = JsonContent.Create(dto);
-            logger.LogDebug(JsonSerializer.Serialize(dto));
-            var request = new HttpRequestMessage(HttpMethod.Post, new Uri($"{options.Value.OpenfireApiUrl}/v1/users"))
+            var url = new Uri($"{options.Value.OpenfireApiUrl}/v1/users");
+            var request = new HttpRequestMessage(HttpMethod.Post, url)
             {
                 Headers =
                 {
@@ -57,8 +57,12 @@ public class OpenfireApi(HttpClientSingleton httpClient, IOptions<MessengerConfi
             var response = await httpClient.Client.SendAsync(request);
             if (response.StatusCode == HttpStatusCode.Created)
             {
+                logger.LogInformation("Account created at openfire for user: \"{}\"", username);
                 return true;
             }
+            logger.LogError("Error creating account for user \"{}\": status code: {}, url: {} response string: \"{}\"", 
+                username, response.StatusCode, url.ToString(), await response.Content.ReadAsStringAsync());
+            return false;
         }
         catch (HttpRequestException)
         {
@@ -68,8 +72,5 @@ public class OpenfireApi(HttpClientSingleton httpClient, IOptions<MessengerConfi
         {
             return false;
         }
-        
-
-        return true;
     }
 }
