@@ -16,8 +16,8 @@ namespace Isolaatti.Messenger;
 
 public class Property
 {
-    public string Key;
-    public string Value;
+    public string Key { get; set; }
+    public string Value { get; set; }
 }
 public class CreateUserDto
 {
@@ -29,7 +29,7 @@ public class CreateUserDto
 }
 public class OpenfireApi(HttpClientSingleton httpClient, IOptions<MessengerConfig> options, ILogger<OpenfireApi> logger) : IMessagingServer
 {
-    public async Task<bool> CreateUser(string username, string name, string email, string password)
+    public async Task<bool> CreateUser(int userId, string username, string name, string email, string password)
     {
         logger.LogDebug(options.Value.ApiKey);
         var dto = new CreateUserDto()
@@ -38,7 +38,13 @@ public class OpenfireApi(HttpClientSingleton httpClient, IOptions<MessengerConfi
             Name = name,
             Username = username,
             Password = password,
-            Properties = []
+            Properties = [
+                new Property()
+                {
+                    Key = "Isolaatti.UserId",
+                    Value = userId.ToString()
+                }
+            ]
         };
         try
         {

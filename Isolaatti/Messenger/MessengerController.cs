@@ -59,7 +59,7 @@ public class MessengerController(DbContextApp db, IMessagingServer messagingServ
             User.MessengerId = newMessengerAccountUsername;
             db.Users.Update(User);
             db.MessengerAccounts.Add(newMessengerAccount);
-            var userCreatedSuccessfully = await messagingServerApi.CreateUser(newMessengerAccountUsername, User.Name, User.Email, newMessengerAccount.Password);
+            var userCreatedSuccessfully = await messagingServerApi.CreateUser(User.Id, newMessengerAccountUsername, User.Name, User.Email, newMessengerAccount.Password);
             if (userCreatedSuccessfully)
             {
                 await db.SaveChangesAsync();
