@@ -20,6 +20,7 @@ using Isolaatti.Messaging;
 using Isolaatti.Messenger;
 using Isolaatti.Middleware;
 using Isolaatti.Notifications.PushNotifications;
+using Isolaatti.Notifications.Realtime;
 using Isolaatti.Notifications.Services;
 using Isolaatti.RealtimeInteraction.Service;
 using Isolaatti.Recaptcha;
@@ -29,6 +30,7 @@ using Isolaatti.Squads.Repository;
 using Isolaatti.Tagging;
 using Isolaatti.Users.Repository;
 using Isolaatti.Utils.ActionFilters;
+using Isolaatti.Utils.HubFilters;
 using Isolaatti.Utils.PageFilters;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
@@ -36,6 +38,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -163,13 +166,7 @@ namespace Isolaatti
                     config.Site = recaptchaConfig.Site;
                     config.Secret = recaptchaConfig.Secret;
                 });
-                var isolaattiServicesKeysJsonEnvVar = Environment.GetEnvironmentVariable(Env.IsolaattiServiceKeys);
-                services.Configure<IsolaattiServicesKeys>(config =>
-                {
-                    var isolaattiServiceKeys =
-                        JsonSerializer.Deserialize<IsolaattiServicesKeys>(isolaattiServicesKeysJsonEnvVar);
-                    config.RealtimeService = isolaattiServiceKeys.RealtimeService;
-                });
+                
                 var rabbitmqConfigJsonEnvVar = Environment.GetEnvironmentVariable(Env.RabbitmqConfig);
                 services.Configure<RabbitmqConfig>(config =>
                 {
@@ -243,6 +240,10 @@ namespace Isolaatti
             services.AddScoped<FavoritesRepository>();
             services.AddScoped<TaggingService>();
             services.AddScoped<AccountRemovalService>();
+            services.AddSignalR(options =>
+            {
+                options.AddFilter<AuthFilter>();
+            });
             services.AddSingleton<IMessagingServer, OpenfireApi>();
             
             services.Configure<CookiePolicyOptions>(options =>
@@ -284,6 +285,7 @@ namespace Isolaatti
             {
                 endpoints.MapControllers();
                 endpoints.MapRazorPages();
+                endpoints.MapHub<NotificationsHub>("/realtime/notifications");
             });
         }
     }

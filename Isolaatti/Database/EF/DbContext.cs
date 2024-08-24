@@ -7,6 +7,7 @@ using Isolaatti.Messenger;
 using Isolaatti.Models;
 using Isolaatti.Notifications.Entity;
 using Isolaatti.Posting.Data;
+using Isolaatti.Realtime;
 using Isolaatti.Report.Entity;
 using Isolaatti.Search.Data;
 using Isolaatti.Squads.Data;
@@ -28,6 +29,10 @@ namespace Isolaatti.Database.EF
             modelBuilder.Entity<User>()
                 .HasIndex(u => u.UniqueUsername)
                 .HasFilter("'UniqueUsername' IS NOT NULL")
+                .IsUnique();
+
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.MessengerId)
                 .IsUnique();
 
             modelBuilder.Entity<FollowerRelation>()
@@ -76,6 +81,7 @@ namespace Isolaatti.Database.EF
         public DbSet<ReportEntity> Reports { get; set; }
         public DbSet<PostVersionEntity> PostVersions { get; set; }
         public DbSet<Session> Sessions { get; set; }
+        public DbSet<ConnectionIdUser> ConnectionIds { get; set; }
         public DbSet<OpenfireAccount> MessengerAccounts { get; set; }
     }
 }

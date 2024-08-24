@@ -21,14 +21,7 @@ namespace Isolaatti
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    var port = "5000";
-                    if (Environment.GetEnvironmentVariable("PORT") != null)
-                    {
-                        port = Environment.GetEnvironmentVariable("PORT");
-                    }
-
                     webBuilder.UseStartup<Startup>();
-                    webBuilder.UseUrls("http://*:" + port);
                 });
     }
 }

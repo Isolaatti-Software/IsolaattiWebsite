@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Isolaatti.Database.EF;
+using Isolaatti.Images.Service;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +11,7 @@ namespace Isolaatti.Messenger;
 
 [ApiController]
 [Route("/api/messenger")]
-public class MessengerController(DbContextApp db, IMessagingServer messagingServerApi, IOptions<MessengerConfig> messengerConfig) : IsolaattiController
+public class MessengerController(DbContextApp db, IMessagingServer messagingServerApi, IOptions<MessengerConfig> messengerConfig, ImagesService imagesService) : IsolaattiController
 {
     [IsolaattiAuth]
     [Route("information")]
@@ -80,5 +81,36 @@ public class MessengerController(DbContextApp db, IMessagingServer messagingServ
         
         
         return Ok(response);
+    }
+
+    [IsolaattiAuth]
+    [Route("users/{id}/profile_picture")]
+    [HttpGet]
+    public async Task<IActionResult> GetUserByMessengerId(string id, string mode = "original")
+    {
+        var user = db.Users.FirstOrDefault(u => u.MessengerId == id);
+
+        if (user == null)
+        {
+            return NotFound("No user found for messenger id " + id);
+        }
+        
+        string url;
+        if (user.ProfileImageId == null)
+        {
+            return Redirect(user?.ProfileImageUrl ?? "/res/imgs/avatar.svg");
+        }
+        
+        if(user.ProfileImageId == null && user.ProfileImageUrl != null)
+        {
+            url = user.ProfileImageUrl;
+        } 
+        else
+        {
+            url = await imagesService.GetImageDownloadUrl(user.ProfileImageId, mode);
+        }
+        
+
+        return Redirect(url);
     }
 }

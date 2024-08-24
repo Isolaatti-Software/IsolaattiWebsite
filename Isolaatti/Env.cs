@@ -2,8 +2,6 @@ namespace Isolaatti;
 
 public class Env
 {
-    public const string SendGridApiKeyEnvVar = "send_grid_api_key";
-    public const string IsolaattiServiceKeys = "IsolaattiServicesKeys";
     public const string RecaptchaConfig = "recaptcha";
     public const string ServersConfig = "servers";
     public const string MongoDbConfig = "mongodb_config";
