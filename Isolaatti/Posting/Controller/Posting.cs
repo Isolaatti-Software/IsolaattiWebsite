@@ -9,7 +9,7 @@ using Isolaatti.RealtimeInteraction.Service;
 using Isolaatti.Squads.Repository;
 using Isolaatti.Tagging;
 using Isolaatti.Utils;
-using Isolaatti.Utils.Attributes;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,7 +17,7 @@ namespace Isolaatti.Posting.Controller
 {
     [ApiController]
     [Route("/api/Posting")]
-    public class PostingController : IsolaattiController
+    public class PostingController : ProfileRequiredController
     {
         private readonly DbContextApp _db;
         private readonly NotificationSender _notificationSender;
@@ -32,7 +32,7 @@ namespace Isolaatti.Posting.Controller
             _taggingService = taggingService;
         }
 
-        [IsolaattiAuth]
+        
         [HttpPost]
         [Route("Make")]
         public async Task<IActionResult> Index(MakePostModel post)
@@ -49,7 +49,7 @@ namespace Isolaatti.Posting.Controller
                     });
                 }
 
-                if (!await _squads.UserBelongsToSquad(User.Id, post.SquadId.Value))
+                if (!await _squads.UserBelongsToSquad(Profile.Id, post.SquadId.Value))
                 {
                     return NotFound(new
                     {
@@ -62,7 +62,7 @@ namespace Isolaatti.Posting.Controller
             // Yep, here I can create the post
             var newPost = new Post()
             {
-                UserId = User.Id,
+                UserId = Profile.Id,
                 TextContent = post.Content,
                 Privacy = post.Privacy,
                 AudioId = post.AudioId,
@@ -87,7 +87,7 @@ namespace Isolaatti.Posting.Controller
             });
         }
 
-        [IsolaattiAuth]
+        
         [HttpPost]
         [Route("Edit")]
         public async Task<IActionResult> EditPost(EditPostModel editedPost)
@@ -97,7 +97,7 @@ namespace Isolaatti.Posting.Controller
             {
                 return NotFound("Post not found");
             }
-            if (existingPost.UserId != User.Id)
+            if (existingPost.UserId != Profile.Id)
             {
                 return Unauthorized("Post is not yours, cannot edit");
             }
@@ -125,7 +125,7 @@ namespace Isolaatti.Posting.Controller
                 UserName = _db.Users.FirstOrDefault(u => u.Id == existingPost.UserId)?.Name ?? "",
                 NumberOfComments = await _db.Comments.CountAsync(c => c.PostId == existingPost.Id),
                 NumberOfLikes = await _db.Likes.CountAsync(l => l.PostId == existingPost.Id),
-                Liked = _db.Likes.Any(l => l.UserId == User.Id && l.PostId == existingPost.Id),
+                Liked = _db.Likes.Any(l => l.UserId == Profile.Id && l.PostId == existingPost.Id),
                 SquadName = existingPost.SquadId == null ? null : _squads.GetSquadName(existingPost.SquadId)
             };
 
@@ -138,7 +138,7 @@ namespace Isolaatti.Posting.Controller
             return Ok(updatedPost);
         }
 
-        [IsolaattiAuth]
+        
         [HttpPost]
         [Route("Delete")]
         public async Task<IActionResult> DeletePost(SingleIdentification identification)
@@ -149,7 +149,7 @@ namespace Isolaatti.Posting.Controller
                 return NotFound();
             }
 
-            if (!post.UserId.Equals(User.Id))
+            if (!post.UserId.Equals(Profile.Id))
             {
                 return Unauthorized("You cannot delete a post that is not yours");
             }
@@ -176,7 +176,7 @@ namespace Isolaatti.Posting.Controller
         }
 
         [HttpGet]
-        [IsolaattiAuth]
+        
         [Route("Post/{postId:long}/Versions")]
         public async Task<IActionResult> GetPostVersions(long postId)
         {

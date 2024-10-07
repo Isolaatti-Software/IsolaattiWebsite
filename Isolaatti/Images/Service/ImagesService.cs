@@ -20,11 +20,11 @@ public class ImagesService
 {
     private readonly GoogleCloudStorageService _storage;
     private readonly ImagesRepository _imagesRepository;
-    private readonly IAccountsService _accounts;
+    private readonly ProfileService _accounts;
     private readonly UsersRepository _usersRepository;
 
     public ImagesService(GoogleCloudStorageService googleCloudStorageService, ImagesRepository imagesRepository,
-        IAccountsService accounts, UsersRepository usersRepository)
+        ProfileService accounts, UsersRepository usersRepository)
     {
         _storage = googleCloudStorageService;
         _imagesRepository = imagesRepository;
@@ -83,7 +83,7 @@ public class ImagesService
         if (image == null) return null;
 
         var imageFeed = new ImageFeed(image);
-        imageFeed.Username = _accounts.GetUsernameFromId(imageFeed.UserId);
+        //imageFeed.Username = _accounts.GetUsernameFromId(imageFeed.UserId);
 
         return imageFeed;
     }

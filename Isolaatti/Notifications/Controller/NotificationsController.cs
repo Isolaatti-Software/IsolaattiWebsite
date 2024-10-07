@@ -2,14 +2,14 @@ using System.Threading.Tasks;
 using Isolaatti.Notifications.Dto;
 using Isolaatti.Notifications.Services;
 using Isolaatti.Utils;
-using Isolaatti.Utils.Attributes;
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace Isolaatti.Controllers;
 
 [Route("/api/Notifications")]
 [ApiController]
-public class NotificationsController : IsolaattiController
+public class NotificationsController : ProfileRequiredController
 {
     private readonly NotificationsService _notifications;
     public NotificationsController(NotificationsService notifications)
@@ -17,50 +17,50 @@ public class NotificationsController : IsolaattiController
         _notifications = notifications;
     }
         
-    [IsolaattiAuth]
+    
     [HttpGet]
     [Route("list")]
     public IActionResult GetAll(long? after = null)
     {
         return Ok(new
         {
-            result = _notifications.GetUserNotifications(User.Id, after)
+            result = _notifications.GetUserNotifications(Profile.Id, after)
         });
     }
 
-    [IsolaattiAuth]
+    
     [HttpDelete]
     [Route("delete_notification")]
     public async Task<IActionResult> DeleteANotification(long id)
     {
-        await _notifications.DeleteNotification(User.Id, id);
+        await _notifications.DeleteNotification(Profile.Id, id);
         return Ok();
     }
 
-    [IsolaattiAuth]
+    
     [HttpPost]
     [Route("delete_many")]
     public async Task<IActionResult> DeleteManyNotifications(DeleteManyNotifications deleteManyNotificationsDto)
     {
-        await _notifications.DeleteNotification(User.Id, deleteManyNotificationsDto.Ids);
+        await _notifications.DeleteNotification(Profile.Id, deleteManyNotificationsDto.Ids);
         return Ok();
     }
 
-    [IsolaattiAuth]
+    
     [Route("Delete/All")]
     [HttpPost]
     public async Task<IActionResult> DeleteAll()
     {
-        await _notifications.DeleteAllNotifications(User.Id);
+        await _notifications.DeleteAllNotifications(Profile.Id);
         return Ok();
     }
 
-    [IsolaattiAuth]
+    
     [Route("MarkAsRead")]
     [HttpPost]
     public async Task<IActionResult> MarkAsRead(long notificationId)
     {
-        await _notifications.MarkAsRead(notificationId, User.Id);
+        await _notifications.MarkAsRead(notificationId, Profile.Id);
         return Ok();
     }
 }

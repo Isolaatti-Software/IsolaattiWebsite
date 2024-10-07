@@ -3,14 +3,14 @@ using System.Threading.Tasks;
 using Isolaatti.Squads.Dto;
 using Isolaatti.Squads.Repository;
 using Isolaatti.Utils;
-using Isolaatti.Utils.Attributes;
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace Isolaatti.Controllers;
 
 [ApiController]
 [Route("/api/badges")]
-public class BadgesController : IsolaattiController
+public class BadgesController : ProfileRequiredController
 {
     private readonly SquadJoinRequestsRepository _joinRequestsRepository;
     private readonly SquadInvitationsRepository _squadInvitationsRepository;
@@ -25,15 +25,15 @@ public class BadgesController : IsolaattiController
         _squadInvitationsRepository = squadInvitationsRepository;
     }
     
-    [IsolaattiAuth]
+    
     [HttpGet]
     [Route("squads")]
     public async Task<IActionResult> OfSquads()
     {
-        var squadsOfUser = _squadsRepository.GetSquadsUserOwns(User.Id).Select(squad => squad.Id).ToArray();
+        var squadsOfUser = _squadsRepository.GetSquadsUserOwns(Profile.Id).Select(squad => squad.Id).ToArray();
         var response = new SquadsBadgesStatusDto
         {
-            UnseenInvitations = await _squadInvitationsRepository.GetUnseenInvitationsForUser(User.Id),
+            UnseenInvitations = await _squadInvitationsRepository.GetUnseenInvitationsForUser(Profile.Id),
             UnseenRequests = await _joinRequestsRepository.GetUnseenRequestsForUser(squadsOfUser)
         };
         

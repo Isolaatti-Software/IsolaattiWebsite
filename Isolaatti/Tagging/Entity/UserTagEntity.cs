@@ -10,6 +10,6 @@ public class UserTagEntity
     public string Username { get; set; }
     public long PostId { get; set; }
     
-    public User TaggedUser { get; set; }
+    public Profile TaggedProfile { get; set; }
     public Post Post { get; set; }
 }

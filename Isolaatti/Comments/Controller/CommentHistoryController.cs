@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Isolaatti.Comments.Controller
 {
-    public class CommentHistoryController : IsolaattiController
+    public class CommentHistoryController : ProfileRequiredController
     {
         private readonly DbContextApp _db;
         private readonly CommentHistoryRepository _commentHistoryRepository;

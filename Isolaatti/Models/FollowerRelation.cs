@@ -6,10 +6,10 @@ namespace Isolaatti.Models
     public class FollowerRelation
     {
         public Guid Id { get; set; }
-        public int UserId { get; set; }
-        public int TargetUserId { get; set; }
+        public int ProfileId { get; set; }
+        public int TargetProfileId { get; set; }
         
-        public User User { get; set; }
-        public User TargetUser { get; set; }
+        public Profile Profile { get; set; }
+        public Profile TargetProfile { get; set; }
     }
 }

@@ -8,7 +8,7 @@ using Isolaatti.Images.Data;
 using Isolaatti.Images.Service;
 using Isolaatti.Squads.Repository;
 using Isolaatti.Utils;
-using Isolaatti.Utils.Attributes;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
@@ -17,14 +17,14 @@ namespace Isolaatti.Images.Controller;
 
 [ApiController]
 [Route("/api/images")]
-public class ImagesController : IsolaattiController
+public class ImagesController : ProfileRequiredController
 {
-    private readonly IAccountsService _accounts;
+    private readonly ProfileService _accounts;
     private readonly ImagesService _images;
     private readonly SquadsRepository _squadsRepository;
     private readonly DbContextApp _db;
 
-    public ImagesController(IAccountsService accounts, ImagesService images, SquadsRepository squadsRepository, DbContextApp db)
+    public ImagesController(ProfileService accounts, ImagesService images, SquadsRepository squadsRepository, DbContextApp db)
     {
         _accounts = accounts;
         _images = images;
@@ -41,7 +41,7 @@ public class ImagesController : IsolaattiController
         return url != null ? Redirect(url) : NotFound();
     }
 
-    [IsolaattiAuth]
+    
     [HttpPost]
     [Route("create")]
     public async Task<IActionResult> CreateImage([FromForm] IFormFile file, [FromForm] string name, [FromQuery] bool setAsProfile, [FromForm] Guid? squadId)
@@ -54,14 +54,14 @@ public class ImagesController : IsolaattiController
                 return BadRequest(new { error = "Squad doesn't exist, image not created" });
             }
 
-            if (!await _squadsRepository.UserBelongsToSquad(User.Id, squad.Id))
+            if (!await _squadsRepository.UserBelongsToSquad(Profile.Id, squad.Id))
             {
                 return Unauthorized(new { error = "User cannot set image to squad" });
             }
         }
 
-        var image = await _images.CreateImage(file.OpenReadStream(), User.Id, name.Trim(), squadId);
-        image.Username = User.Name;
+        var image = await _images.CreateImage(file.OpenReadStream(), Profile.Id, name.Trim(), squadId);
+        image.Username = Profile.Name;
         if (!setAsProfile) return Ok(image);
         if (squadId != null)
         {
@@ -69,8 +69,8 @@ public class ImagesController : IsolaattiController
         }
         else
         {
-            User.ProfileImageId = image.Id;
-            _db.Users.Update(User);
+            Profile.ProfileImageId = image.Id;
+            _db.Users.Update(Profile);
             await _db.SaveChangesAsync();
         }
         
@@ -101,7 +101,7 @@ public class ImagesController : IsolaattiController
         return Redirect(url);
     }
 
-    [IsolaattiAuth]
+    
     [HttpGet]
     [Route("of_user/{userId:int}")]
     public async Task<IActionResult> GetImagesOfUserById(int userId, string? lastId, int pageSize = 20)
@@ -112,7 +112,7 @@ public class ImagesController : IsolaattiController
         });
     }
 
-    [IsolaattiAuth]
+    
     [HttpGet]
     [Route("of_squad/{squadId:guid}")]
     public async Task<IActionResult> GetImagesOfSquadById(Guid squadId, string? lastId, int pageSize = 20)
@@ -123,7 +123,7 @@ public class ImagesController : IsolaattiController
         });
     }
 
-    [IsolaattiAuth]
+    
     [HttpPost]
     [Route("set_image_of_squad/{squadId:guid}")]
     public async Task<IActionResult> SetSquadImage(Guid squadId, [FromQuery] string imageId)
@@ -139,12 +139,12 @@ public class ImagesController : IsolaattiController
         return Ok();
     }
 
-    [IsolaattiAuth]
+    
     [HttpDelete]
     [Route("{imageId}")]
     public async Task<IActionResult> DeleteImage(string imageId)
     {
-        var result = await _images.DeleteImage(imageId, User.Id);
+        var result = await _images.DeleteImage(imageId, Profile.Id);
 
         return result switch
         {
@@ -156,22 +156,22 @@ public class ImagesController : IsolaattiController
         };
     }
 
-    [IsolaattiAuth]
+    
     [HttpPost]
     [Route("delete/delete_many")]
     public async Task<IActionResult> DeleteImages([FromBody] ImagesToDeleteDto imagesToDeleteDto)
     {
-        await _images.DeleteImages(imagesToDeleteDto.ImageIds, User.Id);
+        await _images.DeleteImages(imagesToDeleteDto.ImageIds, Profile.Id);
         
         return Ok();
     }
 
-    [IsolaattiAuth]
+    
     [HttpPost]
     [Route("{imageId}/rename")]
     public async Task<IActionResult> RenameImage(string imageId, SimpleStringData payload)
     {
-        var result = await _images.RenameImage(imageId, User.Id, payload.Data);
+        var result = await _images.RenameImage(imageId, Profile.Id, payload.Data);
 
         return result switch
         {

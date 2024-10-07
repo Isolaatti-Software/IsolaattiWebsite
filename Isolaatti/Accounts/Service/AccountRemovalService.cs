@@ -24,7 +24,7 @@ public class AccountRemovalService
     private readonly DbContextApp _db;
     private readonly EmailSenderMessaging _emailSender;
     private readonly ImagesService _imagesService;
-    private readonly IAccountsService _accountsService;
+
     private readonly AudiosService _audiosService;
     private readonly SquadInvitationsRepository _squadInvitationsRepository;
     private readonly SquadJoinRequestsRepository _squadJoinRequestsRepository;
@@ -34,8 +34,7 @@ public class AccountRemovalService
         DbContextApp db, 
         IOptions<HostConfig> optionsHostConfig, 
         EmailSenderMessaging emailSender, 
-        ImagesService imagesService, 
-        IAccountsService accountsService, 
+        ImagesService imagesService,
         AudiosService audiosService, 
         SquadInvitationsRepository squadInvitationsRepository, 
         SquadJoinRequestsRepository squadJoinRequestsRepository, 
@@ -45,7 +44,6 @@ public class AccountRemovalService
         _optionsHostConfig = optionsHostConfig;
         _emailSender = emailSender;
         _imagesService = imagesService;
-        _accountsService = accountsService;
         _audiosService = audiosService;
         _squadInvitationsRepository = squadInvitationsRepository;
         _squadJoinRequestsRepository = squadJoinRequestsRepository;
@@ -109,7 +107,6 @@ public class AccountRemovalService
 
         await DeleteAudios(accountRemovalRequest.UserId);
         await DeleteImages(accountRemovalRequest.UserId);
-        await DeleteSessions(accountRemovalRequest.UserId);
         await HandleUserRemovalFromSquads(accountRemovalRequest.UserId);
         await DeleteAccount(accountRemovalRequest.UserId);
         
@@ -121,11 +118,7 @@ public class AccountRemovalService
     {
         await _imagesService.DeleteUserImages(userId);
     }
-
-    private async Task DeleteSessions(int userId)
-    {
-        await _accountsService.RemoveAllSessions(userId, null);
-    }
+    
 
     private async Task DeleteAudios(int userId)
     {

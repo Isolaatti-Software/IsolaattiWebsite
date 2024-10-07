@@ -5,7 +5,7 @@ using Isolaatti.Database.EF;
 using Isolaatti.Posting.Data;
 using Isolaatti.Posting.Dto;
 using Isolaatti.Utils;
-using Isolaatti.Utils.Attributes;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,7 +13,7 @@ namespace Isolaatti.Tagging.Controller;
 
 [ApiController]
 [Route("/api/hashtags")]
-public class HashtagsController : IsolaattiController
+public class HashtagsController : ProfileRequiredController
 {
 
     private DbContextApp _db;
@@ -23,7 +23,7 @@ public class HashtagsController : IsolaattiController
     }
 
     
-    [IsolaattiAuth]
+    
     [HttpGet]
     [Route("hashtag/{hashtag}")]
     public async Task<IActionResult> GetHashtagPosts(string hashtag, [FromQuery] long after = 0, [FromQuery] int length = 20)
@@ -57,7 +57,7 @@ public class HashtagsController : IsolaattiController
             UserName = _db.Users.FirstOrDefault(u => u.Id == post.UserId).Name,
             NumberOfComments = post.Comments.Count,
             NumberOfLikes = post.Likes.Count,
-            Liked = _db.Likes.Any(l => l.UserId == User.Id && l.PostId == post.Id),
+            Liked = _db.Likes.Any(l => l.UserId == Profile.Id && l.PostId == post.Id),
             SquadName = post.Squad.Name
         });
         
@@ -70,7 +70,7 @@ public class HashtagsController : IsolaattiController
     }
     
     
-    [IsolaattiAuth]
+    
     [HttpGet]
     [Route("trending")]
     public async Task<IActionResult> GetTrendingHashtags()

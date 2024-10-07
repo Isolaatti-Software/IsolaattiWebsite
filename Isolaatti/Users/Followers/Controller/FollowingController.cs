@@ -9,7 +9,7 @@ using Isolaatti.Notifications.Services;
 using Isolaatti.Users.Followers.Dto;
 using Isolaatti.Users.Repository;
 using Isolaatti.Utils;
-using Isolaatti.Utils.Attributes;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,7 +17,7 @@ namespace Isolaatti.Users.Followers.Controller
 {
     [ApiController]
     [Route("/api/Following")]
-    public class FollowingController : IsolaattiController
+    public class FollowingController : ProfileRequiredController
     {
         private readonly DbContextApp Db;
         private readonly UsersRepository _usersRepository;
@@ -30,7 +30,7 @@ namespace Isolaatti.Users.Followers.Controller
             _notificationsService = notificationsService;
         }
         
-        [IsolaattiAuth]
+        
         [HttpPost]
         [Route("Follow")]
         public async Task<IActionResult> Index(SingleIdentification identification)
@@ -40,27 +40,27 @@ namespace Isolaatti.Users.Followers.Controller
 
             // create new relation only if there is not one already
             if (await Db.FollowerRelations.AnyAsync(rel =>
-                    rel.UserId.Equals(User.Id) && rel.TargetUserId.Equals(userToFollow.Id)))
+                    rel.ProfileId.Equals(Profile.Id) && rel.TargetProfileId.Equals(userToFollow.Id)))
             {
                 return Unauthorized("user already followed");
             }
 
             var followerRelation = new FollowerRelation
             {
-                UserId = User.Id,
-                TargetUserId = userToFollow.Id
+                ProfileId = Profile.Id,
+                TargetProfileId = userToFollow.Id
             };
 
             Db.FollowerRelations.Add(followerRelation);
             await Db.SaveChangesAsync();
 
-            _usersRepository.SetUserFollowsUser(User.Id, userToFollow.Id, true);
+            _usersRepository.SetUserFollowsUser(Profile.Id, userToFollow.Id, true);
 
             await _notificationsService.InsertNewFollowerNotification(followerRelation);
             return Ok(await GetFollowingInfo(userToFollow.Id));
         }
 
-        [IsolaattiAuth]
+        
         [Route("Unfollow")]
         [HttpPost]
         public async Task<IActionResult> Unfollow(SingleIdentification identification)
@@ -72,11 +72,11 @@ namespace Isolaatti.Users.Followers.Controller
             {
                 // finds and removes follower relation
                 var followerRelation = await Db.FollowerRelations.SingleAsync(relation =>
-                    relation.UserId.Equals(User.Id) && relation.TargetUserId.Equals(userToUnfollow.Id));
+                    relation.ProfileId.Equals(Profile.Id) && relation.TargetProfileId.Equals(userToUnfollow.Id));
                 Db.FollowerRelations.Remove(followerRelation);
 
                 await Db.SaveChangesAsync();
-                _usersRepository.SetUserFollowsUser(User.Id, userToUnfollow.Id, false);
+                _usersRepository.SetUserFollowsUser(Profile.Id, userToUnfollow.Id, false);
                 
                 return Ok(await GetFollowingInfo(userToUnfollow.Id));
             }
@@ -88,7 +88,7 @@ namespace Isolaatti.Users.Followers.Controller
 
         
 
-        [IsolaattiAuth]
+        
         [Route("FollowingsOf/{userId:int}")]
         [HttpGet]
         public IActionResult Following(int userId, int lastId)
@@ -96,10 +96,10 @@ namespace Isolaatti.Users.Followers.Controller
             var listOfFollowing =
                 (from _user in Db.Users
                  from _relation in Db.FollowerRelations
-                 where _relation.UserId == userId && _user.Id == _relation.TargetUserId && _relation.TargetUserId > lastId
+                 where _relation.ProfileId == userId && _user.Id == _relation.TargetProfileId && _relation.TargetProfileId > lastId
                  select new UserFeedDto
                  {
-                     Id = _relation.TargetUserId,
+                     Id = _relation.TargetProfileId,
                      Name = _user.Name,
                      ImageId = _user.ProfileImageId,
                      Following = false
@@ -107,12 +107,12 @@ namespace Isolaatti.Users.Followers.Controller
                  })
                     .OrderBy(u => u.Id)
                     .Take(10)
-                    .ToList().Select(u => { u.Following = _usersRepository.GetUserFollowsUser(User.Id, u.Id); return u; });
+                    .ToList().Select(u => { u.Following = _usersRepository.GetUserFollowsUser(Profile.Id, u.Id); return u; });
 
             return Ok(listOfFollowing);
         }
 
-        [IsolaattiAuth]
+        
         [Route("FollowersOf/{userId:int}")]
         [HttpGet]
         public IActionResult Followers(int userId, int lastId)
@@ -120,17 +120,17 @@ namespace Isolaatti.Users.Followers.Controller
             var listOfFollowers =
                 (from _user in Db.Users
                     from _relation in Db.FollowerRelations
-                    where _relation.TargetUserId == userId && _relation.UserId == _user.Id && _relation.UserId > lastId
+                    where _relation.TargetProfileId == userId && _relation.ProfileId == _user.Id && _relation.ProfileId > lastId
                     select new UserFeedDto
                     {
-                        Id = _relation.UserId,
+                        Id = _relation.ProfileId,
                         Name = _user.Name,
                         ImageId = _user.ProfileImageId,
                         Following = true
                     })
                     .OrderBy(u => u.Id)
                     .Take(10)
-                    .ToList().Select(u => { u.Following = _usersRepository.GetUserFollowsUser(User.Id, u.Id); return u; });
+                    .ToList().Select(u => { u.Following = _usersRepository.GetUserFollowsUser(Profile.Id, u.Id); return u; });
             return Ok(listOfFollowers);
         }
 
@@ -138,8 +138,8 @@ namespace Isolaatti.Users.Followers.Controller
         {
             return new FollowDto() 
             {
-                ThisUserIsFollowingMe = await Db.FollowerRelations.AnyAsync(fr => fr.TargetUserId == User.Id && fr.UserId == userId),
-                FollowingThisUser = await Db.FollowerRelations.AnyAsync(fr => fr.UserId == User.Id && fr.TargetUserId == userId)
+                ThisUserIsFollowingMe = await Db.FollowerRelations.AnyAsync(fr => fr.TargetProfileId == Profile.Id && fr.ProfileId == userId),
+                FollowingThisUser = await Db.FollowerRelations.AnyAsync(fr => fr.ProfileId == Profile.Id && fr.TargetProfileId == userId)
             };
         }
     }

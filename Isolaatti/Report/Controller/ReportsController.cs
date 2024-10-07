@@ -4,7 +4,7 @@ using Isolaatti.Database.EF;
 using Isolaatti.Report.Dto;
 using Isolaatti.Report.Entity;
 using Isolaatti.Utils;
-using Isolaatti.Utils.Attributes;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,16 +12,16 @@ namespace Isolaatti.Report.Controller;
 
 [ApiController]
 [Route("/api/reports")]
-public class ReportsController(DbContextApp db) : IsolaattiController
+public class ReportsController(DbContextApp db) : ProfileRequiredController
 {
     [HttpPost]
-    [IsolaattiAuth]
+    
     public async Task<IActionResult> CreateReport([FromBody] CreateReportDto createReportDto)
     {
         var entity = new ReportEntity()
         {
             ReportReason = createReportDto.Reason,
-            UserId = User.Id,
+            UserId = Profile.Id,
             Status = ReportEntity.ReportStatus.Open,
             Feedback = "",
             ContentType = createReportDto.ContentType,
@@ -34,11 +34,11 @@ public class ReportsController(DbContextApp db) : IsolaattiController
     }
 
     [HttpGet]
-    [IsolaattiAuth]
+    
     [Route("by_me")]
     public async Task<IActionResult> GetReportsByUser()
     {
-        var reports = await db.Reports.Where(report => report.UserId == User.Id).ToListAsync();
+        var reports = await db.Reports.Where(report => report.UserId == Profile.Id).ToListAsync();
 
         return Ok(new
         {

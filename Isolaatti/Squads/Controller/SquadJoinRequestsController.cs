@@ -8,21 +8,21 @@ using Isolaatti.Enums;
 using Isolaatti.Squads.Dto;
 using Isolaatti.Squads.Repository;
 using Isolaatti.Utils;
-using Isolaatti.Utils.Attributes;
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace Isolaatti.Squads.Controller;
 
 [ApiController]
 [Route("/api/Squads/JoinRequests")]
-public class SquadJoinRequestsController : IsolaattiController
+public class SquadJoinRequestsController : ProfileRequiredController
 {
-    private readonly IAccountsService _accounts;
+    private readonly ProfileService _accounts;
     private readonly DbContextApp _db;
     private readonly SquadJoinRequestsRepository _joinRequestsRepository;
     private readonly SquadsRepository _squadsRepository;
     
-    public SquadJoinRequestsController(IAccountsService accounts, 
+    public SquadJoinRequestsController(ProfileService accounts, 
         DbContextApp dbContextApp, 
         SquadJoinRequestsRepository joinRequestsRepository,
         SquadsRepository squadsRepository)
@@ -33,28 +33,28 @@ public class SquadJoinRequestsController : IsolaattiController
         _squadsRepository = squadsRepository;
     }
     
-    [IsolaattiAuth]
+    
     [HttpGet]
     [Route("Search")]
     public async Task<IActionResult> Search(Guid squadId)
     {
         return Ok(new
         {
-            request = await _joinRequestsRepository.SearchJoinRequest(squadId, User.Id)
+            request = await _joinRequestsRepository.SearchJoinRequest(squadId, Profile.Id)
         });
     }
 
-    [IsolaattiAuth]
+    
     [HttpPost]
     [Route("/api/Squads/{squadId:guid}/RequestJoin")]
     public async Task<IActionResult> Create(Guid squadId, CreateJoinRequest payload)
     {
-        if (await _joinRequestsRepository.SameJoinRequestExists(squadId, User.Id))
+        if (await _joinRequestsRepository.SameJoinRequestExists(squadId, Profile.Id))
         {
             return Problem("Already sent join request. User has to wait until accepted.");
         }
 
-        await _joinRequestsRepository.CreateJoinRequest(squadId, User.Id, payload.Message);
+        await _joinRequestsRepository.CreateJoinRequest(squadId, Profile.Id, payload.Message);
         
         return Ok();
     }
@@ -65,7 +65,7 @@ public class SquadJoinRequestsController : IsolaattiController
     /// <param name="sessionToken">Auth token</param>
     /// <param name="requestId">Join request id</param>
     /// <returns></returns>
-    [IsolaattiAuth]
+    
     [HttpDelete]
     [Route("{requestId}/Remove")]
     public async Task<IActionResult> Remove(string requestId)
@@ -76,7 +76,7 @@ public class SquadJoinRequestsController : IsolaattiController
             return NotFound();
         }
 
-        if (joinRequest.SenderUserId != User.Id)
+        if (joinRequest.SenderUserId != Profile.Id)
         {
             return Unauthorized(new
             {
@@ -99,7 +99,7 @@ public class SquadJoinRequestsController : IsolaattiController
     /// <param name="action">'Accept' or 'Reject' are the only valid actions</param>
     /// <param name="payload">Object containing the reason message. The string can be null but not the object.</param>
     /// <returns></returns>
-    [IsolaattiAuth]
+    
     [HttpPost]
     [Route("{requestId}/Reject")]
     public async Task<IActionResult> Reject(string requestId, SimpleStringData payload)
@@ -122,7 +122,7 @@ public class SquadJoinRequestsController : IsolaattiController
         }
 
         // Validates the user is admin
-        if (squad.UserId != User.Id)
+        if (squad.UserId != Profile.Id)
         {
             return Unauthorized(new
             {
@@ -137,9 +137,10 @@ public class SquadJoinRequestsController : IsolaattiController
         return Ok(new
         {
             request = joinRequest,
-            senderName = _accounts.GetUsernameFromId(joinRequest.SenderUserId),
+            //senderName = _accounts.GetUsernameFromId(joinRequest.SenderUserId),
+            senderName = "",
             squadName = _squadsRepository.GetSquadName(joinRequest.SquadId),
-            admins = squad.UserId == User.Id
+            admins = squad.UserId == Profile.Id
         });
     }
 
@@ -150,7 +151,7 @@ public class SquadJoinRequestsController : IsolaattiController
     /// <param name="squadId">Squad id</param>
     /// <param name="lastId">Last item served for pagination</param>
     /// <returns></returns>
-    [IsolaattiAuth]
+    
     [HttpGet]
     [Route("/api/Squads/{squadId:guid}/JoinRequests")]
     public async Task<IActionResult> ListRequestsOfSquad(Guid squadId, string lastId = null)
@@ -164,8 +165,8 @@ public class SquadJoinRequestsController : IsolaattiController
             });
         }
 
-        var userIsAdminOrMember = squad.UserId.Equals(User.Id) 
-                                  || await _squadsRepository.UserBelongsToSquad(User.Id, squadId);
+        var userIsAdminOrMember = squad.UserId.Equals(Profile.Id) 
+                                  || await _squadsRepository.UserBelongsToSquad(Profile.Id, squadId);
         if (!userIsAdminOrMember)
         {
             return Unauthorized(new
@@ -182,7 +183,7 @@ public class SquadJoinRequestsController : IsolaattiController
             request,
             senderName = _db.Users.Where(u => u.Id == request.SenderUserId).Select(u => u.Name).FirstOrDefault(),
             squadName = _squadsRepository.GetSquadName(request.SquadId),
-            admins = squad.UserId == User.Id
+            admins = squad.UserId == Profile.Id
         }));
     }
 
@@ -192,17 +193,18 @@ public class SquadJoinRequestsController : IsolaattiController
     /// <param name="sessionToken">Auth token</param>
     /// <param name="lastId">Last join request served id for pagination.</param>
     /// <returns></returns>
-    [IsolaattiAuth]
+    
     [HttpGet]
     [Route("MyJoinRequests")]
     public async Task<IActionResult> ListRequestsMadeOfUser(string lastId = null)
     {
-        var joinRequests = await _joinRequestsRepository.GetJoinRequestsOfUser(User.Id, lastId);
+        var joinRequests = await _joinRequestsRepository.GetJoinRequestsOfUser(Profile.Id, lastId);
         
         return Ok(joinRequests.Select(request => new
         {
             request,
-            senderName = _accounts.GetUsernameFromId(request.SenderUserId),
+            //senderName = _accounts.GetUsernameFromId(request.SenderUserId),
+            senderName = "",
             squadName = _squadsRepository.GetSquadName(request.SquadId),
             admins = false
         }));
@@ -213,23 +215,24 @@ public class SquadJoinRequestsController : IsolaattiController
     /// <param name="sessionToken">Auth token</param>
     /// <param name="lastId">Last join request served id for pagination.</param>
     /// <returns></returns>
-    [IsolaattiAuth]
+    
     [HttpGet]
     [Route("JoinRequestsForMe")]
     public async Task<IActionResult> ListRequestsMadeForUser(string lastId = null)
     {
-        var joinRequests = await _joinRequestsRepository.GetJoinRequestsForUser(User.Id, lastId);
+        var joinRequests = await _joinRequestsRepository.GetJoinRequestsForUser(Profile.Id, lastId);
         
         return Ok(joinRequests.Select(request => new
         {
             request,
-            senderName = _accounts.GetUsernameFromId(request.SenderUserId),
+            //senderName = _accounts.GetUsernameFromId(request.SenderUserId),
+            senderName = "",
             squadName = _squadsRepository.GetSquadName(request.SquadId),
             admins = true
         }));
     }
 
-    [IsolaattiAuth]
+    
     [HttpPost]
     [Route("{requestId}/Accept")]
     public async Task<IActionResult> AcceptJoinRequest(string requestId, SimpleStringData message)
@@ -242,7 +245,7 @@ public class SquadJoinRequestsController : IsolaattiController
         }
 
         var squad = await _squadsRepository.GetSquad(joinRequest.SquadId);
-        if (squad.UserId != User.Id)
+        if (squad.UserId != Profile.Id)
         {
             return Unauthorized();
         }
@@ -256,9 +259,10 @@ public class SquadJoinRequestsController : IsolaattiController
             return Ok(new
             {
                 request = joinRequest,
-                senderName = _accounts.GetUsernameFromId(joinRequest.SenderUserId),
+                //senderName = _accounts.GetUsernameFromId(joinRequest.SenderUserId),
+                senderName = "",
                 squadName = _squadsRepository.GetSquadName(joinRequest.SquadId),
-                admins = squad.UserId == User.Id
+                admins = squad.UserId == Profile.Id
             });
         }
         return NotFound();

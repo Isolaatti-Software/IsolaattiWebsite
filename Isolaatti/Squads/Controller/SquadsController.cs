@@ -7,7 +7,7 @@ using Isolaatti.Enums;
 using Isolaatti.Squads.Dto;
 using Isolaatti.Squads.Repository;
 using Isolaatti.Utils;
-using Isolaatti.Utils.Attributes;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,7 +15,7 @@ namespace Isolaatti.Squads.Controller;
 
 [ApiController]
 [Route("/api/Squads")]
-public class SquadsController : IsolaattiController
+public class SquadsController : ProfileRequiredController
 {
     private readonly SquadsRepository _squadsRepository;
     private readonly SquadInvitationsRepository _squadInvitationsRepository;
@@ -35,16 +35,16 @@ public class SquadsController : IsolaattiController
         _emailSenderMessaging = emailSenderMessaging;
     }
 
-    [IsolaattiAuth]
+    
     [HttpPost]
     [Route("Create")]
     public async Task<IActionResult> MakeSquad(SquadCreationRequest payload)
     {
-        var creationResult = await _squadsRepository.MakeSquad(User.Id, payload);
+        var creationResult = await _squadsRepository.MakeSquad(Profile.Id, payload);
         return Ok(creationResult);
     }
     
-    [IsolaattiAuth]
+    
     [HttpGet]
     [Route("{squadId:guid}")]
     public async Task<IActionResult> GetSquad(Guid squadId)
@@ -59,25 +59,25 @@ public class SquadsController : IsolaattiController
             squad = squad,
             state = new SquadStateDto()
             {
-                IsOwner = squad.UserId == User.Id
+                IsOwner = squad.UserId == Profile.Id
             }
         });
     }
 
-    [IsolaattiAuth]
+    
     [HttpGet]
     [Route("{squadId:guid}/MyState")]
     public async Task<IActionResult> GetSquadState(Guid squadId)
     {
-        return Ok(await _squadsRepository.GetSquadState(squadId, User.Id));
+        return Ok(await _squadsRepository.GetSquadState(squadId, Profile.Id));
     }
     
-    [IsolaattiAuth]
+    
     [HttpDelete]
     [Route("{squadId:guid}")]
     public async Task<IActionResult> RemoveSquad(Guid squadId)
     {
-        if (!await _squadsRepository.ValidateSquadOwner(squadId, User.Id))
+        if (!await _squadsRepository.ValidateSquadOwner(squadId, Profile.Id))
         {
             return Unauthorized(new { error = "This squad cannot by deleted by this user." });
         }
@@ -89,7 +89,7 @@ public class SquadsController : IsolaattiController
         return Ok();
     }
     
-    [IsolaattiAuth]
+    
     [HttpPost]
     [Route("{squadId:guid}/Invite")]
     public async Task<IActionResult> MakeInvitation(Guid squadId, SquadInvitationCreationRequest payload)
@@ -106,12 +106,12 @@ public class SquadsController : IsolaattiController
             return NotFound(new { error = "User does not exist." });
         }
 
-        if (await _squadInvitationsRepository.SameInvitationExists(squad.Id, User.Id, recipientUser.Id))
+        if (await _squadInvitationsRepository.SameInvitationExists(squad.Id, Profile.Id, recipientUser.Id))
         {
             return Ok(new { error = "Invitation had already been sent." });
         }
         await _squadInvitationsRepository
-            .CreateInvitation(squadId, User.Id, payload.UserId, payload.Message);
+            .CreateInvitation(squadId, Profile.Id, payload.UserId, payload.Message);
 
         _emailSenderMessaging.SendEmail(
             EmailTemplates.NotificationsAddress, 
@@ -119,12 +119,12 @@ public class SquadsController : IsolaattiController
             recipientUser.Email, 
             recipientUser.Name, 
             "Invitación a squad", 
-            string.Format(EmailTemplates.InvitationEmail, User.UniqueUsername, squad.Name));
+            string.Format(EmailTemplates.InvitationEmail, Profile.UniqueUsername, squad.Name));
         
         return Ok(new { result = "Invitation sent." });
     }
 
-    [IsolaattiAuth]
+    
     [HttpPost]
     [Route("{squadId:guid}/InviteMany")]
     public async Task<IActionResult> MakeInvitations(Guid squadId, SquadInvitationsCreationRequest payload)
@@ -163,31 +163,31 @@ public class SquadsController : IsolaattiController
                 u.email, 
                 u.displayName, 
                 "Invitación a squad", 
-                string.Format(EmailTemplates.InvitationEmail, User.UniqueUsername, squad.Name));
+                string.Format(EmailTemplates.InvitationEmail, Profile.UniqueUsername, squad.Name));
         }
 
-        await _squadInvitationsRepository.CreateInvitations(squadId, User.Id, users.Select(u => u.id), payload.Message);
+        await _squadInvitationsRepository.CreateInvitations(squadId, Profile.Id, users.Select(u => u.id), payload.Message);
         return Ok(new { result = "Invitations send. Fake ids or ids that had already been used, if any, were omitted."});
     }
     
 
-    [IsolaattiAuth]
+    
     [HttpGet]
     [Route("MySquads")]
     public async Task<IActionResult> GetSquadOfUserAdmins(Guid? lastId)
     {
-        return Ok(await _squadsRepository.GetSquadsUserOwns(User.Id, lastId).ToListAsync());
+        return Ok(await _squadsRepository.GetSquadsUserOwns(Profile.Id, lastId).ToListAsync());
     }
 
-    [IsolaattiAuth]
+    
     [HttpGet]
     [Route("SquadsBelong")]
     public async Task<IActionResult> GetSquadsOfUser(Guid? lastId)
     {
-        return Ok(_squadsRepository.GetSquadUserBelongs(User.Id, lastId));
+        return Ok(_squadsRepository.GetSquadUserBelongs(Profile.Id, lastId));
     }
 
-    [IsolaattiAuth]
+    
     [HttpPost]
     [Route("{squadId:guid}/Update")]
     public async Task<IActionResult> UpdateSquad(Guid squadId, SquadUpdateInfoRequest payload)
@@ -198,7 +198,7 @@ public class SquadsController : IsolaattiController
             return NotFound(new { error = "Squad does not exist" });
         }
 
-        if (!squad.UserId.Equals(User.Id))
+        if (!squad.UserId.Equals(Profile.Id))
         {
             return Unauthorized(new { error = "Squad cannot be updated by this user" });
         }
@@ -210,7 +210,7 @@ public class SquadsController : IsolaattiController
         });
     }
 
-    [IsolaattiAuth]
+    
     [HttpPost]
     [Route("{squadId:guid}/UpdatePrivacyTo/{privacy}")]
     public async Task<IActionResult> UpdatePrivacy(Guid squadId, string privacy)
@@ -234,7 +234,7 @@ public class SquadsController : IsolaattiController
             return NotFound(new { error = "Squad does not exist" });
         }
 
-        if (!squad.UserId.Equals(User.Id))
+        if (!squad.UserId.Equals(Profile.Id))
         {
             return Unauthorized(new { error = "Squad cannot be updated by this user" });
         }

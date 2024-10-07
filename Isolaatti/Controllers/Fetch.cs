@@ -13,7 +13,7 @@ using Isolaatti.Posting.Dto;
 using Isolaatti.Squads.Repository;
 using Isolaatti.Users.Repository;
 using Isolaatti.Utils;
-using Isolaatti.Utils.Attributes;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,7 +21,7 @@ namespace Isolaatti.Controllers
 {
     [ApiController]
     [Route("/api/[controller]")]
-    public class Fetch : IsolaattiController
+    public class Fetch : ProfileRequiredController
     {
         private readonly DbContextApp _db;
         private readonly SquadsRepository _squads;
@@ -39,12 +39,12 @@ namespace Isolaatti.Controllers
 
         
 
-        [IsolaattiAuth]
+        
         [HttpGet]
         [Route("PostsOfUser/{userId:int}")]
         public async Task<IActionResult> GetPosts(int userId, int length = 30, long lastId = -1, bool olderFirst = false, string? filterJson = null)
         {
-            User? requestedAuthor = null;
+            Profile? requestedAuthor = null;
 
             PostFilterDto? filter = null;
             
@@ -56,7 +56,7 @@ namespace Isolaatti.Controllers
             
 
             IQueryable<Post> posts;
-            if (User.Id == userId)
+            if (Profile.Id == userId)
             {
                 /*
                  * Composition of query
@@ -64,7 +64,7 @@ namespace Isolaatti.Controllers
                  * 2. Order
                  * 3. Paging by cursor
                  */
-                 posts = _db.SimpleTextPosts.Where(post => post.UserId == User.Id);
+                 posts = _db.SimpleTextPosts.Where(post => post.UserId == Profile.Id);
                  if (filter != null)
                  {
                      posts = filter.IncludeAudio switch
@@ -182,7 +182,7 @@ namespace Isolaatti.Controllers
                     UserName = u.Name,
                     NumberOfComments = post.Comments.Count,
                     NumberOfLikes = post.Likes.Count,
-                    Liked = _db.Likes.Any(l => l.UserId == User.Id && l.PostId == post.Id),
+                    Liked = _db.Likes.Any(l => l.UserId == Profile.Id && l.PostId == post.Id),
                     SquadName = post.Squad.Name,
                 };
 
@@ -208,7 +208,7 @@ namespace Isolaatti.Controllers
             });
         }
 
-        [IsolaattiAuth]
+        
         [HttpGet]
         [Route("Post/{postId:long}")]
         public async Task<IActionResult> GetPost(long postId)
@@ -224,10 +224,10 @@ namespace Isolaatti.Controllers
                 .Select(p => new PostDto
                 {
                     Post = p,
-                    UserName = p.User.Name,
+                    UserName = p.Profile.Name,
                     NumberOfComments = p.Comments.Count,
                     NumberOfLikes = p.Likes.Count,
-                    Liked = _db.Likes.Any(l => l.UserId == User.Id && l.PostId == p.Id),
+                    Liked = _db.Likes.Any(l => l.UserId == Profile.Id && l.PostId == p.Id),
                     SquadName = p.Squad.Name
                 })
                 .FirstOrDefault();
@@ -236,7 +236,7 @@ namespace Isolaatti.Controllers
             // This post seems to be from a Squad, let's verify user is authorized to see it
             if (post!.Post.SquadId != null) // at this point post should not be null
             {
-                if (!await _squads.UserBelongsToSquad(User.Id, post.Post.SquadId.Value))
+                if (!await _squads.UserBelongsToSquad(Profile.Id, post.Post.SquadId.Value))
                 {
                     return Unauthorized(new
                     {
@@ -251,14 +251,14 @@ namespace Isolaatti.Controllers
 
 
 
-        [IsolaattiAuth]
+        
         [HttpGet]
         [Route("Post/{postId:long}/LikedBy")]
         public async Task<IActionResult> GetPostLikedBy(long postId)
         {
             
             var post = await _db.SimpleTextPosts.FindAsync(postId);
-            if (post == null || (post.Privacy == 1 && post.UserId != User.Id)) return NotFound("post not found");
+            if (post == null || (post.Privacy == 1 && post.UserId != Profile.Id)) return NotFound("post not found");
 
             var likedBy = (from like in _db.Likes
                 from account in _db.Users
@@ -273,13 +273,23 @@ namespace Isolaatti.Controllers
                 // this makes another database roundtrip only if this query is not cached
                 .Select(u => 
                 { 
-                    u.Following = _usersRepository.GetUserFollowsUser(User.Id, u.Id); 
+                    u.Following = _usersRepository.GetUserFollowsUser(Profile.Id, u.Id); 
                     return u; 
                 });
 
             return Ok(new
             {
                 result = likedBy
+            });
+        }
+
+        [Route("/api/claims")]
+        [HttpGet]
+        public IActionResult GetClaims()
+        {
+            return Ok(new
+            {
+                claims = User.Claims.Select(claim => new {claim.Type, claim.Value})
             });
         }
     }

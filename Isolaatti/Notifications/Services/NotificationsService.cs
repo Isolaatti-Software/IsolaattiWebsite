@@ -148,12 +148,12 @@ public class NotificationsService
     {
         var notificationToInsert = new NotificationEntity()
         {
-            UserId = followerRelation.TargetUserId,
+            UserId = followerRelation.TargetProfileId,
             Data = JsonSerializer.SerializeToDocument(new Dictionary<string, string>()
             {
                 { NotificationEntity.KeyType, NotificationEntity.TypeFollower },
-                { NotificationEntity.KeyFollowerUserId, followerRelation.UserId.ToString() },
-                { NotificationEntity.KeyFollowerName, _usersRepository.GetUsernameById(followerRelation.UserId) ?? "" }
+                { NotificationEntity.KeyFollowerUserId, followerRelation.ProfileId.ToString() },
+                { NotificationEntity.KeyFollowerName, _usersRepository.GetUsernameById(followerRelation.ProfileId) ?? "" }
             }),
             RelatedNotifications = Array.Empty<long>()
         };
@@ -164,7 +164,7 @@ public class NotificationsService
                 && notification.Data.RootElement.GetProperty(NotificationEntity.KeyType).GetString() ==
                 NotificationEntity.TypeFollower
                 && notification.Data.RootElement.GetProperty(NotificationEntity.KeyFollowerUserId).GetString() ==
-                followerRelation.UserId.ToString()).Select(existingNotification => existingNotification.Id).ToArray();
+                followerRelation.ProfileId.ToString()).Select(existingNotification => existingNotification.Id).ToArray();
 
         if (existingNotifications.Length != 0)
         {
@@ -177,7 +177,7 @@ public class NotificationsService
 
         await _db.SaveChangesAsync();
         
-        _notificationSender.NotifyUser(followerRelation.TargetUserId, notificationToInsert);
+        _notificationSender.NotifyUser(followerRelation.TargetProfileId, notificationToInsert);
     }
 
     public async Task InsertNewUserActivityNotification(int userId, long postId)

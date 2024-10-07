@@ -32,5 +32,5 @@ public class ReportEntity
     public string ContentId { get; set; }
     
     [JsonIgnore]
-    public User User { get; set; }
+    public Profile Profile { get; set; }
 }

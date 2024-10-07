@@ -1,9 +1,7 @@
 using Isolaatti.Accounts.Data.Entity;
-using Isolaatti.Accounts.SignIn.Data;
 using Isolaatti.Comments.Entity;
 using Isolaatti.Favorites.Data;
 using Isolaatti.Likes.Data;
-using Isolaatti.Messenger;
 using Isolaatti.Models;
 using Isolaatti.Notifications.Entity;
 using Isolaatti.Posting.Data;
@@ -25,18 +23,18 @@ namespace Isolaatti.Database.EF
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<User>()
+            modelBuilder.Entity<Profile>()
                 .HasIndex(u => u.UniqueUsername)
                 .HasFilter("'UniqueUsername' IS NOT NULL")
                 .IsUnique();
 
             modelBuilder.Entity<FollowerRelation>()
-                .HasOne<User>("User")
+                .HasOne<Profile>("Profile")
                 .WithOne()
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<FollowerRelation>()
-                .HasOne<User>("TargetUser")
+                .HasOne<Profile>("TargetProfile")
                 .WithOne()
                 .OnDelete(DeleteBehavior.Cascade);
 
@@ -55,8 +53,7 @@ namespace Isolaatti.Database.EF
 
         public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
         
-        public DbSet<User> Users { get; set; }
-        public DbSet<AccountPrecreate> AccountPrecreates { get; set; }
+        public DbSet<Profile> Users { get; set; }
         public DbSet<ChangePasswordToken> ChangePasswordTokens { get; set; }
         public DbSet<ExternalUser> ExternalUsers { get; set; }
         public DbSet<UserSeenPostHistory> UserSeenPostHistories { get; set; }
@@ -75,7 +72,5 @@ namespace Isolaatti.Database.EF
         public DbSet<SearchResultViewEntity> SearchView { get; set; }
         public DbSet<ReportEntity> Reports { get; set; }
         public DbSet<PostVersionEntity> PostVersions { get; set; }
-        public DbSet<Session> Sessions { get; set; }
-        public DbSet<OpenfireAccount> MessengerAccounts { get; set; }
     }
 }

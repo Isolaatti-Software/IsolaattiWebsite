@@ -1,0 +1,22 @@
+<div class="d-flex h-100 flex-column">
+  <h2 matDialogTitle>New post</h2>
+  <mat-dialog-content>
+    <mat-tab-group class="h-100">
+      <mat-tab label="Write" class="h-100" [bodyClass]="'h-100'" class>
+        <div class="d-flex flex-column h-100">
+          <textarea class="textarea-post-content"  placeholder="What do you want to talk about? Markdown is compatible. You can record and audio if you want."></textarea>
+        </div>
+      </mat-tab>
+      <mat-tab label="Preview">
+
+      </mat-tab>
+    </mat-tab-group>
+  </mat-dialog-content>
+  <mat-dialog-actions class="d-flex flex-row">
+    <button mat-fab extended class="ml-auto">
+      <mat-icon>send</mat-icon>
+      Post
+    </button>
+  </mat-dialog-actions>
+
+</div>

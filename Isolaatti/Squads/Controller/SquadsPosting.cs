@@ -8,27 +8,27 @@ using Isolaatti.Posting.Data;
 using Isolaatti.Posting.Dto;
 using Isolaatti.Squads.Repository;
 using Isolaatti.Utils;
-using Isolaatti.Utils.Attributes;
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace Isolaatti.Squads.Controller;
 
 [ApiController]
 [Route("/api/Squads/{squadId:guid}/Posting")]
-public class SquadsPosting : IsolaattiController
+public class SquadsPosting : ProfileRequiredController
 {
     private readonly DbContextApp _db;
-    private readonly IAccountsService _accounts;
+    private readonly ProfileService _accounts;
     private readonly SquadsRepository _squads;
 
-    public SquadsPosting(DbContextApp dbContextApp, IAccountsService accounts, SquadsRepository squadsRepository)
+    public SquadsPosting(DbContextApp dbContextApp, ProfileService accounts, SquadsRepository squadsRepository)
     {
         _db = dbContextApp;
         _accounts = accounts;
         _squads = squadsRepository;
     }
     
-    [IsolaattiAuth]
+    
     [HttpGet]
     [Route("Posts")]
     public async Task<IActionResult> GetPostsOfSquad(Guid squadId, long lastId, int length, bool olderFirst)
@@ -42,7 +42,7 @@ public class SquadsPosting : IsolaattiController
             });
         }
 
-        if (!await _squads.UserBelongsToSquad(User.Id, squad.Id))
+        if (!await _squads.UserBelongsToSquad(Profile.Id, squad.Id))
         {
             return Unauthorized(new
             {
@@ -74,7 +74,7 @@ public class SquadsPosting : IsolaattiController
                 UserName = _db.Users.FirstOrDefault(u => u.Id == post.UserId).Name,
                 NumberOfComments = post.Comments.Count,
                 NumberOfLikes = post.Likes.Count,
-                Liked = _db.Likes.Any(l => l.UserId == User.Id && l.PostId == post.Id),
+                Liked = _db.Likes.Any(l => l.UserId == Profile.Id && l.PostId == post.Id),
                 SquadName = post.Squad.Name
             };
         

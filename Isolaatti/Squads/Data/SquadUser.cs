@@ -18,6 +18,6 @@ public class SquadUser
     public double Ranking { get; set; }
     public List<string> Permissions { get; set; }
     
-    [JsonIgnore] public virtual User User { get; set; }
+    [JsonIgnore] public virtual Profile Profile { get; set; }
     [JsonIgnore] public virtual Squad Squad { get; set; }
 }

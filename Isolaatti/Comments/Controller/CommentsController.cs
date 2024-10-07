@@ -8,7 +8,7 @@ using Isolaatti.Common;
 using Isolaatti.Database.EF;
 using Isolaatti.Users.Repository;
 using Isolaatti.Utils;
-using Isolaatti.Utils.Attributes;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,9 +19,9 @@ namespace Isolaatti.Comments.Controller;
 public class CommentsController(
     DbContextApp db,
     CommentHistoryRepository commentHistoryRepository,
-    UsersRepository usersRepository) : IsolaattiController
+    UsersRepository usersRepository) : ProfileRequiredController
 {
-    [IsolaattiAuth]
+    
     [HttpPost]
     [Route("/api/Posting/Post/{postId:long}/Comment")]
     public async Task<IActionResult> MakeComment(long postId, MakeCommentModel commentModel)
@@ -32,7 +32,7 @@ public class CommentsController(
             return Unauthorized("Post does not exist");
         }
 
-        if (!post.UserId.Equals(User.Id) && post.Privacy == 1)
+        if (!post.UserId.Equals(Profile.Id) && post.Privacy == 1)
         {
             return Unauthorized("Post is private");
         }
@@ -40,7 +40,7 @@ public class CommentsController(
         var commentToMake = new Comment
         {
             TextContent = commentModel.Content,
-            UserId = User.Id,
+            UserId = Profile.Id,
             PostId = post.Id,
             TargetUser = post.UserId,
             AudioId = commentModel.AudioId,
@@ -60,13 +60,13 @@ public class CommentsController(
         return Ok(commentDto);
     }
 
-    [IsolaattiAuth]
+    
     [HttpGet]
     [Route("/api/Fetch/Post/{postId:long}/Comments")]
     public async Task<IActionResult> GetComments(long postId, long lastId = long.MaxValue, int take = 10)
     {
         var post = await db.SimpleTextPosts.FindAsync(postId);
-        if (post == null || (post.Privacy == 1 && post.UserId != User.Id))
+        if (post == null || (post.Privacy == 1 && post.UserId != Profile.Id))
             return Unauthorized("post does not exist or is private");
 
         IQueryable<Comment> comments = db.Comments
@@ -94,7 +94,7 @@ public class CommentsController(
         });
     }
 
-    [IsolaattiAuth]
+    
     [HttpGet]
     [Route("/api/Fetch/Comments/{commentId:long}")]
     public async Task<IActionResult> GetComment(long commentId)
@@ -110,7 +110,7 @@ public class CommentsController(
     }
 
 
-    [IsolaattiAuth]
+    
     [Route("Delete")]
     [HttpPost]
     public async Task<IActionResult> Delete(SingleIdentification identification)
@@ -118,7 +118,7 @@ public class CommentsController(
         var comment = await db.Comments.FindAsync(identification.Id);
         if (comment == null) return NotFound("Comment not found");
 
-        if (comment.UserId != User.Id)
+        if (comment.UserId != Profile.Id)
         {
             return Unauthorized("Access denied, cannot delete this comment, it is not yours");
         }
@@ -130,14 +130,14 @@ public class CommentsController(
         return Ok();
     }
 
-    [IsolaattiAuth]
+    
     [HttpPost]
     [Route("{commentId:long}/Edit")]
     public async Task<IActionResult> EditComment(long commentId, MakeCommentModel updatedComment)
     {
         var commentToEdit = await db.Comments.FindAsync(commentId);
         if (commentToEdit == null) return NotFound();
-        if (commentToEdit.UserId != User.Id)
+        if (commentToEdit.UserId != Profile.Id)
         {
             return Unauthorized();
         }
@@ -161,7 +161,7 @@ public class CommentsController(
         return Ok(commentDto);
     }
 
-    [IsolaattiAuth]
+    
     [HttpPost]
     [Route("/api/Comments/{commentId:long}/reply")]
     public async Task<IActionResult> ReplyComment(long commentId, MakeCommentModel comment)
@@ -179,7 +179,7 @@ public class CommentsController(
             return Unauthorized("Post does not exist");
         }
 
-        if (!post.UserId.Equals(User.Id) && post.Privacy == 1)
+        if (!post.UserId.Equals(Profile.Id) && post.Privacy == 1)
         {
             return Unauthorized("Post is private");
         }
@@ -187,7 +187,7 @@ public class CommentsController(
         var commentToMake = new Comment
         {
             TextContent = comment.Content,
-            UserId = User.Id,
+            UserId = Profile.Id,
             PostId = post.Id,
             TargetUser = post.UserId,
             AudioId = comment.AudioId,
@@ -207,7 +207,7 @@ public class CommentsController(
         return Ok(commentDto);
     }
     
-    [IsolaattiAuth]
+    
     [HttpGet]
     [Route("/api/Comments/{commentId:long}/replies")]
 

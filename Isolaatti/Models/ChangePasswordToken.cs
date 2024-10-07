@@ -11,7 +11,7 @@ namespace Isolaatti.Models
         public string Token { get; set; }
         public DateTime Expires { get; set; }
 
-        public User User { get; set; }
+        public Profile Profile { get; set; }
         public ChangePasswordToken()
         {
             byte[] randomData = new byte[256];

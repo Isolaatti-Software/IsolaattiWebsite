@@ -6,14 +6,14 @@ using Isolaatti.Common;
 using Isolaatti.Database.EF;
 using Isolaatti.Images.Service;
 using Isolaatti.Utils;
-using Isolaatti.Utils.Attributes;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Isolaatti.Profiles.Controller
 {
     [ApiController]
-    public class ProfileController : IsolaattiController
+    public class ProfileController : ProfileRequiredController
     {
         private readonly DbContextApp _db;
         private readonly AudiosRepository _audios;
@@ -27,7 +27,7 @@ namespace Isolaatti.Profiles.Controller
         }
 
 
-        [IsolaattiAuth]
+        
         [HttpGet]
         [Route("/api/Fetch/UserProfile/{userId:int}")]
         public async Task<IActionResult> GetProfile(int userId)
@@ -36,15 +36,15 @@ namespace Isolaatti.Profiles.Controller
             var account = await _db.Users.FindAsync(userId);
             if (account == null) return NotFound();
 
-            account.NumberOfFollowers = await _db.FollowerRelations.CountAsync(fr => fr.TargetUserId == account.Id);
-            account.NumberOfFollowing = await _db.FollowerRelations.CountAsync(fr => fr.UserId == account.Id);
+            account.NumberOfFollowers = await _db.FollowerRelations.CountAsync(fr => fr.TargetProfileId == account.Id);
+            account.NumberOfFollowing = await _db.FollowerRelations.CountAsync(fr => fr.ProfileId == account.Id);
             account.NumberOfPosts = await _db.SimpleTextPosts.CountAsync(p => p.UserId == account.Id);
             account.NumberOfLikes = await _db.Likes.CountAsync(l => l.TargetUserId == account.Id);
-            account.IsUserItself = account.Id == User.Id;
+            account.IsUserItself = account.Id == Profile.Id;
             account.ThisUserIsFollowingMe =
-                await _db.FollowerRelations.AnyAsync(fr => fr.TargetUserId == User.Id && fr.UserId == account.Id);
+                await _db.FollowerRelations.AnyAsync(fr => fr.TargetProfileId == Profile.Id && fr.ProfileId == account.Id);
             account.FollowingThisUser =
-                await _db.FollowerRelations.AnyAsync(fr => fr.UserId == User.Id && fr.TargetUserId == account.Id);
+                await _db.FollowerRelations.AnyAsync(fr => fr.ProfileId == Profile.Id && fr.TargetProfileId == account.Id);
 
             if (account.DescriptionAudioId != null)
             {
@@ -59,7 +59,7 @@ namespace Isolaatti.Profiles.Controller
                 
             }
             
-            if (!account.ShowEmail && account.Id != User.Id)
+            if (!account.ShowEmail && account.Id != Profile.Id)
             {
                 account.Email = null;
             }
@@ -68,7 +68,7 @@ namespace Isolaatti.Profiles.Controller
             return Ok(account);
         }
 
-        [IsolaattiAuth]
+        
         [HttpPost]
         [Route("/api/EditProfile/UpdateProfile")]
         public async Task<IActionResult> EditProfileInfo(EditProfileDto payload)
@@ -81,22 +81,22 @@ namespace Isolaatti.Profiles.Controller
 
 
             if (payload.NewUsername != null)
-                User.Name = payload.NewUsername.Trim();
+                Profile.Name = payload.NewUsername.Trim();
             if (payload.NewDescription != null)
-                User.DescriptionText = payload.NewDescription.Trim();
+                Profile.DescriptionText = payload.NewDescription.Trim();
 
-            _db.Users.Update(User);
+            _db.Users.Update(Profile);
 
             await _db.SaveChangesAsync();
 
             return Ok(new EditProfileDto
             {
-                NewUsername = User.Name,
-                NewDescription = User.DescriptionText
+                NewUsername = Profile.Name,
+                NewDescription = Profile.DescriptionText
             });
         }
 
-        [IsolaattiAuth]
+        
         [HttpPost]
         [Route("/api/EditProfile/UpdateAudioDescription")]
         public async Task<IActionResult> UpdateAudioDescription(SimpleStringData payload)
@@ -106,14 +106,14 @@ namespace Isolaatti.Profiles.Controller
                 return BadRequest("Audio specified by id does not exist");
             }
 
-            User.DescriptionAudioId = payload.Data;
+            Profile.DescriptionAudioId = payload.Data;
 
-            _db.Users.Update(User);
+            _db.Users.Update(Profile);
             await _db.SaveChangesAsync();
             return Ok();
         }
 
-        [IsolaattiAuth]
+        
         [HttpPost]
         [Route("/api/EditProfile/SetProfilePhoto")]
         public async Task<IActionResult> UpdateProfileImageWithImageId([FromQuery] string imageId)
@@ -124,36 +124,36 @@ namespace Isolaatti.Profiles.Controller
                 return NotFound(imageId);
             }
 
-            if (selectedImage.UserId != User.Id)
+            if (selectedImage.UserId != Profile.Id)
             {
                 return Unauthorized();
             }
 
-            User.ProfileImageId = selectedImage.Id;
-            _db.Users.Update(User);
+            Profile.ProfileImageId = selectedImage.Id;
+            _db.Users.Update(Profile);
             await _db.SaveChangesAsync();
 
             return Ok();
         }
 
-        [IsolaattiAuth]
+        
         [HttpPost]
         [Route("/api/EditProfile/RemoveAudioFromProfile")]
         public async Task<IActionResult> RemoveAudioFromDescription()
         {
-            User.DescriptionAudioId = null;
-            _db.Users.Update(User);
+            Profile.DescriptionAudioId = null;
+            _db.Users.Update(Profile);
             await _db.SaveChangesAsync();
             return Ok();
         }
 
-        [IsolaattiAuth]
+        
         [HttpPost]
         [Route("/api/EditProfile/RemoveProfileImage")]
         public async Task<IActionResult> RemoveProfileImage()
         {
-            User.ProfileImageId = null;
-            _db.Users.Update(User);
+            Profile.ProfileImageId = null;
+            _db.Users.Update(Profile);
             await _db.SaveChangesAsync();
             return Ok();
         }

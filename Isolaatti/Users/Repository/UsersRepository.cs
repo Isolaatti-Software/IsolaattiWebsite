@@ -59,7 +59,7 @@ namespace Isolaatti.Users.Repository
 
             if (value == null)
             {
-                value = _db.FollowerRelations.Count(fr => fr.TargetUserId == userId).ToString();
+                value = _db.FollowerRelations.Count(fr => fr.TargetProfileId == userId).ToString();
 
                 _cache.SetString(GetKeyForFollowersCount(userId), value);
             }
@@ -99,7 +99,7 @@ namespace Isolaatti.Users.Repository
                     return false;
                 }
             }
-            var value = _db.FollowerRelations.Any(fr => fr.UserId == userId && fr.TargetUserId == targetUserId);
+            var value = _db.FollowerRelations.Any(fr => fr.ProfileId == userId && fr.TargetProfileId == targetUserId);
 
             _cache.SetString(FollowStateCacheKey(userId, targetUserId), value ? "1" : "0");
 

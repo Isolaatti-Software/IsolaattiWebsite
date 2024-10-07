@@ -15,13 +15,11 @@ public class AudiosService
 {
     private readonly GoogleCloudStorageService _storage;
     private readonly AudiosRepository _audiosRepository;
-    private readonly IAccountsService _accounts;
     
-    public AudiosService(GoogleCloudStorageService googleFirebaseStorageService, AudiosRepository audiosRepository, IAccountsService accounts)
+    public AudiosService(GoogleCloudStorageService googleFirebaseStorageService, AudiosRepository audiosRepository)
     {
         _storage = googleFirebaseStorageService;
         _audiosRepository = audiosRepository;
-        _accounts = accounts;
     }
 
     public async Task<FeedAudio> CreateAudio(Stream file, int userId, string name, string contentType, int duration)
@@ -38,7 +36,7 @@ public class AudiosService
 
         var feedAudio = new FeedAudio(audio);
 
-        feedAudio.UserName = _accounts.GetUsernameFromId(feedAudio.UserId);
+        //feedAudio.UserName = _accounts.GetUsernameFromId(feedAudio.UserId);
 
         return feedAudio;
     }
@@ -47,10 +45,10 @@ public class AudiosService
     {
         var audios = await _audiosRepository.GetAudios(ids);
         
-        foreach(var (id, audio) in audios)
-        {
-            audio.UserName = _accounts.GetUsernameFromId(audio.UserId);
-        }
+        // foreach(var (id, audio) in audios)
+        // {
+        //     audio.UserName = _accounts.GetUsernameFromId(audio.UserId);
+        // }
 
         return audios;
     }

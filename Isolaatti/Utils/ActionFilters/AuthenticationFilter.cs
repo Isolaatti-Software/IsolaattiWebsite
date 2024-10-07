@@ -1,67 +1,43 @@
-﻿using System.Linq;
-using System.Text.Json;
+﻿
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
-using Isolaatti.Accounts.Service;
-using Isolaatti.Accounts.SignIn.Dto;
-using Isolaatti.Utils.Attributes;
+using Isolaatti.Database.EF;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.EntityFrameworkCore;
 
 namespace Isolaatti.Utils.ActionFilters;
 
-public class AuthenticationFilter : IAsyncActionFilter
+/// <summary>
+/// Read <c>User</c> claims and in case user is authenticated and controller is a <c>IsolaattiController</c>, look up
+/// the profile on the database. If a profile is found, Profile field in <c>IsolaattiController</c>
+/// </summary>
+/// <param name="db">DbContextApp injected by DI</param>
+public class AuthenticationFilter(DbContextApp db) : IAsyncActionFilter
 {
-    private readonly IAccountsService _accounts;
-    public AuthenticationFilter(IAccountsService accounts)
-    {
-        _accounts = accounts;
-    }
     
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
-        var attrs = context.ActionDescriptor.EndpointMetadata.OfType<IsolaattiAuth>();
-        if (attrs.Any())
+        
+        if (context.Controller is ProfileRequiredController isolaattiController)
         {
-            // Api requests can be authenticated by Authorization header or cookie value isolaatti_user_session_token
-            
-            var header = context.HttpContext.Request.Headers["Authorization"].FirstOrDefault();
-            var cookie = context.HttpContext.Request.Cookies[AccountsService.SessionCookieName];
-            
-            if (header == null && cookie == null)
+            var userId = context.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId != null)
             {
-                context.Result = new UnauthorizedObjectResult("Unauthorized");
-                return;
+                var profile = await db.Users.FirstOrDefaultAsync(profile => profile.SID.Equals(userId));
+                if (profile != null)
+                {
+                    isolaattiController.Profile = profile;
+                }
+                else
+                {
+                    context.Result = new ConflictResult();
+                    return;
+                }
+                
             }
-
-            SessionDto session;
-
-            try
-            {
-                session = JsonSerializer.Deserialize<SessionDto>(header ?? cookie);
-            }
-            catch (JsonException)
-            {
-                context.Result = new BadRequestResult();
-                return;
-            }
-
-            var user = await _accounts.ValidateSession(session);
-            if (user == null)
-            {
-                context.Result = new UnauthorizedObjectResult("Unauthorized");
-                return;
-            }
-
-            if (context.Controller is IsolaattiController controller)
-            {
-                controller.User = user;
-                controller.CurrentSessionDto = session;
-            }
-            await next();
         }
-        else
-        {
-            await next();
-        }
+        await next();
     }
 }

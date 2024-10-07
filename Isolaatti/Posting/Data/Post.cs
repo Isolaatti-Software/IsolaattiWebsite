@@ -21,7 +21,7 @@ namespace Isolaatti.Posting.Data
         public long? LinkedCommentId { get; set; }
         
         [JsonIgnore]
-        public User User { get; set; }
+        public Profile Profile { get; set; }
         [JsonIgnore]
         public virtual ICollection<Like> Likes { get; set; }
         [JsonIgnore]

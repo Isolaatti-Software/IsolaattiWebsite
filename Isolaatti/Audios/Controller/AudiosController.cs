@@ -4,7 +4,7 @@ using Isolaatti.Audios.Service;
 using Isolaatti.Common;
 using Isolaatti.Services;
 using Isolaatti.Utils;
-using Isolaatti.Utils.Attributes;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,7 +12,7 @@ namespace Isolaatti.Audios.Controller;
 
 [ApiController]
 [Route("/api/Audios")]
-public class AudiosController : IsolaattiController
+public class AudiosController : ProfileRequiredController
 {
     private readonly AudiosRepository _audiosRepository;
     private readonly AudiosService _audios;
@@ -25,7 +25,7 @@ public class AudiosController : IsolaattiController
         _storage = googleCloudStorageService;
     }
 
-    [IsolaattiAuth]
+    
     [HttpGet]
     [Route("OfUser/{userId:int}")]
     public async Task<IActionResult> GetAudiosOfUser(int userId, [FromQuery] string? lastAudioId)
@@ -36,7 +36,7 @@ public class AudiosController : IsolaattiController
         });
     }
 
-    [IsolaattiAuth]
+    
     [HttpPost]
     [Route("Create")]
     public async Task<IActionResult> PostAudio([FromForm] IFormFile audioFile, [FromForm] string name, [FromForm] int duration)
@@ -46,24 +46,24 @@ public class AudiosController : IsolaattiController
             return BadRequest("name parameter was not provided, is empty or white spaces");
         }
 
-        var createdDoc = await _audios.CreateAudio(audioFile.OpenReadStream(), User.Id, name, audioFile.ContentType, duration);
+        var createdDoc = await _audios.CreateAudio(audioFile.OpenReadStream(), Profile.Id, name, audioFile.ContentType, duration);
 
         return Ok(createdDoc);
     }
 
-    [IsolaattiAuth]
+    
     [HttpPost]
     [Route("{audioId}/Delete")]
     public async Task<IActionResult> DeleteAudio(string audioId)
     {
-        var result = await _audios.DeleteAudio(audioId, User.Id);
+        var result = await _audios.DeleteAudio(audioId, Profile.Id);
         return Ok(new
         {
             result = result.ToString()
         });
     }
 
-    [IsolaattiAuth]
+    
     [HttpPost]
     [Route("{audioId}/Rename")]
     public async Task<IActionResult> Rename(string audioId, SimpleStringData payload)
@@ -73,7 +73,7 @@ public class AudiosController : IsolaattiController
             return Problem("Name cannot be empty");
         }
 
-        var result = await _audios.RenameAudio(audioId, User.Id, payload.Data);
+        var result = await _audios.RenameAudio(audioId, Profile.Id, payload.Data);
 
         return Ok(new
         {
@@ -81,7 +81,7 @@ public class AudiosController : IsolaattiController
         });
     }
 
-    [IsolaattiAuth]
+    
     [HttpGet]
     [Route("{audioId}")]
     public async Task<IActionResult> GetAudioInformation(string audioId)

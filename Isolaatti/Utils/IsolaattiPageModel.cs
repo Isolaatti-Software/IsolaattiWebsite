@@ -1,5 +1,4 @@
 ﻿using Isolaatti.Accounts.Data.Entity;
-using Isolaatti.Accounts.SignIn.Data;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Isolaatti.Utils;
@@ -7,8 +6,7 @@ namespace Isolaatti.Utils;
 public class IsolaattiPageModel : PageModel
 {
 
-    public new User User { get; set; }
-    public Session Session {get;set;}
+    public new Profile Profile { get; set; }
 
     
     public bool HideNav { get; set; }

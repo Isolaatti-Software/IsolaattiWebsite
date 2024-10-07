@@ -17,7 +17,6 @@ using Isolaatti.Favorites.Data;
 using Isolaatti.Images.Repository;
 using Isolaatti.Images.Service;
 using Isolaatti.Messaging;
-using Isolaatti.Messenger;
 using Isolaatti.Middleware;
 using Isolaatti.Notifications.PushNotifications;
 using Isolaatti.Notifications.Services;
@@ -29,7 +28,6 @@ using Isolaatti.Squads.Repository;
 using Isolaatti.Tagging;
 using Isolaatti.Users.Repository;
 using Isolaatti.Utils.ActionFilters;
-using Isolaatti.Utils.PageFilters;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
@@ -40,6 +38,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Npgsql;
 
 namespace Isolaatti
@@ -91,18 +90,20 @@ namespace Isolaatti
                             .AllowAnyHeader();
                     })
             );
+            services.AddAuthentication(options =>
+                {
+                    options.DefaultScheme = "Bearer";
+                })
+                .AddJwtBearer("Bearer", options =>
+                {
+                    options.Authority = "https://localhost:7240";
+                    options.TokenValidationParameters.ValidateAudience = false;
+                });
             services.AddControllers(options =>
             {
                 options.Filters.Add<AuthenticationFilter>();
             });
             services.AddMvcCore().AddApiExplorer();
-            services.AddRazorPages()
-                .AddMvcOptions(options =>
-                {
-                    options.Filters.Add<IsolaattiAuthPagesFilter>();
-                })
-                .AddRazorPagesOptions(options => options.Conventions.AddPageRoute("/Profile", "/perfil/{numericId:int}"))
-                .AddRazorRuntimeCompilation();
             
 
 
@@ -193,13 +194,6 @@ namespace Isolaatti
                     config.BaseUrl = hostConfig.BaseUrl;
                 });
                 var messengerConfigJsonEnv = Environment.GetEnvironmentVariable(Env.MessengerConfig);
-                services.Configure<MessengerConfig>(config =>
-                {
-                    var messengerConfig = JsonSerializer.Deserialize<MessengerConfig>(messengerConfigJsonEnv);
-                    config.ApiKey = messengerConfig.ApiKey;
-                    config.OpenfireApiUrl = messengerConfig.OpenfireApiUrl;
-                    config.Domain = messengerConfig.Domain;
-                });
             }
             else
             {
@@ -210,7 +204,6 @@ namespace Isolaatti
                 services.Configure<RabbitmqConfig>(Configuration.GetSection("RabbitMQ"));
                 services.Configure<List<Client>>(Configuration.GetSection("Clients"));
                 services.Configure<HostConfig>(Configuration.GetSection("Host"));
-                services.Configure<MessengerConfig>(Configuration.GetSection("Openfire"));
             }
 
             services.AddSingleton<MongoDatabase>();
@@ -224,11 +217,10 @@ namespace Isolaatti
             services.AddScoped<NotificationsService>();
             services.AddScoped<SocketIoServiceKeysRepository>();
             services.AddScoped<CommentHistoryRepository>();
-            services.AddScoped<SessionsRepository>();
             services.AddDistributedMemoryCache();
             services.AddScoped<UsersRepository>();
             services.AddScoped<ScopedHttpContext>();
-            services.AddScoped<IAccountsService, AccountsService>();
+            services.AddScoped<ProfileService>();
             services.AddSingleton<NotificationSender>();
             services.AddScoped<ServerRenderedAlerts>();
             services.AddSingleton<GoogleCloudStorageService>();
@@ -243,7 +235,6 @@ namespace Isolaatti
             services.AddScoped<FavoritesRepository>();
             services.AddScoped<TaggingService>();
             services.AddScoped<AccountRemovalService>();
-            services.AddSingleton<IMessagingServer, OpenfireApi>();
             
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -278,12 +269,12 @@ namespace Isolaatti
 
             app.UseRouting();
             app.UseCors("cors");
+            app.UseAuthentication();
             app.UseAuthorization();
             app.UseMiddleware<ScopedHttpContextMiddleware>();
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
-                endpoints.MapRazorPages();
+                endpoints.MapControllers().RequireAuthorization();
             });
         }
     }

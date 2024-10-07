@@ -8,7 +8,7 @@ using Isolaatti.Notifications.Services;
 using Isolaatti.Posting.Dto;
 using Isolaatti.RealtimeInteraction.Service;
 using Isolaatti.Utils;
-using Isolaatti.Utils.Attributes;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,7 +16,7 @@ namespace Isolaatti.Likes.Controller
 {
     [ApiController]
     [Route("/api/[controller]")]
-    public class Likes : IsolaattiController
+    public class Likes : ProfileRequiredController
     {
         private readonly DbContextApp _db;
         private readonly NotificationSender _notificationSender;
@@ -29,14 +29,14 @@ namespace Isolaatti.Likes.Controller
             _notifications = notifications;
         }
 
-        [IsolaattiAuth]
+        
         [HttpPost]
         [Route("LikePost")]
         public async Task<IActionResult> LikePost(SingleIdentification identification)
         {
             var post = await _db.SimpleTextPosts.FindAsync(identification.Id);
             if (post == null) return Unauthorized("Post does not exist");
-            if (_db.Likes.Any(element => element.UserId == User.Id && element.PostId == identification.Id))
+            if (_db.Likes.Any(element => element.UserId == Profile.Id && element.PostId == identification.Id))
                 return Unauthorized("Post already liked");
 
 
@@ -44,7 +44,7 @@ namespace Isolaatti.Likes.Controller
             var likeEntity = new Like
             {
                 PostId = identification.Id,
-                UserId = User.Id,
+                UserId = Profile.Id,
                 TargetUserId = post.UserId,
                 SquadId = post.SquadId
             };
@@ -58,7 +58,7 @@ namespace Isolaatti.Likes.Controller
                 LikesCount = await _db.Likes.CountAsync(like => like.PostId == post.Id)
             };
             
-            if(post.UserId != User.Id)
+            if(post.UserId != Profile.Id)
             {
                 await _notifications.InsertNewLikeNotification(likeEntity);
             }
@@ -66,17 +66,17 @@ namespace Isolaatti.Likes.Controller
             return Ok(likeDto);
         }
 
-        [IsolaattiAuth]
+        
         [HttpPost]
         [Route("UnLikePost")]
         public async Task<IActionResult> UnLikePost(SingleIdentification identification)
         {
             var post = await _db.SimpleTextPosts.FindAsync(identification.Id);
             if (post == null) return Unauthorized("Post does not exist");
-            if (!_db.Likes.Any(element => element.UserId == User.Id && element.PostId == identification.Id))
+            if (!_db.Likes.Any(element => element.UserId == Profile.Id && element.PostId == identification.Id))
                 return Unauthorized("Post cannot be unliked as it is not liked");
 
-            var like = _db.Likes.Single(element => element.PostId == identification.Id && element.UserId == User.Id);
+            var like = _db.Likes.Single(element => element.PostId == identification.Id && element.UserId == Profile.Id);
             _db.Likes.Remove(like);
             await _db.SaveChangesAsync();
 
@@ -90,7 +90,7 @@ namespace Isolaatti.Likes.Controller
             return Ok(likeDto);
         }
 
-        [IsolaattiAuth]
+        
         [HttpGet]
         [Route("LikedBy/{userId:int}")]
         public async Task<IActionResult> PostsLikedByUser(int userId, long lastId = long.MaxValue)
@@ -115,7 +115,7 @@ namespace Isolaatti.Likes.Controller
 
         }
 
-        [IsolaattiAuth]
+        
         [HttpGet]
         [Route("PostsUser/{authorUserId:int}/LikedOf/{targetUserId:int}")]
         public async Task<IActionResult> PostsOfUserLikedByUserWithId(int authorUserId, int targetUserId, long lastId = long.MaxValue)

@@ -16,7 +16,7 @@ namespace Isolaatti.Likes.Data
         public Guid? SquadId { get; set; }
 
         [JsonIgnore]
-        public virtual User User { get; set; }
+        public virtual Profile Profile { get; set; }
         
         public Like()
         {

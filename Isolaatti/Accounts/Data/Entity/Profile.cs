@@ -1,0 +1,51 @@
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
+using Isolaatti.Audios.Dto;
+
+namespace Isolaatti.Accounts.Data.Entity
+{
+    public class Profile
+    {
+        public int Id { get; set; }
+        public string UniqueUsername { get; set; }
+        public string Name { get; set; }
+        public string Email { get; set; }
+        
+        [JsonIgnore]
+        [Required]
+        public string SID { get; set; }
+        
+        [JsonIgnore] 
+        public bool ShowEmail { get; set; }
+        [NotMapped] 
+        public int NumberOfFollowers { get; set; }
+        [NotMapped] 
+        public int NumberOfFollowing { get; set; }
+        [NotMapped]
+        public int NumberOfLikes { get; set; }
+        [NotMapped] 
+        public int NumberOfPosts { get; set; }
+        [NotMapped]
+        public bool IsUserItself { get; set; }
+        [NotMapped]
+        public bool FollowingThisUser { get; set; }
+        [NotMapped]
+        public bool ThisUserIsFollowingMe { get; set; }
+        
+        // ProfileImageId is used as first option, and then try ProfileImageUrl
+        public string? ProfileImageId { get; set; }
+        // ProfileImageUrl is used to save Firebase account image url. It can come from Google, Facebook, etc
+        public string? ProfileImageUrl { get; set; }
+        public string? DescriptionText { get; set; }
+        public string? DescriptionAudioId { get; set; }
+        public string? Genre { get; set; }
+        public string? CountryCode { get; set; }
+        public DateTime? Birthday { get; set; }
+        
+        [NotMapped]
+        public FeedAudio? Audio { get; set; }
+
+    }
+}

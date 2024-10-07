@@ -1,0 +1,45 @@
+<mat-sidenav-container class="sidenav-navigation-container">
+  <mat-sidenav opened mode="side" >
+    <div class="sidenav">
+      <img src="assets/isolaatti-logo.svg" id="logo">
+      <mat-nav-list>
+        <a mat-list-item class="sidenav-menu-item" routerLink="" routerLinkActive="activated">
+          <mat-icon>home</mat-icon>
+          Home
+        </a>
+
+        <a mat-list-item class="sidenav-menu-item" routerLink="profile" routerLinkActive="active">
+          <mat-icon>person</mat-icon>
+          Profile
+        </a>
+        <a mat-list-item class="sidenav-menu-item">
+          <mat-icon>groups</mat-icon>
+          Squads
+        </a>
+        <a mat-list-item class="sidenav-menu-item">
+          <mat-icon>search</mat-icon>
+          Search
+        </a>
+        <a mat-list-item class="sidenav-menu-item">
+          <mat-icon>notifications</mat-icon>
+          Notifications
+        </a>
+        <a mat-list-item class="sidenav-menu-item">
+          <mat-icon>settings</mat-icon>
+          Settings
+        </a>
+
+
+
+      </mat-nav-list>
+      <button mat-fab extended id="new-button" (click)="openNewPostDialog()">
+        <mat-icon>add</mat-icon>
+        New
+      </button>
+    </div>
+
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>

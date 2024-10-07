@@ -7,7 +7,7 @@ using Isolaatti.Database.EF;
 using Isolaatti.Posting.Data;
 using Isolaatti.Posting.Dto;
 using Isolaatti.Utils;
-using Isolaatti.Utils.Attributes;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,7 +15,7 @@ namespace Isolaatti.Feed.Controller
 {
     [ApiController]
     [Route("/api/[controller]")]
-    public class Feed : IsolaattiController
+    public class Feed : ProfileRequiredController
     {
         private readonly DbContextApp Db;
         private readonly AudiosService _audios;
@@ -26,7 +26,7 @@ namespace Isolaatti.Feed.Controller
             _audios = audios;
         }
 
-        [IsolaattiAuth]
+        
         [HttpGet]
         public async Task<IActionResult> Index(long lastId = 0, int length = 10, long newestPostId = 0)
         {
@@ -64,7 +64,7 @@ namespace Isolaatti.Feed.Controller
                     UserName = Db.Users.FirstOrDefault(u => u.Id == post.UserId).Name,
                     NumberOfComments = post.Comments.Count,
                     NumberOfLikes = post.Likes.Count,
-                    Liked = Db.Likes.Any(l => l.UserId == User.Id && l.PostId == post.Id),
+                    Liked = Db.Likes.Any(l => l.UserId == Profile.Id && l.PostId == post.Id),
                     SquadName = post.Squad.Name
                 };
 
@@ -74,8 +74,8 @@ namespace Isolaatti.Feed.Controller
             {
                 newPosts = await (from post in Db.SimpleTextPosts
                             from following in Db.FollowerRelations
-                            where following.UserId == User.Id
-                                  && post.UserId == following.TargetUserId
+                            where following.ProfileId == Profile.Id
+                                  && post.UserId == following.TargetProfileId
                                   && post.Privacy != 1
                                   && post.Id > newestPostId
                                   && post.SquadId == null
@@ -86,7 +86,7 @@ namespace Isolaatti.Feed.Controller
                                       UserName = Db.Users.FirstOrDefault(u => u.Id == post.UserId).Name,
                                       NumberOfComments = post.Comments.Count,
                                       NumberOfLikes = post.Likes.Count,
-                                      Liked = Db.Likes.Any(l => l.UserId == User.Id && l.PostId == post.Id),
+                                      Liked = Db.Likes.Any(l => l.UserId == Profile.Id && l.PostId == post.Id),
                                       SquadName = post.Squad.Name
                                   }).ToListAsync();
             }

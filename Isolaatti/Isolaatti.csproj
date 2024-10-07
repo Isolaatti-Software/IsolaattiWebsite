@@ -17,6 +17,10 @@
         <PackageReference Include="Google.Cloud.Storage.V1" Version="4.10.0" />
 
         <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="6.0.0" />
+
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8" />
+
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="8.0.8" />
         <PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" Version="8.0.4" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="8.0.4" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.4" />
@@ -37,6 +41,7 @@
 
     <ItemGroup>
         <Folder Include="Migrations" />
+        <Folder Include="wwwroot\" />
     </ItemGroup>
 
     <ItemGroup>
@@ -44,6 +49,112 @@
       <_ContentIncludedByDefault Remove="Pages\Audaliv\Index.cshtml" />
       <_ContentIncludedByDefault Remove="Pages\Likes\GivenLikes.cshtml" />
       <_ContentIncludedByDefault Remove="Pages\Likes\ReceivedLikes.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\AboutPage.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\AccountRemoval\AskAccountRemoval.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\AccountRemoval\ConfirmAccountRemoval.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\auth\ExternalLogin.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Bootloader\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\ExternalAuth.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\ForgotPassword.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\ImageViewer.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Lists.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\MyProfile.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Notifications.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\PostEditor.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\PostViewer.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Profile.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\PublicContent\PublicThreadViewer.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Public\Feed.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Settings.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\SettingsPages\FeedSettingsContent.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\SettingsPages\PrivacySettings.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Shared\_LayoutSquadMembersManager.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Shared\_LayoutWebApp.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Shared\_LayoutWebAppOutside.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\SquadsPages\ManageSquadAdmins.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\SquadsPages\ManageSquadMembers.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\SquadsPages\ManageSquadOwner.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\SquadsPages\Squads.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\SquadsPages\SquadViewer.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\s\Legal\PrivacyPolicy.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\s\Legal\TermsOfUse.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\_ViewImports.cshtml" />
+      <_ContentIncludedByDefault Remove="wwwroot\css\globalAudioPlayer.css" />
+      <_ContentIncludedByDefault Remove="wwwroot\css\isolaatti.css" />
+      <_ContentIncludedByDefault Remove="wwwroot\css\search-box.css" />
+      <_ContentIncludedByDefault Remove="wwwroot\css\welcome-purple-image.css" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\audioService.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\confirm_account.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\googleAuthVerification.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\sign_in_page.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\utils.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\audioAttachmentComponent.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\audioPlayerComponent.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\audioRecorder.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\audiosList.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\commentComponent.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\commentsViewer.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\imageUploaderComponent.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\interactionsComponent.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\lastAudiosComponent.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\newCommentComponent.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\newDiscussionComponent.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\newQuickPost.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\newsFeedComponent.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\notificationComponent.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\page\discussionComponent.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\page\givenLikesComponent.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\page\global.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\page\homeComponent.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\page\interactionsDiscussionsPage.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\page\interactionsSquads.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\page\myProfileComponent.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\page\myProfile\myProfileStartPage.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\page\notifications\likeNotification.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\page\notifications\notificationsPage.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\page\profileComponent.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\page\profile\profileStartPage.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\page\public\feed\feedPage.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\page\squadMembersManagerPage\addSquadAdminModalDialog.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\page\squadMembersManagerPage\changeSquadOwnerModalDialog.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\page\squadMembersManagerPage\removeAdminFromSquadModalContent.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\page\squadMembersManagerPage\removeUserFromSquadModalContent.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\page\squadMembersManagerPage\squadAdminsPage.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\page\squadMembersManagerPage\squadMembersPage.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\page\squadMembersManagerPage\squadUserProfileComponent.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\page\squadMembersManagerPage\turnIntoAdminModalDialog.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\page\squads\createSquadComponent.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\page\squads\invitationsComponent.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\page\squads\requestsComponent.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\page\squads\squadsBelong.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\page\squads\squadsComponent.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\page\squads\squadsList.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\page\squads\yourSquadsComponent.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\page\squadViewerPage\joinRequestsComponent.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\page\squadViewerPage\squadHeaderComponent.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\page\squadViewerPage\squadInvitationsComponent.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\page\squadViewerPage\squadMembersComponent.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\page\squadViewerPage\squadNewDiscussionComponent.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\page\squadViewerPage\squadPeopleComponent.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\page\squadViewerPage\squadPreviewPage.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\page\squadViewerPage\squadSettingsPageComponent.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\page\squadViewerPage\squadViewerComponent.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\page\squadViewerPage\squadWikiComponent.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\postComponent.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\postsList.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\profileImageMakerComponent.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\profileImagesComponent.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\profileUserInfoComponent.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\quickSearchComponent.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\shortCutsComponent.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\squads\squadImagesComponent.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\squads\squadInvitationsList.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\squads\squadInvitationUserSearcher.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\squads\squadNewInvitationComponent.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\squads\squadRequestsList.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\usersGridComponent.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\VueComponents\visualTextEditor.js" />
     </ItemGroup>
 
     <ItemGroup>

@@ -12,7 +12,7 @@ using Isolaatti.Search.Dto;
 using Isolaatti.Squads.Repository;
 using Isolaatti.Users.Repository;
 using Isolaatti.Utils;
-using Isolaatti.Utils.Attributes;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,7 +20,7 @@ namespace Isolaatti.Controllers;
 
 [ApiController]
 [Route("/api/Search")]
-public class SearchController : IsolaattiController
+public class SearchController : ProfileRequiredController
 {
     private readonly DbContextApp _db;
     private readonly AudiosRepository _audios;
@@ -39,7 +39,7 @@ public class SearchController : IsolaattiController
         _usersRepository = usersRepository;
     }
 
-    [IsolaattiAuth]
+    
     [Route("Quick")]
     [HttpGet]
     public async Task<IActionResult> QuickSearch([FromQuery] string q, [FromQuery] string contextType = "global", 
@@ -100,7 +100,7 @@ public class SearchController : IsolaattiController
             select new PostDto
             {
                 Post = post,
-                Liked = _db.Likes.Any(l => l.UserId == User.Id && l.PostId == post.Id),
+                Liked = _db.Likes.Any(l => l.UserId == Profile.Id && l.PostId == post.Id),
                 NumberOfComments = _db.Comments.Count(c => c.PostId == post.Id),
                 NumberOfLikes = _db.Likes.Count(l => l.PostId == post.Id),
                 SquadName = _db.Squads.Where(s => s.Id.Equals(post.SquadId)).Select(s => s.Name).FirstOrDefault(),
@@ -156,7 +156,7 @@ public class SearchController : IsolaattiController
         return Ok(results);
     }
 
-    [IsolaattiAuth]
+    
     [HttpGet]
     [Route("v2")]
     public async Task<IActionResult> Search([FromQuery] string query)
@@ -169,7 +169,7 @@ public class SearchController : IsolaattiController
         return Ok(new { result });
     }
 
-    [IsolaattiAuth]
+    
     [Route("{squadId:guid}/RankedUserSearch")]
     [HttpGet]
     public async Task<IActionResult> RankedSearchOnSquads([FromQuery] string q, Guid squadId, [FromQuery] int lastId = 0)
@@ -181,7 +181,7 @@ public class SearchController : IsolaattiController
 
         var squadExists = await _squadsRepository.SquadExists(squadId);
 
-        var userBelongs = await _squadsRepository.UserBelongsToSquad(User.Id, squadId);
+        var userBelongs = await _squadsRepository.UserBelongsToSquad(Profile.Id, squadId);
 
         if (!squadExists || !userBelongs)
         {
@@ -192,14 +192,14 @@ public class SearchController : IsolaattiController
         return Ok(result);
     }
 
-    [IsolaattiAuth]
+    
     [Route("{squadId:guid}/SearchSuggestions")]
     [HttpGet]
     public async Task<IActionResult> GetSuggestionsSquadRankedUsers(Guid squadId,[FromQuery] bool owner = false, [FromQuery] bool admins = true, [FromQuery] bool members = true)
     {
         var squadExists = await _squadsRepository.SquadExists(squadId);
 
-        var userBelongs = await _squadsRepository.UserBelongsToSquad(User.Id, squadId);
+        var userBelongs = await _squadsRepository.UserBelongsToSquad(Profile.Id, squadId);
 
         if (!squadExists || !userBelongs)
         {
@@ -210,13 +210,13 @@ public class SearchController : IsolaattiController
         return Ok(result);
     }
 
-    [IsolaattiAuth]
+    
     [HttpGet]
     [Route("newestUsers")]
     public async Task<IActionResult> GetNewestUsers([FromQuery] int limit, [FromQuery] int after)
     {
         var users = (from user in _db.Users
-            where user.Id != User.Id
+            where user.Id != Profile.Id
             orderby user.Id descending
             select new UserFeedDto()
             {
@@ -226,7 +226,7 @@ public class SearchController : IsolaattiController
             })
             .ToList()
             .Select(searchResult => { 
-                searchResult.Following = _usersRepository.GetUserFollowsUser(User.Id, searchResult.Id); 
+                searchResult.Following = _usersRepository.GetUserFollowsUser(Profile.Id, searchResult.Id); 
                 return searchResult; 
             });
 
