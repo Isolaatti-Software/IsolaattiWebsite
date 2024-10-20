@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Isolaatti.Accounts.Service;
@@ -33,18 +35,13 @@ public class AuthenticationFilter : IAsyncActionFilter
                 return;
             }
 
-            SessionDto session;
-
-            try
+            var session = _accounts.GetSessionDtoFromToken(header ?? cookie);
+            if (session == null)
             {
-                session = JsonSerializer.Deserialize<SessionDto>(header ?? cookie);
-            }
-            catch (JsonException)
-            {
-                context.Result = new BadRequestResult();
+                context.Result = new UnauthorizedObjectResult("Unauthorized");
                 return;
             }
-
+            
             var user = await _accounts.ValidateSession(session);
             if (user == null)
             {

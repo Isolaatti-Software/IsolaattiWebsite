@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -239,12 +240,16 @@ public partial class AccountsService : IAccountsService
 
     public async Task<User?> ValidateSession(SessionDto sessionDto)
     {
-        if (sessionDto == null) return null;   
         var userId = await _sessionsRepository.FindUserIdFromSession(sessionDto);
         var user = await db.Users.FindAsync(userId);
         return user;
     }
-    
+
+    public SessionDto? GetSessionDtoFromToken(string? token)
+    {
+        return token == null ? null : SessionDto.FromJson(Encoding.UTF8.GetString(Convert.FromBase64String(token)));
+    }
+
     public async Task<bool> RemoveSession(SessionDto sessionDto)
     {
         return await _sessionsRepository.RemoveSession(sessionDto);

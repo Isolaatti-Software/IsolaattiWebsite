@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using System.Text.Json;
 using Isolaatti.Accounts.SignIn.Dto;
 using Isolaatti.Utils;
@@ -36,7 +37,7 @@ namespace Isolaatti.Accounts.SignIn.Data
 
         public override string ToString()
         {
-            return JsonSerializer.Serialize<SessionDto>(GetDto());
+            return Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(GetDto())));
         }
     }
 }

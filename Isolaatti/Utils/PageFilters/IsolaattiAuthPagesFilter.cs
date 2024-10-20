@@ -50,7 +50,13 @@ public class IsolaattiAuthPagesFilter : IAsyncPageFilter
 
             try
             {
-                var session = JsonSerializer.Deserialize<SessionDto>(cookie);
+                var session = _accounts.GetSessionDtoFromToken(cookie);
+                if (session == null)
+                {
+                    _logger.LogDebug("invalid session, could not deserialize cookie");
+                    RedirectToLogin(context);
+                    return;
+                }
                 var user = await _accounts.ValidateSession(session);
                 if (user == null)
                 {

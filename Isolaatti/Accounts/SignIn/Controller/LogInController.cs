@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Threading.Tasks;
 using Isolaatti.Accounts.Data;
 using Isolaatti.Accounts.Service;
@@ -44,9 +45,18 @@ public class LogIn : ControllerBase
 
     [Route("Verify")]
     [HttpPost]
-    public async Task<IActionResult> GetUserData([FromHeader(Name = "sessionToken")] string sessionToken)
+    public async Task<IActionResult> GetUserData([FromHeader(Name = "sessionToken")] string? sessionToken)
     {
-        var user = await _accounts.ValidateSession(SessionDto.FromJson(sessionToken));
+        var sessionDto = _accounts.GetSessionDtoFromToken(sessionToken);
+        if (sessionDto == null)
+        {
+            return Unauthorized(new SessionTokenValidated
+            {
+                IsValid = false,
+                UserId = -1
+            });
+        }
+        var user = await _accounts.ValidateSession(sessionDto);
         if (user == null)
             return Unauthorized(new SessionTokenValidated
             {

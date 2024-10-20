@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Isolaatti.Accounts.Service;
 using Isolaatti.Accounts.SignIn.Dto;
@@ -30,10 +31,18 @@ namespace Isolaatti.Pages
 
         public async Task<IActionResult> OnGet(bool newUser = false, bool accountRemoved = false)
         {
-            var user = await _accounts.ValidateSession(SessionDto.FromJson(Request.Cookies[AccountsService.SessionCookieName]));
-
-            NewUser = newUser;
+            var cookie = Request.Cookies[AccountsService.SessionCookieName];
             
+            NewUser = newUser;
+
+            if (cookie == null) return Page();
+            var session = _accounts.GetSessionDtoFromToken(cookie);
+            if (session == null)
+            {
+                Response.Cookies.Delete(AccountsService.SessionCookieName);
+                return Page();
+            }
+            var user = await _accounts.ValidateSession(session);
             if (user != null)
             {
                 return RedirectToPage("/Index");

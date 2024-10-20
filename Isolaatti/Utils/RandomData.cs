@@ -10,7 +10,7 @@ namespace Isolaatti.Utils
         {
             var randomBytes = new byte[length];
             RandomNumberGenerator.Fill(randomBytes);
-            return Convert.ToBase64String(randomBytes);
+            return Convert.ToHexString(randomBytes);
         }
 
         public static string GenerateRandomPassword()

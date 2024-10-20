@@ -32,6 +32,8 @@ public interface IAccountsService
     Task<string?> CreateNewSession(int userId, string plainTextPassword);
     Task<User?> ValidateSession(SessionDto sessionDto);
 
+    SessionDto? GetSessionDtoFromToken(string? token);
+
     Task<bool> RemoveSession(SessionDto sessionDto);
     Task<bool> RemoveSessions(int userId, IEnumerable<Guid> ids);
     Task<bool> RemoveAllSessions(int userId, IEnumerable<Guid>? exceptIds);
