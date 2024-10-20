@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Isolaatti.Accounts.Service;
@@ -54,6 +55,7 @@ public class IsolaattiAuthPagesFilter : IAsyncPageFilter
                 if (session == null)
                 {
                     _logger.LogDebug("invalid session, could not deserialize cookie");
+                    _accounts.RemoveSessionCookie();
                     RedirectToLogin(context);
                     return;
                 }
@@ -78,7 +80,7 @@ public class IsolaattiAuthPagesFilter : IAsyncPageFilter
                 }
                 await next.Invoke();
             }
-            catch (JsonException)
+            catch (Exception)
             {
                 _accounts.RemoveSessionCookie();
                 context.Result = new RedirectToPageResult("LogIn");
