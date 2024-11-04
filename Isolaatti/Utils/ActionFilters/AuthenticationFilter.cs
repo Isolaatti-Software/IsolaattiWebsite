@@ -26,23 +26,26 @@ public class AuthenticationFilter : IAsyncActionFilter
         {
             // Api requests can be authenticated by Authorization header or cookie value isolaatti_user_session_token
             
-            var header = context.HttpContext.Request.Headers["Authorization"].FirstOrDefault();
+            var header = context.HttpContext.Request.Headers.Authorization.FirstOrDefault();
             var cookie = context.HttpContext.Request.Cookies[AccountsService.SessionCookieName];
             
-            if (header == null && cookie == null)
+            var token = header ?? cookie;
+
+            if (token == null)
             {
                 context.Result = new UnauthorizedObjectResult("Unauthorized");
                 return;
             }
 
-            var session = _accounts.GetSessionDtoFromToken(header ?? cookie);
+            var session = await _accounts.GetSessionById(token);
             if (session == null)
             {
                 context.Result = new UnauthorizedObjectResult("Unauthorized");
                 return;
             }
-            
+
             var user = await _accounts.ValidateSession(session);
+
             if (user == null)
             {
                 context.Result = new UnauthorizedObjectResult("Unauthorized");
@@ -52,7 +55,7 @@ public class AuthenticationFilter : IAsyncActionFilter
             if (context.Controller is IsolaattiController controller)
             {
                 controller.User = user;
-                controller.CurrentSessionDto = session;
+                controller.CurrentSession = session;
             }
             await next();
         }

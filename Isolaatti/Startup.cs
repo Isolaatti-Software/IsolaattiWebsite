@@ -17,7 +17,6 @@ using Isolaatti.Favorites.Data;
 using Isolaatti.Images.Repository;
 using Isolaatti.Images.Service;
 using Isolaatti.Messaging;
-using Isolaatti.Messenger;
 using Isolaatti.Middleware;
 using Isolaatti.Notifications.PushNotifications;
 using Isolaatti.Notifications.Services;
@@ -193,13 +192,6 @@ namespace Isolaatti
                     config.BaseUrl = hostConfig.BaseUrl;
                 });
                 var messengerConfigJsonEnv = Environment.GetEnvironmentVariable(Env.MessengerConfig);
-                services.Configure<MessengerConfig>(config =>
-                {
-                    var messengerConfig = JsonSerializer.Deserialize<MessengerConfig>(messengerConfigJsonEnv);
-                    config.ApiKey = messengerConfig.ApiKey;
-                    config.OpenfireApiUrl = messengerConfig.OpenfireApiUrl;
-                    config.Domain = messengerConfig.Domain;
-                });
             }
             else
             {
@@ -210,7 +202,6 @@ namespace Isolaatti
                 services.Configure<RabbitmqConfig>(Configuration.GetSection("RabbitMQ"));
                 services.Configure<List<Client>>(Configuration.GetSection("Clients"));
                 services.Configure<HostConfig>(Configuration.GetSection("Host"));
-                services.Configure<MessengerConfig>(Configuration.GetSection("Openfire"));
             }
 
             services.AddSingleton<MongoDatabase>();
@@ -243,7 +234,6 @@ namespace Isolaatti
             services.AddScoped<FavoritesRepository>();
             services.AddScoped<TaggingService>();
             services.AddScoped<AccountRemovalService>();
-            services.AddSingleton<IMessagingServer, OpenfireApi>();
             
             services.Configure<CookiePolicyOptions>(options =>
             {

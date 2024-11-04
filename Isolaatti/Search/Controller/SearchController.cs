@@ -16,7 +16,7 @@ using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Isolaatti.Controllers;
+namespace Isolaatti.Search.Controller;
 
 [ApiController]
 [Route("/api/Search")]
@@ -123,13 +123,6 @@ public class SearchController : IsolaattiController
         results.Audios.AddRange(audiosResult.Select(a => new FeedAudio(a)
         {
             UserName = _db.Users.Where(u => u.Id == a.UserId).Select(u => u.Name).FirstOrDefault()
-        }));
-
-        // Perform basic search on images
-        var imagesResult = await _imagesRepository.SearchOnName(lowerCaseQ);
-        results.Images.AddRange(imagesResult.Select(i => new ImageFeed(i)
-        {
-            Username = _db.Users.Where(u => u.Id == i.UserId).Select(u => u.Name).FirstOrDefault()
         }));
         
         // Some post processing

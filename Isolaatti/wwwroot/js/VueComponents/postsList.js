@@ -125,13 +125,6 @@ Vue.component("posts-list", {
       
       <div class="d-flex w-100 justify-content-end">
         <button class="btn ml-1" :class="{'btn-primary': showingFilter, 'btn-light': !showingFilter}" @click="showingFilter = !showingFilter"><i class="fa-solid fa-filter"></i></button>
-        <div class="dropdown">
-          <button type="button" class="btn" data-toggle="dropdown" aria-haspopup="true"><i class="fas fa-ellipsis-h" aria-hidden="true"></i></button>
-          <div class="dropdown-menu">
-            <a href="#" class="dropdown-item">Borrado por lotes</a>
-            <a href="#" class="dropdown-item">Descarga tu información</a>
-          </div>
-        </div>
       </div>
       <div v-if="showingFilter" class="d-flex flex-column align-items-start w-100 isolaatti-card mt-2">
         <div class="w-100">

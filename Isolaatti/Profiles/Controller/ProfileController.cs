@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Isolaatti.Accounts.Data;
 using Isolaatti.Audios.Dto;
 using Isolaatti.Audios.Repository;
@@ -116,7 +117,7 @@ namespace Isolaatti.Profiles.Controller
         [IsolaattiAuth]
         [HttpPost]
         [Route("/api/EditProfile/SetProfilePhoto")]
-        public async Task<IActionResult> UpdateProfileImageWithImageId([FromQuery] string imageId)
+        public async Task<IActionResult> UpdateProfileImageWithImageId([FromQuery] Guid imageId)
         {
             var selectedImage = await _images.GetImage(imageId);
             if (selectedImage == null)

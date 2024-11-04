@@ -57,7 +57,7 @@ namespace Isolaatti.Feed.Controller
 
 
 
-            var posts = from post in postsQuery
+            var posts = from post in (postsQuery.Include(p => p.Images))
                 select new PostDto
                 {
                     Post = post,
@@ -90,7 +90,7 @@ namespace Isolaatti.Feed.Controller
                                       SquadName = post.Squad.Name
                                   }).ToListAsync();
             }
-
+            
             var postList = newPosts.Concat(posts.ToList()).ToList();
             
             var audiosIds = postList.Where(p => p.Post.AudioId != null).Select(p => p.Post.AudioId!);

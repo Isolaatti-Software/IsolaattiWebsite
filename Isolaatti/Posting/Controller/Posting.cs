@@ -66,7 +66,8 @@ namespace Isolaatti.Posting.Controller
                 TextContent = post.Content,
                 Privacy = post.Privacy,
                 AudioId = post.AudioId,
-                SquadId = post.SquadId
+                SquadId = post.SquadId,
+                IsDraft = post.IsDraft
             };
             
             _db.SimpleTextPosts.Add(newPost);
@@ -83,7 +84,7 @@ namespace Isolaatti.Posting.Controller
                 NumberOfComments = 0,
                 NumberOfLikes = 0,
                 Liked = false,
-                SquadName = newPost.Squad?.Name
+                SquadName = newPost.Squad?.Name,
             });
         }
 
@@ -112,6 +113,12 @@ namespace Isolaatti.Posting.Controller
             existingPost.Privacy = editedPost.Privacy;
             existingPost.TextContent = editedPost.Content;
             existingPost.AudioId = editedPost.AudioId;
+            existingPost.IsDraft = editedPost.IsDraft;
+
+            // relate images to post
+            await _db.Images
+                .Where(i => editedPost.Images.Contains(i.Id) && i.UserId == User.Id)
+                .ForEachAsync(i =>  i.PostId = existingPost.Id);
 
             _db.SimpleTextPosts.Update(existingPost);
             
@@ -129,11 +136,11 @@ namespace Isolaatti.Posting.Controller
                 SquadName = existingPost.SquadId == null ? null : _squads.GetSquadName(existingPost.SquadId)
             };
 
-            try
+            var success = Guid.TryParse(Request.Headers["client-id"], out var clientId);
+            if (success)
             {
-                var clientId = Guid.Parse(Request.Headers["client-id"]);
                 _notificationSender.SendPostUpdate(editedPost.PostId, clientId);
-            } catch(FormatException) {}
+            }
 
             return Ok(updatedPost);
         }
@@ -180,10 +187,59 @@ namespace Isolaatti.Posting.Controller
         [Route("Post/{postId:long}/Versions")]
         public async Task<IActionResult> GetPostVersions(long postId)
         {
-            var versions = _db.PostVersions.Where(pv => pv.PostId == postId).OrderByDescending(pv => pv.Id).ToList();
+            var versions = await _db.PostVersions
+                .Where(pv => pv.PostId == postId)
+                .OrderByDescending(pv => pv.Id)
+                .ToListAsync();
             return Ok(new {result = versions});
         }
-        
-        
+
+        [HttpPost]
+        [IsolaattiAuth]
+        [Route("Post/{postId:long}/SetImages")]
+        public async Task<IActionResult> SetImages(long postId, ListPayload<Guid> imagesIds)
+        {
+            // check existence and ownership of post
+            var post = await _db.SimpleTextPosts.AnyAsync(p => p.Id == postId && p.UserId == User.Id);
+
+            if (!post)
+            {
+                return NotFound("Post not found or ownership check failed");
+            }
+            
+            // specified images that are indeed owned by the user
+            var images = _db.Images.Where(i => imagesIds.Items.Contains(i.Id) && i.UserId == User.Id).ToList();
+            
+            foreach (var image in images)
+            {
+                image.PostId = postId;
+            }
+            
+            _db.Images.UpdateRange(images);
+            await _db.SaveChangesAsync();
+
+            return Ok();
+        }
+
+        [HttpPost]
+        [IsolaattiAuth]
+        [Route("Post/{postId:long}/SetIsDraft")]
+        public async Task<IActionResult> SetIsDraft(long postId, [FromQuery] bool isDraft)
+        {
+            // check existence and ownership of post
+            var post = await _db.SimpleTextPosts.FirstOrDefaultAsync(p => p.Id == postId && p.UserId == User.Id);
+
+            if (post == null)
+            {
+                return NotFound("Post not found or ownership check failed");
+            }
+
+            post.IsDraft = isDraft;
+
+            _db.SimpleTextPosts.Update(post);
+            await _db.SaveChangesAsync();
+
+            return Ok();
+        }
     }
 }

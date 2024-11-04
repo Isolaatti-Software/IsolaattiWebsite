@@ -12,5 +12,5 @@ public class Squad
     public int UserId { get; set; }
     public SquadPrivacy Privacy { get; set; }
     public DateTime CreationTime { get; set; }
-    public string? ImageId { get; set; }
+    public Guid? ImageId { get; set; }
 }

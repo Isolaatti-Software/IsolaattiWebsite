@@ -24,7 +24,7 @@ public class ManageSquadOwner : IsolaattiPageModel
     }
     
     public Squad Squad { get; set; }
-    public UserFeedDto Owner { get; set; }
+    public UserFeedDto? Owner { get; set; }
     public async Task<IActionResult> OnGet(Guid squadId)
     {
         Squad = await _squadsRepository.GetSquad(squadId);

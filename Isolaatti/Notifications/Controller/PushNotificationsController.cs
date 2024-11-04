@@ -24,7 +24,7 @@ public class PushNotificationsController : IsolaattiController
     {
         _registerDeviceMessaging.RegisterDevice(new RegisterDeviceMessagingDto
         {
-            SessionId = CurrentSessionDto.SessionId.ToString(),
+            SessionId = CurrentSession.Id,
             Token = token,
             UserId = User.Id
         });

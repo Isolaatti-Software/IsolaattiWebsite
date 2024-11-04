@@ -67,18 +67,6 @@ namespace Isolaatti.Users.Repository
             return Convert.ToInt32(value);
 
         }
-
-        public string GetUserImageId(int userId)
-        {
-            string value = _cache.GetString(GetKeyForUserImageId(userId));
-
-            if (value == null)
-            {
-                value = _db.Users.Where(u => u.Id == userId).Select(u => u.ProfileImageId).FirstOrDefault();
-            }
-
-            return value;
-        }
         
         private string FollowStateCacheKey(int userId, int targetUserId)
         {

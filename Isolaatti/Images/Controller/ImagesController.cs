@@ -11,6 +11,7 @@ using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Primitives;
 
 namespace Isolaatti.Images.Controller;
@@ -34,7 +35,7 @@ public class ImagesController : IsolaattiController
 
     [HttpGet]
     [Route("image/{imageId}")]
-    public async Task<IActionResult> GetImage(string imageId, [FromQuery] string mode)
+    public async Task<IActionResult> GetImage(Guid imageId, [FromQuery] string mode)
     {
         var url = await _images.GetImageDownloadUrl(imageId, mode);
         Response.Headers.CacheControl = new StringValues(new []{"max-age=604800", $"etag={imageId}"});
@@ -44,7 +45,7 @@ public class ImagesController : IsolaattiController
     [IsolaattiAuth]
     [HttpPost]
     [Route("create")]
-    public async Task<IActionResult> CreateImage([FromForm] IFormFile file, [FromForm] string name, [FromQuery] bool setAsProfile, [FromForm] Guid? squadId)
+    public async Task<IActionResult> CreateImage([FromForm] IFormFile file, [FromQuery] bool setAsProfile, [FromForm] long? postId, [FromForm] Guid? squadId)
     {
         if (squadId != null)
         {
@@ -60,7 +61,13 @@ public class ImagesController : IsolaattiController
             }
         }
 
-        var image = await _images.CreateImage(file.OpenReadStream(), User.Id, name.Trim(), squadId);
+        // check post existence and ownership
+        if (postId != null && !(await _db.SimpleTextPosts.AnyAsync(p => p.Id == postId && p.UserId == User.Id)))
+        {
+            return NotFound("Post not found or ownership check failed");
+        }
+
+        var image = await _images.CreateImage(file.OpenReadStream(), User.Id, squadId, postId);
         image.Username = User.Name;
         if (!setAsProfile) return Ok(image);
         if (squadId != null)
@@ -94,7 +101,7 @@ public class ImagesController : IsolaattiController
         } 
         else
         {
-            url = await _images.GetImageDownloadUrl(user?.ProfileImageId, mode);
+            url = await _images.GetImageDownloadUrl(user.ProfileImageId.Value, mode);
         }
         
 
@@ -102,31 +109,9 @@ public class ImagesController : IsolaattiController
     }
 
     [IsolaattiAuth]
-    [HttpGet]
-    [Route("of_user/{userId:int}")]
-    public async Task<IActionResult> GetImagesOfUserById(int userId, string? lastId, int pageSize = 20)
-    {
-        return Ok(new
-        {
-            data = await _images.GetImagesOfUser(userId, lastId, pageSize)
-        });
-    }
-
-    [IsolaattiAuth]
-    [HttpGet]
-    [Route("of_squad/{squadId:guid}")]
-    public async Task<IActionResult> GetImagesOfSquadById(Guid squadId, string? lastId, int pageSize = 20)
-    {
-        return Ok(new
-        {
-            data = await _squadsRepository.GetImagesOfSquad(squadId, lastId, pageSize)
-        });
-    }
-
-    [IsolaattiAuth]
     [HttpPost]
     [Route("set_image_of_squad/{squadId:guid}")]
-    public async Task<IActionResult> SetSquadImage(Guid squadId, [FromQuery] string imageId)
+    public async Task<IActionResult> SetSquadImage(Guid squadId, [FromQuery] Guid imageId)
     {
         var image = await _images.GetImage(imageId);
         if (image == null)
@@ -141,8 +126,8 @@ public class ImagesController : IsolaattiController
 
     [IsolaattiAuth]
     [HttpDelete]
-    [Route("{imageId}")]
-    public async Task<IActionResult> DeleteImage(string imageId)
+    [Route("{imageId:guid}")]
+    public async Task<IActionResult> DeleteImage(Guid imageId)
     {
         var result = await _images.DeleteImage(imageId, User.Id);
 
@@ -165,22 +150,4 @@ public class ImagesController : IsolaattiController
         
         return Ok();
     }
-
-    [IsolaattiAuth]
-    [HttpPost]
-    [Route("{imageId}/rename")]
-    public async Task<IActionResult> RenameImage(string imageId, SimpleStringData payload)
-    {
-        var result = await _images.RenameImage(imageId, User.Id, payload.Data);
-
-        return result switch
-        {
-            ImageModificationResult.Success => Ok(new { message = "Success" }),
-            ImageModificationResult.Error => Problem("Internal error"),
-            ImageModificationResult.NotFound => NotFound(),
-            ImageModificationResult.NotOwned => Unauthorized(),
-            _ => throw new ArgumentOutOfRangeException()
-        };
-    }
-
 }

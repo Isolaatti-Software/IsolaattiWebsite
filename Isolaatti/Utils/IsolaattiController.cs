@@ -1,4 +1,5 @@
 ﻿using Isolaatti.Accounts.Data.Entity;
+using Isolaatti.Accounts.SignIn.Data;
 using Isolaatti.Accounts.SignIn.Dto;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,5 +11,5 @@ public class IsolaattiController : ControllerBase
     /// <summary>
     /// Current session dto
     /// </summary>
-    public SessionDto CurrentSessionDto { get; set; }
+    public Session CurrentSession { get; set; }
 }

@@ -173,7 +173,7 @@ namespace Isolaatti.Controllers
             posts = posts.Take(length);
 
 
-            var a = from post in posts
+            var a = from post in (posts.Include(p => p.Images))
                 from u in _db.Users
                 where post.UserId == u.Id
                 select new PostDto()
@@ -221,6 +221,7 @@ namespace Isolaatti.Controllers
 
             var post = _db.SimpleTextPosts
                 .Where(p => p.Id == postId)
+                .Include(p => p.Images)
                 .Select(p => new PostDto
                 {
                     Post = p,

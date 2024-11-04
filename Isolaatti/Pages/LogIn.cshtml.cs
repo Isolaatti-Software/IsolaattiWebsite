@@ -36,10 +36,9 @@ namespace Isolaatti.Pages
             NewUser = newUser;
 
             if (cookie == null) return Page();
-            var session = _accounts.GetSessionDtoFromToken(cookie);
+            var session = await _accounts.GetSessionById(cookie);
             if (session == null)
             {
-                Response.Cookies.Delete(AccountsService.SessionCookieName);
                 return Page();
             }
             var user = await _accounts.ValidateSession(session);

@@ -47,8 +47,8 @@ public class LogIn : ControllerBase
     [HttpPost]
     public async Task<IActionResult> GetUserData([FromHeader(Name = "sessionToken")] string? sessionToken)
     {
-        var sessionDto = _accounts.GetSessionDtoFromToken(sessionToken);
-        if (sessionDto == null)
+        
+        if (sessionToken == null)
         {
             return Unauthorized(new SessionTokenValidated
             {
@@ -56,7 +56,19 @@ public class LogIn : ControllerBase
                 UserId = -1
             });
         }
-        var user = await _accounts.ValidateSession(sessionDto);
+        
+        var session = await _accounts.GetSessionById(sessionToken);
+
+        if (session == null)
+        {
+            return Unauthorized(new
+            {
+                IsValid = false,
+                UserId = -1
+            });
+        }
+        
+        var user = await _accounts.ValidateSession(session);
         if (user == null)
             return Unauthorized(new SessionTokenValidated
             {

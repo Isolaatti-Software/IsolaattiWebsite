@@ -2,8 +2,8 @@ using Isolaatti.Accounts.Data.Entity;
 using Isolaatti.Accounts.SignIn.Data;
 using Isolaatti.Comments.Entity;
 using Isolaatti.Favorites.Data;
+using Isolaatti.Images.Data;
 using Isolaatti.Likes.Data;
-using Isolaatti.Messenger;
 using Isolaatti.Models;
 using Isolaatti.Notifications.Entity;
 using Isolaatti.Posting.Data;
@@ -50,6 +50,13 @@ namespace Isolaatti.Database.EF
                 eb.Property(v => v.Description).HasColumnName("description");
                 eb.Property(v => v.Rank).HasColumnName("rank");
             });
+
+            modelBuilder.Entity<Post>()
+                .HasMany<Image>(d => d.Images)
+                .WithOne(image => image.Post)
+                .HasForeignKey(image => image.PostId)
+                .HasPrincipalKey(post => post.Id)
+                .OnDelete(DeleteBehavior.Cascade);
         }
 
 
@@ -76,6 +83,6 @@ namespace Isolaatti.Database.EF
         public DbSet<ReportEntity> Reports { get; set; }
         public DbSet<PostVersionEntity> PostVersions { get; set; }
         public DbSet<Session> Sessions { get; set; }
-        public DbSet<OpenfireAccount> MessengerAccounts { get; set; }
+        public DbSet<Image> Images { get; set; }
     }
 }

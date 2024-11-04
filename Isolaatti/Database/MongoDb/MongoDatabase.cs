@@ -25,11 +25,7 @@ namespace Isolaatti.Database.MongoDb
             return _database.GetCollection<Audio>(_settings.AudiosCollectionName);
         }
 
-        public IMongoCollection<Image> GetImagesCollection()
-        {
-            return _database.GetCollection<Image>(_settings.ImagesCollectionName);
-        }
-
+        
         public IMongoCollection<SocketIoServiceKey> GetSocketIoServiceKeysCollection()
         {
             return _database.GetCollection<SocketIoServiceKey>(_settings.RealtimeServiceKeysCollectionName);

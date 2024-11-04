@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
 using Isolaatti.Accounts.Data.Entity;
 using Isolaatti.Comments.Entity;
+using Isolaatti.Images.Data;
 using Isolaatti.Likes.Data;
 using Isolaatti.Squads.Data;
 
@@ -28,6 +30,9 @@ namespace Isolaatti.Posting.Data
         public virtual ICollection<Comment> Comments { get; set; }
         [JsonIgnore]
         public virtual Squad Squad { get; set; }
+
+        public virtual ICollection<Image> Images { get; } = new List<Image>();
+        public bool IsDraft { get; set; }
 
         public Post()
         {

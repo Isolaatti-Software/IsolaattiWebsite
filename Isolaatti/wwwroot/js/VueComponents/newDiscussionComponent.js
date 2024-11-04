@@ -124,61 +124,9 @@
     },
     template: `
       <section>
-      <div class="btn-group btn-group-sm mb-1">
-        <button class="btn btn-light" v-on:click="activeAction='newAudio'"
-                :disabled="activeAction==='newAudio'">
-          <i class="fa-solid fa-microphone"></i>
-        </button>
-        <button class="btn btn-light" v-on:click="activeAction='existingAudio'"
-                :disabled="activeAction==='existingAudio'">
-          <i class="fa-solid fa-file-audio"></i>
-        </button>
-        <button class="btn btn-light" v-on:click="activeAction='image'"
-                :disabled="activeAction==='image'">
-          <i class="fa-sharp fa-solid fa-image"></i>
-        </button>
-      </div>
-
-      <div class="btn-group btn-group-sm mb-1">
-        <button class="btn" :class="[showPreview ? 'btn-primary' : 'btn-light']" @click="showPreview=!showPreview">
-          <i class="fa-solid fa-eye"></i> Vista previa
-        </button>
-      </div>
-
-
-      <div v-if="activeAction==='newAudio'" class="bg-white p-3">
-        <div class="d-flex justify-content-end">
-          <button class="btn btn-light btn-sm close" v-on:click="activeAction='none'">&times;</button>
-        </div>
-
-        <audio-recorder class="mt-2" :is-discussion="true" v-on:audio-posted="audioPosted"></audio-recorder>
-      </div>
-      <div v-else-if="activeAction==='existingAudio'" class="bg-white p-3">
-        <div class="d-flex justify-content-end">
-          <span class="mr-auto">Audio existente</span>
-          <button class="btn btn-light btn-sm close" v-on:click="activeAction='none'">&times;</button>
-        </div>
-        <audios-list-select v-on:audio-selected="setAudio"></audios-list-select>
-      </div>
-      <div v-else-if="activeAction==='image'" class="bg-white p-3">
-        <span class="mr-auto">Agregar imagen</span>
-        <button class="btn btn-light btn-sm close" v-on:click="activeAction='none'">&times;</button>
-        <div class="alert alert-info mt-1">
-          Agrega una imagen a la discusión. Se generará el código Markdown correspondiente y se insertará al final dando un salto de línea.
-        </div>
-        <profile-image-maker :squad-id="squadId" @imageUpdated="imageUpdated" :profile="false"></profile-image-maker>
-      </div>
-      
-      <post-template v-if="showPreview" :post="discussion" :preview="true"></post-template>
-      
-      <audio-attachment class="mt-2"
-                        :audio-id="discussion.post.audioId"
-                        :can-remove="true"
-                        v-if="discussion.post.audioId!==null"
-                        v-on:remove="removeAudio"></audio-attachment>
-
+        
       <textarea class="mt-2 form-control" v-model="discussion.post.textContent" rows="10"
-                placeholder="Escribe aqui el contenido para iniciar la discusión. Markdown es compatible."></textarea>
+                placeholder="Escribe aqui el contenido para iniciar la discusión."></textarea>
 
       <div class="d-flex justify-content-end mt-2">
         <button class="btn btn-primary" :disabled="!ableToPostDiscussion" v-on:click="postDiscussion" v-if="!posting">

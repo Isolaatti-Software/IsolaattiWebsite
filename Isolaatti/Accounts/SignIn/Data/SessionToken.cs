@@ -8,36 +8,26 @@ namespace Isolaatti.Accounts.SignIn.Data
 {
     public class Session
     {
-        public Guid Id { get; set; }
+        public string Id { get; set; }
         
         public int UserId { get; set; }
         
         public string IpAddress { get; set; }
         
         public string UserAgent { get; set; }
-
-        public string SessionKey { get; set; }
+        
         
         public DateTime CreationDate { get; set; }
 
         public Session()
         {
-            SessionKey = RandomData.GenerateRandomKey(32);
+            Id = RandomData.GenerateRandomKey(64);
             CreationDate = DateTime.Now.ToUniversalTime();
         }
-
-        public SessionDto GetDto() 
-        {
-            return new() 
-            {
-                SessionId = Id,
-                SessionKey = SessionKey
-            };
-        }
-
+        
         public override string ToString()
         {
-            return Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(GetDto())));
+            return Id;
         }
     }
 }

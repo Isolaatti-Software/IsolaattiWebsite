@@ -51,11 +51,10 @@ public class IsolaattiAuthPagesFilter : IAsyncPageFilter
 
             try
             {
-                var session = _accounts.GetSessionDtoFromToken(cookie);
+                var session = await _accounts.GetSessionById(cookie);
                 if (session == null)
                 {
-                    _logger.LogDebug("invalid session, could not deserialize cookie");
-                    _accounts.RemoveSessionCookie();
+                    _logger.LogDebug("Session is null");
                     RedirectToLogin(context);
                     return;
                 }

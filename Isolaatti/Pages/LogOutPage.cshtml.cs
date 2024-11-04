@@ -19,7 +19,7 @@ public class LogOutPage : PageModel
         var currentSession = await _accounts.CurrentSession();
         if (currentSession != null)
         {
-            await _accounts.RemoveSession(currentSession.GetDto());
+            await _accounts.RemoveSession(currentSession.Id);
         }
         
         _accounts.RemoveSessionCookie();

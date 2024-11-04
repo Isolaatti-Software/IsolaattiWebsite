@@ -622,3 +622,17 @@ blockquote {
 .pointer {
   cursor: pointer;
 }
+
+.image-pager {
+  width: 100%;
+  height: auto;
+  position: relative;
+  aspect-ratio: 1;
+}
+
+.image-pager img {
+  flex: 0 0 auto;
+  width: 100%;
+  height: 100%;
+  display: block;
+}

@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Isolaatti.Accounts.Data;
 using Isolaatti.Accounts.Data.Entity;
 using Isolaatti.Accounts.SignIn.Data;
-using Isolaatti.Accounts.SignIn.Dto;
 
 namespace Isolaatti.Accounts.Service;
 
@@ -30,16 +29,15 @@ public interface IAccountsService
     Task<AccountPrecreate?> ValidatePreCreateCode(string code);
     Task<ChangePasswordResultDto> ChangeAPassword(int userId, string currentPassword, string newPassword);
     Task<string?> CreateNewSession(int userId, string plainTextPassword);
-    Task<User?> ValidateSession(SessionDto sessionDto);
+    Task<User?> ValidateSession(Session session);
+    Task<Session?> GetSessionById(string sessionId);
 
-    SessionDto? GetSessionDtoFromToken(string? token);
-
-    Task<bool> RemoveSession(SessionDto sessionDto);
-    Task<bool> RemoveSessions(int userId, IEnumerable<Guid> ids);
-    Task<bool> RemoveAllSessions(int userId, IEnumerable<Guid>? exceptIds);
+    Task<bool> RemoveSession(string sessionId);
+    Task<bool> RemoveSessions(int userId, IEnumerable<string> ids);
+    Task<bool> RemoveAllSessions(int userId, IEnumerable<string>? exceptIds);
     string? GetUsernameFromId(int userId);
     Task<IEnumerable<Session>> GetSessionsOfUser(int userId);
     string GetIpAddress();
     void RemoveSessionCookie();
-    Task<Session> CurrentSession();
+    Task<Session?> CurrentSession();
 }

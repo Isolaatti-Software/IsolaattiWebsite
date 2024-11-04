@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using Isolaatti.Accounts.Data;
 using Isolaatti.Accounts.Data.Entity;
 using Isolaatti.Accounts.SignIn.Data;
-using Isolaatti.Accounts.SignIn.Dto;
 using Isolaatti.Common;
 using Isolaatti.Database.EF;
 using Isolaatti.EmailSender;
@@ -18,6 +17,7 @@ using Isolaatti.Repositories;
 using Isolaatti.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.CodeAnalysis.RulesetToEditorconfig;
 using Microsoft.EntityFrameworkCore;
 
 namespace Isolaatti.Accounts.Service;
@@ -238,31 +238,30 @@ public partial class AccountsService : IAccountsService
         return sessionInserted.ToString();
     }
 
-    public async Task<User?> ValidateSession(SessionDto sessionDto)
+    public async Task<User?> ValidateSession(Session session)
     {
-        var userId = await _sessionsRepository.FindUserIdFromSession(sessionDto);
-        var user = await db.Users.FindAsync(userId);
+        var user = await db.Users.FindAsync(session.UserId);
         return user;
     }
 
-    public SessionDto? GetSessionDtoFromToken(string? token)
+    public async Task<Session?> GetSessionById(string sessionId)
     {
-        return token == null ? null : SessionDto.FromJson(Encoding.UTF8.GetString(Convert.FromBase64String(token)));
+        return await _sessionsRepository.FindSessionById(sessionId);
     }
 
-    public async Task<bool> RemoveSession(SessionDto sessionDto)
+    public async Task<bool> RemoveSession(string sessionId)
     {
-        return await _sessionsRepository.RemoveSession(sessionDto);
+        return await _sessionsRepository.RemoveSession(sessionId);
     }
 
-    public Task<bool> RemoveSessions(int userId, IEnumerable<Guid> ids)
+    public Task<bool> RemoveSessions(int userId, IEnumerable<string> ids)
     {
         return _sessionsRepository.RemoveSessions(userId, ids);
     }
 
-    public Task<bool> RemoveAllSessions(int userId, IEnumerable<Guid>? exceptIds)
+    public Task<bool> RemoveAllSessions(int userId, IEnumerable<string>? exceptIds)
     {
-        return _sessionsRepository.RemoveSessionsByUserId(userId, exceptIds ?? new List<Guid>());
+        return _sessionsRepository.RemoveSessionsByUserId(userId, exceptIds ?? []);
     }
     
 
@@ -313,7 +312,7 @@ public partial class AccountsService : IAccountsService
         _httpContext.Response.Cookies.Delete(SessionCookieName);
     }
 
-    public async Task<Session> CurrentSession()
+    public async Task<Session?> CurrentSession()
     {
         var cookie = _httpContext.Request.Cookies[SessionCookieName];
         if (cookie == null)
@@ -323,8 +322,7 @@ public partial class AccountsService : IAccountsService
 
         try
         {
-            var sessionDto = JsonSerializer.Deserialize<SessionDto>(cookie);
-            return await _sessionsRepository.FindSessionById(sessionDto);
+            return await _sessionsRepository.FindSessionById(cookie);
         }
         catch (JsonException)
         {

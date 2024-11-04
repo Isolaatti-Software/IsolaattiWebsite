@@ -285,7 +285,7 @@ public class SquadsRepository
         return _db.Squads.Where(s => s.Id.Equals(squadId)).Select(s => s.Name).FirstOrDefault();
     }
 
-    public async Task SetSquadImage(Guid squadId, string imageId)
+    public async Task SetSquadImage(Guid squadId, Guid imageId)
     {
         var squad = await _db.Squads.FindAsync(squadId);
         if (squad == null)
@@ -296,11 +296,6 @@ public class SquadsRepository
         squad.ImageId = imageId;
         _db.Squads.Update(squad);
         await _db.SaveChangesAsync();
-    }
-
-    public async Task<IEnumerable<Image>> GetImagesOfSquad(Guid squadId, string? lastId, int pageSize)
-    {
-        return await _images.GetImagesOfSquad(squadId, lastId, pageSize);
     }
 
     public async Task SetSquadPrivacy(Guid squadId, SquadPrivacy privacy) 

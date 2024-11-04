@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Google;
 using Isolaatti.Accounts.Service;
@@ -32,7 +31,7 @@ public class ImagesService
         _usersRepository = usersRepository;
     }
 
-    public async Task<Image> CreateImage(Stream file, int userId, string name, Guid? squadId)
+    public async Task<Image> CreateImage(Stream file, int userId, Guid? squadId, long? postId)
     {
         var imageGuid = Guid.NewGuid();
         var originalImageObjectName = $"images/{imageGuid}/original";
@@ -74,10 +73,10 @@ public class ImagesService
         // Upload reduced image object
         await _storage.CreateObject(reducedImageStream, "image/webp", reducedImageObjectName);
         await reducedImageStream.DisposeAsync();
-        return await _imagesRepository.InsertImage(userId, name, imageGuid.ToString(), squadId);
+        return await _imagesRepository.InsertImage(userId, imageGuid.ToString(), squadId, postId);
     }
 
-    public async Task<ImageFeed?> GetImage(string imageId)
+    public async Task<ImageFeed?> GetImage(Guid imageId)
     {
         var image = await _imagesRepository.GetImage(imageId);
         if (image == null) return null;
@@ -88,7 +87,7 @@ public class ImagesService
         return imageFeed;
     }
 
-    public async Task<string> GetImageDownloadUrl(string imageId, string mode = "original")
+    public async Task<string?> GetImageDownloadUrl(Guid imageId, string mode = "original")
     {
         var image = await _imagesRepository.GetImage(imageId);
         if (image == null) return null;
@@ -98,7 +97,7 @@ public class ImagesService
         return null;
     }
 
-    public async Task<ImageModificationResult> DeleteImage(string id, int userId)
+    public async Task<ImageModificationResult> DeleteImage(Guid id, int userId)
     {
         var image = await _imagesRepository.GetImage(id);
         if (image == null)
@@ -125,34 +124,7 @@ public class ImagesService
 
     }
 
-    public async Task<IEnumerable<Image>> GetImagesOfUser(int userId, string? lastId, int pageSize)
-    {
-        var images =  await _imagesRepository.GetImagesOfUser(userId, lastId, pageSize);
-        return images.Select(i =>
-        {
-            i.Username = _usersRepository.GetUsernameById(i.UserId);
-            return i;
-        });
-    }
-
-    public async Task<ImageModificationResult> RenameImage(string imageId, int userId, string newName)
-    {
-        var image = await _imagesRepository.GetImage(imageId);
-        if (image == null)
-        {
-            return ImageModificationResult.NotFound;
-        }
-        if (image.UserId != userId)
-        {
-            return ImageModificationResult.NotOwned;
-        }
-
-        await _imagesRepository.RenameImage(imageId, newName);
-
-        return ImageModificationResult.Success;
-    }
-
-    public async Task DeleteImages(IEnumerable<string> imageIds, int userId)
+    public async Task DeleteImages(IEnumerable<Guid> imageIds, int userId)
     {
         var filesToRemove = await _imagesRepository.DeleteImages(imageIds, userId);
         foreach (var id in filesToRemove)
@@ -174,10 +146,5 @@ public class ImagesService
             await _storage.DeleteObject($"images/{id}/reduced");
             await _storage.DeleteObject($"images/{id}/small");
         }
-    }
-
-    public Task<bool> SetImageOutstanding(string imageId, int userId, bool outstanding)
-    {
-        return _imagesRepository.SetImageOutstanding(imageId, userId, outstanding);
     }
 }

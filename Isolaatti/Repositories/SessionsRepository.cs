@@ -22,16 +22,16 @@ public class SessionsRepository(DbContextApp db)
         return db.Sessions.Where(session => session.UserId == userId).ToList();
     }
 
-    public async Task<int?> FindUserIdFromSession(SessionDto sessionDto)
+    public async Task<int?> FindUserIdFromSession(string sessionId)
     {
-        var session = await db.Sessions.FindAsync(sessionDto.SessionId);
+        var session = await db.Sessions.FindAsync(sessionId);
 
         if(session == null) 
         {
             return null;
         }
 
-        if(!session.SessionKey.Equals(sessionDto.SessionKey))
+        if(!session.Id.Equals(sessionId))
         {
             return null;
         }
@@ -39,9 +39,9 @@ public class SessionsRepository(DbContextApp db)
         return session.UserId;
     }
 
-    public async Task<bool> RemoveSession(SessionDto sessionDto)
+    public async Task<bool> RemoveSession(string sessionId)
     {
-        var session = await db.Sessions.FindAsync(sessionDto.SessionId);
+        var session = await db.Sessions.FindAsync(sessionId);
         if (session == null)
         {
             return false;
@@ -51,19 +51,19 @@ public class SessionsRepository(DbContextApp db)
         return true;
     }
 
-    public async Task<bool> RemoveSessionsByUserId(int userId, IEnumerable<Guid> exceptIds)
+    public async Task<bool> RemoveSessionsByUserId(int userId, IEnumerable<string> exceptIds)
     {
         db.Sessions.RemoveRange(db.Sessions.Where(session => session.UserId == userId && !exceptIds.Contains(session.Id)));
         await db.SaveChangesAsync();
         return true;
     }
 
-    public async Task<Session?> FindSessionById(SessionDto sessionDto)
+    public async Task<Session?> FindSessionById(string sessionId)
     {
-        return await db.Sessions.FindAsync(sessionDto.SessionId);
+        return await db.Sessions.FindAsync(sessionId);
     }
 
-    public async Task<bool> RemoveSessions(int userId, IEnumerable<Guid> ids)
+    public async Task<bool> RemoveSessions(int userId, IEnumerable<string> ids)
     {
         db.Sessions.RemoveRange(db.Sessions.Where(session => session.UserId == userId && ids.Contains(session.Id)));
         await db.SaveChangesAsync();

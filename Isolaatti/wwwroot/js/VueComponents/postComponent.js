@@ -45,6 +45,10 @@ Vue.component('post-template',{
             }
             
             return `/squads/${this.renderPost.post.squadId}`;
+        },
+        imagesUrls: function() {
+            const that = this;
+            return this.renderPost.post.images.map(function(image) { return that.imageUrl(image.id, "reduced") })
         }
     },
     watch: {
@@ -57,9 +61,6 @@ Vue.component('post-template',{
         }
     },
     methods: {
-        compileMarkdown: function (raw) {
-            return DOMPurify.sanitize(marked.parse(raw));
-        },
         getUserImageUrl: function (userId) {
             return `/api/images/profile_image/of_user/${userId}?mode=small`
         },
@@ -127,6 +128,9 @@ Vue.component('post-template',{
             });
             if(response.ok)
                 this.renderPost = await response.json();
+        },
+        imageUrl: function(imageId, mode) {
+            return `/api/images/image/${imageId}?mode=${mode}`;
         }
     },
     template: `
@@ -140,7 +144,7 @@ Vue.component('post-template',{
         <button class="btn btn-primary" @click="deletePost">Sí</button>
       </section>
       <article class="d-flex flex-column w-100" v-if="!editable">
-        <div :class="containerCssClass">
+        <div class="d-flex flex-column p-2 mt-3 post">
           <div class="d-flex justify-content-between align-items-center">
             <div class="d-flex">
               <img class="user-avatar" :src="getUserImageUrl(renderPost.post.userId)">
@@ -175,10 +179,10 @@ Vue.component('post-template',{
           </div>
 
           <audio-attachment :audio-id="renderPost.post.audioId" v-if="renderPost.post.audioId!==null"></audio-attachment>
-          <div class="mt-2 post-content" v-html="compileMarkdown(renderPost.post.textContent === null ? '' : renderPost.post.textContent)" ref="postContentContainer" @click="openDiscussion"></div>
-          <div class="d-flex justify-content-center">
-            <button class="btn btn-link btn-sm mt-1" v-on:click="showFullPost" v-if="cutContent">Mostrar todo</button>
+          <div class="mt-2 post-content" ref="postContentContainer" @click="openDiscussion">
+            <p>{{renderPost.post.textContent === null ? '' : renderPost.post.textContent}}</p>
           </div>
+          <images-pager v-if="renderPost.post.images.length > 0" :images-urls="imagesUrls"/>
           <div class="d-flex justify-content-end">
             <button class="btn btn-transparent mr-auto btn-sm" data-toggle="modal" data-target="#modal-post-info" 
                     @click="$emit('details', post.post)"><i class="fa-solid fa-info"></i> </button>
