@@ -1,29 +1,24 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
+using Isolaatti.Posting.Data;
 
 namespace Isolaatti.Audios.Data;
 
 public class Audio
 {
-    [BsonId]
-    [BsonRepresentation(BsonType.ObjectId)]
-    public string Id { get; set; }
-
-    [Required(ErrorMessage = "Name is required")]
-    public string Name { get; set; }
-
-    [Required(ErrorMessage = "UserId is required")]
-    [BsonRepresentation(BsonType.Int32)]
+    public Guid Id { get; set; }
     public int UserId { get; set; }
+    
+    
+    [JsonIgnore]
+    public virtual Post? Post { get; set; }
+    
 
-    public DateTime CreationTime { get; set; }
+    public DateTime CreationTime { get; set; } = DateTime.Now.ToUniversalTime();
 
-    [Required(ErrorMessage = "Firestore path is required")]
+    [JsonIgnore]
     public string FirestoreObjectPath { get; set; }
     
-    [Required]
     public int DurationSeconds { get; set; }
-    public string? SquadId { get; set; }
 }

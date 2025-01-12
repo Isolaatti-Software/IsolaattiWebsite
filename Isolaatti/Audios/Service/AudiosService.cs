@@ -1,81 +1,62 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Google;
 using Isolaatti.Accounts.Service;
+using Isolaatti.Audios.Data;
 using Isolaatti.Audios.Dto;
-using Isolaatti.Audios.Repository;
+using Isolaatti.Common;
+using Isolaatti.Database.EF;
 using Isolaatti.Enums;
 using Isolaatti.Services;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Isolaatti.Audios.Service;
 
-public class AudiosService
+public class AudiosService(DbContextApp _db, GoogleCloudStorageService _storage, ILogger<AudiosService> logger)
 {
-    private readonly GoogleCloudStorageService _storage;
-    private readonly AudiosRepository _audiosRepository;
-    private readonly IAccountsService _accounts;
-    
-    public AudiosService(GoogleCloudStorageService googleFirebaseStorageService, AudiosRepository audiosRepository, IAccountsService accounts)
-    {
-        _storage = googleFirebaseStorageService;
-        _audiosRepository = audiosRepository;
-        _accounts = accounts;
-    }
 
-    public async Task<FeedAudio> CreateAudio(Stream file, int userId, string name, string contentType, int duration)
+    public async Task<Audio> CreateAudio(Stream file, int userId, long postId, string contentType, int duration)
     {
         var objectName = $"audios/{Guid.NewGuid()}";
         await _storage.CreateObject(file, contentType, objectName);
-        return await _audiosRepository.InsertAudio(userId, name, objectName, duration);
-    }
 
-    public async Task<FeedAudio> GetAudio(string id)
-    {
-        var audio = await _audiosRepository.GetAudio(id);
-        if (audio == null) return null;
+        var post = await _db.SimpleTextPosts.FindAsync(postId);
 
-        var feedAudio = new FeedAudio(audio);
-
-        feedAudio.UserName = _accounts.GetUsernameFromId(feedAudio.UserId);
-
-        return feedAudio;
-    }
-
-    public async Task<Dictionary<string, FeedAudio>> GetAudios(IEnumerable<string> ids)
-    {
-        var audios = await _audiosRepository.GetAudios(ids);
-        
-        foreach(var (id, audio) in audios)
+        if (post == null)
         {
-            audio.UserName = _accounts.GetUsernameFromId(audio.UserId);
+            throw new PostNotFoundException(postId);
         }
 
-        return audios;
-    }
-
-
-    public async Task<AudiosOperationResult> RenameAudio(string id, int userId, string name)
-    {
-        var audio = await _audiosRepository.GetAudio(id);
-        if (audio == null)
-            return AudiosOperationResult.DoesNotExist;
-        if (audio.UserId != userId)
-            return AudiosOperationResult.NotOwned;
-
-        if (name.Length > 30)
+        if (post.UserId != userId)
         {
-            name = name[..30];
+            throw new UnauthorizedUserException(userId);
         }
-        
-        await _audiosRepository.RenameAudio(id, name);
-        return AudiosOperationResult.Success;
-    }
 
-    public async Task<AudiosOperationResult> DeleteAudio(string id, int userId)
+        var audio = new Audio
+        {
+            UserId = userId,
+            FirestoreObjectPath = objectName,
+            DurationSeconds = duration
+        };
+
+        _db.Audios.Add(audio);
+
+        post.AudioId = audio.Id;
+        _db.SimpleTextPosts.Update(post);
+
+        await _db.SaveChangesAsync();
+
+        
+
+        return audio;
+    }
+    
+    public async Task<AudiosOperationResult> DeleteAudio(Guid id, int userId)
     {
-        var audio = await _audiosRepository.GetAudio(id);
+        var audio = await _db.Audios.FindAsync(id);
         if (audio == null)
             return AudiosOperationResult.DoesNotExist;
         if (audio.UserId != userId)
@@ -85,18 +66,25 @@ public class AudiosService
         {
             await _storage.DeleteObject(audio.FirestoreObjectPath);
         }
-        catch (GoogleApiException)
+        catch (GoogleApiException googleApiException)
         {
-            
+            logger.LogError("Error deleting object on Google Cloud Bucket. {}", googleApiException.Message);
         }
-        await _audiosRepository.RemoveAudio(audio.Id);
+
+        _db.Audios.Remove(audio);
+
+        await _db.SaveChangesAsync();
 
         return AudiosOperationResult.Success;
     }
 
-    public async Task DeleteAllUserAudios(int userId)
+    public async Task<Audio?> GetAudio(Guid audioId)
     {
-        var paths = await _audiosRepository.RemoveAllAudiosFromUser(userId);
-        await _storage.DeleteObjects(paths);
+        return await _db.Audios.FindAsync(audioId);
+    }
+
+    public void DeleteAllUserAudios(int userId)
+    {
+        _db.Audios.RemoveRange(_db.Audios.Where(a => a.UserId == userId));
     }
 }

@@ -8,7 +8,7 @@
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
-using Isolaatti.Audios.Dto;
+using Isolaatti.Audios.Data;
 
 namespace Isolaatti.Accounts.Data.Entity
 {
@@ -43,14 +43,11 @@ namespace Isolaatti.Accounts.Data.Entity
         // ProfileImageUrl is used to save Firebase account image url. It can come from Google, Facebook, etc
         public string? ProfileImageUrl { get; set; }
         public string? DescriptionText { get; set; }
-        public string? DescriptionAudioId { get; set; }
+        public Guid? DescriptionAudioId { get; set; }
         public string? Genre { get; set; }
         public string? CountryCode { get; set; }
         public DateTime? Birthday { get; set; }
         
-        [NotMapped]
-        public FeedAudio? Audio { get; set; }
-        public string? MessengerId { get; set; }
-
+        public virtual Audio? DescriptionAudio { get; set; }
     }
 }

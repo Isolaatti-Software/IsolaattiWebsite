@@ -173,7 +173,7 @@ namespace Isolaatti.Controllers
             posts = posts.Take(length);
 
 
-            var a = from post in (posts.Include(p => p.Images))
+            var a = from post in (posts.Include(p => p.Images).Include(p => p.Audio))
                 from u in _db.Users
                 where post.UserId == u.Id
                 select new PostDto()
@@ -189,18 +189,7 @@ namespace Isolaatti.Controllers
             var count = posts.Count();
 
             var postList = await a.ToListAsync();
-
-            var audiosIds = postList.Where(p => p.Post.AudioId != null).Select(p => p.Post.AudioId!);
-            var audiosBadge = await _audios.GetAudios(audiosIds);
-
-            foreach (var post in postList)
-            {
-                var audioId = post.Post.AudioId;
-                if (audioId == null) continue;
-                audiosBadge.TryGetValue(audioId, out var audio);
-                post.Audio = audio;
-            }
-
+            
             return Ok(new ContentListWrapper<PostDto>
             {
                 Data = postList,
@@ -222,6 +211,7 @@ namespace Isolaatti.Controllers
             var post = _db.SimpleTextPosts
                 .Where(p => p.Id == postId)
                 .Include(p => p.Images)
+                .Include(p => p.Audio)
                 .Select(p => new PostDto
                 {
                     Post = p,

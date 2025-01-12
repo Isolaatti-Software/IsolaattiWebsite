@@ -2,10 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Isolaatti.Accounts.Data;
-using Isolaatti.Audios.Dto;
-using Isolaatti.Audios.Repository;
 using Isolaatti.Database.EF;
-using Isolaatti.Images.Data;
 using Isolaatti.Images.Repository;
 using Isolaatti.Posting.Dto;
 using Isolaatti.Search.Dto;
@@ -23,16 +20,14 @@ namespace Isolaatti.Search.Controller;
 public class SearchController : IsolaattiController
 {
     private readonly DbContextApp _db;
-    private readonly AudiosRepository _audios;
     private readonly ImagesRepository _imagesRepository;
     private readonly SquadUsersRepository _squadUsersRepository;
     private readonly SquadsRepository _squadsRepository;
     private readonly UsersRepository _usersRepository;
 
-    public SearchController(DbContextApp db, AudiosRepository audios, ImagesRepository imagesRepository, SquadUsersRepository squadUsersRepository, SquadsRepository squadsRepository, UsersRepository usersRepository)
+    public SearchController(DbContextApp db, ImagesRepository imagesRepository, SquadUsersRepository squadUsersRepository, SquadsRepository squadsRepository, UsersRepository usersRepository)
     {
         _db = db;
-        _audios = audios;
         _imagesRepository = imagesRepository;
         _squadUsersRepository = squadUsersRepository;
         _squadsRepository = squadsRepository;
@@ -116,14 +111,6 @@ public class SearchController : IsolaattiController
             select squad;
 
         results.Squads.AddRange(await squadsResults.Take(8).ToListAsync());
-
-        // Perform basic search on audios
-        var audiosResult = await _audios.SearchByName(lowerCaseQ);
-
-        results.Audios.AddRange(audiosResult.Select(a => new FeedAudio(a)
-        {
-            UserName = _db.Users.Where(u => u.Id == a.UserId).Select(u => u.Name).FirstOrDefault()
-        }));
         
         // Some post processing
         // Add to users result the authors from the posts, audios and images

@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Isolaatti.Accounts.Data;
 using Isolaatti.Audios.Dto;
-using Isolaatti.Audios.Repository;
 using Isolaatti.Common;
 using Isolaatti.Database.EF;
 using Isolaatti.Images.Service;
@@ -17,13 +17,11 @@ namespace Isolaatti.Profiles.Controller
     public class ProfileController : IsolaattiController
     {
         private readonly DbContextApp _db;
-        private readonly AudiosRepository _audios;
         private readonly ImagesService _images;
 
-        public ProfileController(DbContextApp db, AudiosRepository audios, ImagesService images)
+        public ProfileController(DbContextApp db, ImagesService images)
         {
             _db = db;
-            _audios = audios;
             _images = images;
         }
 
@@ -34,7 +32,7 @@ namespace Isolaatti.Profiles.Controller
         public async Task<IActionResult> GetProfile(int userId)
         {
 
-            var account = await _db.Users.FindAsync(userId);
+            var account = _db.Users.Include(p => p.DescriptionAudio).FirstOrDefault(u => u.Id == userId);
             if (account == null) return NotFound();
 
             account.NumberOfFollowers = await _db.FollowerRelations.CountAsync(fr => fr.TargetUserId == account.Id);
@@ -47,18 +45,6 @@ namespace Isolaatti.Profiles.Controller
             account.FollowingThisUser =
                 await _db.FollowerRelations.AnyAsync(fr => fr.UserId == User.Id && fr.TargetUserId == account.Id);
 
-            if (account.DescriptionAudioId != null)
-            {
-                var audio = await _audios.GetAudio(account.DescriptionAudioId);
-                if (audio != null)
-                {
-                    account.Audio = new FeedAudio(audio)
-                    {
-                        UserName = account.Name
-                    };
-                }
-                
-            }
             
             if (!account.ShowEmail && account.Id != User.Id)
             {
@@ -100,15 +86,15 @@ namespace Isolaatti.Profiles.Controller
         [IsolaattiAuth]
         [HttpPost]
         [Route("/api/EditProfile/UpdateAudioDescription")]
-        public async Task<IActionResult> UpdateAudioDescription(SimpleStringData payload)
+        public async Task<IActionResult> UpdateAudioDescription(SingleIdentification<Guid> payload)
         {
-            if (await _audios.GetAudio(payload.Data) == null)
+            if (!_db.Audios.Any(a => a.Id.Equals(payload.Id) && a.UserId == User.Id))
             {
-                return BadRequest("Audio specified by id does not exist");
+                return NotFound("Audio specified not found or owned");
             }
-
-            User.DescriptionAudioId = payload.Data;
-
+            
+            User.DescriptionAudioId = payload.Id;
+            
             _db.Users.Update(User);
             await _db.SaveChangesAsync();
             return Ok();

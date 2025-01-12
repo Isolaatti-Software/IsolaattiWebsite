@@ -5,7 +5,6 @@ using System.Text.Json;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Isolaatti.Accounts.Service;
-using Isolaatti.Audios.Repository;
 using Isolaatti.Audios.Service;
 using Isolaatti.Comments.Repository;
 using Isolaatti.Common;
@@ -206,7 +205,6 @@ namespace Isolaatti
 
             services.AddSingleton<MongoDatabase>();
             services.AddSingleton<HttpClientSingleton>();
-            services.AddScoped<AudiosRepository>();
             services.AddScoped<SquadInvitationsRepository>();
             services.AddScoped<SquadsRepository>();
             services.AddScoped<SquadUsersRepository>();

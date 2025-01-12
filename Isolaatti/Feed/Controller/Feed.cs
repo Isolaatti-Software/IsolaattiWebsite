@@ -57,7 +57,10 @@ namespace Isolaatti.Feed.Controller
 
 
 
-            var posts = from post in (postsQuery.Include(p => p.Images))
+            var posts = from post in 
+                    postsQuery
+                        .Include(p => p.Images)
+                        .Include(p => p.Audio)
                 select new PostDto
                 {
                     Post = post,
@@ -92,17 +95,6 @@ namespace Isolaatti.Feed.Controller
             }
             
             var postList = newPosts.Concat(posts.ToList()).ToList();
-            
-            var audiosIds = postList.Where(p => p.Post.AudioId != null).Select(p => p.Post.AudioId!);
-            var audiosBadge = await _audios.GetAudios(audiosIds);
-            
-            foreach (var post in postList)
-            {
-                var audioId = post.Post.AudioId;
-                if (audioId == null) continue;
-                audiosBadge.TryGetValue(audioId, out var audio);
-                post.Audio = audio;
-            }
             
             return Ok(new ContentListWrapper<PostDto>
             {

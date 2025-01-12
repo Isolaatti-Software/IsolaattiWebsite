@@ -65,7 +65,6 @@ namespace Isolaatti.Posting.Controller
                 UserId = User.Id,
                 TextContent = post.Content,
                 Privacy = post.Privacy,
-                AudioId = post.AudioId,
                 SquadId = post.SquadId,
                 IsDraft = post.IsDraft
             };
@@ -107,12 +106,10 @@ namespace Isolaatti.Posting.Controller
                 PostId = existingPost.Id,
                 TextContent = existingPost.TextContent,
                 DateTime = DateTime.Now.ToUniversalTime(),
-                AudioId = existingPost.AudioId
             });
 
             existingPost.Privacy = editedPost.Privacy;
             existingPost.TextContent = editedPost.Content;
-            existingPost.AudioId = editedPost.AudioId;
             existingPost.IsDraft = editedPost.IsDraft;
 
             // relate images to post

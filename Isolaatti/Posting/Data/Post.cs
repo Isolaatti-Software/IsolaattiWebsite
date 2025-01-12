@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
 using Isolaatti.Accounts.Data.Entity;
+using Isolaatti.Audios.Data;
 using Isolaatti.Comments.Entity;
 using Isolaatti.Images.Data;
 using Isolaatti.Likes.Data;
@@ -17,10 +18,8 @@ namespace Isolaatti.Posting.Data
         public int UserId { get; set; }
         public int Privacy { get; set; }
         public DateTimeOffset Date { get; set; }
-        public string? AudioId { get; set; }
+        public Guid? AudioId { get; set; }
         public Guid? SquadId { get; set; }
-        public long? LinkedDiscussionId { get; set; }
-        public long? LinkedCommentId { get; set; }
         
         [JsonIgnore]
         public User User { get; set; }
@@ -29,7 +28,8 @@ namespace Isolaatti.Posting.Data
         [JsonIgnore]
         public virtual ICollection<Comment> Comments { get; set; }
         [JsonIgnore]
-        public virtual Squad Squad { get; set; }
+        public virtual Squad? Squad { get; set; }
+        public virtual Audio? Audio { get; set; }
 
         public virtual ICollection<Image> Images { get; } = new List<Image>();
         public bool IsDraft { get; set; }

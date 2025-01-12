@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Google;
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Storage.V1;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace Isolaatti.Services;
@@ -17,10 +19,12 @@ public class GoogleCloudStorageService
     private readonly StorageClient _storage;
 
     private readonly ILogger<GoogleCloudStorageService> _logger;
+    private readonly IWebHostEnvironment _webHostEnvironment;
 
-    public GoogleCloudStorageService(ILogger<GoogleCloudStorageService> logger)
+    public GoogleCloudStorageService(ILogger<GoogleCloudStorageService> logger, IWebHostEnvironment webHostEnvironment)
     {
         _logger = logger;
+        _webHostEnvironment = webHostEnvironment;
         const string filePath = "isolaatti-firebase-adminsdk.json";
         GoogleCredential credential;
         if (File.Exists(filePath))
@@ -46,23 +50,27 @@ public class GoogleCloudStorageService
 
     public async Task CreateObject(Stream fileContent, string contentType, string objectName)
     {
-        await _storage.UploadObjectAsync(FirebaseProjectName, objectName, contentType, fileContent);
+        var path = _webHostEnvironment.IsDevelopment() ? $"dev/{objectName}" : objectName;
+        await _storage.UploadObjectAsync(FirebaseProjectName, path, contentType, fileContent);
     }
 
     public async Task DeleteObject(string objectName)
     {
-        await _storage.DeleteObjectAsync(FirebaseProjectName, objectName);
+        var path = _webHostEnvironment.IsDevelopment() ? $"dev/{objectName}" : objectName;
+        await _storage.DeleteObjectAsync(FirebaseProjectName, path);
     }
 
     public async Task<string> GetSignedUrl(string objectName)
     {
         var urlSigner = UrlSigner.FromServiceAccountPath(GoogleCloudCredentialPath);
-        return await urlSigner.SignAsync(FirebaseProjectName, objectName, TimeSpan.FromHours(1), HttpMethod.Get);
+        var path = _webHostEnvironment.IsDevelopment() ? $"dev/{objectName}" : objectName;
+        return await urlSigner.SignAsync(FirebaseProjectName, path, TimeSpan.FromHours(1), HttpMethod.Get);
     }
 
     public async Task<string> GetDownloadUrl(string objectName)
     {
-        var firestoreObject = await _storage.GetObjectAsync(FirebaseProjectName, objectName);
+        var path = _webHostEnvironment.IsDevelopment() ? $"dev/{objectName}" : objectName;
+        var firestoreObject = await _storage.GetObjectAsync(FirebaseProjectName, path);
         return firestoreObject.MediaLink;
     }
 
@@ -70,13 +78,14 @@ public class GoogleCloudStorageService
     {
         foreach (var file in objects)
         {
+            var path = _webHostEnvironment.IsDevelopment() ? $"dev/{file}" : file;
             try
             {
-                await _storage.DeleteObjectAsync(FirebaseProjectName, file);
+                await _storage.DeleteObjectAsync(FirebaseProjectName, path);
             }
             catch (GoogleApiException e)
             {
-                _logger.LogError("Error deleting file {} from Google Cloud Storage Bucket with exception message {}", file, e.Message);
+                _logger.LogError("Error deleting file {} from Google Cloud Storage Bucket with exception message {}", path, e.Message);
             }
         }
     }
