@@ -37,7 +37,7 @@ namespace Isolaatti.Feed.Controller
             {
                 postsQuery =
                     from post in Db.SimpleTextPosts
-                    where post.Privacy != 1 && post.SquadId == null
+                    where post.Privacy != 1 && post.SquadId == null && !post.IsDraft
                     orderby post.Id descending 
                     select post;
             }
@@ -46,7 +46,7 @@ namespace Isolaatti.Feed.Controller
                 postsQuery =
                     from post in Db.SimpleTextPosts
 
-                    where post.Privacy != 1 && post.Id < lastId && post.SquadId == null
+                    where post.Privacy != 1 && post.Id < lastId && post.SquadId == null && !post.IsDraft
                     orderby post.Id descending 
                     select post;
             }

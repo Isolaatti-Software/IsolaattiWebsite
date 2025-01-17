@@ -64,7 +64,7 @@ namespace Isolaatti.Controllers
                  * 2. Order
                  * 3. Paging by cursor
                  */
-                 posts = _db.SimpleTextPosts.Where(post => post.UserId == User.Id);
+                 posts = _db.SimpleTextPosts.Where(post => post.UserId == User.Id && !post.IsDraft);
                  if (filter != null)
                  {
                      posts = filter.IncludeAudio switch
@@ -120,7 +120,7 @@ namespace Isolaatti.Controllers
                 requestedAuthor = await _db.Users.FindAsync(userId);
                 if (requestedAuthor == null) return NotFound();
 
-                posts = _db.SimpleTextPosts.Where(post => post.UserId == requestedAuthor.Id && post.SquadId == null);
+                posts = _db.SimpleTextPosts.Where(post => post.UserId == requestedAuthor.Id && post.SquadId == null && post.Privacy != 1 && !post.IsDraft);
                  if (filter != null)
                  {
                      posts = filter.IncludeAudio switch
@@ -202,7 +202,7 @@ namespace Isolaatti.Controllers
         [Route("Post/{postId:long}")]
         public async Task<IActionResult> GetPost(long postId)
         {
-            var postExists = await _db.SimpleTextPosts.AnyAsync(p => p.Id == postId);
+            var postExists = await _db.SimpleTextPosts.AnyAsync(p => p.Id == postId && !p.IsDraft);
             if (!postExists)
             {
                 return NotFound("post not found");

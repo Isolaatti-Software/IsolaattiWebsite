@@ -38,7 +38,7 @@ public class HashtagsController : IsolaattiController
         {
             postsQuery = from ht in _db.Hashtags
                 from post in _db.SimpleTextPosts
-                where ht.Text.Equals(hashtag) && post.Id == ht.PostId
+                where ht.Text.Equals(hashtag) && post.Id == ht.PostId && post.Privacy != 1 && !post.IsDraft
                 orderby post.Id descending
                 select post;
         }
@@ -46,7 +46,7 @@ public class HashtagsController : IsolaattiController
         {
             postsQuery = from ht in _db.Hashtags
                 from post in _db.SimpleTextPosts
-                where ht.Text.Equals(hashtag) && post.Id == ht.PostId && post.Id < after
+                where ht.Text.Equals(hashtag) && post.Id == ht.PostId && post.Id < after && post.Privacy != 1 && !post.IsDraft
                 orderby post.Id descending 
                 select post;
         }
