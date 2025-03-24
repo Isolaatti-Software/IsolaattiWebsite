@@ -9,6 +9,7 @@ using Google.Cloud.Storage.V1;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Object = Google.Apis.Storage.v1.Data.Object;
 
 namespace Isolaatti.Services;
 

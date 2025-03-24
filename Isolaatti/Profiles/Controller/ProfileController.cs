@@ -3,27 +3,22 @@ using System.Linq;
 using System.Threading.Tasks;
 using Isolaatti.Accounts.Data;
 using Isolaatti.Audios.Dto;
+using Isolaatti.Audios.Service;
 using Isolaatti.Common;
 using Isolaatti.Database.EF;
 using Isolaatti.Images.Service;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Isolaatti.Profiles.Controller
 {
     [ApiController]
-    public class ProfileController : IsolaattiController
+    public class ProfileController(DbContextApp _db, ImagesService _images, AudiosService audios, ILogger<ProfileController> logger) : IsolaattiController
     {
-        private readonly DbContextApp _db;
-        private readonly ImagesService _images;
-
-        public ProfileController(DbContextApp db, ImagesService images)
-        {
-            _db = db;
-            _images = images;
-        }
 
 
         [IsolaattiAuth]
@@ -85,19 +80,24 @@ namespace Isolaatti.Profiles.Controller
 
         [IsolaattiAuth]
         [HttpPost]
-        [Route("/api/EditProfile/UpdateAudioDescription")]
-        public async Task<IActionResult> UpdateAudioDescription(SingleIdentification<Guid> payload)
+        [Route("/api/EditProfile/SetAudioDescription")]
+        public async Task<IActionResult> UpdateAudioDescription([FromForm] IFormFile audioFile, [FromForm] int duration)
         {
-            if (!_db.Audios.Any(a => a.Id.Equals(payload.Id) && a.UserId == User.Id))
+            try
             {
-                return NotFound("Audio specified not found or owned");
+                var audio = await audios.CreateAudioForDescription(audioFile.OpenReadStream(), User.Id,
+                    audioFile.ContentType, duration);
+                return Ok(audio);
             }
-            
-            User.DescriptionAudioId = payload.Id;
-            
-            _db.Users.Update(User);
-            await _db.SaveChangesAsync();
-            return Ok();
+            catch (UserNotFoundException)
+            {
+                return NotFound(new { Message = "User not found" });
+            }
+            catch (Exception e)
+            {
+                logger.LogError("Error at /api/EditProfile/SetAudioDescription {}", e.Message);
+                return Problem("Unknown error");
+            }
         }
 
         [IsolaattiAuth]

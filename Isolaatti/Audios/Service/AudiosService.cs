@@ -53,6 +53,70 @@ public class AudiosService(DbContextApp _db, GoogleCloudStorageService _storage,
 
         return audio;
     }
+
+    /// <summary>
+    /// Creates a description audio for the user. Removes previously set audio if any.
+    /// </summary>
+    /// <param name="file">audio file</param>
+    /// <param name="userId">user id that requests this</param>
+    /// <param name="contentType">mime type of audio file</param>
+    /// <param name="duration">Duration in seconds</param>
+    /// <returns>Created audio</returns>
+    public async Task<Audio> CreateAudioForDescription(Stream file, int userId, string contentType, int duration)
+    {
+        
+        var user = await _db.Users.FindAsync(userId);
+
+        if (user == null)
+        {
+            throw new UserNotFoundException(userId);
+        }
+
+        var oldAudioId = user.DescriptionAudioId;
+        
+        var objectName = $"audios/{Guid.NewGuid()}";
+        await _storage.CreateObject(file, contentType, objectName);
+        
+        var audio = new Audio
+        {
+            UserId = userId,
+            FirestoreObjectPath = objectName,
+            DurationSeconds = duration
+        };
+        
+        _db.Audios.Add(audio);
+        
+
+        user.DescriptionAudioId = audio.Id;
+        await _db.SaveChangesAsync();
+
+        // remove old audio from storage and db
+
+        if (oldAudioId != null)
+        {
+
+            var oldAudio = _db.Audios.FirstOrDefault(a => a.Id == oldAudioId);
+            
+            if (oldAudio != null)
+            {
+                _db.Audios.Remove(oldAudio);
+                await _db.SaveChangesAsync();
+                try
+                {
+                    await _storage.DeleteObject(oldAudio.FirestoreObjectPath);
+                }
+                catch (Exception e)
+                {
+                    logger.LogError("Failed to remove audio");
+                }
+            }
+            
+            
+        }
+        
+
+        return audio;
+    }
     
     public async Task<AudiosOperationResult> DeleteAudio(Guid id, int userId)
     {
