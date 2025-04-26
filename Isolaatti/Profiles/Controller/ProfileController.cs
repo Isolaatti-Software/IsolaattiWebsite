@@ -124,13 +124,21 @@ namespace Isolaatti.Profiles.Controller
         }
 
         [IsolaattiAuth]
-        [HttpPost]
-        [Route("/api/EditProfile/RemoveAudioFromProfile")]
+        [HttpDelete]
+        [Route("/api/EditProfile/Audio")]
         public async Task<IActionResult> RemoveAudioFromDescription()
         {
+            var audioId = User.DescriptionAudioId;
+            if (audioId == null)
+            {
+                return Ok(new { error = "Audio not found" });
+            }
             User.DescriptionAudioId = null;
             _db.Users.Update(User);
             await _db.SaveChangesAsync();
+
+            await audios.DeleteAudio(audioId.Value, User.Id);
+            
             return Ok();
         }
 
