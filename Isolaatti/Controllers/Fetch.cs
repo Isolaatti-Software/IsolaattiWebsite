@@ -69,8 +69,8 @@ namespace Isolaatti.Controllers
                  {
                      posts = filter.IncludeAudio switch
                      {
-                         "onlyAudio" => posts.Where(post => post.AudioId != null),
-                         "onlyNoAudio" => posts.Where(post => post.AudioId == null),
+                         "onlyAudio" => posts.Where(post => post.AudioStoragePath != null),
+                         "onlyNoAudio" => posts.Where(post => post.AudioStoragePath == null),
                          _ => posts
                      };
 
@@ -125,8 +125,8 @@ namespace Isolaatti.Controllers
                  {
                      posts = filter.IncludeAudio switch
                      {
-                         "onlyAudio" => posts.Where(post => post.AudioId != null),
-                         "onlyNoAudio" => posts.Where(post => post.AudioId == null),
+                         "onlyAudio" => posts.Where(post => post.AudioStoragePath != null),
+                         "onlyNoAudio" => posts.Where(post => post.AudioStoragePath == null),
                          _ => posts
                      };
                      
@@ -173,7 +173,7 @@ namespace Isolaatti.Controllers
             posts = posts.Take(length);
 
 
-            var a = from post in (posts.Include(p => p.Images).Include(p => p.Audio))
+            var a = from post in (posts.Include(p => p.Images))
                 from u in _db.Users
                 where post.UserId == u.Id
                 select new PostDto()
@@ -211,7 +211,6 @@ namespace Isolaatti.Controllers
             var post = _db.SimpleTextPosts
                 .Where(p => p.Id == postId)
                 .Include(p => p.Images)
-                .Include(p => p.Audio)
                 .Select(p => new PostDto
                 {
                     Post = p,

@@ -2,11 +2,11 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Isolaatti.Accounts.Data;
-using Isolaatti.Audios.Dto;
 using Isolaatti.Audios.Service;
 using Isolaatti.Common;
 using Isolaatti.Database.EF;
 using Isolaatti.Images.Service;
+using Isolaatti.Services;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Http;
@@ -17,7 +17,7 @@ using Microsoft.Extensions.Logging;
 namespace Isolaatti.Profiles.Controller
 {
     [ApiController]
-    public class ProfileController(DbContextApp _db, ImagesService _images, AudiosService audios, ILogger<ProfileController> logger) : IsolaattiController
+    public class ProfileController(DbContextApp _db, ImagesService _images, AudiosService audios, ILogger<ProfileController> logger, GoogleCloudStorageService storage) : IsolaattiController
     {
 
 
@@ -27,7 +27,7 @@ namespace Isolaatti.Profiles.Controller
         public async Task<IActionResult> GetProfile(int userId)
         {
 
-            var account = _db.Users.Include(p => p.DescriptionAudio).FirstOrDefault(u => u.Id == userId);
+            var account = _db.Users.FirstOrDefault(u => u.Id == userId);
             if (account == null) return NotFound();
 
             account.NumberOfFollowers = await _db.FollowerRelations.CountAsync(fr => fr.TargetUserId == account.Id);
@@ -85,9 +85,11 @@ namespace Isolaatti.Profiles.Controller
         {
             try
             {
-                var audio = await audios.CreateAudioForDescription(audioFile.OpenReadStream(), User.Id,
+                var audioOperationResult = await audios.CreateAudioForDescription(audioFile.OpenReadStream(), User.Id,
                     audioFile.ContentType, duration);
-                return Ok(audio);
+                
+                return Ok(new {audioOperationResult});
+                
             }
             catch (UserNotFoundException)
             {
@@ -128,16 +130,13 @@ namespace Isolaatti.Profiles.Controller
         [Route("/api/EditProfile/Audio")]
         public async Task<IActionResult> RemoveAudioFromDescription()
         {
-            var audioId = User.DescriptionAudioId;
-            if (audioId == null)
+            if (User.AudioStoragePath != null)
             {
-                return Ok(new { error = "Audio not found" });
+                await audios.DeleteAudio(User.AudioStoragePath);
+                User.AudioStoragePath = null;
+                _db.Users.Update(User);
+                await _db.SaveChangesAsync();
             }
-            User.DescriptionAudioId = null;
-            _db.Users.Update(User);
-            await _db.SaveChangesAsync();
-
-            await audios.DeleteAudio(audioId.Value, User.Id);
             
             return Ok();
         }
@@ -152,5 +151,26 @@ namespace Isolaatti.Profiles.Controller
             await _db.SaveChangesAsync();
             return Ok();
         }
+        
+        [IsolaattiAuth]
+        [HttpGet]
+        [Route("/api/users/{userId:int}/downloadAudio")]
+        public async Task<IActionResult> DownloadAudio([FromRoute] int userId)
+        {
+            var user = _db.Users.FirstOrDefault(u => u.Id == userId);
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+
+            if (user.AudioStoragePath == null)
+            {
+                return NotFound("This user does not have an audio");
+            }
+
+            return Redirect(await storage.GetDownloadUrl(user.AudioStoragePath));
+        }
     }
+    
+    
 }

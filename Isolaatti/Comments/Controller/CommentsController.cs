@@ -43,7 +43,6 @@ public class CommentsController(
             UserId = User.Id,
             PostId = post.Id,
             TargetUser = post.UserId,
-            AudioId = commentModel.AudioId,
             SquadId = post.SquadId
         };
 
@@ -144,7 +143,6 @@ public class CommentsController(
 
         await commentHistoryRepository.InsertModificationHistory(commentToEdit);
 
-        commentToEdit.AudioId = updatedComment.AudioId;
         commentToEdit.TextContent = updatedComment.Content;
         commentToEdit.Modified = true;
         commentToEdit.Date = DateTime.UtcNow;
@@ -190,7 +188,6 @@ public class CommentsController(
             UserId = User.Id,
             PostId = post.Id,
             TargetUser = post.UserId,
-            AudioId = comment.AudioId,
             SquadId = post.SquadId,
             ResponseForCommentId = commentToReply.Id
         };

@@ -5,5 +5,6 @@ public enum AudiosOperationResult
     Success,
     NotOwned,
     DoesNotExist,
-    UploadFailed
+    UploadFailed,
+    RemovalFailed
 }

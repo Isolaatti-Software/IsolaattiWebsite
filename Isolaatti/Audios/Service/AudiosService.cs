@@ -1,16 +1,11 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Google;
-using Isolaatti.Accounts.Service;
-using Isolaatti.Audios.Data;
-using Isolaatti.Audios.Dto;
 using Isolaatti.Common;
 using Isolaatti.Database.EF;
 using Isolaatti.Enums;
 using Isolaatti.Services;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Isolaatti.Audios.Service;
@@ -18,7 +13,7 @@ namespace Isolaatti.Audios.Service;
 public class AudiosService(DbContextApp _db, GoogleCloudStorageService _storage, ILogger<AudiosService> logger)
 {
 
-    public async Task<Audio> CreateAudio(Stream file, int userId, long postId, string contentType, int duration)
+    public async Task CreateAudio(Stream file, int userId, long postId, string contentType, int duration)
     {
         var objectName = $"audios/{Guid.NewGuid()}";
         await _storage.CreateObject(file, contentType, objectName);
@@ -35,23 +30,25 @@ public class AudiosService(DbContextApp _db, GoogleCloudStorageService _storage,
             throw new UnauthorizedUserException(userId);
         }
 
-        var audio = new Audio
+        // audio to delete
+        if (post.AudioStoragePath != null)
         {
-            UserId = userId,
-            FirestoreObjectPath = objectName,
-            DurationSeconds = duration
-        };
+            try
+            {
+                await _storage.DeleteObject(post.AudioStoragePath);
+            }
+            catch (Exception)
+            {
+                logger.LogError("Failed to delete audio {}", post.AudioStoragePath);
+            }
+        }
 
-        _db.Audios.Add(audio);
+        post.AudioStoragePath = objectName;
+        post.AudioDurationMs = duration;
 
-        post.AudioId = audio.Id;
         _db.SimpleTextPosts.Update(post);
 
         await _db.SaveChangesAsync();
-
-        
-
-        return audio;
     }
 
     /// <summary>
@@ -62,7 +59,7 @@ public class AudiosService(DbContextApp _db, GoogleCloudStorageService _storage,
     /// <param name="contentType">mime type of audio file</param>
     /// <param name="duration">Duration in seconds</param>
     /// <returns>Created audio</returns>
-    public async Task<Audio> CreateAudioForDescription(Stream file, int userId, string contentType, int duration)
+    public async Task<AudiosOperationResult> CreateAudioForDescription(Stream file, int userId, string contentType, int duration)
     {
         
         var user = await _db.Users.FindAsync(userId);
@@ -72,83 +69,46 @@ public class AudiosService(DbContextApp _db, GoogleCloudStorageService _storage,
             throw new UserNotFoundException(userId);
         }
 
-        var oldAudioId = user.DescriptionAudioId;
+        var oldAudioPath = user.AudioStoragePath;
         
         var objectName = $"audios/{Guid.NewGuid()}";
         await _storage.CreateObject(file, contentType, objectName);
-        
-        var audio = new Audio
-        {
-            UserId = userId,
-            FirestoreObjectPath = objectName,
-            DurationSeconds = duration
-        };
-        
-        _db.Audios.Add(audio);
-        
 
-        user.DescriptionAudioId = audio.Id;
+        user.AudioStoragePath = objectName;
+        
         await _db.SaveChangesAsync();
 
-        // remove old audio from storage and db
+        // remove old audio from storage
 
-        if (oldAudioId != null)
+        if (oldAudioPath != null)
         {
-
-            var oldAudio = _db.Audios.FirstOrDefault(a => a.Id == oldAudioId);
-            
-            if (oldAudio != null)
+            try
             {
-                _db.Audios.Remove(oldAudio);
-                await _db.SaveChangesAsync();
-                try
-                {
-                    await _storage.DeleteObject(oldAudio.FirestoreObjectPath);
-                }
-                catch (Exception e)
-                {
-                    logger.LogError("Failed to remove audio");
-                }
+                await _storage.DeleteObject(oldAudioPath);
+                return AudiosOperationResult.Success;
             }
-            
-            
+            catch (Exception e)
+            {
+                logger.LogError("Failed to remove audio");
+                return AudiosOperationResult.RemovalFailed;
+            }
         }
-        
 
-        return audio;
+        return AudiosOperationResult.Success;
     }
     
-    public async Task<AudiosOperationResult> DeleteAudio(Guid id, int userId)
+    public async Task<AudiosOperationResult> DeleteAudio(string storagePath)
     {
-        var audio = await _db.Audios.FindAsync(id);
-        if (audio == null)
-            return AudiosOperationResult.DoesNotExist;
-        if (audio.UserId != userId)
-            return AudiosOperationResult.NotOwned;
 
         try
         {
-            await _storage.DeleteObject(audio.FirestoreObjectPath);
+            await _storage.DeleteObject(storagePath);
         }
         catch (GoogleApiException googleApiException)
         {
             logger.LogError("Error deleting object on Google Cloud Bucket. {}", googleApiException.Message);
         }
 
-        _db.Audios.Remove(audio);
-
-        await _db.SaveChangesAsync();
-
         return AudiosOperationResult.Success;
-    }
-
-    public async Task<Audio?> GetAudio(Guid audioId)
-    {
-        return await _db.Audios.FindAsync(audioId);
-    }
-
-    public void DeleteAllUserAudios(int userId)
-    {
-        _db.Audios.RemoveRange(_db.Audios.Where(a => a.UserId == userId));
     }
 }

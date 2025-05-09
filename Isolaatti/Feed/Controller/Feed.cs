@@ -60,7 +60,6 @@ namespace Isolaatti.Feed.Controller
             var posts = from post in 
                     postsQuery
                         .Include(p => p.Images)
-                        .Include(p => p.Audio)
                 select new PostDto
                 {
                     Post = post,

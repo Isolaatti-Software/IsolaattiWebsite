@@ -1,5 +1,4 @@
-﻿using Isolaatti.Audios.Data;
-using Isolaatti.Comments.Entity;
+﻿using Isolaatti.Comments.Entity;
 using Isolaatti.Images.Data;
 using Isolaatti.RealtimeInteraction.Entity;
 using Microsoft.Extensions.Options;
@@ -19,12 +18,6 @@ namespace Isolaatti.Database.MongoDb
             _mongoClient = new MongoClient(_settings.ConnectionString);
             _database = _mongoClient.GetDatabase(_settings.DatabaseName);
         }
-
-        public IMongoCollection<Audio> GetAudiosCollection()
-        {
-            return _database.GetCollection<Audio>(_settings.AudiosCollectionName);
-        }
-
         
         public IMongoCollection<SocketIoServiceKey> GetSocketIoServiceKeysCollection()
         {

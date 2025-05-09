@@ -1,6 +1,5 @@
 using Isolaatti.Accounts.Data.Entity;
 using Isolaatti.Accounts.SignIn.Data;
-using Isolaatti.Audios.Data;
 using Isolaatti.Comments.Entity;
 using Isolaatti.Favorites.Data;
 using Isolaatti.Images.Data;
@@ -58,17 +57,7 @@ namespace Isolaatti.Database.EF
                 .HasForeignKey(image => image.PostId)
                 .HasPrincipalKey(post => post.Id)
                 .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<Post>()
-                .HasOne<Audio>(p => p.Audio)
-                .WithOne(audio => audio.Post)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<Audio>()
-                .HasOne<User>()
-                .WithOne(u => u.DescriptionAudio)
-                .HasForeignKey<User>(user => user.DescriptionAudioId)
-                .OnDelete(DeleteBehavior.SetNull);
+            
         }
 
 
@@ -94,6 +83,5 @@ namespace Isolaatti.Database.EF
         public DbSet<PostVersionEntity> PostVersions { get; set; }
         public DbSet<Session> Sessions { get; set; }
         public DbSet<Image> Images { get; set; }
-        public DbSet<Audio> Audios { get; set; }
     }
 }

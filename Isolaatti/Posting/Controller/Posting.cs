@@ -1,15 +1,18 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Isolaatti.Audios.Service;
 using Isolaatti.Common;
 using Isolaatti.Database.EF;
 using Isolaatti.Posting.Data;
 using Isolaatti.Posting.Dto;
 using Isolaatti.RealtimeInteraction.Service;
+using Isolaatti.Services;
 using Isolaatti.Squads.Repository;
 using Isolaatti.Tagging;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,21 +20,15 @@ namespace Isolaatti.Posting.Controller
 {
     [ApiController]
     [Route("/api/Posting")]
-    public class PostingController : IsolaattiController
+    public class PostingController(
+        DbContextApp _db, 
+        NotificationSender _notificationSender, 
+        SquadsRepository _squads, 
+        TaggingService _taggingService,
+        AudiosService _audios,
+        GoogleCloudStorageService cloudStorage) : IsolaattiController
     {
-        private readonly DbContextApp _db;
-        private readonly NotificationSender _notificationSender;
-        private readonly SquadsRepository _squads;
-        private readonly TaggingService _taggingService;
-
-        public PostingController(DbContextApp dbContextApp, NotificationSender notificationSender, SquadsRepository squadsRepository, TaggingService taggingService)
-        {
-            _db = dbContextApp;
-            _notificationSender = notificationSender;
-            _squads = squadsRepository;
-            _taggingService = taggingService;
-        }
-
+        
         [IsolaattiAuth]
         [HttpPost]
         [Route("Make")]
@@ -118,6 +115,11 @@ namespace Isolaatti.Posting.Controller
                 .ForEachAsync(i =>  i.PostId = existingPost.Id);
 
             _db.SimpleTextPosts.Update(existingPost);
+
+            if (editedPost.RemoveAudio && existingPost.AudioStoragePath != null)
+            {
+                await _audios.DeleteAudio(existingPost.AudioStoragePath);
+            }
             
             await _db.SaveChangesAsync();
 
@@ -237,6 +239,36 @@ namespace Isolaatti.Posting.Controller
             await _db.SaveChangesAsync();
 
             return Ok();
+        }
+
+
+        [HttpPost]
+        [IsolaattiAuth]
+        [Route("Post/{postId:long}/Audio")]
+        public async Task<IActionResult> SetAudio([FromForm] IFormFile audioFile, [FromRoute] long postId, [FromForm] int duration)
+        {
+            await _audios.CreateAudio(audioFile.OpenReadStream(), User.Id, postId, audioFile.ContentType, duration);
+
+            return Ok();
+        }
+
+        [HttpGet]
+        [IsolaattiAuth]
+        [Route("Post/{postId:long}/DownloadAudio")]
+        public async Task<IActionResult> DownloadAudio(long postId)
+        {
+            var post = _db.SimpleTextPosts.FirstOrDefault(p => p.Id == postId);
+            if (post == null)
+            {
+                return NotFound("Post not found");
+            }
+
+            if (post.AudioStoragePath == null)
+            {
+                return NotFound("Post has no audio");
+            }
+
+            return Redirect(await cloudStorage.GetDownloadUrl(post.AudioStoragePath));
         }
     }
 }

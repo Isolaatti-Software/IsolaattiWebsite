@@ -106,8 +106,7 @@ public class AccountRemovalService
         {
             return false;
         }
-
-        DeleteAudios(accountRemovalRequest.UserId);
+        
         await DeleteImages(accountRemovalRequest.UserId);
         await DeleteSessions(accountRemovalRequest.UserId);
         await HandleUserRemovalFromSquads(accountRemovalRequest.UserId);
@@ -125,11 +124,6 @@ public class AccountRemovalService
     private async Task DeleteSessions(int userId)
     {
         await _accountsService.RemoveAllSessions(userId, null);
-    }
-
-    private void DeleteAudios(int userId)
-    {
-        _audiosService.DeleteAllUserAudios(userId);
     }
     
     // special case for squads:

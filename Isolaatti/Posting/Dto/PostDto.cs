@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Isolaatti.Audios.Dto;
-using Isolaatti.Posting.Data;
+﻿using Isolaatti.Posting.Data;
 
 namespace Isolaatti.Posting.Dto;
 
