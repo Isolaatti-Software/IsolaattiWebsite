@@ -114,13 +114,16 @@ namespace Isolaatti.Posting.Controller
                 .Where(i => editedPost.Images.Contains(i.Id) && i.UserId == User.Id)
                 .ForEachAsync(i =>  i.PostId = existingPost.Id);
 
-            _db.SimpleTextPosts.Update(existingPost);
+            
 
             if (editedPost.RemoveAudio && existingPost.AudioStoragePath != null)
             {
                 await _audios.DeleteAudio(existingPost.AudioStoragePath);
+                existingPost.AudioStoragePath = null;
+                existingPost.AudioDurationMs = 0;
             }
             
+            _db.SimpleTextPosts.Update(existingPost);
             await _db.SaveChangesAsync();
 
             await _taggingService.ProcessPost(existingPost, true);
