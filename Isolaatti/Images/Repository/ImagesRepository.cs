@@ -45,6 +45,7 @@ public class ImagesRepository(DbContextApp db)
         var images = db.Images.Where(i => i.UserId == userId && imageIds.Contains(i.Id)).ToList();
         
         db.Images.RemoveRange(images);
+        await db.SaveChangesAsync();
         
         return images.Select(i => i.IdOnFirebase);
     }
