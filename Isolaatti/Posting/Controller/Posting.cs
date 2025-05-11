@@ -89,7 +89,7 @@ namespace Isolaatti.Posting.Controller
         [Route("Edit")]
         public async Task<IActionResult> EditPost(EditPostModel editedPost)
         {
-            var existingPost = await _db.SimpleTextPosts.FindAsync(editedPost.PostId);
+            var existingPost = await _db.SimpleTextPosts.Include(p => p.Images).FirstOrDefaultAsync(p => p.Id == editedPost.PostId);
             if (existingPost == null)
             {
                 return NotFound("Post not found");
