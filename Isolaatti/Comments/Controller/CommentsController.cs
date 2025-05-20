@@ -43,7 +43,8 @@ public class CommentsController(
             UserId = User.Id,
             PostId = post.Id,
             TargetUser = post.UserId,
-            SquadId = post.SquadId
+            SquadId = post.SquadId,
+            IsFromUser = true
         };
 
         db.Comments.Add(commentToMake);
@@ -84,11 +85,14 @@ public class CommentsController(
         return Ok(new ContentListWrapper<CommentDto>
         {
             Data = commentsList.Select(co =>
-                new CommentDto
+            {
+                co.IsFromUser = User.Id == co.UserId;
+                return new CommentDto
                 {
                     Comment = co,
                     Username = usersRepository.GetUsernameById(co.UserId) ?? ""
-                }).ToList(),
+                };
+            }).ToList(),
             MoreContent = total > commentsList.Count()
         });
     }
@@ -100,6 +104,8 @@ public class CommentsController(
     {
         var comment = await db.Comments.FindAsync(commentId);
         if (comment == null) return NotFound();
+        
+        comment.IsFromUser = User.Id == comment.UserId;
 
         return Ok(new CommentDto
         {
@@ -146,6 +152,7 @@ public class CommentsController(
         commentToEdit.TextContent = updatedComment.Content;
         commentToEdit.Modified = true;
         commentToEdit.Date = DateTime.UtcNow;
+        commentToEdit.IsFromUser = true;
 
         db.Comments.Update(commentToEdit);
         await db.SaveChangesAsync();
@@ -189,7 +196,8 @@ public class CommentsController(
             PostId = post.Id,
             TargetUser = post.UserId,
             SquadId = post.SquadId,
-            ResponseForCommentId = commentToReply.Id
+            ResponseForCommentId = commentToReply.Id,
+            IsFromUser = true
         };
 
         db.Comments.Add(commentToMake);
@@ -228,11 +236,14 @@ public class CommentsController(
         return Ok(new ContentListWrapper<CommentDto>
         {
             Data = commentsList.Select(co =>
-                new CommentDto
+            {
+                co.IsFromUser = User.Id == co.UserId;
+                return new CommentDto
                 {
                     Comment = co,
                     Username = usersRepository.GetUsernameById(co.UserId) ?? ""
-                }).ToList(),
+                };
+            }).ToList(),
             MoreContent = total > commentsList.Count
         });
         

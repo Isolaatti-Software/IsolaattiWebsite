@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Isolaatti.Comments.Entity
 {
@@ -21,6 +22,9 @@ namespace Isolaatti.Comments.Entity
         public long? LinkedCommentId { get; set; }
 
         public bool Modified { get; set; }
+        
+        [NotMapped]
+        public bool IsFromUser { get; set; }
 
 
         public Comment()
