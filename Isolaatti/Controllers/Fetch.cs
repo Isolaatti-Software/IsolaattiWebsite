@@ -234,7 +234,22 @@ namespace Isolaatti.Controllers
                     });
                 }
             }
+
+            var participantsInt = (from c in _db.Comments
+                where c.PostId == post.Post.Id
+                select c.UserId).Distinct();
+
+            var participants = _db.Users
+                .Where(u => participantsInt.Contains(u.Id) && u.Id != User.Id)
+                .Select(u => new UserFeedDto()
+                {
+                    Id = u.Id,
+                    Name = u.Name,
+                    ImageId = u.ProfileImageId,
+                    Following = _db.FollowerRelations.Any(fr => fr.UserId == User.Id && fr.TargetUserId == u.Id)
+                }).ToList();
             
+            post.Participants = participants;
             
             return Ok(post);
         }

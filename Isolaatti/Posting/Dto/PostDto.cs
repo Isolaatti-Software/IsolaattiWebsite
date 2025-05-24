@@ -1,4 +1,6 @@
-﻿using Isolaatti.Posting.Data;
+﻿using System.Collections.Generic;
+using Isolaatti.Accounts.Data;
+using Isolaatti.Posting.Data;
 
 namespace Isolaatti.Posting.Dto;
 
@@ -11,4 +13,5 @@ public class PostDto
     public string UserName { get; set; }
     public string? SquadName { get; set; }
     public bool Liked { get; set; }
+    public List<UserFeedDto>? Participants { get; set; }
 }
