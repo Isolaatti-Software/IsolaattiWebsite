@@ -187,10 +187,16 @@ public class SquadsController : IsolaattiController
         return Ok(_squadsRepository.GetSquadUserBelongs(User.Id, lastId));
     }
 
+    [IsolaattiAuth]
+    [HttpGet]
+    [Route("")]
     public IActionResult GetSquads(Guid? lastId)
     {
-        return Ok(_squadsRepository.GetSquads(User.Id, lastId));
-    }
+        return Ok(new
+        {
+            squads = _squadsRepository.GetSquads(User.Id, lastId).ToList()
+        });
+}
 
     [IsolaattiAuth]
     [HttpPost]

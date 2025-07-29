@@ -178,7 +178,8 @@ public class SquadsRepository
             SquadId = squad.Id,
             UserId = userId,
             Role = SquadUserRole.User,
-            JoinedAt = DateTime.Now.ToUniversalTime()
+            JoinedAt = DateTime.Now.ToUniversalTime(),
+            Permissions = []
         };
         
         try
@@ -256,11 +257,13 @@ public class SquadsRepository
             .Where(squad => squad.UserId == userId);
     }
 
-    public IEnumerable<Squad> GetSquads(int userId, Guid? lastId = null)
+    public IQueryable<Squad> GetSquads(int userId, Guid? lastId = null)
     {
-        return from squadUser in _db.SquadUsers
+        return 
             from squad in _db.Squads
-            where (squad.UserId == userId) || (squadUser.UserId == userId && squad.Id == squadUser.SquadId)
+            join squadUser in _db.SquadUsers on userId equals squadUser.UserId into squadUsers
+            from squadUser in squadUsers.DefaultIfEmpty()
+            where squad.UserId == userId || squadUser.UserId == userId
             select squad;
     }
 
