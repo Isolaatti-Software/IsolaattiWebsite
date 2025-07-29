@@ -256,6 +256,14 @@ public class SquadsRepository
             .Where(squad => squad.UserId == userId);
     }
 
+    public IEnumerable<Squad> GetSquads(int userId, Guid? lastId = null)
+    {
+        return from squadUser in _db.SquadUsers
+            from squad in _db.Squads
+            where (squad.UserId == userId) || (squadUser.UserId == userId && squad.Id == squadUser.SquadId)
+            select squad;
+    }
+
     public async Task<IEnumerable<UserFeedDto>> GetMembersOfSquad(Guid squadId)
     {
         // return _db.SquadUsers.Where(squadUser => squadUser.SquadId.Equals(squadId)).Select(u => new UserFeed

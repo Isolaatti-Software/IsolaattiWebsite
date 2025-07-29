@@ -187,6 +187,11 @@ public class SquadsController : IsolaattiController
         return Ok(_squadsRepository.GetSquadUserBelongs(User.Id, lastId));
     }
 
+    public IActionResult GetSquads(Guid? lastId)
+    {
+        return Ok(_squadsRepository.GetSquads(User.Id, lastId));
+    }
+
     [IsolaattiAuth]
     [HttpPost]
     [Route("{squadId:guid}/Update")]
