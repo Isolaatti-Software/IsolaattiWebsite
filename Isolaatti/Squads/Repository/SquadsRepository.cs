@@ -63,10 +63,21 @@ public class SquadsRepository
             Privacy = squadCreationRequest.Privacy,
             UserId = userId
         };
+
+        
         
         try
         {
             await _db.Squads.AddAsync(newSquad);
+            var squadUser = new SquadUser()
+            {
+                SquadId = newSquad.Id,
+                UserId = userId,
+                Role = SquadUserRole.Owner,
+                JoinedAt = DateTime.Now.ToUniversalTime(),
+                Permissions = []
+            };
+            await _db.SquadUsers.AddAsync(squadUser);
             await _db.SaveChangesAsync();
             return new SquadCreationResponse
             {

@@ -254,4 +254,20 @@ public class SquadsController : IsolaattiController
 
         return Ok();
     }
+
+    [IsolaattiAuth]
+    [HttpGet]
+    [Route("Feed")]
+    public async Task<IActionResult> GetFeed(long lastPostId)
+    {
+        var posts = from post in _db.SimpleTextPosts
+            join squadUser in _db.SquadUsers on post.SquadId equals squadUser.SquadId into squadUsers
+            from squadUser in squadUsers.DefaultIfEmpty()
+            where squadUser.UserId.Equals(User.Id)
+            select post;
+        return Ok(new
+        {
+            posts = await posts.ToListAsync()
+        });
+    }
 }

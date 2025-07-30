@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Web;
 using Isolaatti.MediaStreaming.Dto;
 using Isolaatti.Config;
+using Isolaatti.Database.EF;
 using Isolaatti.MediaStreaming.Entity;
 using Isolaatti.Models;
 using Isolaatti.Utils;

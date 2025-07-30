@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Isolaatti.Database.EF;
 using Isolaatti.MediaStreaming.Entity;
 using Isolaatti.Models;
 using Isolaatti.Utils;

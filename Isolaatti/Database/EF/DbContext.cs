@@ -4,6 +4,7 @@ using Isolaatti.Comments.Entity;
 using Isolaatti.Favorites.Data;
 using Isolaatti.Images.Data;
 using Isolaatti.Likes.Data;
+using Isolaatti.MediaStreaming.Entity;
 using Isolaatti.Models;
 using Isolaatti.Notifications.Entity;
 using Isolaatti.Posting.Data;
@@ -83,5 +84,7 @@ namespace Isolaatti.Database.EF
         public DbSet<PostVersionEntity> PostVersions { get; set; }
         public DbSet<Session> Sessions { get; set; }
         public DbSet<Image> Images { get; set; }
+        public DbSet<StreamingStationEntity> RadioStations { get; set; }
+
     }
 }

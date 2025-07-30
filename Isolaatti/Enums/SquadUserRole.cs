@@ -2,5 +2,5 @@
 
 public enum SquadUserRole
 {
-    User, Admin
+    User, Admin, Owner
 }
