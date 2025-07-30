@@ -1,0 +1,28 @@
+@page
+@model Isolaatti.Pages.VideoStream.StreamPlayer
+
+@{
+    Layout = "Shared/_LayoutWebAppOutside";
+}
+
+@section Scripts
+{
+    <script src="https://cdn.dashjs.org/latest/dash.all.min.js"></script>
+    
+    <script defer>
+        (function (){
+            const dashUrl = "@Model.DashUrl";
+                const player = dashjs.MediaPlayer().create();
+                
+                player.initialize(document.querySelector("#player"), dashUrl, true);
+        }());
+    </script>
+}
+
+<div class="col-12">
+    <h1>@Model.StationEntity?.Name</h1>
+    <video id="player" controls width="100%" autoplay="autoplay"></video>
+    <p></p>
+    <p>@Model.StationEntity?.Description</p>
+</div>
+

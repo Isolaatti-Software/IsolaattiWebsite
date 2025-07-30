@@ -1,0 +1,26 @@
+@page
+@model Isolaatti.Pages.MediaStreaming.StreamingStation
+
+@{
+    Layout = "Shared/_LayoutWebApp";
+}
+
+@section Scripts
+{
+    <script src="https://cdn.dashjs.org/latest/dash.all.min.js"></script>
+    <script>
+        const stationId = "@Model.StreamingStationEntity?.Id"
+    </script>
+    <script src="~/js/StreamingStationPage.js"></script>
+}
+
+<div class="container-fluid">
+    <div class="jumbotron row">
+        <div class="col-12">
+            <h3>@Model.StreamingStationEntity?.Name</h3>
+            <p>@Model.StreamingStationEntity?.Description</p>
+        </div>
+    </div>
+    
+    <streaming-station></streaming-station>
+</div>

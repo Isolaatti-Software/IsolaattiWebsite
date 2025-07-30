@@ -6,7 +6,7 @@ using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Isolaatti.Pages;
+namespace Isolaatti.Pages.SquadsPages;
 
 [IsolaattiAuth]
 public class SquadViewer : IsolaattiPageModel

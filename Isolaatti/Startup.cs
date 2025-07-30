@@ -151,8 +151,9 @@ namespace Isolaatti
                 services.Configure<Servers>(config =>
                 {
                     var serversConfig = JsonSerializer.Deserialize<Servers>(serversConfigEnvVar!);
-                    config.RealtimeServerUrl= serversConfig?.RealtimeServerUrl;
-                    config.RealtimeServerInternalUrl = serversConfig?.RealtimeServerInternalUrl;
+                    config.RtmpServer = serversConfig.RtmpServer;
+                    config.DashUrl = serversConfig.DashUrl;
+                    config.HlsUrl = serversConfig.HlsUrl;
                 });
                 var recaptchaConfigEnvVar = Environment.GetEnvironmentVariable(Env.RecaptchaConfig);
                 services.Configure<ReCaptchaConfig>(config =>
