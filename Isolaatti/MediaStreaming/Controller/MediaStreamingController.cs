@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -39,15 +40,15 @@ public class MediaStreamingController : IsolaattiController
     {
         var station = new StreamingStationEntity()
         {
-            Name = createStationDto.Name,
-            Description = createStationDto.Description,
+            Name = createStationDto.Name.Trim(),
+            Description = (createStationDto.Description ?? "").Trim(),
             UserId = User.Id
         };
 
         var result = await _db.RadioStations.AddAsync(station);
         await _db.SaveChangesAsync();
         
-        return Ok(new CreateStationResultDto(result.Entity));
+        return Ok(new CreateStationResultDto(GetStationDto(result.Entity)));
     }
 
     [HttpGet]
@@ -139,5 +140,89 @@ public class MediaStreamingController : IsolaattiController
         }
 
         return Ok();
+    }
+
+    [HttpDelete]
+    [IsolaattiAuth]
+    [Route("stations/{stationId:guid}")]
+    public async Task<IActionResult> DeleteStation(Guid stationId)
+    {
+        var station = await _db.RadioStations.FindAsync(stationId);
+        if (station == null)
+        {
+            return NotFound();
+        }
+
+        if (station.UserId != User.Id)
+        {
+            return Unauthorized();
+        }
+        
+        _db.RadioStations.Remove(station);
+        await _db.SaveChangesAsync();
+        
+        await _db.SaveChangesAsync();
+        
+        return Ok();
+    }
+
+    [HttpPut]
+    [IsolaattiAuth]
+    [Route("stations/{stationId:guid}")]
+    public async Task<IActionResult> UpdateStation([FromBody] CreateStationDto createStationDto, Guid stationId)
+    {
+        var station = await _db.RadioStations.FindAsync(stationId);
+        if (station == null)
+        {
+            return NotFound();
+        }
+
+        station.Name = createStationDto.Name;
+
+        station.Description = (createStationDto.Description ?? "").Trim();
+        
+        
+        
+        _db.RadioStations.Update(station);
+        await _db.SaveChangesAsync();
+
+        return Ok(new CreateStationResultDto(GetStationDto(station)));
+    }
+    
+    [HttpGet]
+    [IsolaattiAuth]
+    [Route("stations")]
+    public async Task<IActionResult> GetStations(Guid? after, int pageSize = 20)
+    {
+        
+        var lastId = after ?? Guid.Empty;
+        
+        var stationEntities = await _db.RadioStations
+                .OrderByDescending(s => s.Id)
+                .Where(s => s.Id > lastId)
+                .Take(pageSize)
+                .ToListAsync();
+
+
+            return Ok(new
+            {
+                Count = await _db.RadioStations.CountAsync(),
+                Stations = stationEntities
+                    .Select(GetStationDto)
+            });
+        
+    }
+
+    private StationDto GetStationDto(StreamingStationEntity station)
+    {
+        return StationDto
+            .FromEntity(
+                station,
+                new Dictionary<string, string>
+                {
+                    { "dash", _servers.Value.DashUrl?.Replace("[stationId]", station.Id.ToString()) ?? "" },
+                    { "hls", _servers.Value.HlsUrl?.Replace("[stationId]", station.Id.ToString()) ?? "" }
+                },
+                _servers.Value.ThumbnailUrl?.Replace("[stationId]", station.Id.ToString()) ?? "");
     }
 }

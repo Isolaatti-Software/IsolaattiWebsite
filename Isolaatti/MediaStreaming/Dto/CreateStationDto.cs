@@ -1,8 +1,10 @@
-using System;
-using Isolaatti.MediaStreaming.Entity;
+using System.ComponentModel.DataAnnotations;
 
 namespace Isolaatti.MediaStreaming.Dto;
 
-public record CreateStationDto(string Name, string Description);
+public record CreateStationDto(
+    [Required(AllowEmptyStrings = false, ErrorMessage = "Name is required")]
+    string Name, 
+    string? Description );
 
-public record CreateStationResultDto(StreamingStationEntity Station);
+public record CreateStationResultDto(StationDto Station);

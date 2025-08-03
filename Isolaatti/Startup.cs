@@ -154,6 +154,7 @@ namespace Isolaatti
                     config.RtmpServer = serversConfig.RtmpServer;
                     config.DashUrl = serversConfig.DashUrl;
                     config.HlsUrl = serversConfig.HlsUrl;
+                    config.ThumbnailUrl = serversConfig.ThumbnailUrl;
                 });
                 var recaptchaConfigEnvVar = Environment.GetEnvironmentVariable(Env.RecaptchaConfig);
                 services.Configure<ReCaptchaConfig>(config =>
