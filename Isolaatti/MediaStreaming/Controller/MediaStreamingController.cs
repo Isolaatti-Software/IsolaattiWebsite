@@ -111,10 +111,10 @@ public class MediaStreamingController : IsolaattiController
 
     [HttpPost]
     [Route("validate_key")]
-    public async Task<IActionResult> ValidateKey([FromForm] string swfurl, [FromForm(Name = "name")] string stationId)
+    public async Task<IActionResult> ValidateKey([FromForm] string tcUrl, [FromForm(Name = "name")] string stationId)
     {
         
-        var uri = new Uri(swfurl);
+        var uri = new Uri(tcUrl);
         var query = uri.Query;
         
         var key = HttpUtility.UrlDecode(query.Trim('?'));
