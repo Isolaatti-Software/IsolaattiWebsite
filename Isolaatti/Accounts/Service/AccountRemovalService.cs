@@ -26,8 +26,6 @@ public class AccountRemovalService
     private readonly ImagesService _imagesService;
     private readonly IAccountsService _accountsService;
     private readonly AudiosService _audiosService;
-    private readonly SquadInvitationsRepository _squadInvitationsRepository;
-    private readonly SquadJoinRequestsRepository _squadJoinRequestsRepository;
     private readonly SquadsRepository _squadsRepository;
 
     public AccountRemovalService(
@@ -37,8 +35,6 @@ public class AccountRemovalService
         ImagesService imagesService, 
         IAccountsService accountsService, 
         AudiosService audiosService, 
-        SquadInvitationsRepository squadInvitationsRepository, 
-        SquadJoinRequestsRepository squadJoinRequestsRepository, 
         SquadsRepository squadsRepository)
     {
         _db = db;
@@ -47,8 +43,6 @@ public class AccountRemovalService
         _imagesService = imagesService;
         _accountsService = accountsService;
         _audiosService = audiosService;
-        _squadInvitationsRepository = squadInvitationsRepository;
-        _squadJoinRequestsRepository = squadJoinRequestsRepository;
         _squadsRepository = squadsRepository;
     }
 
@@ -133,8 +127,6 @@ public class AccountRemovalService
     // 3. if no admin, ordinary member with the most "points" will be promoted to owner
     private async Task HandleUserRemovalFromSquads(int userId)
     {
-        await _squadInvitationsRepository.RemoveInvitationsFromAndToUser(userId);
-        await _squadJoinRequestsRepository.RemoveJoinRequestFromAndToUser(userId);
 
         var squadsUserOwns = _squadsRepository.GetSquadsUserOwns(userId).ToList();
         

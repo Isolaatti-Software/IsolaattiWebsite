@@ -207,11 +207,8 @@ namespace Isolaatti
 
             services.AddSingleton<MongoDatabase>();
             services.AddSingleton<HttpClientSingleton>();
-            services.AddScoped<SquadInvitationsRepository>();
             services.AddScoped<SquadsRepository>();
             services.AddScoped<SquadUsersRepository>();
-            services.AddScoped<SquadPermissionsRepository>();
-            services.AddScoped<SquadJoinRequestsRepository>();
             services.AddScoped<NotificationsService>();
             services.AddScoped<SocketIoServiceKeysRepository>();
             services.AddScoped<CommentHistoryRepository>();

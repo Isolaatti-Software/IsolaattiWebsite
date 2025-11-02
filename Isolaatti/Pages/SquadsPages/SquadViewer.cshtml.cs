@@ -12,12 +12,10 @@ namespace Isolaatti.Pages.SquadsPages;
 public class SquadViewer : IsolaattiPageModel
 {
     private readonly SquadsRepository _squads;
-    private readonly SquadInvitationsRepository _squadInvitationsRepository;
     
-    public SquadViewer(SquadsRepository squadsRepository, SquadInvitationsRepository squadInvitationsRepository)
+    public SquadViewer(SquadsRepository squadsRepository)
     {
         _squads = squadsRepository;
-        _squadInvitationsRepository = squadInvitationsRepository;
     }
 
     public Guid SquadId { get; set; }
@@ -34,8 +32,7 @@ public class SquadViewer : IsolaattiPageModel
 
         ViewData["Title"] = squad.Name;
         UserBelongs = await _squads.UserBelongsToSquad(User.Id, squad.Id);
-        var userWasInvited = _squadInvitationsRepository.SearchInvitation(User.Id, squad.Id) != null;
-        if (!UserBelongs && squad.Privacy == SquadPrivacy.Private && !userWasInvited)
+        if (!UserBelongs && squad.Privacy == SquadPrivacy.Private)
         {
             return NotFound();
         }

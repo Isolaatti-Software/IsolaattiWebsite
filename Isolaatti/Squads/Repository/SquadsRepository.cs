@@ -74,8 +74,7 @@ public class SquadsRepository
                 SquadId = newSquad.Id,
                 UserId = userId,
                 Role = SquadUserRole.Owner,
-                JoinedAt = DateTime.Now.ToUniversalTime(),
-                Permissions = []
+                JoinedAt = DateTime.Now.ToUniversalTime()
             };
             await _db.SquadUsers.AddAsync(squadUser);
             await _db.SaveChangesAsync();
@@ -189,8 +188,7 @@ public class SquadsRepository
             SquadId = squad.Id,
             UserId = userId,
             Role = SquadUserRole.User,
-            JoinedAt = DateTime.Now.ToUniversalTime(),
-            Permissions = []
+            JoinedAt = DateTime.Now.ToUniversalTime()
         };
         
         try

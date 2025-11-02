@@ -24,16 +24,6 @@ namespace Isolaatti.Database.MongoDb
             return _database.GetCollection<SocketIoServiceKey>(_settings.RealtimeServiceKeysCollectionName);
         }
 
-        public IMongoCollection<SquadInvitation> GetSquadInvitationsCollection()
-        {
-            return _database.GetCollection<SquadInvitation>(_settings.SquadsInvitationsCollectionName);
-        }
-
-        public IMongoCollection<SquadJoinRequest> GetSquadJoinRequestsCollection()
-        {
-            return _database.GetCollection<SquadJoinRequest>(_settings.SquadsJoinRequestsCollectionName);
-        }
-
         public IMongoCollection<CommentModificationHistory> GetCommentModificationHistoryCollection()
         {
             return _database.GetCollection<CommentModificationHistory>(_settings.CommentModificationHistoryCollectionName);

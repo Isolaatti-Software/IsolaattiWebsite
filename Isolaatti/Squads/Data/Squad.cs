@@ -13,4 +13,6 @@ public class Squad
     public SquadPrivacy Privacy { get; set; }
     public DateTime CreationTime { get; set; }
     public Guid? ImageId { get; set; }
+    public bool PlatformGenerated { get; set; }
+    public string Keywords { get; set; }
 }
