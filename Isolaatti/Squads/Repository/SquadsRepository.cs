@@ -60,8 +60,8 @@ public class SquadsRepository
             Description = squadCreationRequest.Description,
             ExtendedDescription = squadCreationRequest.ExtendedDescription,
             CreationTime = DateTime.Now.ToUniversalTime(),
-            Privacy = squadCreationRequest.Privacy,
-            UserId = userId
+            UserId = userId,
+            OwnedByUser = true
         };
 
         
@@ -151,16 +151,6 @@ public class SquadsRepository
             return SquadUpdateResult.Error;
         }
     }
-    
-    public async Task UpdatePrivacy(Guid id, SquadPrivacy privacy)
-    {
-        var squad = await _db.Squads.FindAsync(id);
-        if (squad == null)
-            return;
-        squad.Privacy = privacy;
-        _db.Squads.Update(squad);
-        await _db.SaveChangesAsync();
-    }
 
     public async Task<AddUserToSquadResult> AddUserToSquad(Guid squadId, int userId)
     {
@@ -243,15 +233,6 @@ public class SquadsRepository
         }
     }
 
-    public async Task RemoveAllUsersFromASquad(Guid squadId)
-    {
-        var squadUsers = _db.SquadUsers
-            .Where(squadUser => squadUser.SquadId.Equals(squadId));
-        
-        _db.SquadUsers.RemoveRange(squadUsers);
-        await _db.SaveChangesAsync();
-    }
-
     public IEnumerable<Squad> GetSquadUserBelongs(int userId, Guid? lastId = null)
     {
         return from squadUser in _db.SquadUsers
@@ -317,20 +298,7 @@ public class SquadsRepository
         _db.Squads.Update(squad);
         await _db.SaveChangesAsync();
     }
-
-    public async Task SetSquadPrivacy(Guid squadId, SquadPrivacy privacy) 
-    {
-        var squad = await _db.Squads.FindAsync(squadId);
-        if(squad == null)
-        {
-            return;
-        }
-
-        squad.Privacy = privacy;
-
-        _db.Squads.Update(squad);
-        await _db.SaveChangesAsync();
-    }
+    
 
     public async Task SetSquadOwner(Guid squadId, int userId)
     {
@@ -344,76 +312,7 @@ public class SquadsRepository
         _db.Squads.Update(squad);
         await _db.SaveChangesAsync();
     }
-
-    public async Task<bool> SetUserAsAdmin(int userId, Guid squadId)
-    {
-        var squad = await _db.Squads.FindAsync(squadId);
-        if (squad == null)
-        {
-            return false;
-        }
-
-        var squadUser = await _db.SquadUsers.FirstOrDefaultAsync(su => su.UserId == userId && su.SquadId.Equals(squadId));
-        if (squadUser == null)
-        {
-            return false;
-        }
-
-        squadUser.Role = SquadUserRole.Admin;
-
-        _db.SquadUsers.Update(squadUser);
-
-        try
-        {
-            await _db.SaveChangesAsync();
-            return true;
-        }
-        catch (Exception e)
-        {
-            // TODO Log this
-            return false;
-        }
-    }
-
-    public async Task<bool> SetUserAsNormalUser(int userId, Guid squadId)
-    {
-        var squad = await _db.Squads.FindAsync(squadId);
-        if (squad == null)
-        {
-            return false;
-        }
-
-        var squadUser = await _db.SquadUsers.FirstOrDefaultAsync(su => su.UserId == userId && su.SquadId.Equals(squadId));
-        if (squadUser == null)
-        {
-            return false;
-        }
-
-        squadUser.Role = SquadUserRole.User;
-
-        _db.SquadUsers.Update(squadUser);
-
-        try
-        {
-            await _db.SaveChangesAsync();
-            return true;
-        }
-        catch (Exception e)
-        {
-            // TODO Log this
-            return false;
-        }
-    }
-
-    public async Task<bool> CheckOwner(int userId, Guid squadId)
-    {
-        var squad = await _db.Squads.FindAsync(squadId);
-        if (squad == null)
-        {
-            return false;
-        }
-
-        return squad.UserId == userId;
-    }
+    
+    
     
 }

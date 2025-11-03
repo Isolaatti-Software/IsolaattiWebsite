@@ -176,62 +176,6 @@ public class SquadMembersController : IsolaattiController
     }
 
     [IsolaattiAuth]
-    [HttpPost]
-    [Route("AddAdmin")]
-    public async Task<IActionResult> AddAdmin(Guid squadId, SingleIdentification<int> userId)
-    {
-        var squad = await _squadsRepository.GetSquad(squadId);
-        if (squad == null)
-        {
-            return NotFound(new { result = "squad_not_found" });
-        }
-        if (squad.UserId == userId.Id)
-        {
-            return BadRequest(new { result = "owner_cannot_be_admin" });
-        }
-
-        if (!await _squadsRepository.UserBelongsToSquad(userId.Id, squadId))
-        {
-            return BadRequest(new {result = "user_is_not_member"});
-        }
-
-        var result = await _squadsRepository.SetUserAsAdmin(userId.Id, squadId);
-
-        return result ? Ok() : Problem("Internal error saving to database.");
-    }
-    
-    [IsolaattiAuth]
-    [HttpPost]
-    [Route("RemoveAdmin")]
-
-    public async Task<IActionResult> RemoveAdmin(Guid squadId, SingleIdentification<int> userId)
-    {
-        var squad = await _squadsRepository.GetSquad(squadId);
-        if (squad == null)
-        {
-            return NotFound(new { result = "squad_not_found" });
-        }
-
-        if (squad.UserId != User.Id)
-        {
-            return Unauthorized(new { result = "not_owner"});
-        }
-        if (squad.UserId == userId.Id)
-        {
-            return BadRequest(new { result = "owner_cannot_be_user" });
-        }
-
-        if (!await _squadsRepository.UserBelongsToSquad(userId.Id, squadId))
-        {
-            return BadRequest(new {result = "user_is_not_member"});
-        }
-
-        var result = await _squadsRepository.SetUserAsNormalUser(userId.Id, squadId);
-
-        return result ? Ok() : Problem("Internal error saving to database.");
-    }
-
-    [IsolaattiAuth]
     [HttpGet]
     [Route("User/{userId:int}")]
     public async Task<IActionResult> GetSquadUserProfile(Guid squadId, int userId)
@@ -262,20 +206,6 @@ public class SquadMembersController : IsolaattiController
             LastInteraction = squadUser.LastInteractionDateTime,
             Ranking = squadUser.Ranking
         });
-    }
-
-    [HttpDelete]
-    [IsolaattiAuth]
-    [Route("RemoveUser")]
-    public async Task<IActionResult> RemoveUserFromSquad(Guid squadId, SingleIdentification<int> userId)
-    {
-        if (!await _squadsRepository.CheckOwner(User.Id, squadId))
-        {
-            return Unauthorized(new { result = "not_owner"});
-        }
-
-        var result = await _squadsRepository.RemoveAUserFromASquad(squadId, userId.Id);
-        return result ? Ok(new { result = "success" }) : Problem("Error on saving data");
     }
     
 }

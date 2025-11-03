@@ -32,7 +32,7 @@ public class SquadViewer : IsolaattiPageModel
 
         ViewData["Title"] = squad.Name;
         UserBelongs = await _squads.UserBelongsToSquad(User.Id, squad.Id);
-        if (!UserBelongs && squad.Privacy == SquadPrivacy.Private)
+        if (!UserBelongs)
         {
             return NotFound();
         }

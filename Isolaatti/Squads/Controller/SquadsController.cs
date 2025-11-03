@@ -55,6 +55,7 @@ public class SquadsController : IsolaattiController
         {
             return BadRequest("Squad not found");
         }
+        squad.OwnedByUser = squad.UserId == User.Id;
         return Ok(new
         {
             squad = squad,
@@ -114,8 +115,9 @@ public class SquadsController : IsolaattiController
         return Ok(new
         {
             squads = _squadsRepository.GetSquads(User.Id, lastId).ToList()
+                .Select(s => s.Apply(squad => squad.OwnedByUser = squad.UserId == User.Id))
         });
-}
+    }
 
     [IsolaattiAuth]
     [HttpPost]
@@ -139,40 +141,7 @@ public class SquadsController : IsolaattiController
                 payload.ExtendedDescription)).ToString()
         });
     }
-
-    [IsolaattiAuth]
-    [HttpPost]
-    [Route("{squadId:guid}/UpdatePrivacyTo/{privacy}")]
-    public async Task<IActionResult> UpdatePrivacy(Guid squadId, string privacy)
-    {
-        SquadPrivacy squadPrivacy;
-        try 
-        {
-            squadPrivacy = Enum.Parse<SquadPrivacy>(privacy);
-        }
-        catch(ArgumentException) 
-        {
-            return BadRequest(new 
-            {
-                message = "Provide value for route param privacy: Private or Public"
-            });
-        }
-
-        var squad = await _squadsRepository.GetSquad(squadId);
-        if (squad == null)
-        {
-            return NotFound(new { error = "Squad does not exist" });
-        }
-
-        if (!squad.UserId.Equals(User.Id))
-        {
-            return Unauthorized(new { error = "Squad cannot be updated by this user" });
-        }
-
-        await _squadsRepository.SetSquadPrivacy(squadId, squadPrivacy);
-
-        return Ok();
-    }
+    
 
     [IsolaattiAuth]
     [HttpGet]
