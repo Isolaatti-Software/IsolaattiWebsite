@@ -10,6 +10,7 @@ using Isolaatti.Squads.Repository;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Isolaatti.Squads.Controller;
 
@@ -55,12 +56,14 @@ public class SquadsPosting : IsolaattiController
         if (lastId < 0)
         {
             posts = _db.SimpleTextPosts
+                .Include(post => post.Images)
                 .Where(post => post.SquadId.Equals(squad.Id))
                 .OrderByDescending(post => post.Id);
         }
         else
         {
             posts = _db.SimpleTextPosts
+                .Include(post => post.Images)
                 .Where(post => post.SquadId.Equals(squad.Id) && post.Id < lastId)
                 .OrderByDescending(post => post.Id);
         }
