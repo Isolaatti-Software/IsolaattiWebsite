@@ -14,7 +14,7 @@ public class Squad
     public DateTime CreationTime { get; set; }
     public Guid? ImageId { get; set; }
     public bool PlatformGenerated { get; set; }
-    public string Keywords { get; set; }
+    public string? Keywords { get; set; }
     [NotMapped]
     public bool OwnedByUser { get; set; }
 }
