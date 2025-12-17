@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Amazon.Runtime.Internal.Util;
+using Isolaatti.Accounts.Data;
 using Isolaatti.Accounts.Service;
 using Isolaatti.Common;
 using Isolaatti.Database.EF;
@@ -11,6 +13,7 @@ using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Isolaatti.Squads.Controller;
 
@@ -21,12 +24,14 @@ public class SquadsPosting : IsolaattiController
     private readonly DbContextApp _db;
     private readonly IAccountsService _accounts;
     private readonly SquadsRepository _squads;
+    private readonly ILogger<SquadsPosting> _logger;
 
-    public SquadsPosting(DbContextApp dbContextApp, IAccountsService accounts, SquadsRepository squadsRepository)
+    public SquadsPosting(DbContextApp dbContextApp, IAccountsService accounts, SquadsRepository squadsRepository, ILogger<SquadsPosting> logger)
     {
         _db = dbContextApp;
         _accounts = accounts;
         _squads = squadsRepository;
+        _logger = logger;
     }
     
     [IsolaattiAuth]
@@ -34,7 +39,7 @@ public class SquadsPosting : IsolaattiController
     [Route("Posts")]
     public async Task<IActionResult> GetPostsOfSquad(Guid squadId, long lastId, int length, bool olderFirst)
     {
-        var squad = await _squads.GetSquad(squadId);
+        var squad = await _squads.GetSquad(squadId, User.Id);
         if (squad == null)
         {
             return NotFound(new
@@ -43,7 +48,7 @@ public class SquadsPosting : IsolaattiController
             });
         }
 
-        if (!await _squads.UserBelongsToSquad(User.Id, squad.Id))
+        if (!await _squads.UserBelongsToSquad(squad.Id, User.Id))
         {
             return Unauthorized(new
             {
@@ -74,10 +79,18 @@ public class SquadsPosting : IsolaattiController
             select new PostDto
             {
                 Post = post,
-                UserName = _db.Users.FirstOrDefault(u => u.Id == post.UserId).Name,
-                NumberOfComments = post.Comments.Count,
-                NumberOfLikes = post.Likes.Count,
-                Liked = _db.Likes.Any(l => l.UserId == User.Id && l.PostId == post.Id),
+                UserName = post.User.Name,
+                NumberOfComments = _db.Comments.Count(comment => comment.PostId == post.Id),
+                NumberOfLikes = _db.Likes.Count(like => like.PostId == post.Id),
+                Liked = _db.Likes.Any(like => like.PostId == post.Id && like.UserId == User.Id),
+                Participants = post.Comments
+                    .GroupBy(comment => comment.UserId)
+                    .Select(comment => new UserFeedDto()
+                {
+                    Id = comment.First().UserId,
+                    Name = comment.First().User.Name,
+                    Following =  false,
+                }).ToList(),
                 SquadName = post.Squad.Name
             };
         

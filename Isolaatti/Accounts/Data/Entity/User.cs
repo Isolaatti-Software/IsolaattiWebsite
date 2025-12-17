@@ -6,8 +6,12 @@
  */
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using Isolaatti.Comments.Entity;
+using Isolaatti.Likes.Data;
 
 namespace Isolaatti.Accounts.Data.Entity
 {
@@ -50,6 +54,14 @@ namespace Isolaatti.Accounts.Data.Entity
         public string? Genre { get; set; }
         public string? CountryCode { get; set; }
         public DateTime? Birthday { get; set; }
-        
+
+        [JsonIgnore]
+        public virtual ICollection<Like> Likes { get; set; } = new List<Like>();
+        [JsonIgnore]
+        public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
+
+        [JsonIgnore]
+        public virtual ICollection<Comment> CommentsReceived { get; set; } = new List<Comment>();
+
     }
 }

@@ -53,7 +53,7 @@ public class NotificationSender
         var dto = new RealtimeMulticastEventDto<long>()
         {
             Type = EventType.CommentAdded,
-            RelatedId = comment.Comment.PostId,
+            RelatedId = comment.PostId,
             Payload = comment,
             ClientId = clientId
         };
@@ -125,7 +125,7 @@ public class NotificationSender
         {
             Type = EventType.CommentModified,
             ClientId = clientId,
-            RelatedId = updatedComment.Comment.PostId,
+            RelatedId = updatedComment.PostId,
             Payload = updatedComment
         };
         

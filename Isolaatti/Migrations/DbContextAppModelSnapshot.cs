@@ -156,12 +156,6 @@ namespace Isolaatti.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<long?>("LinkedCommentId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("LinkedDiscussionId")
-                        .HasColumnType("bigint");
-
                     b.Property<bool>("Modified")
                         .HasColumnType("boolean");
 
@@ -174,7 +168,7 @@ namespace Isolaatti.Migrations
                     b.Property<Guid?>("SquadId")
                         .HasColumnType("uuid");
 
-                    b.Property<int>("TargetUser")
+                    b.Property<int>("TargetUserId")
                         .HasColumnType("integer");
 
                     b.Property<string>("TextContent")
@@ -187,6 +181,12 @@ namespace Isolaatti.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("PostId");
+
+                    b.HasIndex("ResponseForCommentId");
+
+                    b.HasIndex("TargetUserId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Comments");
                 });
@@ -268,6 +268,8 @@ namespace Isolaatti.Migrations
                     b.HasKey("LikeId");
 
                     b.HasIndex("PostId");
+
+                    b.HasIndex("TargetUserId");
 
                     b.HasIndex("UserId");
 
@@ -581,9 +583,6 @@ namespace Isolaatti.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("integer");
 
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
-
                     b.Property<DateTime>("JoinedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -679,7 +678,30 @@ namespace Isolaatti.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Isolaatti.Comments.Entity.Comment", "ParentComment")
+                        .WithMany("Replies")
+                        .HasForeignKey("ResponseForCommentId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Isolaatti.Accounts.Data.Entity.User", "TargetUser")
+                        .WithMany("CommentsReceived")
+                        .HasForeignKey("TargetUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Isolaatti.Accounts.Data.Entity.User", "User")
+                        .WithMany("Comments")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ParentComment");
+
                     b.Navigation("Post");
+
+                    b.Navigation("TargetUser");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Isolaatti.Favorites.Data.FavoriteEntity", b =>
@@ -719,11 +741,19 @@ namespace Isolaatti.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Isolaatti.Accounts.Data.Entity.User", "TargetUser")
+                        .WithMany("Likes")
+                        .HasForeignKey("TargetUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Isolaatti.Accounts.Data.Entity.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("TargetUser");
 
                     b.Navigation("User");
                 });
@@ -814,7 +844,7 @@ namespace Isolaatti.Migrations
                     b.HasOne("Isolaatti.Squads.Data.Squad", "Squad")
                         .WithMany("SquadUsers")
                         .HasForeignKey("SquadId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Isolaatti.Accounts.Data.Entity.User", "User")
@@ -856,6 +886,20 @@ namespace Isolaatti.Migrations
                     b.Navigation("Post");
 
                     b.Navigation("TaggedUser");
+                });
+
+            modelBuilder.Entity("Isolaatti.Accounts.Data.Entity.User", b =>
+                {
+                    b.Navigation("Comments");
+
+                    b.Navigation("CommentsReceived");
+
+                    b.Navigation("Likes");
+                });
+
+            modelBuilder.Entity("Isolaatti.Comments.Entity.Comment", b =>
+                {
+                    b.Navigation("Replies");
                 });
 
             modelBuilder.Entity("Isolaatti.Posting.Data.Post", b =>

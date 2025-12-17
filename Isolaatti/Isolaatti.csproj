@@ -38,6 +38,7 @@
     <ItemGroup>
         <Folder Include="Audios\Data\" />
         <Folder Include="Migrations" />
+        <Folder Include="Squads\Policies\" />
     </ItemGroup>
 
     <ItemGroup>
@@ -45,6 +46,11 @@
       <_ContentIncludedByDefault Remove="Pages\Audaliv\Index.cshtml" />
       <_ContentIncludedByDefault Remove="Pages\Likes\GivenLikes.cshtml" />
       <_ContentIncludedByDefault Remove="Pages\Likes\ReceivedLikes.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\SquadsPages\ManageSquadAdmins.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\SquadsPages\ManageSquadMembers.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\SquadsPages\ManageSquadOwner.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\SquadsPages\Squads.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\SquadsPages\SquadViewer.cshtml" />
     </ItemGroup>
 
     <ItemGroup>

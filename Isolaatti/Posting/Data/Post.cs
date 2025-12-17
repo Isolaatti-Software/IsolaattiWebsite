@@ -30,8 +30,9 @@ namespace Isolaatti.Posting.Data
         public User User { get; set; }
         [JsonIgnore]
         public virtual ICollection<Like> Likes { get; set; }
-        [JsonIgnore]
-        public virtual ICollection<Comment> Comments { get; set; }
+
+        [JsonIgnore] 
+        public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
         [JsonIgnore]
         public virtual Squad? Squad { get; set; }
         public virtual ICollection<Image> Images { get; } = new List<Image>();

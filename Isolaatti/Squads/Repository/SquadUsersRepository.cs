@@ -47,43 +47,4 @@ public class SquadUsersRepository
             LastId = last?.User.Id
         };
     }
-
-    public async Task<UserSearchFeed> GetRankedSuggestions(Guid squadId,bool owner = true, bool admins = true, bool normalMembers = true)
-    {
-        var query = (from user in _db.Users
-            from squadUser in _db.SquadUsers
-            where (user.Id == squadUser.UserId)
-                  && squadUser.SquadId.Equals(squadId)
-                  && ((squadUser.Role == SquadUserRole.Admin && admins) || (squadUser.Role == SquadUserRole.User && normalMembers))
-            orderby squadUser.Ranking
-            select new RankedSquadUser
-            {
-                User = new UserFeedDto
-                {
-                    Id = user.Id,
-                    ImageId = user.ProfileImageId,
-                    Name = user.Name
-                },
-                Ranking = squadUser.Ranking
-            }).Take(5);
-
-        return new UserSearchFeed
-        {
-            Users = query.ToList()
-        };
-    }
-
-    public async Task<List<UserFeedDto>> GetAdminsOfSquad(Guid squadId)
-    {
-        return await (from user in _db.Users
-            from squadUser in _db.SquadUsers
-            where user.Id == squadUser.UserId && squadUser.SquadId.Equals(squadId) &&
-                  squadUser.Role == SquadUserRole.Admin
-            select new UserFeedDto
-            {
-                Id = user.Id,
-                Name = user.Name,
-                ImageId = user.ProfileImageId
-            }).ToListAsync();
-    }
 }

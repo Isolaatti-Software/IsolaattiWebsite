@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Isolaatti.Database.EF;
 using Isolaatti.EmailSender;
 using Isolaatti.Enums;
+using Isolaatti.Squads.Data;
 using Isolaatti.Squads.Dto;
 using Isolaatti.Squads.Repository;
 using Isolaatti.Utils;
@@ -50,28 +51,18 @@ public class SquadsController : IsolaattiController
     [Route("{squadId:guid}")]
     public async Task<IActionResult> GetSquad(Guid squadId)
     {
-        var squad = await _squadsRepository.GetSquad(squadId);
+        var squad = await _squadsRepository.GetSquad(squadId, User.Id);
         if (squad == null)
         {
             return BadRequest("Squad not found");
         }
-        squad.OwnedByUser = squad.UserId == User.Id;
-        return Ok(new
-        {
-            squad = squad,
-            state = new SquadStateDto()
-            {
-                IsOwner = squad.UserId == User.Id
-            }
-        });
-    }
 
-    [IsolaattiAuth]
-    [HttpGet]
-    [Route("{squadId:guid}/MyState")]
-    public async Task<IActionResult> GetSquadState(Guid squadId)
-    {
-        return Ok(await _squadsRepository.GetSquadState(squadId, User.Id));
+        if (squad.ImageId != null)
+        {
+            squad.ImageUrl = Url.Link("GetImage", new { imageId = squad.ImageId });
+        }
+        
+        return Ok(squad);
     }
     
     [IsolaattiAuth]
@@ -79,66 +70,108 @@ public class SquadsController : IsolaattiController
     [Route("{squadId:guid}")]
     public async Task<IActionResult> RemoveSquad(Guid squadId)
     {
-        if (!await _squadsRepository.ValidateSquadOwner(squadId, User.Id))
+        
+        var deleted = await _squadsRepository.RemoveSquad(squadId, User.Id);
+
+        if (!deleted)
         {
-            return Unauthorized(new { error = "This squad cannot by deleted by this user." });
+            return NotFound();
         }
         
-        await _squadsRepository.RemoveSquad(squadId);
-        
-        return Ok();
-    }
-    
-    
-
-    [IsolaattiAuth]
-    [HttpGet]
-    [Route("MySquads")]
-    public async Task<IActionResult> GetSquadOfUserAdmins(Guid? lastId)
-    {
-        return Ok(await _squadsRepository.GetSquadsUserOwns(User.Id, lastId).ToListAsync());
-    }
-
-    [IsolaattiAuth]
-    [HttpGet]
-    [Route("SquadsBelong")]
-    public async Task<IActionResult> GetSquadsOfUser(Guid? lastId)
-    {
-        return Ok(_squadsRepository.GetSquadUserBelongs(User.Id, lastId));
+        return Ok(new { deleted });
     }
 
     [IsolaattiAuth]
     [HttpGet]
     [Route("")]
-    public IActionResult GetSquads(Guid? lastId)
+    public async Task<IActionResult> GetSquads(Guid? lastId, [FromQuery] int pageSize = 20)
     {
+        var squads = await _squadsRepository.GetSquads(User.Id, lastId);
+
+        foreach (var squadListItemDto in squads)
+        {
+            if (squadListItemDto.ImageId != null)
+            {
+                squadListItemDto.ImageUrl = Url.Link("GetImage", new { imageId = squadListItemDto.ImageId });
+            }
+        }
+
+        var hasMore = squads.Count > pageSize;
+
+        if (hasMore)
+        {
+            squads.RemoveAt(squads.Count - 1);
+        }
+        
         return Ok(new
         {
-            squads = _squadsRepository.GetSquads(User.Id, lastId).ToList()
-                .Select(s => s.Apply(squad => squad.OwnedByUser = squad.UserId == User.Id))
+            squads,
+            hasMore,
+            nextCursor = squads.LastOrDefault()?.Id
         });
     }
 
     [IsolaattiAuth]
-    [HttpPost]
-    [Route("{squadId:guid}/Update")]
-    public async Task<IActionResult> UpdateSquad(Guid squadId, SquadUpdateInfoRequest payload)
+    [HttpGet]
+    [Route("Discover")]
+    public async Task<IActionResult> DiscoverSquads(Guid? lastId, [FromQuery] int pageSize = 20)
     {
-        var squad = await _squadsRepository.GetSquad(squadId);
-        if (squad == null)
+        var squads = await _squadsRepository.GetSquadsDiscover(User.Id, lastId);
+
+        foreach (var squadListItemDto in squads)
         {
-            return NotFound(new { error = "Squad does not exist" });
+            if (squadListItemDto.ImageId != null)
+            {
+                squadListItemDto.ImageUrl = Url.Link("GetImage", new { imageId = squadListItemDto.ImageId });
+            }
         }
 
-        if (!squad.UserId.Equals(User.Id))
-        {
-            return Unauthorized(new { error = "Squad cannot be updated by this user" });
-        }
+        var hasMore = squads.Count > pageSize;
 
+        if (hasMore)
+        {
+            squads.RemoveAt(squads.Count - 1);
+        }
+        
         return Ok(new
         {
-            result = (await _squadsRepository.UpdateSquad(squadId, payload.Name, payload.Description,
-                payload.ExtendedDescription)).ToString()
+            squads,
+            hasMore,
+            nextCursor = squads.LastOrDefault()?.Id
+        });
+    }
+
+    [IsolaattiAuth]
+    [HttpPut]
+    [Route("{squadId:guid}")]
+    public async Task<IActionResult> UpdateSquad(Guid squadId, SquadUpdateInfoRequest payload)
+    {
+        var result = await _squadsRepository.UpdateSquad(squadId, User.Id, payload.Name, payload.Description,
+            payload.ExtendedDescription);
+
+        if (result == SquadUpdateResult.ValidationErrors)
+        {
+            return BadRequest(new
+            {
+                result
+            });
+        }
+
+        if (result == SquadUpdateResult.Error)
+        {
+            return Problem();
+        }
+
+        if (result == SquadUpdateResult.SquadDoesNotExist)
+        {
+            return NotFound(new
+            {
+                result
+            });
+        }
+        return Ok(new
+        {
+            result
         });
     }
     

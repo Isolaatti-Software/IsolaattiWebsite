@@ -128,46 +128,46 @@ public class AccountRemovalService
     private async Task HandleUserRemovalFromSquads(int userId)
     {
 
-        var squadsUserOwns = _squadsRepository.GetSquadsUserOwns(userId).ToList();
-        
-        foreach (var squad in squadsUserOwns)
-        {
-            var membersCount = _db.SquadUsers
-                .Where(su => su.SquadId.Equals(squad))
-                .GroupBy(sq => sq.Role)
-                .ToDictionary(sqg => sqg.Key);
-
-            var adminCount = membersCount.GetValueOrDefault(SquadUserRole.Admin)?.Count();
-            var ordinaryMemberCount = membersCount.GetValueOrDefault(SquadUserRole.User)?.Count();
-            
-            if (adminCount is > 0)
-            {
-                var mostParticipativeAdmin = _db.SquadUsers
-                    .Where(su => su.SquadId.Equals(squad.Id) && su.Role == SquadUserRole.Admin)
-                    .MaxBy(su => su.Ranking);
-
-                if (mostParticipativeAdmin != null)
-                {
-                    await _squadsRepository.SetSquadOwner(squad.Id, mostParticipativeAdmin.UserId);
-                }
-                
-            } 
-            else if (ordinaryMemberCount is > 0)
-            {
-                var mostParticipativeOrdinaryMember = _db.SquadUsers
-                    .Where(su => su.SquadId.Equals(squad.Id) && su.Role == SquadUserRole.User)
-                    .MaxBy(su => su.Ranking);
-
-                if (mostParticipativeOrdinaryMember != null)
-                {
-                    await _squadsRepository.SetSquadOwner(squad.Id, mostParticipativeOrdinaryMember.UserId);
-                }
-            }
-            else
-            {
-                await _squadsRepository.RemoveSquad(squad.Id);
-            }
-        }
+        // var squadsUserOwns = _squadsRepository.GetSquadsUserOwns(userId).ToList();
+        //
+        // foreach (var squad in squadsUserOwns)
+        // {
+        //     var membersCount = _db.SquadUsers
+        //         .Where(su => su.SquadId.Equals(squad))
+        //         .GroupBy(sq => sq.Role)
+        //         .ToDictionary(sqg => sqg.Key);
+        //
+        //     var adminCount = membersCount.GetValueOrDefault(SquadUserRole.Admin)?.Count();
+        //     var ordinaryMemberCount = membersCount.GetValueOrDefault(SquadUserRole.User)?.Count();
+        //     
+        //     if (adminCount is > 0)
+        //     {
+        //         var mostParticipativeAdmin = _db.SquadUsers
+        //             .Where(su => su.SquadId.Equals(squad.Id) && su.Role == SquadUserRole.Admin)
+        //             .MaxBy(su => su.Ranking);
+        //
+        //         if (mostParticipativeAdmin != null)
+        //         {
+        //             await _squadsRepository.SetSquadOwner(squad.Id, mostParticipativeAdmin.UserId);
+        //         }
+        //         
+        //     } 
+        //     else if (ordinaryMemberCount is > 0)
+        //     {
+        //         var mostParticipativeOrdinaryMember = _db.SquadUsers
+        //             .Where(su => su.SquadId.Equals(squad.Id) && su.Role == SquadUserRole.User)
+        //             .MaxBy(su => su.Ranking);
+        //
+        //         if (mostParticipativeOrdinaryMember != null)
+        //         {
+        //             await _squadsRepository.SetSquadOwner(squad.Id, mostParticipativeOrdinaryMember.UserId);
+        //         }
+        //     }
+        //     else
+        //     {
+        //         await _squadsRepository.RemoveSquad(squad.Id, userId);
+        //     }
+        // }
     }
     
     // deleting user will cause all related data to be removed in cascade

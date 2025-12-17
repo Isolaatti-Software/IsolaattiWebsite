@@ -12,6 +12,7 @@ namespace Isolaatti.Likes.Data
         public long PostId { get; set; }
         public int UserId { get; set; }
         public int TargetUserId { get; set; }
+        public User TargetUser { get; set; }
         public DateTime Date { get; set; }
         public Guid? SquadId { get; set; }
 

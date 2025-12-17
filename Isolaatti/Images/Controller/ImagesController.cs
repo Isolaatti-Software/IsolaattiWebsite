@@ -34,7 +34,7 @@ public class ImagesController : IsolaattiController
     }
 
     [HttpGet]
-    [Route("image/{imageId}")]
+    [Route("image/{imageId}", Name = "GetImage")]
     public async Task<IActionResult> GetImage(Guid imageId, [FromQuery] string mode)
     {
         var url = await _images.GetImageDownloadUrl(imageId, mode);
@@ -49,13 +49,13 @@ public class ImagesController : IsolaattiController
     {
         if (squadId != null)
         {
-            var squad = await _squadsRepository.GetSquad(squadId.Value);
+            var squad = await _squadsRepository.GetSquad(squadId.Value, User.Id);
             if (squad == null)
             {
                 return BadRequest(new { error = "Squad doesn't exist, image not created" });
             }
 
-            if (!await _squadsRepository.UserBelongsToSquad(User.Id, squad.Id))
+            if (!await _squadsRepository.UserBelongsToSquad(squad.Id, User.Id))
             {
                 return Unauthorized(new { error = "User cannot set image to squad" });
             }

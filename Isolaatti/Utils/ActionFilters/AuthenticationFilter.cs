@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -11,57 +13,66 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Isolaatti.Utils.ActionFilters;
 
-public class AuthenticationFilter : IAsyncActionFilter
+public class AuthenticationFilter : IAsyncAuthorizationFilter
 {
     private readonly IAccountsService _accounts;
+
     public AuthenticationFilter(IAccountsService accounts)
     {
         _accounts = accounts;
     }
-    
-    public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+
+    public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
     {
-        var attrs = context.ActionDescriptor.EndpointMetadata.OfType<IsolaattiAuth>();
-        if (attrs.Any())
+        var attrs = context.ActionDescriptor.EndpointMetadata
+            .OfType<IsolaattiAuth>();
+
+        if (!attrs.Any())
         {
-            // Api requests can be authenticated by Authorization header or cookie value isolaatti_user_session_token
-            
-            var header = context.HttpContext.Request.Headers.Authorization.FirstOrDefault();
-            var cookie = context.HttpContext.Request.Cookies[AccountsService.SessionCookieName];
-            
-            var token = header ?? cookie;
-
-            if (token == null)
-            {
-                context.Result = new UnauthorizedObjectResult("Unauthorized");
-                return;
-            }
-
-            var session = await _accounts.GetSessionById(token);
-            if (session == null)
-            {
-                context.Result = new UnauthorizedObjectResult("Unauthorized");
-                return;
-            }
-
-            var user = await _accounts.ValidateSession(session);
-
-            if (user == null)
-            {
-                context.Result = new UnauthorizedObjectResult("Unauthorized");
-                return;
-            }
-
-            if (context.Controller is IsolaattiController controller)
-            {
-                controller.User = user;
-                controller.CurrentSession = session;
-            }
-            await next();
+            return;
         }
-        else
+
+        // Authorization header OR session cookie
+        var header = context.HttpContext.Request.Headers.Authorization
+            .FirstOrDefault();
+
+        var cookie = context.HttpContext.Request.Cookies[
+            AccountsService.SessionCookieName];
+
+        var token = header ?? cookie;
+
+        if (token == null)
         {
-            await next();
+            context.Result = new UnauthorizedObjectResult("Unauthorized");
+            return;
         }
+
+        var session = await _accounts.GetSessionById(token);
+        if (session == null)
+        {
+            context.Result = new UnauthorizedObjectResult("Unauthorized");
+            return;
+        }
+
+        var user = await _accounts.ValidateSession(session);
+        if (user == null)
+        {
+            context.Result = new UnauthorizedObjectResult("Unauthorized");
+            return;
+        }
+        
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim("session_id", session.Id)
+        };
+
+        var identity = new ClaimsIdentity(claims, "Isolaatti");
+        var principal = new ClaimsPrincipal(identity);
+
+        context.HttpContext.User = principal;
+        context.HttpContext.Items["CurrentUser"] = user;
+        context.HttpContext.Items["CurrentSession"] = session;
     }
 }

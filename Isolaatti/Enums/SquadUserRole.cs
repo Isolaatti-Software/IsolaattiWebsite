@@ -1,6 +1,10 @@
-﻿namespace Isolaatti.Enums;
+﻿
+using System.Text.Json.Serialization;
 
+namespace Isolaatti.Enums;
+
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum SquadUserRole
 {
-    User, Admin, Owner
+    Outsider = 0, User = 1, Owner = 2
 }

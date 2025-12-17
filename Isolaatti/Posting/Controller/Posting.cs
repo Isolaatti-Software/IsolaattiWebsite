@@ -37,20 +37,12 @@ namespace Isolaatti.Posting.Controller
             // Let's verify if Squad exists and that user is authorized to post
             if (post.SquadId.HasValue)
             {
-                var squad = await _squads.GetSquad(post.SquadId.Value);
-                if (squad == null)
+                var userBelongs = await _squads.UserBelongsToSquad(post.SquadId.Value, User.Id);
+                if (!userBelongs)
                 {
                     return NotFound(new
                     {
                         error = "Squad does not exist"
-                    });
-                }
-
-                if (!await _squads.UserBelongsToSquad(User.Id, post.SquadId.Value))
-                {
-                    return NotFound(new
-                    {
-                        error = "User cannot post in this squad"
                     });
                 }
             }
@@ -61,8 +53,8 @@ namespace Isolaatti.Posting.Controller
             {
                 UserId = User.Id,
                 TextContent = post.Content,
-                Privacy = post.Privacy,
                 SquadId = post.SquadId,
+                Privacy = post.Privacy,
                 IsDraft = post.IsDraft
             };
             

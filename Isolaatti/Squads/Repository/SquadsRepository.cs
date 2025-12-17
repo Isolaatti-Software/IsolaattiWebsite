@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Isolaatti.Accounts.Data;
 using Isolaatti.Database.EF;
@@ -27,8 +28,32 @@ public class SquadsRepository
 
     public async Task<bool> ValidateSquadOwner(Guid squadId, int userId)
     {
-        var squad = await GetSquad(squadId);
-        return squad?.UserId == userId;
+        var squad = await _db.Squads.FindAsync(squadId);
+        if (squad == null)
+        {
+            return false;
+        }
+
+        return squad.SquadUsers.Any(squadUser => squadUser.UserId == userId && squadUser.Role == SquadUserRole.Owner);
+    }
+    
+    public static Expression<Func<Squad, SquadListItemDto>> ToListItemDto(int userId)
+    {
+        return squad => new SquadListItemDto
+        {
+            Id = squad.Id,
+            Name = squad.Name,
+            Description = squad.Description,
+            ExtendedDescription = squad.ExtendedDescription,
+            CreationTime = squad.CreationTime,
+            ImageId = squad.ImageId,
+            PlatformGenerated = squad.PlatformGenerated,
+            Keywords = squad.Keywords,
+            Membership = squad.SquadUsers
+                .Where(userSquad => userSquad.UserId == userId)
+                .Select(squadUser => squadUser.Role)
+                .FirstOrDefault()
+        };
     }
     
 
@@ -60,11 +85,7 @@ public class SquadsRepository
             Description = squadCreationRequest.Description,
             ExtendedDescription = squadCreationRequest.ExtendedDescription,
             CreationTime = DateTime.Now.ToUniversalTime(),
-            UserId = userId,
-            OwnedByUser = true
         };
-
-        
         
         try
         {
@@ -81,7 +102,18 @@ public class SquadsRepository
             return new SquadCreationResponse
             {
                 CreationResult = SquadCreationResult.Success,
-                Squad = newSquad
+                Squad = new SquadListItemDto
+                {
+                    Id = newSquad.Id,
+                    Name = newSquad.Name,
+                    Description = newSquad.Description,
+                    ExtendedDescription = newSquad.ExtendedDescription,
+                    CreationTime = newSquad.CreationTime,
+                    ImageId = newSquad.ImageId,
+                    Keywords = newSquad.Keywords,
+                    PlatformGenerated = newSquad.PlatformGenerated,
+                    Membership = SquadUserRole.Owner
+                }
             };
         } 
         catch(DbUpdateException)
@@ -94,38 +126,21 @@ public class SquadsRepository
         }
     }
 
-    public async Task<Squad?> GetSquad(Guid id)
+    public async Task<bool> UserBelongsToSquad(Guid squadId, int userId)
     {
-        return await _db.Squads.FindAsync(id);
+        return await _db.Squads.AnyAsync(squad =>
+            squad.Id == squadId && squad.SquadUsers.Any(squadUser => squadUser.UserId == userId));
     }
 
-    public async Task<SquadStateDto?> GetSquadState(Guid squadId, int userId)
+    public async Task<SquadListItemDto?> GetSquad(Guid id, int userId)
     {
-        return await _db.Squads
-            .Where(s => s.Id.Equals(squadId))
-            .Select(s => new SquadStateDto
-            {
-                IsOwner = s.UserId == userId
-            })
-            .FirstOrDefaultAsync();
+        return await _db.Squads.Where(squad => squad.Id == id).Select(ToListItemDto(userId)).FirstOrDefaultAsync();
     }
 
-    public async Task<bool> SquadExists(Guid squadId)
+    public async Task<SquadUpdateResult> UpdateSquad(Guid id, int userId, string name, string description, string extendedDescription)
     {
-        return await _db.Squads.AnyAsync(s => s.Id.Equals(squadId));
-    }
-
-    public async Task RemoveSquad(Guid id)
-    {
-        var squad = await GetSquad(id);
-        if (squad == null) return;
-        _db.Squads.Remove(squad);
-        await _db.SaveChangesAsync();
-    }
-
-    public async Task<SquadUpdateResult> UpdateSquad(Guid id, string name, string description, string extendedDescription)
-    {
-        var squad = await GetSquad(id);
+        var squad = await _db.Squads.Where(squad => squad.Id == id && squad.SquadUsers.Any(squadUser => squadUser.UserId == userId && squadUser.Role == SquadUserRole.Owner)).FirstOrDefaultAsync();
+        
         if (squad == null)
         {
             return SquadUpdateResult.SquadDoesNotExist;
@@ -152,6 +167,23 @@ public class SquadsRepository
         }
     }
 
+    public async Task<bool> RemoveSquad(Guid squadId, int userId)
+    {
+        var squad = await _db.Squads
+            .Where(squad => squad.Id == squadId && squad.SquadUsers.Any(squadUser =>
+                squadUser.UserId == userId && squadUser.Role == SquadUserRole.Owner))
+            .FirstOrDefaultAsync();
+
+        if (squad == null)
+        {
+            return false;
+        }
+
+        _db.Squads.Remove(squad);
+        await _db.SaveChangesAsync();
+        return true;
+    }
+
     public async Task<AddUserToSquadResult> AddUserToSquad(Guid squadId, int userId)
     {
         var userExists = await _db.Users.AnyAsync(user => user.Id == userId);
@@ -159,18 +191,11 @@ public class SquadsRepository
         {
             return AddUserToSquadResult.UserDoesNotExist;
         }
-        
-        var squad = await GetSquad(squadId);
+
+        var squad = await _db.Squads.FindAsync(squadId);
         if (squad == null)
         {
             return AddUserToSquadResult.SquadDoesNotExist;
-        }
-
-        var userWasAddedAlready = 
-            await  _db.SquadUsers.AnyAsync(squadUser => squadUser.SquadId == squad.Id && squadUser.UserId == userId);
-        if (userWasAddedAlready || squad.UserId == userId)
-        {
-            return AddUserToSquadResult.AlreadyInSquad;
         }
 
         var newSquadUser = new SquadUser
@@ -194,23 +219,6 @@ public class SquadsRepository
 
     }
 
-    public async Task<bool> UserBelongsToSquad(int userId, Guid squadId)
-    {
-        var userExists = await _db.Users.AnyAsync(user => user.Id == userId);
-        if (!userExists)
-        {
-            return false;
-        }
-        
-        var squad = await GetSquad(squadId);
-        if (squad == null)
-        {
-            return false;
-        }
-
-        return await _db.SquadUsers
-            .AnyAsync(squadUser => squadUser.UserId.Equals(userId) && squadUser.SquadId.Equals(squadId)) || squad.UserId == userId;
-    }
 
     public async Task<bool> RemoveAUserFromASquad(Guid squadId, int userId)
     {
@@ -232,29 +240,30 @@ public class SquadsRepository
             return true;
         }
     }
+    
+    
 
-    public IEnumerable<Squad> GetSquadUserBelongs(int userId, Guid? lastId = null)
+    public async Task<List<SquadListItemDto>> GetSquads(int userId, Guid? lastId = null, int pageSize = 20)
     {
-        return from squadUser in _db.SquadUsers
-            from squad in _db.Squads
-            where squadUser.UserId == userId && squad.Id == squadUser.SquadId
-            select squad;
-    }
 
-    public IQueryable<Squad> GetSquadsUserOwns(int userId, Guid? lastId = null)
-    {
-        return  _db.Squads
-            .Where(squad => squad.UserId == userId);
-    }
-
-    public IQueryable<Squad> GetSquads(int userId, Guid? lastId = null)
-    {
-        return 
-            from squad in _db.Squads
-            join squadUser in _db.SquadUsers on userId equals squadUser.UserId into squadUsers
-            from squadUser in squadUsers.DefaultIfEmpty()
-            where squad.UserId == userId || squadUser.UserId == userId
-            select squad;
+        if (lastId != null)
+        {
+            return await _db.Squads
+                .Where(squad => squad.Id < lastId)
+                .Where(squad => squad.SquadUsers.Any(squadUser => squadUser.UserId == userId))
+                .OrderByDescending(squad => squad.Id)
+                .Select(ToListItemDto(userId))
+                .Take(pageSize + 1)
+                .ToListAsync();
+        }
+        return await _db.Squads
+            .Where(squad => squad.SquadUsers.Any(squadUser => squadUser.UserId == userId))
+            .OrderByDescending(squad => squad.Id)
+            .Select(ToListItemDto(userId))
+            .Take(pageSize + 1)
+            .ToListAsync();
+        
+        
     }
 
     public async Task<IEnumerable<UserFeedDto>> GetMembersOfSquad(Guid squadId)
@@ -281,6 +290,27 @@ public class SquadsRepository
         return await users.ToListAsync();
     }
 
+    public async Task<List<SquadListItemDto>> GetSquadsDiscover(int userId, Guid? lastId = null, int pageSize = 20)
+    {
+        if (lastId != null)
+        {
+            return await _db.Squads
+                .Where(squad => squad.Id < lastId)
+                .Where(squad => squad.SquadUsers.Any(squadUser => squadUser.UserId != userId))
+                .OrderByDescending(squad => squad.Id)
+                .Select(ToListItemDto(userId))
+                .Take(pageSize + 1)
+                .ToListAsync();
+        }
+        return await _db.Squads
+            .Where(squad => squad.SquadUsers.Any(squadUser => squadUser.UserId != userId))
+            .OrderByDescending(squad => squad.Id)
+            .Select(ToListItemDto(userId))
+            .Take(pageSize + 1)
+            .ToListAsync();
+
+    }
+
     public string? GetSquadName(Guid? squadId)
     {
         return _db.Squads.Where(s => s.Id.Equals(squadId)).Select(s => s.Name).FirstOrDefault();
@@ -295,20 +325,6 @@ public class SquadsRepository
         }
 
         squad.ImageId = imageId;
-        _db.Squads.Update(squad);
-        await _db.SaveChangesAsync();
-    }
-    
-
-    public async Task SetSquadOwner(Guid squadId, int userId)
-    {
-        var squad = await _db.Squads.FindAsync(squadId);
-        if (squad == null)
-        {
-            return;
-        }
-
-        squad.UserId = userId;
         _db.Squads.Update(squad);
         await _db.SaveChangesAsync();
     }

@@ -226,7 +226,7 @@ namespace Isolaatti.Controllers
             // This post seems to be from a Squad, let's verify user is authorized to see it
             if (post!.Post.SquadId != null) // at this point post should not be null
             {
-                if (!await _squads.UserBelongsToSquad(User.Id, post.Post.SquadId.Value))
+                if (!await _squads.UserBelongsToSquad(post.Post.SquadId.Value, User.Id))
                 {
                     return Unauthorized(new
                     {

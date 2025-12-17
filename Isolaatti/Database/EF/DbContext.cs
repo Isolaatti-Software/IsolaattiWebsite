@@ -55,13 +55,66 @@ namespace Isolaatti.Database.EF
                 eb.Property(v => v.Rank).HasColumnName("rank");
             });
 
+            // Post -> Images
             modelBuilder.Entity<Post>()
-                .HasMany<Image>(d => d.Images)
+                .HasMany(d => d.Images)
                 .WithOne(image => image.Post)
                 .HasForeignKey(image => image.PostId)
-                .HasPrincipalKey(post => post.Id)
                 .OnDelete(DeleteBehavior.Cascade);
-            
+
+            // Squad -> Posts
+            modelBuilder.Entity<Squad>()
+                .HasMany<Post>()
+                .WithOne(post => post.Squad)
+                .HasForeignKey(post => post.SquadId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<SquadUser>(entity =>
+            {
+                entity.HasKey(squadUser => new { squadUser.SquadId, squadUser.UserId });
+
+                entity.HasOne(squadUser => squadUser.Squad)
+                    .WithMany(squad => squad.SquadUsers)
+                    .HasForeignKey(squadUser => squadUser.SquadId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+
+            });
+
+            // Post -> Comments
+            modelBuilder.Entity<Post>()
+                .HasMany<Comment>()
+                .WithOne(comment => comment.Post)
+                .HasForeignKey(comment => comment.PostId)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Comment>()
+                .HasOne(comment => comment.Post)
+                .WithMany(post => post.Comments)
+                .HasForeignKey(c => c.PostId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Like>()
+                .HasOne(like => like.TargetUser)
+                .WithMany(user => user.Likes)
+                .HasForeignKey(like => like.TargetUserId);
+
+            modelBuilder.Entity<Comment>()
+                .HasOne(comment => comment.User)
+                .WithMany(user => user.Comments)
+                .HasForeignKey(comment => comment.UserId);
+
+            modelBuilder.Entity<Comment>()
+                .HasOne(comment => comment.TargetUser)
+                .WithMany(user => user.CommentsReceived)
+                .HasForeignKey(comment => comment.TargetUserId);
+
+            modelBuilder.Entity<Comment>()
+                .HasMany(comment => comment.Replies)
+                .WithOne(comment => comment.ParentComment)
+                .HasForeignKey(comment => comment.ResponseForCommentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+
         }
 
 

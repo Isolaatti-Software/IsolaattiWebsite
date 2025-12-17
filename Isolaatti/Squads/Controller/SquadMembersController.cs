@@ -32,7 +32,7 @@ public class SquadMembersController : IsolaattiController
     [Route("Members")]
     public async Task<IActionResult> GetMembers(Guid squadId, int lastId = -1)
     {
-        var squad = await _squadsRepository.GetSquad(squadId);
+        var squad = await _squadsRepository.GetSquad(squadId, User.Id);
         if (squad == null)
         {
             return NotFound();
@@ -59,128 +59,13 @@ public class SquadMembersController : IsolaattiController
         return Ok(members);
 
     }
-
-    [IsolaattiAuth]
-    [HttpGet]
-    [Route("Admins")]
-    public async Task<IActionResult> GetAdmins(Guid squadId, int lastId = -1)
-    {
-        var squad = await _squadsRepository.GetSquad(squadId);
-        if (squad == null)
-        {
-            return NotFound();
-        }
-
-        var members = (from u in _db.Users
-            from su in _db.SquadUsers
-            where u.Id == su.UserId && su.SquadId == squad.Id && su.Role == SquadUserRole.Admin
-            orderby  u.Id
-            select new
-            {
-                Id = u.Id,
-                Name = u.Name,
-                ImageId = u.ProfileImageId
-            });
-        
-        if (lastId > 0)
-        {
-            members = members.Where(member => member.Id > lastId);
-        }
-
-        members = members.Take(20);
-
-        return Ok(members);
-    }
     
-    [IsolaattiAuth]
-    [HttpGet]
-    [Route("Owner")]
-    public async Task<IActionResult> GetOwnerOfSquad(Guid squadId)
-    {
-        var squad = await _squadsRepository.GetSquad(squadId);
-        if (squad == null)
-        {
-            return NotFound();
-        }
-
-        var owner = (from u in _db.Users
-            where u.Id == squad.UserId
-            select new
-            {
-                Id = u.Id,
-                Name = u.Name,
-                ImageId = u.ProfileImageId
-            }).FirstOrDefault();
-
-        return Ok(owner);
-    }
-    
-    [IsolaattiAuth]
-    [HttpPost]
-    [Route("Leave")]
-    public async Task<IActionResult> LeaveSquad(Guid squadId)
-    {
-        var squad = await _squadsRepository.GetSquad(squadId);
-        if (squad == null)
-        {
-            return NotFound(new {result = "squad_not_found"});
-        }
-
-        if (squad.UserId == User.Id)
-        {
-            return BadRequest(new { result = "owner_cannot_leave" });
-        }
-
-        var squadUser = _db.SquadUsers.FirstOrDefault(su => su.SquadId == squad.Id && su.UserId == User.Id);
-        
-        if (squadUser == null)
-        {
-            return BadRequest(new { result = "user_does_not_belong" });
-        }
-
-        _db.SquadUsers.Remove(squadUser);
-        await _db.SaveChangesAsync();
-        
-        return Ok(new {result = "left_squad"});
-    }
-
-    [IsolaattiAuth]
-    [HttpPost]
-    [Route("SetOwner")]
-    public async Task<IActionResult> SetOwner(Guid squadId, SingleIdentification<int> userId)
-    {
-        var squad = await _squadsRepository.GetSquad(squadId);
-        if (squad == null)
-        {
-            return NotFound(new { result = "squad_not_found" });
-        }
-
-        if (squad.UserId == userId.Id)
-        {
-            return Ok(new { result = "ok" });
-        }
-
-        if (squad.UserId != User.Id)
-        {
-            return BadRequest(new { result = "squad_not_owned" });
-        }
-
-        
-
-        await _squadsRepository.SetSquadOwner(squad.Id, userId.Id);
-        await _squadsRepository.AddUserToSquad(squad.Id, User.Id);
-        await _squadsRepository.RemoveAUserFromASquad(squad.Id, userId.Id);
-
-        return Ok(new { result = "ok" });
-
-    }
-
     [IsolaattiAuth]
     [HttpGet]
     [Route("User/{userId:int}")]
     public async Task<IActionResult> GetSquadUserProfile(Guid squadId, int userId)
     {
-        if (!await _squadsRepository.UserBelongsToSquad(User.Id, squadId))
+        if (!await _squadsRepository.UserBelongsToSquad(squadId, User.Id))
         {
             return Unauthorized();
         }
@@ -201,7 +86,7 @@ public class SquadMembersController : IsolaattiController
                 Name = squadUser.User.Name,
                 ImageId = squadUser.User.ProfileImageId
             },
-            IsAdmin = squadUser.Role == SquadUserRole.Admin,
+            IsAdmin = false,
             Joined = squadUser.JoinedAt,
             LastInteraction = squadUser.LastInteractionDateTime,
             Ranking = squadUser.Ranking

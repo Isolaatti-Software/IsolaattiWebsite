@@ -13,5 +13,5 @@ public class PostDto
     public string UserName { get; set; }
     public string? SquadName { get; set; }
     public bool Liked { get; set; }
-    public List<UserFeedDto>? Participants { get; set; }
+    public IEnumerable<UserFeedDto>? Participants { get; set; }
 }

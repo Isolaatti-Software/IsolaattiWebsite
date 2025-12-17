@@ -7,9 +7,10 @@ namespace Isolaatti.Utils;
 
 public class IsolaattiController : ControllerBase
 {
-    public new User User { get; set; }
+    public new User User => HttpContext.Items["CurrentUser"] as User;
+
     /// <summary>
     /// Current session dto
     /// </summary>
-    public Session CurrentSession { get; set; }
+    public Session CurrentSession => HttpContext.Items["CurrentSession"] as Session;
 }

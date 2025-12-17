@@ -1,4 +1,6 @@
-﻿namespace Isolaatti.Squads.Dto;
+﻿using System.Text.Json.Serialization;
+
+namespace Isolaatti.Squads.Dto;
 
 public class SquadUpdateInfoRequest
 {

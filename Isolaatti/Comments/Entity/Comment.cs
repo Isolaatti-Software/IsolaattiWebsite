@@ -1,5 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
+using Isolaatti.Accounts.Data.Entity;
+using Isolaatti.Posting.Data;
 
 namespace Isolaatti.Comments.Entity
 {
@@ -7,9 +11,18 @@ namespace Isolaatti.Comments.Entity
     {
         public long Id { get; set; }
         public string TextContent { get; set; }
+        
+        [JsonIgnore]
+        public virtual User User { get; set; }
         public int UserId { get; set; }
         public long PostId { get; set; }
-        public int TargetUser { get; set; }
+        
+        [JsonIgnore]
+        public Post Post { get; set; }
+        
+        [JsonIgnore]
+        public User TargetUser { get; set; }
+        public int TargetUserId { get; set; }
         public DateTime Date { get; set; }
         public Guid? SquadId { get; set; }
 
@@ -17,9 +30,11 @@ namespace Isolaatti.Comments.Entity
         // Response in the same discussion
         public long? ResponseForCommentId { get; set; }
 
-        // Other discussions
-        public long? LinkedDiscussionId { get; set; }
-        public long? LinkedCommentId { get; set; }
+        [JsonIgnore]
+        public ICollection<Comment> Replies { get; set; } = new List<Comment>();
+        
+        [JsonIgnore]
+        public Comment? ParentComment { get; set; }
 
         public bool Modified { get; set; }
         
