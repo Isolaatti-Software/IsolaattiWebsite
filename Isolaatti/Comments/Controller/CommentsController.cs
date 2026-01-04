@@ -10,6 +10,7 @@ using Isolaatti.Database.EF;
 using Isolaatti.Users.Repository;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -61,7 +62,7 @@ public class CommentsController(
         };
     }
     
-    [IsolaattiAuth]
+    [Authorize]
     [HttpPost]
     [Route("/api/Posting/Post/{postId:long}/Comment")]
     public async Task<IActionResult> MakeComment(long postId, MakeCommentModel commentModel)
@@ -96,7 +97,7 @@ public class CommentsController(
         return Ok(commentDto);
     }
 
-    [IsolaattiAuth]
+    [Authorize]
     [HttpGet]
     [Route("/api/Fetch/Post/{postId:long}/Comments")]
     public async Task<IActionResult> GetComments(long postId, long lastId = long.MaxValue, int take = 10)
@@ -122,7 +123,7 @@ public class CommentsController(
         });
     }
 
-    [IsolaattiAuth]
+    [Authorize]
     [HttpGet]
     [Route("{commentId:long}")]
     public async Task<IActionResult> GetComment(long commentId)
@@ -139,7 +140,7 @@ public class CommentsController(
     }
 
 
-    [IsolaattiAuth]
+    [Authorize]
     [Route("{commentId:long}")]
     [HttpDelete]
     public async Task<IActionResult> Delete([FromRoute] long commentId)
@@ -153,7 +154,7 @@ public class CommentsController(
         return Ok();
     }
 
-    [IsolaattiAuth]
+    [Authorize]
     [HttpPut]
     [Route("{commentId:long}")]
     public async Task<IActionResult> EditComment(long commentId, MakeCommentModel updatedComment)
@@ -180,7 +181,7 @@ public class CommentsController(
         return Ok(commentDto);
     }
 
-    [IsolaattiAuth]
+    [Authorize]
     [HttpPost]
     [Route("{commentId:long}/reply")]
     public async Task<IActionResult> ReplyComment(long commentId, MakeCommentModel comment)
@@ -222,7 +223,7 @@ public class CommentsController(
         return Ok(commentDto);
     }
     
-    [IsolaattiAuth]
+    [Authorize]
     [HttpGet]
     [Route("{commentId:long}/replies")]
 

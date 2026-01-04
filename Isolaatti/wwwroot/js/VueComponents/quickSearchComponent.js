@@ -80,9 +80,6 @@
                     </div>
                     <hr/>
                 </div>
-                <div v-if="result.audios.length>0">
-                    <h5>Audios</h5>
-                </div>
                 
                 <post-template v-for="post in result.posts" :post="post"
                      v-bind:preview="false"

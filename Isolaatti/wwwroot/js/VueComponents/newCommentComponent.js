@@ -51,13 +51,15 @@
             this.posting = true;
 
             let url = `/api/Posting/Post/${this.postToComment}/Comment`;
+            let method = "POST";
 
             if (this.mode === "modify") {
-                url = `/api/Comment/${this.commentToEdit}/Edit`;
+                url = `/api/Comments/${this.commentToEdit}`;
+                method = "PUT";
             }
 
             const response = await fetch(url, {
-                method: "POST",
+                method: method,
                 headers: this.customHeaders,
                 body: JSON.stringify({
                     content: this.commentDto.comment.textContent,
@@ -85,7 +87,7 @@
     mounted: function () {
         if (this.mode === "modify") {
             const that = this;
-            fetch(`/api/Fetch/Comments/${this.commentToEdit}`, {
+            fetch(`/api/Comments/${this.commentToEdit}`, {
                 method: "GET",
                 headers: this.customHeaders
             }).then(res => res.json()).then(function (comment) {

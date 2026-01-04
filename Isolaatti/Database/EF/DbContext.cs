@@ -33,6 +33,10 @@ namespace Isolaatti.Database.EF
                 .HasIndex(u => u.UniqueUsername)
                 .HasFilter("'UniqueUsername' IS NOT NULL")
                 .IsUnique();
+
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Sub)
+                .IsUnique();
             
             modelBuilder.Entity<FollowerRelation>()
                 .HasOne<User>("User")
@@ -52,7 +56,6 @@ namespace Isolaatti.Database.EF
                 eb.Property(v => v.ResourceId).HasColumnName("id");
                 eb.Property(v => v.Title).HasColumnName("title");
                 eb.Property(v => v.Description).HasColumnName("description");
-                eb.Property(v => v.Rank).HasColumnName("rank");
             });
 
             // Post -> Images

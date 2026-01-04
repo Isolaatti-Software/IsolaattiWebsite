@@ -178,7 +178,7 @@ Vue.component('post-template',{
             </div>
           </div>
 
-          <audio-attachment :audio-id="renderPost.post.audioId" v-if="renderPost.post.audioId!==null"></audio-attachment>
+          <audio-attachment :audio-id="renderPost.post.audioId" v-if="renderPost.post.hasAudio"></audio-attachment>
           <div class="mt-2 post-content" ref="postContentContainer" @click="openDiscussion">
             <p>{{renderPost.post.textContent === null ? '' : renderPost.post.textContent}}</p>
           </div>

@@ -2,11 +2,12 @@
 using System.Threading.Tasks;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Isolaatti.Pages;
 
-[IsolaattiAuth]
+[Authorize]
 public class ImageViewer : IsolaattiPageModel
 {
     public async Task<IActionResult> OnGet(Guid imageId)

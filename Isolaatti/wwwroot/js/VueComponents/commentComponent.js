@@ -21,10 +21,10 @@ Vue.component('comment', {
     },
     computed: {
         profileLink: function () {
-            return `/perfil/${this.comment.comment.userId}`
+            return `/perfil/${this.comment.userId}`
         },
         reportLink: function () {
-            return `/Reports/ReportPostOrComment?commentId=${this.comment.id}`;
+            return `/Reports/ReportPostOrComment?commentId=${this.id}`;
         },
         containerCssClass: function () {
             return this.cutContent ? "post d-flex flex-column p-2 post-cut-height" : "post d-flex flex-column p-2"
@@ -46,15 +46,14 @@ Vue.component('comment', {
         },
         deleteResponse: function () {
             const that = this;
-            fetch("/api/Comment/Delete", {
-                method: "POST",
-                headers: this.customHeaders,
+            fetch(`/api/Comments/${this.comment.id}`, {
+                method: "DELETE",
                 body: JSON.stringify({
-                    id: this.comment.comment.id
+                    id: this.comment.id
                 })
             }).then(_ => {
                 this.deleteMode = false;
-                that.$emit("commentDeleted", that.comment.comment.id);
+                that.$emit("commentDeleted", that.comment.id);
             });
         },
         handleUpdate: function(commentDto) {
@@ -80,10 +79,10 @@ Vue.component('comment', {
         <div :class="containerCssClass">
           <div class="d-flex justify-content-between align-items-center">
             <div class="d-flex">
-              <img class="user-avatar" :src="getUserImageUrl(comment.comment.userId)">
+              <img class="user-avatar" :src="getUserImageUrl(comment.userId)">
               <div class="d-flex flex-column ml-2">
                 <span class="user-name"><a :href="profileLink">{{ comment.username }}</a> </span>
-                <span>{{ new Date(comment.comment.date).toLocaleString() }}</span>
+                <span>{{ new Date(comment.date).toLocaleString() }}</span>
               </div>
             </div>
             <div class="dropdown dropleft" v-if="userData.id!==-1">
@@ -91,23 +90,22 @@ Vue.component('comment', {
                 <i class="fas fa-ellipsis-h"></i>
               </button>
               <div class="dropdown-menu">
-                <a href="#" class="dropdown-item" v-if="comment.comment.userId===this.userData.id"
+                <a href="#" class="dropdown-item" v-if="comment.userId===this.userData.id"
                    @click="edit=true">Editar</a>
-                <a href="#" class="dropdown-item" v-if="comment.comment.userId===this.userData.id"
+                <a href="#" class="dropdown-item" v-if="comment.userId===this.userData.id"
                    v-on:click="deleteMode=true">Eliminar</a>
                 <a :href="reportLink" class="dropdown-item" target="_blank">Reportar</a>
               </div>
             </div>
           </div>
-          <audio-attachment v-if="comment.comment.audioId!==null" :audio-id="comment.comment.audioId"></audio-attachment>
-          <div class="mt-2 post-content" v-html="compileMarkdown(comment.comment.textContent)" ref="commentContentContainer"></div>
+          <div class="mt-2 post-content" v-html="compileMarkdown(comment.textContent)" ref="commentContentContainer"></div>
           <div class="d-flex justify-content-center">
             <button class="btn btn-primary " v-on:click="showFullPost" v-if="cutContent">Mostrar todo</button>
           </div>
         </div>
       </article>
       <section v-else>
-        <new-comment :post-to-comment="comment.comment.id" :mode="'modify'" :comment-to-edit="comment.comment.id"
+        <new-comment :post-to-comment="comment.id" :mode="'modify'" :comment-to-edit="comment.id"
                      @commented="handleUpdate"></new-comment>
       </section>
       </div>

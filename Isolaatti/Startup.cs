@@ -13,6 +13,7 @@ using Isolaatti.Database.EF;
 using Isolaatti.Database.MongoDb;
 using Isolaatti.EmailSender;
 using Isolaatti.Favorites.Data;
+using Isolaatti.IdentityService;
 using Isolaatti.Images.Repository;
 using Isolaatti.Images.Service;
 using Isolaatti.Messaging;
@@ -28,6 +29,9 @@ using Isolaatti.Tagging;
 using Isolaatti.Users.Repository;
 using Isolaatti.Utils.ActionFilters;
 using Isolaatti.Utils.PageFilters;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
@@ -38,6 +42,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Npgsql;
 
 namespace Isolaatti
@@ -94,12 +99,30 @@ namespace Isolaatti
                 options.Filters.Add<AuthenticationFilter>();
             });
             services.AddMvcCore().AddApiExplorer();
+            
+            services.AddLocalization(options => options.ResourcesPath = "Resources");
+
+            services.Configure<RequestLocalizationOptions>(options =>
+            {
+                var supportedCultures = new[] { "en-US", "es", "es-419" };
+                options.SetDefaultCulture(supportedCultures[0])
+                    .AddSupportedCultures(supportedCultures)
+                    .AddSupportedUICultures(supportedCultures);
+            });
+            
             services.AddRazorPages()
+
+                .AddRazorPagesOptions(options =>
+                {
+                    
+                    options.Conventions.AddPageRoute("/Profile", "/perfil/{numericId:int}");
+                    options.Conventions.AllowAnonymousToPage("/WelcomePage");
+                })
                 .AddMvcOptions(options =>
                 {
                     options.Filters.Add<IsolaattiAuthPagesFilter>();
                 })
-                .AddRazorPagesOptions(options => options.Conventions.AddPageRoute("/Profile", "/perfil/{numericId:int}"))
+                .AddViewLocalization()
                 .AddRazorRuntimeCompilation();
             
 
@@ -203,6 +226,7 @@ namespace Isolaatti
                 services.Configure<RabbitmqConfig>(Configuration.GetSection("RabbitMQ"));
                 services.Configure<List<Client>>(Configuration.GetSection("Clients"));
                 services.Configure<HostConfig>(Configuration.GetSection("Host"));
+                services.Configure<Keycloak>(Configuration.GetSection("Keycloak"));
             }
 
             services.AddSingleton<MongoDatabase>();
@@ -231,7 +255,7 @@ namespace Isolaatti
             services.AddScoped<FavoritesRepository>();
             services.AddScoped<TaggingService>();
             services.AddScoped<AccountRemovalService>();
-            
+            services.AddScoped<IIdentityService, KeycloakIdentityService>();
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // No consent check needed here
@@ -248,6 +272,38 @@ namespace Isolaatti
             services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = 1024 * 1024 * 10);
             
             services.AddSwaggerGen();
+
+            var keycloakConfiguration = Configuration.GetSection("Keycloak").Get<Keycloak>();
+
+            services.AddAuthentication(options =>
+                {
+                    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+                    options.DefaultAuthenticateScheme = $"{CookieAuthenticationDefaults.AuthenticationScheme}";
+                })
+                .AddCookie()
+                .AddOpenIdConnect(options =>
+                {
+                    options.Authority = keycloakConfiguration!.Authority;
+                    options.ClientId = keycloakConfiguration!.ClientId;
+                    options.ResponseType = "code";
+                    options.SaveTokens = true;
+                    options.RequireHttpsMetadata = false;
+                }).AddJwtBearer("Bearer", options =>
+                {
+                    options.Authority = keycloakConfiguration!.Authority;
+                    options.MetadataAddress = keycloakConfiguration!.MetadataAddress;
+                    options.RequireHttpsMetadata = false;
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateAudience = false,
+                        ValidateIssuer = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                    };
+                });
+            
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -265,6 +321,7 @@ namespace Isolaatti
 
             app.UseRouting();
             app.UseCors("cors");
+            app.UseAuthentication();
             app.UseAuthorization();
             app.UseMiddleware<ScopedHttpContextMiddleware>();
             app.UseEndpoints(endpoints =>

@@ -9,6 +9,7 @@ using Isolaatti.Squads.Dto;
 using Isolaatti.Squads.Repository;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -32,7 +33,7 @@ public class SquadsController : IsolaattiController
         _emailSenderMessaging = emailSenderMessaging;
     }
 
-    [IsolaattiAuth]
+    [Authorize]
     [HttpPost]
     [Route("Create")]
     public async Task<IActionResult> MakeSquad(SquadCreationRequest payload)
@@ -46,7 +47,7 @@ public class SquadsController : IsolaattiController
         
     }
     
-    [IsolaattiAuth]
+    [Authorize]
     [HttpGet]
     [Route("{squadId:guid}")]
     public async Task<IActionResult> GetSquad(Guid squadId)
@@ -65,7 +66,7 @@ public class SquadsController : IsolaattiController
         return Ok(squad);
     }
     
-    [IsolaattiAuth]
+    [Authorize]
     [HttpDelete]
     [Route("{squadId:guid}")]
     public async Task<IActionResult> RemoveSquad(Guid squadId)
@@ -81,7 +82,7 @@ public class SquadsController : IsolaattiController
         return Ok(new { deleted });
     }
 
-    [IsolaattiAuth]
+    [Authorize]
     [HttpGet]
     [Route("")]
     public async Task<IActionResult> GetSquads(Guid? lastId, [FromQuery] int pageSize = 20)
@@ -111,7 +112,7 @@ public class SquadsController : IsolaattiController
         });
     }
 
-    [IsolaattiAuth]
+    [Authorize]
     [HttpGet]
     [Route("Discover")]
     public async Task<IActionResult> DiscoverSquads(Guid? lastId, [FromQuery] int pageSize = 20)
@@ -141,7 +142,7 @@ public class SquadsController : IsolaattiController
         });
     }
 
-    [IsolaattiAuth]
+    [Authorize]
     [HttpPut]
     [Route("{squadId:guid}")]
     public async Task<IActionResult> UpdateSquad(Guid squadId, SquadUpdateInfoRequest payload)
@@ -176,7 +177,7 @@ public class SquadsController : IsolaattiController
     }
     
 
-    [IsolaattiAuth]
+    [Authorize]
     [HttpGet]
     [Route("Feed")]
     public async Task<IActionResult> GetFeed(long lastPostId)

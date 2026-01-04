@@ -9,6 +9,7 @@ using Isolaatti.Posting.Dto;
 using Isolaatti.RealtimeInteraction.Service;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,7 +30,7 @@ namespace Isolaatti.Likes.Controller
             _notifications = notifications;
         }
 
-        [IsolaattiAuth]
+        [Authorize]
         [HttpPost]
         [Route("LikePost")]
         public async Task<IActionResult> LikePost(SingleIdentification identification)
@@ -66,7 +67,7 @@ namespace Isolaatti.Likes.Controller
             return Ok(likeDto);
         }
 
-        [IsolaattiAuth]
+        [Authorize]
         [HttpPost]
         [Route("UnLikePost")]
         public async Task<IActionResult> UnLikePost(SingleIdentification identification)
@@ -90,7 +91,7 @@ namespace Isolaatti.Likes.Controller
             return Ok(likeDto);
         }
 
-        [IsolaattiAuth]
+        [Authorize]
         [HttpGet]
         [Route("LikedBy/{userId:int}")]
         public async Task<IActionResult> PostsLikedByUser(int userId, long lastId = long.MaxValue)
@@ -115,7 +116,7 @@ namespace Isolaatti.Likes.Controller
 
         }
 
-        [IsolaattiAuth]
+        [Authorize]
         [HttpGet]
         [Route("PostsUser/{authorUserId:int}/LikedOf/{targetUserId:int}")]
         public async Task<IActionResult> PostsOfUserLikedByUserWithId(int authorUserId, int targetUserId, long lastId = long.MaxValue)

@@ -2,11 +2,13 @@
 using Isolaatti.Database.EF;
 using Isolaatti.Users.Dto;
 using Isolaatti.Utils;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Isolaatti.Users.Controller;
 
+[AllowAnonymous]
 [ApiController]
 [Route("/api/usernames")]
 public class UsernameController : ControllerBase

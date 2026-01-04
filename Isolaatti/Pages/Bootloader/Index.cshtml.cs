@@ -1,10 +1,11 @@
 ﻿using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Isolaatti.Pages.Bootloader;
 
-[IsolaattiAuth]
+[Authorize]
 public class Index : IsolaattiPageModel
 {
     public IActionResult OnGet([FromQuery] bool hideNav = false)

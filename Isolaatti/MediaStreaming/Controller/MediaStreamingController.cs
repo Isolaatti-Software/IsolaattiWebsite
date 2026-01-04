@@ -10,6 +10,7 @@ using Isolaatti.MediaStreaming.Entity;
 using Isolaatti.Models;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -35,7 +36,7 @@ public class MediaStreamingController : IsolaattiController
 
     [Route("create_station")]
     [HttpPost]
-    [IsolaattiAuth]
+    [Authorize]
     public async Task<IActionResult> CreateStation([FromBody] CreateStationDto createStationDto)
     {
         var station = new StreamingStationEntity()
@@ -53,7 +54,7 @@ public class MediaStreamingController : IsolaattiController
 
     [HttpGet]
     [Route("user/{userId:int}")]
-    [IsolaattiAuth]
+    [Authorize]
     public async Task<IActionResult> GetUserRadioStations(int userId)
     {
         return Ok(new
@@ -64,7 +65,7 @@ public class MediaStreamingController : IsolaattiController
 
     [HttpGet]
     [Route("station/{stationId:guid}/get_stream_config")]
-    [IsolaattiAuth]
+    [Authorize]
     public async Task<IActionResult> GetStreamUrl(Guid stationId)
     {
         var key = RandomData.GenerateRandomKey(10);
@@ -99,7 +100,7 @@ public class MediaStreamingController : IsolaattiController
 
     [HttpGet]
     [Route("station/{stationId:guid}/get_stream_play_url")]
-    [IsolaattiAuth]
+    [Authorize]
     public async Task<IActionResult> GetStreamPlayUrl(Guid stationId)
     {
         return Ok(new
@@ -143,7 +144,7 @@ public class MediaStreamingController : IsolaattiController
     }
 
     [HttpDelete]
-    [IsolaattiAuth]
+    [Authorize]
     [Route("stations/{stationId:guid}")]
     public async Task<IActionResult> DeleteStation(Guid stationId)
     {
@@ -167,7 +168,7 @@ public class MediaStreamingController : IsolaattiController
     }
 
     [HttpPut]
-    [IsolaattiAuth]
+    [Authorize]
     [Route("stations/{stationId:guid}")]
     public async Task<IActionResult> UpdateStation([FromBody] CreateStationDto createStationDto, Guid stationId)
     {
@@ -190,7 +191,7 @@ public class MediaStreamingController : IsolaattiController
     }
     
     [HttpGet]
-    [IsolaattiAuth]
+    [Authorize]
     [Route("stations")]
     public async Task<IActionResult> GetStations(Guid? after, int pageSize = 20)
     {

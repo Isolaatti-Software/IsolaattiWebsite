@@ -9,6 +9,7 @@ using Isolaatti.Images.Service;
 using Isolaatti.Services;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +22,7 @@ namespace Isolaatti.Profiles.Controller
     {
 
 
-        [IsolaattiAuth]
+        [Authorize]
         [HttpGet]
         [Route("/api/Fetch/UserProfile/{userId:int}")]
         public async Task<IActionResult> GetProfile(int userId)
@@ -40,17 +41,17 @@ namespace Isolaatti.Profiles.Controller
             account.FollowingThisUser =
                 await _db.FollowerRelations.AnyAsync(fr => fr.UserId == User.Id && fr.TargetUserId == account.Id);
 
-            
-            if (!account.ShowEmail && account.Id != User.Id)
-            {
-                account.Email = null;
-            }
+            //
+            // if (!account.ShowEmail && account.Id != User.Id)
+            // {
+            //     account.Email = null;
+            // }
 
 
             return Ok(account);
         }
 
-        [IsolaattiAuth]
+        [Authorize]
         [HttpPost]
         [Route("/api/EditProfile/UpdateProfile")]
         public async Task<IActionResult> EditProfileInfo(EditProfileDto payload)
@@ -78,7 +79,7 @@ namespace Isolaatti.Profiles.Controller
             });
         }
 
-        [IsolaattiAuth]
+        [Authorize]
         [HttpPost]
         [Route("/api/EditProfile/SetAudioDescription")]
         public async Task<IActionResult> UpdateAudioDescription([FromForm] IFormFile audioFile, [FromForm] int duration)
@@ -102,7 +103,7 @@ namespace Isolaatti.Profiles.Controller
             }
         }
 
-        [IsolaattiAuth]
+        [Authorize]
         [HttpPost]
         [Route("/api/EditProfile/SetProfilePhoto")]
         public async Task<IActionResult> UpdateProfileImageWithImageId([FromQuery] Guid imageId)
@@ -125,7 +126,7 @@ namespace Isolaatti.Profiles.Controller
             return Ok();
         }
 
-        [IsolaattiAuth]
+        [Authorize]
         [HttpDelete]
         [Route("/api/EditProfile/Audio")]
         public async Task<IActionResult> RemoveAudioFromDescription()
@@ -141,7 +142,7 @@ namespace Isolaatti.Profiles.Controller
             return Ok();
         }
 
-        [IsolaattiAuth]
+        [Authorize]
         [HttpPost]
         [Route("/api/EditProfile/RemoveProfileImage")]
         public async Task<IActionResult> RemoveProfileImage()
@@ -152,7 +153,7 @@ namespace Isolaatti.Profiles.Controller
             return Ok();
         }
         
-        [IsolaattiAuth]
+        [Authorize]
         [HttpGet]
         [Route("/api/users/{userId:int}/downloadAudio")]
         public async Task<IActionResult> DownloadAudio([FromRoute] int userId)

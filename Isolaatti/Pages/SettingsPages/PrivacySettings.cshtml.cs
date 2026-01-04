@@ -3,11 +3,12 @@ using Isolaatti.Accounts.Service;
 using Isolaatti.Database.EF;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Isolaatti.Pages.SettingsPages
 {
-    [IsolaattiAuth]
+    [Authorize]
     public class PrivacySettings : IsolaattiPageModel
     {
         private readonly DbContextApp _db;

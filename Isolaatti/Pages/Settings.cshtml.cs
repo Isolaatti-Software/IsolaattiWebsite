@@ -1,10 +1,11 @@
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Isolaatti.Pages
 {
-    [IsolaattiAuth]
+    [Authorize]
     public class Settings : IsolaattiPageModel
     {
 

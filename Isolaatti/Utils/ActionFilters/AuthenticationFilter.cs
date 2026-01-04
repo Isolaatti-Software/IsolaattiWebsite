@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Isolaatti.Utils.ActionFilters;
 
-public class AuthenticationFilter : IAsyncAuthorizationFilter
+public class AuthenticationFilter : IAsyncActionFilter
 {
     private readonly IAccountsService _accounts;
 
@@ -22,57 +22,15 @@ public class AuthenticationFilter : IAsyncAuthorizationFilter
         _accounts = accounts;
     }
 
-    public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
+    public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
-        var attrs = context.ActionDescriptor.EndpointMetadata
-            .OfType<IsolaattiAuth>();
-
-        if (!attrs.Any())
+        var subClaim = context.HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
+        if (subClaim != null)
         {
-            return;
-        }
-
-        // Authorization header OR session cookie
-        var header = context.HttpContext.Request.Headers.Authorization
-            .FirstOrDefault();
-
-        var cookie = context.HttpContext.Request.Cookies[
-            AccountsService.SessionCookieName];
-
-        var token = header ?? cookie;
-
-        if (token == null)
-        {
-            context.Result = new UnauthorizedObjectResult("Unauthorized");
-            return;
-        }
-
-        var session = await _accounts.GetSessionById(token);
-        if (session == null)
-        {
-            context.Result = new UnauthorizedObjectResult("Unauthorized");
-            return;
-        }
-
-        var user = await _accounts.ValidateSession(session);
-        if (user == null)
-        {
-            context.Result = new UnauthorizedObjectResult("Unauthorized");
-            return;
+            var user = await _accounts.GetUserFromSub(subClaim);
+            context.HttpContext.Items["CurrentUser"] = user;
         }
         
-        var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Email, user.Email),
-            new Claim("session_id", session.Id)
-        };
-
-        var identity = new ClaimsIdentity(claims, "Isolaatti");
-        var principal = new ClaimsPrincipal(identity);
-
-        context.HttpContext.User = principal;
-        context.HttpContext.Items["CurrentUser"] = user;
-        context.HttpContext.Items["CurrentSession"] = session;
+        await next();
     }
 }

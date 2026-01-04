@@ -330,7 +330,7 @@
                       data-toggle="modal">
                 <i class="fa-solid fa-pencil"></i>
               </button>
-              <audio-attachment :audio-id="profile.descriptionAudioId"></audio-attachment>
+              <audio-attachment v-if="profile.hasAudio" :audio-id="profile.descriptionAudioId"></audio-attachment>
 
             </div>
             <button v-else-if="profile.isUserItself" class="btn btn-light btn-sm w-100" data-target="#modal-edit-audio" data-toggle="modal">

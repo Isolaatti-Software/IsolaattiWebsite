@@ -9,6 +9,7 @@ using Isolaatti.Images.Service;
 using Isolaatti.Squads.Repository;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -42,7 +43,7 @@ public class ImagesController : IsolaattiController
         return url != null ? Redirect(url) : NotFound();
     }
 
-    [IsolaattiAuth]
+    [Authorize]
     [HttpPost]
     [Route("create")]
     public async Task<IActionResult> CreateImage([FromForm] IFormFile file, [FromQuery] bool setAsProfile, [FromForm] long? postId, [FromForm] Guid? squadId)
@@ -108,7 +109,7 @@ public class ImagesController : IsolaattiController
         return Redirect(url);
     }
 
-    [IsolaattiAuth]
+    [Authorize]
     [HttpPost]
     [Route("set_image_of_squad/{squadId:guid}")]
     public async Task<IActionResult> SetSquadImage(Guid squadId, [FromQuery] Guid imageId)
@@ -124,7 +125,7 @@ public class ImagesController : IsolaattiController
         return Ok();
     }
 
-    [IsolaattiAuth]
+    [Authorize]
     [HttpDelete]
     [Route("{imageId:guid}")]
     public async Task<IActionResult> DeleteImage(Guid imageId)
@@ -141,7 +142,7 @@ public class ImagesController : IsolaattiController
         };
     }
 
-    [IsolaattiAuth]
+    [Authorize]
     [HttpPost]
     [Route("delete/delete_many")]
     public async Task<IActionResult> DeleteImages([FromBody] ImagesToDeleteDto imagesToDeleteDto)

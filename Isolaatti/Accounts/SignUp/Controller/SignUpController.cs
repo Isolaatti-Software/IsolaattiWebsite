@@ -28,51 +28,16 @@ public class SignUpController : ControllerBase
 
     [HttpPost]
     [Route(("get_code"))]
-    public async Task<IActionResult> Index([FromHeader(Name = "clientId")] string clientId, [FromHeader(Name = "clientSecret")] string clientSecret, SimpleStringData email)
+    public async Task<IActionResult> Index(SimpleStringData email)
     {
-        var client = _clients.Find(c => c.Id == clientId);
-        if (client == null)
-        {
-            return Unauthorized("Invalid client id");
-        }
-
-        if (client.Secret != clientSecret)
-        {
-            return Unauthorized("Invalid secret");
-        }
-
-        if (!client.SpecialPermissions.Contains(Client.SpecialPermissionSignUp))
-        {
-            return Unauthorized("Api client unauthorized to sign up");
-        }
-
         var result = await _accounts.PreCreateAccount(email.Data);
         return Ok(new { result = result.ToString()});
     }
 
     [HttpPost]
     [Route("validate_code")]
-    public async Task<IActionResult> ValidateCode(
-        [FromHeader(Name = "clientId")] string clientId, 
-        [FromHeader(Name = "clientSecret")] string clientSecret, 
-        SimpleStringData code)
+    public async Task<IActionResult> ValidateCode(SimpleStringData code)
     {
-        var client = _clients.Find(c => c.Id == clientId);
-        if (client == null)
-        {
-            return Unauthorized("Invalid client id");
-        }
-
-        if (client.Secret != clientSecret)
-        {
-            return Unauthorized("Invalid secret");
-        }
-
-        if (!client.SpecialPermissions.Contains(Client.SpecialPermissionSignUp))
-        {
-            return Unauthorized("Api client unauthorized to sign up");
-        }
-
         var accountPrecreate = await _accounts.ValidatePreCreateCode(code.Data);
         
         return Ok(new {valid = accountPrecreate != null});
@@ -80,27 +45,8 @@ public class SignUpController : ControllerBase
 
     [HttpPost]
     [Route("sign_up_with_code")]
-    public async Task<IActionResult> SignUpWithCode(
-        [FromHeader(Name = "clientId")] string clientId, 
-        [FromHeader(Name = "clientSecret")] string clientSecret, 
-        SignUpDto signUpDto)
+    public async Task<IActionResult> SignUpWithCode(SignUpDto signUpDto)
     {
-        var client = _clients.Find(c => c.Id == clientId);
-        if (client == null)
-        {
-            return Unauthorized("Invalid client id");
-        }
-
-        if (client.Secret != clientSecret)
-        {
-            return Unauthorized("Invalid secret");
-        }
-
-        if (!client.SpecialPermissions.Contains(Client.SpecialPermissionSignUp))
-        {
-            return Unauthorized("Api client unauthorized to sign up");
-        }
-
         var accountPrecreate = await _accounts.ValidatePreCreateCode(signUpDto.Code);
 
         if (accountPrecreate is null)
@@ -109,26 +55,11 @@ public class SignUpController : ControllerBase
         }
 
         var result = 
-            await _accounts.MakeAccountAsync(signUpDto.Username, signUpDto.DisplayName, accountPrecreate.Email, signUpDto.Password);
+            await _accounts.MakeAccountAsync(signUpDto.Username, signUpDto.FirstName, signUpDto.LastName, accountPrecreate.Email, signUpDto.Password);
 
         if (result is { AccountMakingResult: AccountMakingResult.Ok, UserId: not null })
         {
-            var session = await _accounts.CreateNewSession(result.UserId.Value, signUpDto.Password);
-            if (session == null)
-            {
-                return Unauthorized();
-            }
-            return Ok(new SignUpWithCodeDto
-            {
-                AccountMakingResult = result.AccountMakingResult.ToString(),
-                Session = new SessionToken
-                {
-                    Created = DateTime.Now,
-                    Expires = DateTime.Now.AddMonths(12),
-                    Token = session,
-                    UserId = result.UserId.Value
-                }
-            });
+            
         }
         
         return Ok(new SignUpWithCodeDto

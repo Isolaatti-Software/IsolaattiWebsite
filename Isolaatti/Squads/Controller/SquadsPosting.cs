@@ -11,6 +11,7 @@ using Isolaatti.Posting.Dto;
 using Isolaatti.Squads.Repository;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -34,7 +35,7 @@ public class SquadsPosting : IsolaattiController
         _logger = logger;
     }
     
-    [IsolaattiAuth]
+    [Authorize]
     [HttpGet]
     [Route("Posts")]
     public async Task<IActionResult> GetPostsOfSquad(Guid squadId, long lastId, int length, bool olderFirst)

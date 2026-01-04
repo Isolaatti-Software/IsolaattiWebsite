@@ -39,18 +39,6 @@ public class SessionsRepository(DbContextApp db)
         return session.UserId;
     }
 
-    public async Task<bool> RemoveSession(string sessionId)
-    {
-        var session = await db.Sessions.FindAsync(sessionId);
-        if (session == null)
-        {
-            return false;
-        }
-        db.Sessions.Remove(session);
-        await db.SaveChangesAsync();
-        return true;
-    }
-
     public async Task<bool> RemoveSessionsByUserId(int userId, IEnumerable<string> exceptIds)
     {
         db.Sessions.RemoveRange(db.Sessions.Where(session => session.UserId == userId && !exceptIds.Contains(session.Id)));

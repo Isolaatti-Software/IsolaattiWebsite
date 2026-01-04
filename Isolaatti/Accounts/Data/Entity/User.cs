@@ -18,11 +18,10 @@ namespace Isolaatti.Accounts.Data.Entity
     public class User
     {
         public int Id { get; set; }
+        public string Sub { get; set; }
         public string UniqueUsername { get; set; }
         public string Name { get; set; }
-        public string Email { get; set; }
-        [JsonIgnore] 
-        public string Password { get; set; }
+        public string LastName { get; set; }
         
         [JsonIgnore] 
         public bool ShowEmail { get; set; }

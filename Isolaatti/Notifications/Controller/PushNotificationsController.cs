@@ -2,6 +2,7 @@
 using Isolaatti.Notifications.PushNotifications;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Isolaatti.Notifications.Controller;
@@ -19,12 +20,12 @@ public class PushNotificationsController : IsolaattiController
     
     [Route("register_device")]
     [HttpPut]
-    [IsolaattiAuth]
+    [Authorize]
     public IActionResult RegisterDevice([FromForm(Name = "token")] string token)
     {
         _registerDeviceMessaging.RegisterDevice(new RegisterDeviceMessagingDto
         {
-            SessionId = CurrentSession.Id,
+            SessionId = "",
             Token = token,
             UserId = User.Id
         });

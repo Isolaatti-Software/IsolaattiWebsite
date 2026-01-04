@@ -43,11 +43,19 @@
 
             </div>
             <div class="form-group">
-                <label for="displayname_form_control">Nombre para mostrar</label>
+                <label for="displayname_form_control">Nombre</label>
                 <input type="text" id="displayname_form_control" class="form-control"
-                       asp-for="Name" v-model="nameField.value" :class="{ 'is-invalid': nameIsInvalid && nameField.hadInput}">
+                       asp-for="FirstName" v-model="firstName.value" :class="{ 'is-invalid': nameIsInvalid && firstName.hadInput}">
                 <div class="invalid-feedback">
-                    El nombre no es válido. Debe tener al menos un caracter y máximo 20.
+                    El nombre no es válido. Debe tener al menos un caracter y máximo 100.
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="lastName_form_control">Apellidos</label>
+                <input type="text" id="lastName_form_control" class="form-control"
+                       asp-for="LastName" v-model="lastName.value" :class="{ 'is-invalid': lastNameIsInvalid && lastName.hadInput}">
+                <div class="invalid-feedback">
+                    El nombre no es válido. Debe tener al menos un caracter y máximo 100.
                 </div>
             </div>
             <div class="form-group">
@@ -84,7 +92,8 @@
 {
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <script>
-    const name = "@Model.Name";
+    const name = "@Model.FirstName";
+    const lastName = "@Model.LastName";
     const username = "@Model.Username";
     </script>
     <script src="~/js/confirm_account.js"></script>

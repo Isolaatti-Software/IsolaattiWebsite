@@ -5,6 +5,7 @@ using Isolaatti.Report.Dto;
 using Isolaatti.Report.Entity;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,7 +16,7 @@ namespace Isolaatti.Report.Controller;
 public class ReportsController(DbContextApp db) : IsolaattiController
 {
     [HttpPost]
-    [IsolaattiAuth]
+    [Authorize]
     public async Task<IActionResult> CreateReport([FromBody] CreateReportDto createReportDto)
     {
         var entity = new ReportEntity()
@@ -34,7 +35,7 @@ public class ReportsController(DbContextApp db) : IsolaattiController
     }
 
     [HttpGet]
-    [IsolaattiAuth]
+    [Authorize]
     [Route("by_me")]
     public async Task<IActionResult> GetReportsByUser()
     {

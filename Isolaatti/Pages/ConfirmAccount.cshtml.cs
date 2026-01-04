@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Isolaatti.Accounts.Service;
 using Isolaatti.Enums;
 using Isolaatti.Recaptcha;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -28,7 +29,9 @@ public class ConfirmAccount : PageModel
     [BindProperty]
     public string Username { get; set; }
     [BindProperty]
-    public string Name { get; set; }
+    public string FirstName { get; set; }
+    [BindProperty]
+    public string LastName { get; set; }
     [BindProperty]
     public string Password { get; set; }
     [BindProperty]
@@ -71,8 +74,8 @@ public class ConfirmAccount : PageModel
                 return Page();
             }
             
-            var accountMakeResult = await _accounts.MakeAccountAsync(Username, Name, preCreate.Email,Password);
-
+            var accountMakeResult = await _accounts.MakeAccountAsync(Username, FirstName,LastName, preCreate.Email,Password);
+            
             switch (accountMakeResult.AccountMakingResult)
             {
                 case AccountMakingResult.EmailNotAvailable:
@@ -80,7 +83,8 @@ public class ConfirmAccount : PageModel
                 case AccountMakingResult.ValidationProblems:
                     break;
                 case AccountMakingResult.Ok:
-                    return RedirectToPage("/LogIn", new { newUser = "true"});
+
+                    return Challenge(new AuthenticationProperties(){ RedirectUri = "/"});
                     break;
                 case AccountMakingResult.Error:
                     TraceId = HttpContext.TraceIdentifier;

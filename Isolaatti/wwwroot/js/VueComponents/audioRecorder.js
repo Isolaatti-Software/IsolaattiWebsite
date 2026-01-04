@@ -172,7 +172,6 @@ Vue.component('audio-recorder', {
             }
 
             request.open("POST", "/api/Audios/Create");
-            request.setRequestHeader("Authorization", decodeURIComponent(authorization));
             const formData = new FormData();
             formData.append("name", this.audioName);
             formData.append("audioFile", this.recorder.resultantBlob);

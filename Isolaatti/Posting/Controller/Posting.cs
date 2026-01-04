@@ -12,6 +12,9 @@ using Isolaatti.Squads.Repository;
 using Isolaatti.Tagging;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -29,7 +32,6 @@ namespace Isolaatti.Posting.Controller
         GoogleCloudStorageService cloudStorage) : IsolaattiController
     {
         
-        [IsolaattiAuth]
         [HttpPost]
         [Route("Make")]
         public async Task<IActionResult> Index(MakePostModel post)
@@ -76,7 +78,6 @@ namespace Isolaatti.Posting.Controller
             });
         }
 
-        [IsolaattiAuth]
         [HttpPost]
         [Route("Edit")]
         public async Task<IActionResult> EditPost(EditPostModel editedPost)
@@ -139,7 +140,6 @@ namespace Isolaatti.Posting.Controller
             return Ok(updatedPost);
         }
 
-        [IsolaattiAuth]
         [HttpPost]
         [Route("Delete")]
         public async Task<IActionResult> DeletePost(SingleIdentification identification)
@@ -177,7 +177,6 @@ namespace Isolaatti.Posting.Controller
         }
 
         [HttpGet]
-        [IsolaattiAuth]
         [Route("Post/{postId:long}/Versions")]
         public async Task<IActionResult> GetPostVersions(long postId)
         {
@@ -189,7 +188,6 @@ namespace Isolaatti.Posting.Controller
         }
 
         [HttpPost]
-        [IsolaattiAuth]
         [Route("Post/{postId:long}/SetImages")]
         public async Task<IActionResult> SetImages(long postId, ListPayload<Guid> imagesIds)
         {
@@ -216,7 +214,6 @@ namespace Isolaatti.Posting.Controller
         }
 
         [HttpPost]
-        [IsolaattiAuth]
         [Route("Post/{postId:long}/SetIsDraft")]
         public async Task<IActionResult> SetIsDraft(long postId, [FromQuery] bool isDraft)
         {
@@ -238,7 +235,7 @@ namespace Isolaatti.Posting.Controller
 
 
         [HttpPost]
-        [IsolaattiAuth]
+        [Authorize]
         [Route("Post/{postId:long}/Audio")]
         public async Task<IActionResult> SetAudio([FromForm] IFormFile audioFile, [FromRoute] long postId, [FromForm] int duration)
         {
@@ -248,7 +245,7 @@ namespace Isolaatti.Posting.Controller
         }
 
         [HttpGet]
-        [IsolaattiAuth]
+        [Authorize]
         [Route("Post/{postId:long}/DownloadAudio")]
         public async Task<IActionResult> DownloadAudio(long postId)
         {

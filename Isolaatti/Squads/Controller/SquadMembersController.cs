@@ -10,6 +10,7 @@ using Isolaatti.Squads.Dto;
 using Isolaatti.Squads.Repository;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,7 +28,7 @@ public class SquadMembersController : IsolaattiController
         _squadsRepository = squadsRepository;
     }
     
-    [IsolaattiAuth]
+    [Authorize]
     [HttpGet]
     [Route("Members")]
     public async Task<IActionResult> GetMembers(Guid squadId, int lastId = -1)
@@ -60,7 +61,7 @@ public class SquadMembersController : IsolaattiController
 
     }
     
-    [IsolaattiAuth]
+    [Authorize]
     [HttpGet]
     [Route("User/{userId:int}")]
     public async Task<IActionResult> GetSquadUserProfile(Guid squadId, int userId)

@@ -61,7 +61,6 @@
             const request = new XMLHttpRequest()
             const url = this.profile ? "/api/images/create?setAsProfile=True" : "/api/images/create"
             request.open("POST", url);
-            request.setRequestHeader("Authorization", decodeURIComponent(authorization))
             request.onload = function () {
                 if (request.status === 200) {
                     that.uploading = false;

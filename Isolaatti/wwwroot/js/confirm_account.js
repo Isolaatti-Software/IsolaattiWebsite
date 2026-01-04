@@ -6,8 +6,12 @@
             hadInput: false,
             isAvailable: undefined
         },
-        nameField: {
+        firstName: {
             value: name, // server rendered
+            hadInput: false
+        },
+        lastName: {
+            value: lastName, // server rendered
             hadInput: false
         },
         passwordField: {
@@ -34,7 +38,10 @@
             return this.usernameField.value.length < 3 || this.usernameField.value.length > 20;
         },
         nameIsInvalid: function () {
-            return this.nameField.value.length < 1 || this.nameField.value.length > 20;
+            return this.firstName.value.length < 1 || this.firstName.value.length > 100;
+        },
+        lastNameIsInvalid: function () {
+            return this.lastName.value.length < 1 || this.lastName.value.length > 100;
         },
         passwordIsInvalid: function () {
             return this.passwordField.value.length < 8;
@@ -54,8 +61,8 @@
                 await this.queryNameAvailability();
             }
         },
-        "nameField.value": function() {
-            this.nameField.hadInput = true;
+        "firstName.value": function() {
+            this.firstName.hadInput = true;
         },
         "passwordField.value": function() {
             this.passwordField.hadInput = true;

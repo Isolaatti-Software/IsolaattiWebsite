@@ -1,14 +1,17 @@
 using Isolaatti.Utils;
-using Isolaatti.Utils.Attributes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Isolaatti.Pages
 {
-    [IsolaattiAuth]
     public class Index : IsolaattiPageModel
     {
         public IActionResult OnGet()
         {
+            if (HttpContext.User.Identity?.IsAuthenticated == false)
+            {
+                return RedirectToPage("/WelcomePage");
+            }
             return Page();
         }
     }

@@ -18,33 +18,4 @@ public class SquadUsersRepository
     {
         _db = dbContextApp;
     }
-
-    public async Task<UserSearchFeed> SearchOnUsers(string text, Guid squadId, int lastId = 0)
-    {
-        var query = (from user in _db.Users
-            from squadUser in _db.SquadUsers
-            where user.Id > lastId 
-                  && user.Id == squadUser.UserId
-                  && squadUser.SquadId.Equals(squadId)
-                  && (user.Name.Contains(text) || user.Email.Contains(text))
-            orderby user.Id
-            select new RankedSquadUser
-            {
-                User = new UserFeedDto
-                {
-                    Id = user.Id,
-                    ImageId = user.ProfileImageId,
-                    Name = user.Name
-                },
-                Ranking = squadUser.Ranking
-            }).Take(20);
-        var last = query.LastOrDefault();
-        return new UserSearchFeed()
-        {
-            Users = await query
-                .OrderByDescending(rankedSquadUser => rankedSquadUser.Ranking)
-                .ToListAsync(),
-            LastId = last?.User.Id
-        };
-    }
 }

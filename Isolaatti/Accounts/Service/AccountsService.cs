@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -13,21 +14,24 @@ using Isolaatti.Common;
 using Isolaatti.Database.EF;
 using Isolaatti.EmailSender;
 using Isolaatti.Enums;
+using Isolaatti.IdentityService;
 using Isolaatti.Repositories;
 using Isolaatti.Utils;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.CodeAnalysis.RulesetToEditorconfig;
 using Microsoft.EntityFrameworkCore;
 
 namespace Isolaatti.Accounts.Service;
 
-public partial class AccountsService : IAccountsService
+public class AccountsService : IAccountsService
 {
     private readonly DbContextApp db;
     private readonly HttpContext _httpContext;
     private readonly EmailSenderMessaging _emailSender;
     private readonly SessionsRepository _sessionsRepository;
+    private readonly IIdentityService _identityService;
 
     public const string SessionCookieName = "isolaatti_user_session_token";
     private const string FromAddress = "cuentas@isolaatti.com";
@@ -43,12 +47,14 @@ public partial class AccountsService : IAccountsService
     public AccountsService(DbContextApp db,
         EmailSenderMessaging emailSender,
         ScopedHttpContext scopedHttpContext,
-        SessionsRepository sessionsRepository)
+        SessionsRepository sessionsRepository,
+        IIdentityService identityService)
     {
         this.db = db;
         _emailSender = emailSender;
         _httpContext = scopedHttpContext.HttpContext;
         _sessionsRepository = sessionsRepository;
+        _identityService = identityService;
     }
 
     private static bool IsUsernameValid(string username)
@@ -66,44 +72,50 @@ public partial class AccountsService : IAccountsService
     {
         return displayName.Length > 1;
     }
-    
-    
-    
-    public async Task<AccountMakeResult> MakeAccountAsync(string username, string displayName, string email,
+
+    public async Task<User?> GetUserFromSub(Claim sub)
+    {
+        return await db.Users.FirstOrDefaultAsync(u => u.Sub == sub.Value);
+    }
+
+    public async Task<AccountMakeResult> MakeAccountAsync(string username, string firstName, string lastName, string email,
         string password)
     {
         
-        if (!IsPasswordValid(password) || !IsDisplayNameValid(displayName) || !IsUsernameValid(username))
+        try
         {
-            return new AccountMakeResult { AccountMakingResult = AccountMakingResult.ValidationProblems };
+            if (await _identityService.UserExists(email))
+            {
+                return new AccountMakeResult { AccountMakingResult = AccountMakingResult.EmailNotAvailable };
+            }
         }
-        
-        if (await db.Users.AnyAsync(user => user.Email.Equals(email)))
+        catch (Exception e)
         {
-            return new AccountMakeResult { AccountMakingResult = AccountMakingResult.EmailNotAvailable };
+            Console.WriteLine(e);
+            throw;
         }
 
-        var passwordHasher = new PasswordHasher<string>();
-        var hashedPassword = "";
-        await Task.Run(() => { hashedPassword = passwordHasher.HashPassword(email, password); });
         var newUser = new User
         {
             UniqueUsername = username,
-            Name = displayName,
-            Email = email,
-            Password = hashedPassword
+            Name = firstName,
+            LastName = lastName
         };
-        db.AccountPrecreates.RemoveRange(db.AccountPrecreates.Where(pc => pc.Email.Equals(email)));
-        await db.SaveChangesAsync();
+
         try
         {
+            var userId = await _identityService.CreateUser(username, email, password, firstName, lastName);
+            db.AccountPrecreates.RemoveRange(db.AccountPrecreates.Where(pc => pc.Email.Equals(email)));
+            await db.SaveChangesAsync();
+            newUser.Sub = userId;
             db.Users.Add(newUser);
             await db.SaveChangesAsync();
-            SendWelcomeEmail(newUser.Email, newUser.Name);
+            SendWelcomeEmail(email, newUser.Name);
             return new AccountMakeResult { AccountMakingResult = AccountMakingResult.Ok, UserId = newUser.Id };
         }
-        catch (Exception)
+        catch (Exception e)
         {
+            Console.WriteLine(e);
             return new AccountMakeResult { AccountMakingResult = AccountMakingResult.Error };
         }
     }
@@ -117,7 +129,7 @@ public partial class AccountsService : IAccountsService
             return IAccountsService.AccountPrecreateResult.EmailValidationError;
         }
         
-        if (await db.Users.AnyAsync(u => u.Email == email))
+        if (await _identityService.UserExists(email))
         {
             return IAccountsService.AccountPrecreateResult.EmailUsed;
         }
@@ -145,7 +157,7 @@ public partial class AccountsService : IAccountsService
     public async Task<AccountPrecreate?> ValidatePreCreateCode(string code)
     {
         var foundCode = await db.AccountPrecreates.FindAsync(code);
-        if (foundCode == null || await db.Users.AnyAsync(u => u.Email.Equals(foundCode.Email)))
+        if (foundCode == null || await _identityService.UserExists(foundCode.Email))
         {
             return null;
         }
@@ -168,103 +180,6 @@ public partial class AccountsService : IAccountsService
         return foundCode;
     }
 
-    private List<string> _passwordPatters = new()
-    {
-        "[a-z]",
-        "[A-Z]",
-        "[0-9]",
-        @"[!@#$%^&*\(\)_\+\-\={}<>,\.\|""'~`:;\\?\/\[\]]"
-    };
-
-    private bool PasswordIsValid(string password)
-    {
-        if (password.Length < 8) return false;
-        var counter = 0;
-        foreach (var pattern in _passwordPatters)
-        {
-            if (Regex.IsMatch(password, pattern))
-            {
-                counter++;
-            }
-        }
-
-        return counter > 3;
-    }
-
-
-    public async Task<ChangePasswordResultDto> ChangeAPassword(int userId, string currentPassword, string newPassword)
-    {
-        var user = await db.Users.FindAsync(userId);
-        if (user == null)
-        {
-            return new ChangePasswordResultDto(false, ChangePasswordResultDto.ReasonUserDoesNotExist);
-        }
-        var passwordHasher = new PasswordHasher<string>();
-        var verificationResult =
-            passwordHasher.VerifyHashedPassword(user.Email, user.Password, currentPassword);
-        if (verificationResult == PasswordVerificationResult.Failed)
-        {
-            return new ChangePasswordResultDto(false, ChangePasswordResultDto.ReasonOldPasswordMismatch);
-        }
-
-        if (!PasswordIsValid(newPassword))
-            return new ChangePasswordResultDto(false, ChangePasswordResultDto.ReasonNewPasswordInvalid);
-        
-        var newPasswordHashed = passwordHasher.HashPassword(user.Email, newPassword);
-        user.Password = newPasswordHashed;
-        db.Users.Update(user);
-        await db.SaveChangesAsync();
-        return new ChangePasswordResultDto(true);
-    }
-
-
-    public async Task<string?> CreateNewSession(int userId, string plainTextPassword)
-    {
-        var user = await db.Users.FindAsync(userId);
-        if (user == null) return null;
-        var passwordHasher = new PasswordHasher<string>();
-        var passwordVerificationResult =
-            passwordHasher.VerifyHashedPassword(user.Email, user.Password, plainTextPassword);
-        if (passwordVerificationResult == PasswordVerificationResult.Failed) return null;
-
-        var sessionInserted = await _sessionsRepository.InsertSession(new Session()
-        {
-            UserId = user.Id,
-            IpAddress = GetIpAddress(),
-            UserAgent = GetUserAgent()
-        });
-        SendJustLoginEmail(user.Email, user.Name,GetIpAddress());
-
-        return sessionInserted.ToString();
-    }
-
-    public async Task<User?> ValidateSession(Session session)
-    {
-        var user = await db.Users.FindAsync(session.UserId);
-        return user;
-    }
-
-    public async Task<Session?> GetSessionById(string sessionId)
-    {
-        return await _sessionsRepository.FindSessionById(sessionId);
-    }
-
-    public async Task<bool> RemoveSession(string sessionId)
-    {
-        return await _sessionsRepository.RemoveSession(sessionId);
-    }
-
-    public Task<bool> RemoveSessions(int userId, IEnumerable<string> ids)
-    {
-        return _sessionsRepository.RemoveSessions(userId, ids);
-    }
-
-    public Task<bool> RemoveAllSessions(int userId, IEnumerable<string>? exceptIds)
-    {
-        return _sessionsRepository.RemoveSessionsByUserId(userId, exceptIds ?? []);
-    }
-    
-
     public string? GetUsernameFromId(int userId)
     {
         return db.Users.Where(u => u.Id == userId).Select(u => u.Name).FirstOrDefault();
@@ -275,24 +190,7 @@ public partial class AccountsService : IAccountsService
         var htmlBody = string.Format(EmailTemplates.WelcomeEmail, name);
         _emailSender.SendEmail(FromAddress,FromName,email, name, WelcomeSubject, htmlBody);
     }
-
-    private void SendWelcomeEmailForExternal(string email, string name, string generatedPassword)
-    {
-        
-        var htmlBody = string.Format(EmailTemplates.WelcomeEmailExternal, name, email, generatedPassword);
-        _emailSender.SendEmail(FromAddress,FromName,email, name, WelcomeSubject, htmlBody);
-    }
-
-    public void SendJustLoginEmail(string email, string name, string ipAddress)
-    {
-        var htmlBody = string.Format(EmailTemplates.LoginEmail, name, ipAddress);
-        _emailSender.SendEmail(FromAddress, FromName, email, name, JustLoggedInSubject, htmlBody);
-    }
-
-    public async Task<IEnumerable<Session>> GetSessionsOfUser(int userId)
-    {
-        return _sessionsRepository.FindSessionsOfUser(userId);
-    }
+    
 
     public string GetIpAddress()
     {
@@ -301,32 +199,6 @@ public partial class AccountsService : IAccountsService
                 ? _httpContext.Request.HttpContext.Connection.RemoteIpAddress?.ToString() 
                 : _httpContext.Request.Headers["X-Forwarded-For"][0].Split(",")[0].Trim();
     }
-
-    public string GetUserAgent()
-    {
-        return _httpContext.Request.Headers.UserAgent.ToString();
-    }
-
-    public void RemoveSessionCookie()
-    {
-        _httpContext.Response.Cookies.Delete(SessionCookieName);
-    }
-
-    public async Task<Session?> CurrentSession()
-    {
-        var cookie = _httpContext.Request.Cookies[SessionCookieName];
-        if (cookie == null)
-        {
-            return null;
-        }
-
-        try
-        {
-            return await _sessionsRepository.FindSessionById(cookie);
-        }
-        catch (JsonException)
-        {
-            return null;
-        }
-    }
+    
+    
 }

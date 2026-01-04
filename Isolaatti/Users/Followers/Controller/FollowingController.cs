@@ -10,6 +10,7 @@ using Isolaatti.Users.Followers.Dto;
 using Isolaatti.Users.Repository;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -30,7 +31,7 @@ namespace Isolaatti.Users.Followers.Controller
             _notificationsService = notificationsService;
         }
         
-        [IsolaattiAuth]
+        [Authorize]
         [HttpPost]
         [Route("Follow")]
         public async Task<IActionResult> Index(SingleIdentification identification)
@@ -60,7 +61,7 @@ namespace Isolaatti.Users.Followers.Controller
             return Ok(await GetFollowingInfo(userToFollow.Id));
         }
 
-        [IsolaattiAuth]
+        [Authorize]
         [Route("Unfollow")]
         [HttpPost]
         public async Task<IActionResult> Unfollow(SingleIdentification identification)
@@ -88,7 +89,7 @@ namespace Isolaatti.Users.Followers.Controller
 
         
 
-        [IsolaattiAuth]
+        [Authorize]
         [Route("FollowingsOf/{userId:int}")]
         [HttpGet]
         public IActionResult Following(int userId, int lastId)
@@ -112,7 +113,7 @@ namespace Isolaatti.Users.Followers.Controller
             return Ok(listOfFollowing);
         }
 
-        [IsolaattiAuth]
+        [Authorize]
         [Route("FollowersOf/{userId:int}")]
         [HttpGet]
         public IActionResult Followers(int userId, int lastId)

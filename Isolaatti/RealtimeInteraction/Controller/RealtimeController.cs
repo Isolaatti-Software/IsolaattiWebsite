@@ -1,10 +1,14 @@
 ﻿using System.Threading.Tasks;
 using Isolaatti.RealtimeInteraction.Entity;
 using Isolaatti.Repositories;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Isolaatti.RealtimeInteraction.Controller;
 
+[Authorize(AuthenticationSchemes = $"{JwtBearerDefaults.AuthenticationScheme}, {CookieAuthenticationDefaults.AuthenticationScheme}")]
 [ApiController]
 public class RealtimeController : ControllerBase
 {

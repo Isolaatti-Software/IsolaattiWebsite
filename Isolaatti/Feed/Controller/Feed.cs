@@ -8,6 +8,9 @@ using Isolaatti.Posting.Data;
 using Isolaatti.Posting.Dto;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,8 +28,7 @@ namespace Isolaatti.Feed.Controller
             Db = dbContextApp;
             _audios = audios;
         }
-
-        [IsolaattiAuth]
+        
         [HttpGet]
         public async Task<IActionResult> Index(long lastId = 0, int length = 10, long newestPostId = 0)
         {

@@ -28,9 +28,6 @@
     @*Server defined constants*@
     <script>
     const cookieName = 'isolaatti_user_session_token';
-    const authorization = document.cookie
-        .split('; ')
-        .find(row => row.startsWith(cookieName)).split("=")[1];
     const userData = { id:@ViewData[IsolaattiPageModel.ViewDataUserIdKey], name:"@ViewData[IsolaattiPageModel.ViewDataNameKey]", email:"@ViewData[IsolaattiPageModel.ViewDataEmailKey]"};
     const clientId = "@Guid.NewGuid()";
     const customHttpHeaders = new Headers();
@@ -71,9 +68,6 @@
 
                 @if (!Model.HideNav)
                 {
-                    <a class="btn custom-nav-link mr-1 ml-1 desktop-only" type="button" asp-page="/SquadsPages/Squads">
-                        <i class="fa-solid fa-people-group"></i>
-                    </a>
                     <a class="btn custom-nav-link mr-1 ml-1 desktop-only" type="button" asp-page="/MediaStreaming/MyStreamingStations">
                         <i class="fa-solid fa-tv"></i>
                     </a>
@@ -161,9 +155,6 @@
     <section class="mobile-only top-options" v-if="showTopBarMobileMenu">
         <div class="d-flex flex-column isolaatti-card m-1">
             <h5>Menu</h5>
-            <a class="btn btn-outline-primary" type="button" asp-page="/SquadsPages/Squads">
-                <i class="fa-solid fa-people-group"></i> Squads
-            </a>
             <a class="btn btn-outline-primary" type="button" asp-page="/MediaStreaming/MyStreamingStations">
                 <i class="fa-solid fa-tv"></i> Stream
             </a>

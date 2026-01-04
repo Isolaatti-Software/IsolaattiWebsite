@@ -14,6 +14,9 @@ using Isolaatti.Squads.Repository;
 using Isolaatti.Users.Repository;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -39,7 +42,7 @@ namespace Isolaatti.Controllers
 
         
 
-        [IsolaattiAuth]
+        [Authorize]
         [HttpGet]
         [Route("PostsOfUser/{userId:int}")]
         public async Task<IActionResult> GetPosts(int userId, int length = 30, long lastId = -1, bool olderFirst = false, string? filterJson = null)
@@ -197,7 +200,7 @@ namespace Isolaatti.Controllers
             });
         }
 
-        [IsolaattiAuth]
+        [Authorize]
         [HttpGet]
         [Route("Post/{postId:long}")]
         public async Task<IActionResult> GetPost(long postId)
@@ -256,7 +259,7 @@ namespace Isolaatti.Controllers
 
 
 
-        [IsolaattiAuth]
+        [Authorize]
         [HttpGet]
         [Route("Post/{postId:long}/LikedBy")]
         public async Task<IActionResult> GetPostLikedBy(long postId)

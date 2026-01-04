@@ -84,18 +84,14 @@ namespace Isolaatti.Migrations
                     b.Property<string>("DescriptionText")
                         .HasColumnType("text");
 
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("Genre")
                         .HasColumnType("text");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Password")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -108,11 +104,18 @@ namespace Isolaatti.Migrations
                     b.Property<bool>("ShowEmail")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("Sub")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("UniqueUsername")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Sub")
+                        .IsUnique();
 
                     b.HasIndex("UniqueUsername")
                         .IsUnique()

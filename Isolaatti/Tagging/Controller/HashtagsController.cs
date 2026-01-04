@@ -6,6 +6,7 @@ using Isolaatti.Posting.Data;
 using Isolaatti.Posting.Dto;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,7 +24,7 @@ public class HashtagsController : IsolaattiController
     }
 
     
-    [IsolaattiAuth]
+    [Authorize]
     [HttpGet]
     [Route("hashtag/{hashtag}")]
     public async Task<IActionResult> GetHashtagPosts(string hashtag, [FromQuery] long after = 0, [FromQuery] int length = 20)
@@ -70,7 +71,7 @@ public class HashtagsController : IsolaattiController
     }
     
     
-    [IsolaattiAuth]
+    [Authorize]
     [HttpGet]
     [Route("trending")]
     public async Task<IActionResult> GetTrendingHashtags()
@@ -87,7 +88,7 @@ public class HashtagsController : IsolaattiController
         });
     }
 
-    [IsolaattiAuth]
+    [Authorize]
     [HttpPost]
     [Route("follow")]
     public async Task<IActionResult> FollowHashtag([FromQuery] string hashtag)

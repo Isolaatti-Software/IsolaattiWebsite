@@ -3,6 +3,7 @@ using Isolaatti.Notifications.Dto;
 using Isolaatti.Notifications.Services;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Isolaatti.Notifications.Controller;
@@ -17,7 +18,7 @@ public class NotificationsController : IsolaattiController
         _notifications = notifications;
     }
         
-    [IsolaattiAuth]
+    [Authorize]
     [HttpGet]
     [Route("list")]
     public IActionResult GetAll(long? after = null)
@@ -28,7 +29,7 @@ public class NotificationsController : IsolaattiController
         });
     }
 
-    [IsolaattiAuth]
+    [Authorize]
     [HttpDelete]
     [Route("delete_notification")]
     public async Task<IActionResult> DeleteANotification(long id)
@@ -37,7 +38,7 @@ public class NotificationsController : IsolaattiController
         return Ok();
     }
 
-    [IsolaattiAuth]
+    [Authorize]
     [HttpPost]
     [Route("delete_many")]
     public async Task<IActionResult> DeleteManyNotifications(DeleteManyNotifications deleteManyNotificationsDto)
@@ -46,7 +47,7 @@ public class NotificationsController : IsolaattiController
         return Ok();
     }
 
-    [IsolaattiAuth]
+    [Authorize]
     [Route("Delete/All")]
     [HttpPost]
     public async Task<IActionResult> DeleteAll()
@@ -55,7 +56,7 @@ public class NotificationsController : IsolaattiController
         return Ok();
     }
 
-    [IsolaattiAuth]
+    [Authorize]
     [Route("MarkAsRead")]
     [HttpPost]
     public async Task<IActionResult> MarkAsRead(long notificationId)

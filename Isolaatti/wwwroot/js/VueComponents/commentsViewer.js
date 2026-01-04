@@ -55,13 +55,13 @@ Vue.component("comments-viewer", {
             }
         },
         onCommentRemoved: function(id) {
-            const index = this.comments.findIndex(c => c.comment.id === id);
+            const index = this.comments.findIndex(c => c.id === id);
             if (index === -1) return;
 
             this.comments.splice(index, 1);
         },
         onCommentEdited: function(comment) {
-            const index = this.comments.findIndex(c => c.comment.id === comment.comment.id);
+            const index = this.comments.findIndex(c => c.id === comment.id);
             if (index === -1) return;
 
             this.comments.splice(index, 1, comment);
@@ -83,7 +83,7 @@ Vue.component("comments-viewer", {
       <div class="d-flex flex-column comments-section">
       <h5 v-if="comments.length===0 && !isUnderPost" class="m-4 text-center"><i class="fas fa-sad-tear"></i> No hay
         comentarios que mostrar</h5>
-      <comment v-for="comment in comments" :comment="comment" class="w-auto" :key="comment.comment.id"
+      <comment v-for="comment in comments" :comment="comment" class="w-auto" :key="comment.id"
                @commentDeleted="onCommentRemoved" @updated="onCommentEdited"></comment>
       <a :href="openThreadLink" v-if="comments.length < numberOfComments && isUnderPost" class="text-center">Ver
         discusión</a>

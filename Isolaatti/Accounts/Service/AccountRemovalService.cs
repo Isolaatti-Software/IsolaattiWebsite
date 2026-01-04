@@ -48,38 +48,38 @@ public class AccountRemovalService
 
     public async Task SendEmail(string email)
     {
-        var user = await _db.Users.SingleOrDefaultAsync(u => u.Email.Equals(email));
-        if (user == null)
-        {
-            return;
-        }
-
-        var key = RandomData.GenerateRandomKey(15);
-
-        var passwordHasher = new PasswordHasher<string>();
-        
-        var keyHash = passwordHasher.HashPassword(user.Id.ToString(), key);
-
-        var accountRemovalRequestEntity = new AccountRemovalRequestEntity()
-        {
-            UserId = user.Id,
-            KeyHash = keyHash
-        };
-
-        _db.AccountRemovalRequests.Add(accountRemovalRequestEntity);
-        await _db.SaveChangesAsync();
-        
-        // enqueue email
-        var url = 
-            $"{_optionsHostConfig.Value.BaseUrl}/AccountRemoval/ConfirmAccountRemoval?id={accountRemovalRequestEntity.Id}&key={HttpUtility.UrlEncode(key)}";
-        var body = string.Format(EmailTemplates.DeleteAccountEmail, url);
-        _emailSender.SendEmail(
-            "no-reply@isolaatti.com", 
-            "Isolaatti", 
-            user.Email, 
-            user.Name, 
-            "Elimina tu cuenta de Isolaatti", 
-            body);
+        // var user = await _db.Users.SingleOrDefaultAsync(u => u.Email.Equals(email));
+        // if (user == null)
+        // {
+        //     return;
+        // }
+        //
+        // var key = RandomData.GenerateRandomKey(15);
+        //
+        // var passwordHasher = new PasswordHasher<string>();
+        //
+        // var keyHash = passwordHasher.HashPassword(user.Id.ToString(), key);
+        //
+        // var accountRemovalRequestEntity = new AccountRemovalRequestEntity()
+        // {
+        //     UserId = user.Id,
+        //     KeyHash = keyHash
+        // };
+        //
+        // _db.AccountRemovalRequests.Add(accountRemovalRequestEntity);
+        // await _db.SaveChangesAsync();
+        //
+        // // enqueue email
+        // var url = 
+        //     $"{_optionsHostConfig.Value.BaseUrl}/AccountRemoval/ConfirmAccountRemoval?id={accountRemovalRequestEntity.Id}&key={HttpUtility.UrlEncode(key)}";
+        // var body = string.Format(EmailTemplates.DeleteAccountEmail, url);
+        // _emailSender.SendEmail(
+        //     "no-reply@isolaatti.com", 
+        //     "Isolaatti", 
+        //     user.Email, 
+        //     user.Name, 
+        //     "Elimina tu cuenta de Isolaatti", 
+        //     body);
     }
 
     public async Task<bool> ProceedWithAccountRemoval(Guid accountRemovalRequestId, string key)
@@ -102,7 +102,6 @@ public class AccountRemovalService
         }
         
         await DeleteImages(accountRemovalRequest.UserId);
-        await DeleteSessions(accountRemovalRequest.UserId);
         await HandleUserRemovalFromSquads(accountRemovalRequest.UserId);
         await DeleteAccount(accountRemovalRequest.UserId);
         
@@ -113,11 +112,6 @@ public class AccountRemovalService
     private async Task DeleteImages(int userId)
     {
         await _imagesService.DeleteUserImages(userId);
-    }
-
-    private async Task DeleteSessions(int userId)
-    {
-        await _accountsService.RemoveAllSessions(userId, null);
     }
     
     // special case for squads:

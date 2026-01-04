@@ -10,6 +10,7 @@ using Isolaatti.Squads.Repository;
 using Isolaatti.Users.Repository;
 using Isolaatti.Utils;
 using Isolaatti.Utils.Attributes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -34,7 +35,7 @@ public class SearchController : IsolaattiController
         _usersRepository = usersRepository;
     }
 
-    [IsolaattiAuth]
+    [Authorize]
     [Route("Quick")]
     [HttpGet]
     public async Task<IActionResult> QuickSearch([FromQuery] string q, [FromQuery] string contextType = "global", 
@@ -136,20 +137,20 @@ public class SearchController : IsolaattiController
         return Ok(results);
     }
 
-    [IsolaattiAuth]
+    [Authorize]
     [HttpGet]
     [Route("v2")]
     public async Task<IActionResult> Search([FromQuery] string query)
     {
         var result = await _db.SearchView
             .FromSql(
-                $"SELECT origin_table, id, title, description, ts_rank(searchable_element, to_tsquery('english', {query})) AS rank FROM View_SearchItems WHERE to_tsquery('english', {query}) @@ View_SearchItems.searchable_element ORDER BY rank DESC")
+                $"SELECT origin_table, id, title, description FROM View_SearchItems WHERE  View_SearchItems.searchable_element @@ to_tsquery('english', {query.Replace(" ", "|")} )")
             .ToListAsync();
 
         return Ok(new { result });
     }
 
-    [IsolaattiAuth]
+    [Authorize]
     [HttpGet]
     [Route("newestUsers")]
     public async Task<IActionResult> GetNewestUsers([FromQuery] int limit, [FromQuery] int after)
