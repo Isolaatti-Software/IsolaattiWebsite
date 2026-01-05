@@ -151,83 +151,18 @@ namespace Isolaatti
                     options.UseNpgsql(Configuration.GetConnectionString("Database"));
                 }
             });
-                services.AddDataProtection().PersistKeysToDbContext<DbContextApp>();
-            if (_environment.IsProduction())
-            {
-                var mongoConfigEnvVar = Environment.GetEnvironmentVariable(Env.MongoDbConfig);
-                services.Configure<MongoDatabaseConfiguration>(config =>
-                {
-                    var mongoConfig = JsonSerializer.Deserialize<MongoDatabaseConfiguration>(mongoConfigEnvVar!);
-                    config.ConnectionString = mongoConfig?.ConnectionString;
-                    config.DatabaseName = mongoConfig?.DatabaseName;
-                    config.AudiosCollectionName = mongoConfig?.AudiosCollectionName;
-                    config.NotificationsCollectionName = mongoConfig?.NotificationsCollectionName;
-                    config.SquadsInvitationsCollectionName = mongoConfig?.SquadsInvitationsCollectionName;
-                    config.SquadsJoinRequestsCollectionName = mongoConfig?.SquadsJoinRequestsCollectionName;
-                    config.RealtimeServiceKeysCollectionName = mongoConfig?.RealtimeServiceKeysCollectionName;
-                    config.AuthTokensCollectionName = mongoConfig?.AuthTokensCollectionName;
-                    config.ImagesCollectionName = mongoConfig?.ImagesCollectionName;
-                    config.CommentModificationHistoryCollectionName = mongoConfig?.CommentModificationHistoryCollectionName;
-                });
-                
-                var serversConfigEnvVar = Environment.GetEnvironmentVariable(Env.ServersConfig);
-                services.Configure<Servers>(config =>
-                {
-                    var serversConfig = JsonSerializer.Deserialize<Servers>(serversConfigEnvVar!);
-                    config.RtmpServer = serversConfig.RtmpServer;
-                    config.DashUrl = serversConfig.DashUrl;
-                    config.HlsUrl = serversConfig.HlsUrl;
-                    config.ThumbnailUrl = serversConfig.ThumbnailUrl;
-                });
-                var recaptchaConfigEnvVar = Environment.GetEnvironmentVariable(Env.RecaptchaConfig);
-                services.Configure<ReCaptchaConfig>(config =>
-                {
-                    var recaptchaConfig = JsonSerializer.Deserialize<ReCaptchaConfig>(recaptchaConfigEnvVar);
-                    config.Site = recaptchaConfig.Site;
-                    config.Secret = recaptchaConfig.Secret;
-                });
-                var isolaattiServicesKeysJsonEnvVar = Environment.GetEnvironmentVariable(Env.IsolaattiServiceKeys);
-                services.Configure<IsolaattiServicesKeys>(config =>
-                {
-                    var isolaattiServiceKeys =
-                        JsonSerializer.Deserialize<IsolaattiServicesKeys>(isolaattiServicesKeysJsonEnvVar);
-                    config.RealtimeService = isolaattiServiceKeys.RealtimeService;
-                });
-                var rabbitmqConfigJsonEnvVar = Environment.GetEnvironmentVariable(Env.RabbitmqConfig);
-                services.Configure<RabbitmqConfig>(config =>
-                {
-                    var rabbitmqConfig = JsonSerializer.Deserialize<RabbitmqConfig>(rabbitmqConfigJsonEnvVar);
-                    config.Host = rabbitmqConfig.Host;
-                    config.Password = rabbitmqConfig.Password;
-                    config.Port = rabbitmqConfig.Port;
-                    config.Username = rabbitmqConfig.Username;
-                    config.VirtualHost = rabbitmqConfig.VirtualHost;
-                });
-                var clientsConfigJsonEnv = Environment.GetEnvironmentVariable(Env.ClientsConfig);
-                services.Configure<List<Client>>(config =>
-                {
-                    var clientsConfig = JsonSerializer.Deserialize<List<Client>>(clientsConfigJsonEnv);
-                    config.AddRange(clientsConfig);
-                });
-                var hostConfigJsonEnv = Environment.GetEnvironmentVariable(Env.HostConfig);
-                services.Configure<HostConfig>(config =>
-                {
-                    var hostConfig = JsonSerializer.Deserialize<HostConfig>(hostConfigJsonEnv);
-                    config.BaseUrl = hostConfig.BaseUrl;
-                });
-                var messengerConfigJsonEnv = Environment.GetEnvironmentVariable(Env.MessengerConfig);
-            }
-            else
-            {
-                services.Configure<MongoDatabaseConfiguration>(Configuration.GetSection("MongoDb"));
-                services.Configure<Servers>(Configuration.GetSection("Servers"));
-                services.Configure<ReCaptchaConfig>(Configuration.GetSection("ReCaptcha"));
-                services.Configure<IsolaattiServicesKeys>(Configuration.GetSection("IsolaattiServicesKeys"));
-                services.Configure<RabbitmqConfig>(Configuration.GetSection("RabbitMQ"));
-                services.Configure<List<Client>>(Configuration.GetSection("Clients"));
-                services.Configure<HostConfig>(Configuration.GetSection("Host"));
-                services.Configure<Keycloak>(Configuration.GetSection("Keycloak"));
-            }
+            services.AddDataProtection().PersistKeysToDbContext<DbContextApp>();
+            
+            // Configuration
+            services.Configure<MongoDatabaseConfiguration>(Configuration.GetSection("MongoDb"));
+            services.Configure<Servers>(Configuration.GetSection("Servers"));
+            services.Configure<ReCaptchaConfig>(Configuration.GetSection("ReCaptcha"));
+            services.Configure<IsolaattiServicesKeys>(Configuration.GetSection("IsolaattiServicesKeys"));
+            services.Configure<RabbitmqConfig>(Configuration.GetSection("RabbitMQ"));
+            services.Configure<List<Client>>(Configuration.GetSection("Clients"));
+            services.Configure<HostConfig>(Configuration.GetSection("Host"));
+            services.Configure<Keycloak>(Configuration.GetSection("Keycloak"));
+            
 
             services.AddSingleton<MongoDatabase>();
             services.AddSingleton<HttpClientSingleton>();
@@ -281,7 +216,10 @@ namespace Isolaatti
                     options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
                     options.DefaultAuthenticateScheme = $"{CookieAuthenticationDefaults.AuthenticationScheme}";
                 })
-                .AddCookie()
+                .AddCookie(options =>
+                {
+                    options.Cookie.Name = "IsolaattiCookie";
+                })
                 .AddOpenIdConnect(options =>
                 {
                     options.Authority = keycloakConfiguration!.Authority;
@@ -289,6 +227,15 @@ namespace Isolaatti
                     options.ResponseType = "code";
                     options.SaveTokens = true;
                     options.RequireHttpsMetadata = false;
+                    options.UseTokenLifetime = true;
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateAudience = false,
+                        ValidateIssuer = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        
+                    };
                 }).AddJwtBearer("Bearer", options =>
                 {
                     options.Authority = keycloakConfiguration!.Authority;
@@ -299,7 +246,7 @@ namespace Isolaatti
                         ValidateAudience = false,
                         ValidateIssuer = true,
                         ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
+                        ValidateIssuerSigningKey = true
                     };
                 });
             
