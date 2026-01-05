@@ -129,27 +129,7 @@ namespace Isolaatti
 
             services.AddDbContextPool<DbContextApp>((serviceProvider, options) =>
             {
-         
-                if (_environment.IsProduction())
-                {
-                    var databaseUrl = Environment.GetEnvironmentVariable(Env.DatabaseUrl);
-                    var databaseUri = new Uri(databaseUrl!);
-                    var credentialInfo = databaseUri.UserInfo.Split(":"); // first part is user, second part is password
-                    
-                    var connectionStringBuilder = new NpgsqlConnectionStringBuilder()
-                    {
-                        Host = databaseUri.Host,
-                        Port = databaseUri.Port,
-                        Username = credentialInfo[0],
-                        Password = credentialInfo[1],
-                        Database = databaseUri.LocalPath.TrimStart('/')
-                    };
-                    options.UseNpgsql(connectionStringBuilder.ToString());
-                }
-                else
-                {
-                    options.UseNpgsql(Configuration.GetConnectionString("Database"));
-                }
+                options.UseNpgsql(Configuration.GetConnectionString("Database"));
             });
             services.AddDataProtection().PersistKeysToDbContext<DbContextApp>();
             
