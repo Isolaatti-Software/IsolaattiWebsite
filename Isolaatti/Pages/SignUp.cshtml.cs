@@ -18,6 +18,8 @@ namespace Isolaatti.Pages
         
         [BindProperty] public string Email { get; set; }
         
+        public bool ErrorCreatingAccount { get; set; }
+        
         public bool RecaptchaError { get; set; }
         public IAccountsService.AccountPrecreateResult Result { get; set; }
         public bool Posted { get; set; }

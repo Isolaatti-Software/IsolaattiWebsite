@@ -22,7 +22,7 @@ namespace Isolaatti.Profiles.Controller
     {
 
 
-        [Authorize]
+        [AllowAnonymous]
         [HttpGet]
         [Route("/api/Fetch/UserProfile/{userId:int}")]
         public async Task<IActionResult> GetProfile(int userId)
@@ -31,21 +31,21 @@ namespace Isolaatti.Profiles.Controller
             var account = _db.Users.FirstOrDefault(u => u.Id == userId);
             if (account == null) return NotFound();
 
+            var isAuthenticated = HttpContext.User.Identity?.IsAuthenticated;
+
             account.NumberOfFollowers = await _db.FollowerRelations.CountAsync(fr => fr.TargetUserId == account.Id);
             account.NumberOfFollowing = await _db.FollowerRelations.CountAsync(fr => fr.UserId == account.Id);
             account.NumberOfPosts = await _db.SimpleTextPosts.CountAsync(p => p.UserId == account.Id);
             account.NumberOfLikes = await _db.Likes.CountAsync(l => l.TargetUserId == account.Id);
-            account.IsUserItself = account.Id == User.Id;
-            account.ThisUserIsFollowingMe =
-                await _db.FollowerRelations.AnyAsync(fr => fr.TargetUserId == User.Id && fr.UserId == account.Id);
-            account.FollowingThisUser =
-                await _db.FollowerRelations.AnyAsync(fr => fr.UserId == User.Id && fr.TargetUserId == account.Id);
 
-            //
-            // if (!account.ShowEmail && account.Id != User.Id)
-            // {
-            //     account.Email = null;
-            // }
+            if (isAuthenticated == true)
+            {
+                account.IsUserItself = account.Id == User.Id;
+                account.ThisUserIsFollowingMe = 
+                    await _db.FollowerRelations.AnyAsync(fr => fr.TargetUserId == User.Id && fr.UserId == account.Id);
+                account.FollowingThisUser =
+                    await _db.FollowerRelations.AnyAsync(fr => fr.UserId == User.Id && fr.TargetUserId == account.Id);
+            }
 
 
             return Ok(account);
@@ -170,6 +170,23 @@ namespace Isolaatti.Profiles.Controller
             }
 
             return Redirect(await storage.GetDownloadUrl(user.AudioStoragePath));
+        }
+
+        [Authorize]
+        [HttpGet]
+        [Route("/api/profiles/my_profile")]
+        public async Task<IActionResult> GetMyProfile()
+        {
+            var account = User;
+            account.NumberOfFollowers = await _db.FollowerRelations.CountAsync(fr => fr.TargetUserId == account.Id);
+            account.NumberOfFollowing = await _db.FollowerRelations.CountAsync(fr => fr.UserId == account.Id);
+            account.NumberOfPosts = await _db.SimpleTextPosts.CountAsync(p => p.UserId == account.Id);
+            account.NumberOfLikes = await _db.Likes.CountAsync(l => l.TargetUserId == account.Id);
+            account.IsUserItself = true;
+            account.ThisUserIsFollowingMe = false;
+            account.FollowingThisUser = false;
+            
+            return Ok(account);
         }
     }
     

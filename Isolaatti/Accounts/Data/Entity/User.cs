@@ -17,6 +17,16 @@ namespace Isolaatti.Accounts.Data.Entity
 {
     public class User
     {
+
+        public static readonly User AnonymousUser = new()
+        {
+            Id = -1,
+            Sub = "anonymous",
+            UniqueUsername = "anonymous",
+            Name = "Anonymous",
+            LastName = "User",
+        };
+        
         public int Id { get; set; }
         public string Sub { get; set; }
         public string UniqueUsername { get; set; }
