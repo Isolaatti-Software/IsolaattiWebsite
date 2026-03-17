@@ -17,6 +17,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Isolaatti.Feed.Controller
 {
     [ApiController]
+    [AllowAnonymous]
     [Route("/api/[controller]")]
     public class Feed : IsolaattiController
     {

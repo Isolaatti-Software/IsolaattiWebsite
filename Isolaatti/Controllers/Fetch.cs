@@ -42,7 +42,7 @@ namespace Isolaatti.Controllers
 
         
 
-        [Authorize]
+        [AllowAnonymous]
         [HttpGet]
         [Route("PostsOfUser/{userId:int}")]
         public async Task<IActionResult> GetPosts(int userId, int length = 30, long lastId = -1, bool olderFirst = false, string? filterJson = null)
@@ -200,7 +200,7 @@ namespace Isolaatti.Controllers
             });
         }
 
-        [Authorize]
+        [AllowAnonymous]
         [HttpGet]
         [Route("Post/{postId:long}")]
         public async Task<IActionResult> GetPost(long postId)
@@ -259,7 +259,7 @@ namespace Isolaatti.Controllers
 
 
 
-        [Authorize]
+        [AllowAnonymous]
         [HttpGet]
         [Route("Post/{postId:long}/LikedBy")]
         public async Task<IActionResult> GetPostLikedBy(long postId)

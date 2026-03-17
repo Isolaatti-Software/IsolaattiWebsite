@@ -97,7 +97,7 @@ public class CommentsController(
         return Ok(commentDto);
     }
 
-    [Authorize]
+    [AllowAnonymous]
     [HttpGet]
     [Route("/api/Fetch/Post/{postId:long}/Comments")]
     public async Task<IActionResult> GetComments(long postId, long lastId = long.MaxValue, int take = 10)
@@ -123,7 +123,7 @@ public class CommentsController(
         });
     }
 
-    [Authorize]
+    [AllowAnonymous]
     [HttpGet]
     [Route("{commentId:long}")]
     public async Task<IActionResult> GetComment(long commentId)
@@ -223,7 +223,7 @@ public class CommentsController(
         return Ok(commentDto);
     }
     
-    [Authorize]
+    [AllowAnonymous]
     [HttpGet]
     [Route("{commentId:long}/replies")]
 

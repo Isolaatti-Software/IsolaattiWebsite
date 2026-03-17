@@ -11,5 +11,12 @@ namespace Isolaatti.Utils;
 [Authorize(AuthenticationSchemes = $"{JwtBearerDefaults.AuthenticationScheme}, {CookieAuthenticationDefaults.AuthenticationScheme}")]
 public class IsolaattiController : ControllerBase
 {
-    public new User User => HttpContext.Items["CurrentUser"] as User;
+    public new User User
+    {
+        get
+        {
+            var foundUser = HttpContext.Items["CurrentUser"];
+            return foundUser as User ?? User.AnonymousUser;
+        }
+    }
 }

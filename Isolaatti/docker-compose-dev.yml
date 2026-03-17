@@ -1,19 +1,24 @@
 services:
 
   db:
-    image: postgres
+    image: postgres:16
     restart: always
-    ports: 
+    ports:
       - 5432:5432
     environment:
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
+      POSTGRES_DB: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d
 
   adminer:
     image: adminer
     restart: always
     ports:
       - 8080:8080
-        
+  
   mongo:
     image: mongo
     restart: always
@@ -32,10 +37,30 @@ services:
       ME_CONFIG_MONGODB_ADMINUSERNAME: root
       ME_CONFIG_MONGODB_ADMINPASSWORD: example
       ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
-      
+  
   rabbitmq:
     image: rabbitmq:3-management-alpine
     restart: always
     ports:
       - 5672:5672
       - 15672:15672
+  
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.4.7
+    container_name: keycloak
+    command: start-dev --http-access-log=true
+    ports:
+      - 8082:8080
+    depends_on:
+      - db
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://db:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: keycloak
+
+volumes:
+  postgres_data:

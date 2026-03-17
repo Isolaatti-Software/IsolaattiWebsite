@@ -43,6 +43,8 @@ public class ConfirmAccount : PageModel
     public bool MalformedUrlError { get; set; }
     public bool UnavailableUsername { get; set; }
     public string? TraceId { get; set; }
+    
+    public AccountMakingResult? AccountMakingResult { get; set; }
 
     public async Task<IActionResult> OnGet([FromQuery] string state)
     {
@@ -75,21 +77,22 @@ public class ConfirmAccount : PageModel
             }
             
             var accountMakeResult = await _accounts.MakeAccountAsync(Username, FirstName,LastName, preCreate.Email,Password);
+            AccountMakingResult = accountMakeResult.AccountMakingResult;
             
             switch (accountMakeResult.AccountMakingResult)
             {
-                case AccountMakingResult.EmailNotAvailable:
+                case Enums.AccountMakingResult.EmailNotAvailable:
                     break;
-                case AccountMakingResult.ValidationProblems:
+                case Enums.AccountMakingResult.ValidationProblems:
                     break;
-                case AccountMakingResult.Ok:
+                case Enums.AccountMakingResult.Ok:
 
                     return Challenge(new AuthenticationProperties(){ RedirectUri = "/"});
                     break;
-                case AccountMakingResult.Error:
+                case Enums.AccountMakingResult.Error:
                     TraceId = HttpContext.TraceIdentifier;
                     return Page();
-                case AccountMakingResult.UsernameUnavailable:
+                case Enums.AccountMakingResult.UsernameUnavailable:
                     UnavailableUsername = true;
                     return Page();
                 default: return Page();
