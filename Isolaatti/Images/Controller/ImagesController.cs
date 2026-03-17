@@ -35,6 +35,7 @@ public class ImagesController : IsolaattiController
     }
 
     [HttpGet]
+    [AllowAnonymous]
     [Route("image/{imageId}", Name = "GetImage")]
     public async Task<IActionResult> GetImage(Guid imageId, [FromQuery] string mode)
     {
@@ -85,6 +86,7 @@ public class ImagesController : IsolaattiController
         return Ok(image);
     }
 
+    [AllowAnonymous]
     [HttpGet]
     [Route("profile_image/of_user/{userId:int}")]
     public async Task<IActionResult> GetProfileImageOfUserById(int userId, string mode = "original")
