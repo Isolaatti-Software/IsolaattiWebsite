@@ -1,0 +1,70 @@
+@page "/register"
+@using Isolaatti.Accounts.Service
+@using Isolaatti.Config
+@using Microsoft.Extensions.Options
+@model Isolaatti.Pages.SignUp
+@inject IOptions<ReCaptchaConfig> RecaptchaConfig
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regístrate - Isolaatti</title>
+    <link rel="stylesheet" href="~/css/login.css">
+</head>
+<body>
+<div class="login-container">
+    <div class="login-card">
+        <h2>Regístrate</h2>
+        <form method="POST" id="signUpForm">
+            @if (Model.Posted && Model.Result == IAccountsService.AccountPrecreateResult.EmailUsed)
+            {
+                <div style="color: #d93025; background-color: #fce8e6; padding: 0.8rem; border-radius: 6px; margin-bottom: 1.25rem; font-size: 0.9rem; text-align: center; border: 1px solid #f5c2c7;">
+                    La dirección de correo que quieres utilizar para crear esta cuenta ya ha sido utilizada previamente.
+                </div>
+            }
+            @if (Model.Posted && Model.Result == IAccountsService.AccountPrecreateResult.CodesSentLimitReached)
+            {
+                <div style="color: #d93025; background-color: #fce8e6; padding: 0.8rem; border-radius: 6px; margin-bottom: 1.25rem; font-size: 0.9rem; text-align: center; border: 1px solid #f5c2c7;">
+                    No es posible enviar más códigos, has alcanzado el límite. Contacta al administrador.
+                </div>
+            }
+
+            <p style="color: #4b4f56; font-size: 0.9rem; margin-bottom: 1.5rem; text-align: center;">
+                El primer paso para crear una cuenta es que proporciones tu dirección de correo. Enviaremos un código que deberás ingresar en el siguiente paso.
+            </p>
+
+            <div class="form-group">
+                <label for="email">Dirección de correo electrónico</label>
+                <input type="email" id="email" required asp-for="Email">
+                <div style="margin-top: 0.5rem; text-align: right;">
+                    <a asp-page="ContinueAccountCreation" id="haveCodeBtn">Tengo un código</a>
+                </div>
+            </div>
+
+            @if (Model.RecaptchaError)
+            {
+                <div style="color: #d93025; background-color: #fce8e6; padding: 0.8rem; border-radius: 6px; margin-bottom: 1.25rem; font-size: 0.9rem; text-align: center; border: 1px solid #f5c2c7;">
+                    Por favor, completa el reCAPTCHA
+                </div>
+            }
+
+            <div class="g-recaptcha" data-sitekey="@RecaptchaConfig.Value.Site" style="display: flex; justify-content: center; margin-bottom: 1.25rem;"></div>
+
+            <div class="actions">
+                <button type="submit" id="signUpBtn">Regístrate</button>
+                <a href="/login" class="btn btn-secondary">Volver al inicio de sesión</a>
+            </div>
+        </form>
+    </div>
+    <div class="app-name">Isolaatti</div>
+</div>
+
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</body>
+</html>

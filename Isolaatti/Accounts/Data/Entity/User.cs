@@ -1,9 +1,4 @@
-/*
- * Isolaatti project
- * Erik Cavazos, 2020
- * This program is not allowed to be copied or reused without explicit permission.
- * erik10cavazos@gmail.com and everardo.cavazoshrnnd@uanl.edu.mx
- */
+
 
 using System;
 using System.Collections;
@@ -21,15 +16,16 @@ namespace Isolaatti.Accounts.Data.Entity
         public static readonly User AnonymousUser = new()
         {
             Id = -1,
-            Sub = "anonymous",
             UniqueUsername = "anonymous",
             Name = "Anonymous",
             LastName = "User",
         };
         
         public int Id { get; set; }
-        public string Sub { get; set; }
+        
+        public string Email { get; set; }
         public string UniqueUsername { get; set; }
+        public string PasswordHash { get; set; }
         public string Name { get; set; }
         public string LastName { get; set; }
         

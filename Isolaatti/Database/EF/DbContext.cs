@@ -33,10 +33,7 @@ namespace Isolaatti.Database.EF
                 .HasIndex(u => u.UniqueUsername)
                 .HasFilter("'UniqueUsername' IS NOT NULL")
                 .IsUnique();
-
-            modelBuilder.Entity<User>()
-                .HasIndex(u => u.Sub)
-                .IsUnique();
+            
             
             modelBuilder.Entity<FollowerRelation>()
                 .HasOne<User>("User")

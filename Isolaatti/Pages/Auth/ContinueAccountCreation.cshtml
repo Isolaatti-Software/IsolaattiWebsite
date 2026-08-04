@@ -1,0 +1,48 @@
+@page "/codigo"
+@model Isolaatti.Pages.ContinueAccountCreation
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ingresar código - Isolaatti</title>
+    <link rel="stylesheet" href="~/css/login.css">
+</head>
+<body>
+<div class="login-container">
+    <div class="login-card">
+        <h2>Ingresa el código</h2>
+        <form method="POST" id="continueForm">
+            <p style="color: #4b4f56; font-size: 0.9rem; margin-bottom: 1.5rem; text-align: center;">
+                Ya casi queda tu cuenta, solo debes ingresar el código que te enviamos a tu correo. 
+                Si no puedes verlo, revisa tu carpeta de spam.
+            </p>
+
+            @if (Model.CodeIsInvalid)
+            {
+                <div style="color: #d93025; background-color: #fce8e6; padding: 0.8rem; border-radius: 6px; margin-bottom: 1.25rem; font-size: 0.9rem; text-align: center; border: 1px solid #f5c2c7;">
+                    El código que ingresaste es inválido. Algunas razones pueden ser que el código está mal escrito o este ya expiró
+                </div>
+            }
+
+            <div class="form-group">
+                <label for="code">Código</label>
+                <input type="text" id="code" placeholder="XXXXXX" required asp-for="Code">
+            </div>
+
+            <div class="actions">
+                <button type="submit" id="continueBtn">Continuar</button>
+                <a href="/login" class="btn btn-secondary">Volver al inicio de sesión</a>
+            </div>
+        </form>
+    </div>
+    <div class="app-name">Isolaatti</div>
+</div>
+</body>
+</html>
+

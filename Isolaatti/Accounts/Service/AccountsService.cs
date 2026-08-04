@@ -75,7 +75,7 @@ public class AccountsService : IAccountsService
 
     public async Task<User?> GetUserFromSub(Claim sub)
     {
-        return await db.Users.FirstOrDefaultAsync(u => u.Sub == sub.Value);
+        return null; // TODO cambiar esto
     }
 
     public async Task<AccountMakeResult> MakeAccountAsync(string username, string firstName, string lastName, string email,
@@ -107,7 +107,7 @@ public class AccountsService : IAccountsService
             var userId = await _identityService.CreateUser(username, email, password, firstName, lastName);
             db.AccountPrecreates.RemoveRange(db.AccountPrecreates.Where(pc => pc.Email.Equals(email)));
             await db.SaveChangesAsync();
-            newUser.Sub = userId;
+            //newUser.Sub = userId;
             db.Users.Add(newUser);
             await db.SaveChangesAsync();
             SendWelcomeEmail(email, newUser.Name);

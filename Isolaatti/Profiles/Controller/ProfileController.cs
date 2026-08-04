@@ -18,7 +18,7 @@ using Microsoft.Extensions.Logging;
 namespace Isolaatti.Profiles.Controller
 {
     [ApiController]
-    public class ProfileController(DbContextApp _db, ImagesService _images, AudiosService audios, ILogger<ProfileController> logger, GoogleCloudStorageService storage) : IsolaattiController
+    public class ProfileController(DbContextApp _db, ImagesService _images, AudiosService audios, ILogger<ProfileController> logger) : IsolaattiController
     {
 
 
@@ -169,7 +169,8 @@ namespace Isolaatti.Profiles.Controller
                 return NotFound("This user does not have an audio");
             }
 
-            return Redirect(await storage.GetDownloadUrl(user.AudioStoragePath));
+            //TODO return Redirect(await storage.GetDownloadUrl(user.AudioStoragePath));
+            throw new NotImplementedException();
         }
 
         [Authorize]

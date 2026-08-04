@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
-using FirebaseAdmin;
-using Google.Apis.Auth.OAuth2;
+using System.Threading.Tasks;
 using Isolaatti.Accounts.Service;
 using Isolaatti.Audios.Service;
+using Isolaatti.Auth;
 using Isolaatti.Comments.Repository;
 using Isolaatti.Common;
 using Isolaatti.Config;
@@ -29,6 +30,7 @@ using Isolaatti.Tagging;
 using Isolaatti.Users.Repository;
 using Isolaatti.Utils.ActionFilters;
 using Isolaatti.Utils.PageFilters;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -39,11 +41,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
-using Npgsql;
+using StackExchange.Redis;
 
 namespace Isolaatti
 {
@@ -61,30 +62,6 @@ namespace Isolaatti
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            const string filePath = "isolaatti-firebase-adminsdk.json";
-            GoogleCredential credential;
-            if (File.Exists(filePath))
-            {
-                var file = File.Open(filePath, FileMode.Open);
-                credential = GoogleCredential.FromStream(file);
-                file.Close();
-            }
-            else
-            {
-                var json = Environment.GetEnvironmentVariable(Env.GoogleFirebaseAdminSdkCredential);
-                if(json != null)
-                    credential = GoogleCredential.FromJson(json);
-                else
-                {
-                    throw new FileNotFoundException(
-                        "Google credential file was not found. Tried to use env vars but did not have success.");
-                }
-            }
-            
-            FirebaseApp.Create(new AppOptions()
-            {
-                Credential = credential
-            });
             services.AddCors(options => 
                 options.AddPolicy(name: "cors",
                     policy =>
@@ -137,7 +114,6 @@ namespace Isolaatti
             services.Configure<MongoDatabaseConfiguration>(Configuration.GetSection("MongoDb"));
             services.Configure<Servers>(Configuration.GetSection("Servers"));
             services.Configure<ReCaptchaConfig>(Configuration.GetSection("ReCaptcha"));
-            services.Configure<IsolaattiServicesKeys>(Configuration.GetSection("IsolaattiServicesKeys"));
             services.Configure<RabbitmqConfig>(Configuration.GetSection("RabbitMQ"));
             services.Configure<List<Client>>(Configuration.GetSection("Clients"));
             services.Configure<HostConfig>(Configuration.GetSection("Host"));
@@ -158,7 +134,6 @@ namespace Isolaatti
             services.AddScoped<IAccountsService, AccountsService>();
             services.AddSingleton<NotificationSender>();
             services.AddScoped<ServerRenderedAlerts>();
-            services.AddSingleton<GoogleCloudStorageService>();
             services.AddScoped<AudiosService>();
             services.AddScoped<ImagesRepository>();
             services.AddScoped<ImagesService>();
@@ -171,6 +146,25 @@ namespace Isolaatti
             services.AddScoped<TaggingService>();
             services.AddScoped<AccountRemovalService>();
             services.AddScoped<IIdentityService, KeycloakIdentityService>();
+            
+            IConnectionMultiplexer redisConnection = ConnectionMultiplexer.Connect(
+                Configuration.GetConnectionString("Redis")!);
+
+            services.AddSingleton(redisConnection);
+            
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.ConnectionMultiplexerFactory = () => Task.FromResult(redisConnection);
+                options.InstanceName = "app:cookiesession:"; // prefijo distintivo
+            });
+            
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.Cookie.Name = ".App.Session";
+                options.Cookie.HttpOnly = true;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+            });
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // No consent check needed here
@@ -190,47 +184,36 @@ namespace Isolaatti
 
             var keycloakConfiguration = Configuration.GetSection("Keycloak").Get<Keycloak>();
 
+            services.AddSingleton<IApiTokenStore, ApiTokenStore>();
+            
+
             services.AddAuthentication(options =>
                 {
                     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                     options.DefaultAuthenticateScheme = $"{CookieAuthenticationDefaults.AuthenticationScheme}";
                 })
                 .AddCookie(options =>
                 {
-                    options.Cookie.Name = "IsolaattiCookie";
+                    options.LoginPath = "/login";
+                    options.LogoutPath = "/logout";
+                    options.AccessDeniedPath = "/denied";
+                    options.ExpireTimeSpan = TimeSpan.FromHours(8);
+                    options.SlidingExpiration = true;
                 })
-                .AddOpenIdConnect(options =>
+                .AddScheme<AuthenticationSchemeOptions, OpaqueTokenAuthenticationHandler>("OpaqueToken", options =>
                 {
-                    options.Authority = keycloakConfiguration!.Authority;
-                    options.ClientId = keycloakConfiguration!.ClientId;
-                    options.ResponseType = "code";
-                    options.SaveTokens = true;
-                    options.RequireHttpsMetadata = false;
-                    options.UseTokenLifetime = true;
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateAudience = false,
-                        ValidateIssuer = true,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-                        
-                    };
-                }).AddJwtBearer("Bearer", options =>
+                })
+                .AddPolicyScheme("Smart", "Smart", options =>
                 {
-                    options.Authority = keycloakConfiguration!.Authority;
-                    options.MetadataAddress = keycloakConfiguration!.MetadataAddress;
-                    options.RequireHttpsMetadata = false;
-                    options.TokenValidationParameters = new TokenValidationParameters
+                    options.ForwardDefaultSelector = context =>
                     {
-                        ValidateAudience = false,
-                        ValidateIssuer = true,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true
+                        var authHeader = context.Request.Headers.Authorization.FirstOrDefault();
+                        if (authHeader != null && authHeader.StartsWith("Bearer "))
+                            return "OpaqueToken";
+                        return CookieAuthenticationDefaults.AuthenticationScheme;
                     };
                 });
-            
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -251,6 +234,7 @@ namespace Isolaatti
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseMiddleware<ScopedHttpContextMiddleware>();
+            app.UseSession();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

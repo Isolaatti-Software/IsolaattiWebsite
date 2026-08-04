@@ -11,7 +11,7 @@ namespace Isolaatti.Audios.Controller;
 
 [ApiController]
 [Route("/api/Audios")]
-public class AudiosController(AudiosService audios, GoogleCloudStorageService googleCloudStorageService)
+public class AudiosController(AudiosService audios)
     : IsolaattiController
 {
     [Authorize]

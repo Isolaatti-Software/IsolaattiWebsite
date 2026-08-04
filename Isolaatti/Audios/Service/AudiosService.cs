@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using Google;
 using Isolaatti.Common;
 using Isolaatti.Database.EF;
 using Isolaatti.Enums;
@@ -10,13 +9,13 @@ using Microsoft.Extensions.Logging;
 
 namespace Isolaatti.Audios.Service;
 
-public class AudiosService(DbContextApp _db, GoogleCloudStorageService _storage, ILogger<AudiosService> logger)
+public class AudiosService(DbContextApp _db, ILogger<AudiosService> logger)
 {
 
     public async Task CreateAudio(Stream file, int userId, long postId, string contentType, int duration)
     {
         var objectName = $"audios/{Guid.NewGuid()}";
-        await _storage.CreateObject(file, contentType, objectName);
+        // await _storage.CreateObject(file, contentType, objectName);
 
         var post = await _db.SimpleTextPosts.FindAsync(postId);
 
@@ -35,7 +34,7 @@ public class AudiosService(DbContextApp _db, GoogleCloudStorageService _storage,
         {
             try
             {
-                await _storage.DeleteObject(post.AudioStoragePath);
+                //await _storage.DeleteObject(post.AudioStoragePath);
             }
             catch (Exception)
             {
@@ -72,7 +71,7 @@ public class AudiosService(DbContextApp _db, GoogleCloudStorageService _storage,
         var oldAudioPath = user.AudioStoragePath;
         
         var objectName = $"audios/{Guid.NewGuid()}";
-        await _storage.CreateObject(file, contentType, objectName);
+        //await _storage.CreateObject(file, contentType, objectName);
 
         user.AudioStoragePath = objectName;
         
@@ -84,7 +83,7 @@ public class AudiosService(DbContextApp _db, GoogleCloudStorageService _storage,
         {
             try
             {
-                await _storage.DeleteObject(oldAudioPath);
+                //await _storage.DeleteObject(oldAudioPath);
                 return AudiosOperationResult.Success;
             }
             catch (Exception e)
@@ -99,15 +98,7 @@ public class AudiosService(DbContextApp _db, GoogleCloudStorageService _storage,
     
     public async Task<AudiosOperationResult> DeleteAudio(string storagePath)
     {
-
-        try
-        {
-            await _storage.DeleteObject(storagePath);
-        }
-        catch (GoogleApiException googleApiException)
-        {
-            logger.LogError("Error deleting object on Google Cloud Bucket. {}", googleApiException.Message);
-        }
+        
 
         return AudiosOperationResult.Success;
     }

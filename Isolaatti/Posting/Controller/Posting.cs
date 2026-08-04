@@ -28,8 +28,7 @@ namespace Isolaatti.Posting.Controller
         NotificationSender _notificationSender, 
         SquadsRepository _squads, 
         TaggingService _taggingService,
-        AudiosService _audios,
-        GoogleCloudStorageService cloudStorage) : IsolaattiController
+        AudiosService _audios) : IsolaattiController
     {
         
         [HttpPost]
@@ -260,7 +259,8 @@ namespace Isolaatti.Posting.Controller
                 return NotFound("Post has no audio");
             }
 
-            return Redirect(await cloudStorage.GetDownloadUrl(post.AudioStoragePath));
+            //return Redirect(await cloudStorage.GetDownloadUrl(post.AudioStoragePath));
+            throw new NotImplementedException();
         }
     }
 }
